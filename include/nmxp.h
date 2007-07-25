@@ -66,6 +66,7 @@ int sendConnect(int isock);
  */
 int sendTerminateSubscription(int isock, enum NMXP_REASON_SHUTDOWN reason, char *message);
 
+
 /*! \brief The key/name info for one channel */
 typedef struct ChannelKey
 {
@@ -92,6 +93,46 @@ typedef struct ChannelList
  * 
  */
 int receiveChannelList(int isock, ChannelList **pchannelList);
+
+
+enum NMXP_BUFFER_FLAG {
+    NMXP_BUFFER_NO			= 0,
+    NMXP_BUFFER_YES			= 1
+};
+
+/*! \brief Sends the message "AddTimeSeriesChannels" on a socket
+ *
+ * \param isock A descriptor referencing the socket.
+ * \param channelList List of channel.
+ * \param shortTermCompletion Short-term-completion time = s, 1<= s <= 300 seconds.
+ * \param out_format Output format.
+ * 	-1 Compressed packets.
+ * 	0 Uncompressed packets.
+ * 	0 < out_format, requested output sample rate.
+ * \param buffer_flag Server will send or not buffered packets.
+ *
+ * \retval SOCKET_OK on success
+ * \retval SOCKET_ERROR on error
+ * 
+ */
+int sendAddTimeSeriesChannel(int isock, ChannelList *channelList, uint32_t shortTermCompletion, uint32_t out_format, enum NMXP_BUFFER_FLAG buffer_flag);
+
+
+/*! \brief Receive Compress Data message from a socket
+ *
+ * \param isock A descriptor referencing the socket.
+ *
+ * \retval SOCKET_OK on success
+ * \retval SOCKET_ERROR on error
+ * 
+ */
+int receiveCompressedData(int isock, ChannelList *channelList);
+
+int receiveDecompressedData(int isock, ChannelList *channelList);
+
+void processCompressedData(char* buffer_data, int length_data, ChannelList *channelList);
+
+void processDecompressedData(char* buffer, int length, ChannelList *channelList);
 
 #endif
 
