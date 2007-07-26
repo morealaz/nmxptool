@@ -462,7 +462,7 @@ WARN_LOGFILE           =
 # directories like "/usr/src/myproject". Separate the files or directories 
 # with spaces.
 
-INPUT                  =   src/nmxp.h src/nmxpbase.h src/nmxpcrc32.h
+INPUT                  =   src/nmxp.h src/nmxp_base.h src/nmxp_chan.h src/nmxp_crc32.h
 
 # This tag can be used to specify the character encoding of the source files that 
 # doxygen parses. Internally doxygen uses the UTF-8 encoding, which is also the default 
