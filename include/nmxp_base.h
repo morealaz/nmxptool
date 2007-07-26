@@ -39,7 +39,8 @@ typedef enum {
 /*! \brief Defines the client message types */
 typedef enum {
    NMXP_MSG_CONNECT			= 100,
-   NMXP_MSG_REQUESTPENDIG		= 110,
+   NMXP_MSG_REQUESTPENDING		= 110,
+   NMXP_MSG_CANCELREQUEST		= 205,
    NMXP_MSG_TERMINATESUBSCRIPTION	= 200,
 
    NMXP_MSG_ADDTIMESERIESCHANNELS	= 120,
