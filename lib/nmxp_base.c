@@ -90,6 +90,7 @@ int nmxp_openSocket(char *hostname, int portNum)
 
 int nmxp_closeSocket(int isock)
 {
+    nmxp_log(0, 1, "Closed connection.\n");
     return close(isock);
 }
 
@@ -346,13 +347,7 @@ void nmxp_processDecompressedData(char* buffer, int length, NMXP_CHAN_LIST *chan
   }
   */
 
-  nmxp_log(0, 0, "%10d %5s_%3s %10.4f, %04d, %04d, %03d\n", pKey, sta, chan, pTime, length, pNSamp, pSampRate);
-  
-  /* print out header and/or data for different packet types */
-  nmxp_log(0,1, "Received uncompressed data for stream %ld (%s_%s)\n",
-	  pKey, sta, chan);
-  nmxp_log(0,1, "  length: %d, nsamp: %d, samprate: %d, time: %f\n",
-	  length, pNSamp, pSampRate, pTime);
+  nmxp_log(0, 0, "%12d %5s_%3s time: %10.4f, length: %04d, nsamp: %04d, samprate: %03d, %10.4f\n", pKey, sta, chan, pTime, length, pNSamp, pSampRate, pTime + ((double) pNSamp / (double) pSampRate));
   
   free(sta);
 }
@@ -485,6 +480,8 @@ void nmxp_processCompressedData(char* buffer_data, int length_data, NMXP_CHAN_LI
 
 	pNSamp = nout;
 
+	pSampRate = this_sample_rate;
+
 	/* Lookup the station and channel code */
 	sta = strdup(nmxp_chan_lookupName(pKey, channelList));
 	if ( (chan = strchr(sta, '.')) == NULL ) {
@@ -504,13 +501,7 @@ void nmxp_processCompressedData(char* buffer_data, int length_data, NMXP_CHAN_LI
 	}
 	*/
 
-	nmxp_log(0, 0, "%10d %5s_%3s %10.4f, %04d, %04d, %03d\n", pKey, sta, chan, pTime, length_data, pNSamp, pSampRate);
-
-	/* print out header and/or data for different packet types */
-	nmxp_log(0,2, "Received compressed data for stream %ld (%s_%s)\n",
-		pKey, sta, chan);
-	nmxp_log(0,2, "  length: %d, nsamp: %d, samprate: %d, time: %f\n",
-		length_data, pNSamp, pSampRate, pTime);
+	nmxp_log(0, 0, "%12d %5s_%3s time: %10.4f, length: %04d, nsamp: %04d, samprate: %03d, %10.4f\n", pKey, sta, chan, pTime, length_data, pNSamp, pSampRate, pTime + ((double) pNSamp / (double) pSampRate));
 
 	free(sta);
 }
@@ -526,7 +517,8 @@ int nmxp_log(int level, int verb, ... )
     retvalue = staticverb;
   }
   else if (verb <= staticverb) {
-    char message[100];
+#define MAX_LOG_MESSAGE_LENGTH 200
+    char message[MAX_LOG_MESSAGE_LENGTH];
     char timestr[100];
     char *format;
     va_list listptr;
@@ -541,7 +533,7 @@ int nmxp_log(int level, int verb, ... )
     strcpy(timestr, asctime(localtime(&loc_time)));
     timestr[strlen(timestr) - 1] = '\0';
 
-    retvalue = vsnprintf(message, 100, format, listptr);
+    retvalue = vsnprintf(message, MAX_LOG_MESSAGE_LENGTH, format, listptr);
 
     if ( level == 1 ) {
       printf("%s - libnmxp: error: %s",timestr, message);
