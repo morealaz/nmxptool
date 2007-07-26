@@ -108,8 +108,11 @@ int nmxp_receiveCompressedData(int isock, NMXP_CHAN_LIST *channelList) {
     if(type != NMXP_MSG_COMPRESSED) {
 	nmxp_log(1, 0, "Type %d is not NMXP_MSG_COMPRESSED!\n", type);
     } else {
-
 	nmxp_processCompressedData(buffer, length, channelList);
+    }
+
+    if(buffer) {
+	free(buffer);
     }
 
     return ret;
@@ -130,6 +133,10 @@ int nmxp_receiveDecompressedData(int isock, NMXP_CHAN_LIST *channelList) {
     } else {
 
 	nmxp_processDecompressedData(buffer, length, channelList);
+    }
+
+    if(buffer) {
+	free(buffer);
     }
 
     return ret;

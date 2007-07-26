@@ -201,16 +201,21 @@ int nmxp_receiveMessage(int isock, NMXP_MSG_SERVER *type, void **buffer, uint32_
     *length = 0;
 
     ret = nmxp_receiveHeader(isock, type, length);
+
     if( ret == NMXP_SOCKET_OK) {
-	 if (*length > 0) {
-	     *buffer = malloc(*length);
-	     ret = nmxp_recv_ctrl(isock, *buffer, *length);
-	 } else {
-	     nmxp_log(1,0, "Error in nmxp_receiveMessage()\n");
-	 }
+	if (*length > 0) {
+	    *buffer = malloc(*length);
+	    ret = nmxp_recv_ctrl(isock, *buffer, *length);
+
+	    if(*type == NMXP_MSG_ERROR) {
+		nmxp_log(1,0, "Received ErrorMessage: %s\n", *buffer);
+	    }
+
+	}
     } else {
 	nmxp_log(1,0, "Error in nmxp_receiveMessage()\n");
     }
+
     return ret;
 }
 
