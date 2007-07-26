@@ -30,6 +30,14 @@ typedef struct {
 } NMXP_CHAN_LIST;
 
 
+/*! \brief Type of Data */
+typedef enum {
+    NMXP_DATA_TIMESERIES	= 1,
+    NMXP_DATA_SOH		= 2,
+    NMXP_DATA_TRANSERIAL	= 6
+} NMXP_DATATYPE;
+
+
 /*! \brief Looks up a channel key in the list using the name
  *
  * \param name Channel name.
@@ -60,7 +68,7 @@ char *nmxp_chan_lookupName(uint32_t key, NMXP_CHAN_LIST *channelList);
  * \warning Returned value will need to be freed!
  *
  */
-NMXP_CHAN_LIST *nmxp_chan_getType(NMXP_CHAN_LIST *channelList, uint8_t dataType);
+NMXP_CHAN_LIST *nmxp_chan_getType(NMXP_CHAN_LIST *channelList, NMXP_DATATYPE dataType);
 
 #endif
 

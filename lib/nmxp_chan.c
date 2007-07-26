@@ -42,7 +42,7 @@ char *nmxp_chan_lookupName(uint32_t key, NMXP_CHAN_LIST *channelList)
     return NULL;
 }
 
-NMXP_CHAN_LIST *nmxp_chan_getType(NMXP_CHAN_LIST *channelList, uint8_t dataType) {
+NMXP_CHAN_LIST *nmxp_chan_getType(NMXP_CHAN_LIST *channelList, NMXP_DATATYPE dataType) {
     NMXP_CHAN_LIST *ret_channelList = NULL;
 
     int chan_number = channelList->number;
