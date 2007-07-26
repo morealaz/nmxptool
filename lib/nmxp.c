@@ -21,15 +21,15 @@
 int my_order = -1;
 
 
-int sendConnect(int isock) {
-    return sendMessage(isock, NMXPMSG_CONNECT, NULL, 0);
+int nmxp_sendConnect(int isock) {
+    return nmxp_sendMessage(isock, NMXPMSG_CONNECT, NULL, 0);
 }
 
-int sendTerminateSubscription(int isock, enum NMXP_REASON_SHUTDOWN reason, char *message) {
-    return sendMessage(isock, NMXPMSG_TERMINATESUBSCRIPTION, message, ((message)? strlen(message)-1 : 0));
+int nmxp_sendTerminateSubscription(int isock, enum NMXP_REASON_SHUTDOWN reason, char *message) {
+    return nmxp_sendMessage(isock, NMXPMSG_TERMINATESUBSCRIPTION, message, ((message)? strlen(message)-1 : 0));
 }
 
-int receiveChannelList(int isock, ChannelList **pchannelList) {
+int nmxp_receiveChannelList(int isock, nmxp_ChannelList **pchannelList) {
     int ret;
     int i;
 
@@ -39,22 +39,22 @@ int receiveChannelList(int isock, ChannelList **pchannelList) {
 
     *pchannelList = NULL;
 
-    ret = receiveMessage(isock, &type, &buffer, &length);
+    ret = nmxp_receiveMessage(isock, &type, &buffer, &length);
 
     if(type != NMXPMSG_CHANNELLIST) {
-	gen_log(1, 0, "Type %d is not NMXPMSG_CHANNELLIST!\n", type);
+	nmxp_gen_log(1, 0, "Type %d is not NMXPMSG_CHANNELLIST!\n", type);
     } else {
 
 	*pchannelList = buffer;
 	(*pchannelList)->number = ntohl((*pchannelList)->number);
 
-	gen_log(0, 1, "number of channels %d\n", (*pchannelList)->number);
+	nmxp_gen_log(0, 1, "number of channels %d\n", (*pchannelList)->number);
 	
 	// TODO check
 
 	for(i=0; i < (*pchannelList)->number; i++) {
 	    (*pchannelList)->channel[i].key = ntohl((*pchannelList)->channel[i].key);
-	    gen_log(0, 1, "%d %s\n", (*pchannelList)->channel[i].key, (*pchannelList)->channel[i].name);
+	    nmxp_gen_log(0, 1, "%d %s\n", (*pchannelList)->channel[i].key, (*pchannelList)->channel[i].name);
 	}
 
     }
@@ -63,7 +63,7 @@ int receiveChannelList(int isock, ChannelList **pchannelList) {
 }
 
 
-int sendAddTimeSeriesChannel(int isock, ChannelList *channelList, uint32_t shortTermCompletion, uint32_t out_format, enum NMXP_BUFFER_FLAG buffer_flag) {
+int nmxp_sendAddTimeSeriesChannel(int isock, nmxp_ChannelList *channelList, uint32_t shortTermCompletion, uint32_t out_format, enum NMXP_BUFFER_FLAG buffer_flag) {
     int ret;
     uint32_t buffer_length = 16 + (4 * channelList->number); 
     char *buffer = malloc(buffer_length);
@@ -93,7 +93,7 @@ int sendAddTimeSeriesChannel(int isock, ChannelList *channelList, uint32_t short
     memcpy(&buffer[disp], &app, 4);
     disp+=4;
 
-    ret = sendMessage(isock, NMXPMSG_ADDTIMESERIESCHANNELS, buffer, buffer_length);
+    ret = nmxp_sendMessage(isock, NMXPMSG_ADDTIMESERIESCHANNELS, buffer, buffer_length);
 
     if(buffer) {
 	free(buffer);
@@ -131,7 +131,7 @@ int unpack_bundle (int *outdata, unsigned char *indata, int *prev)
 
 	for (j=0; j<4; j++) {
 		/*
-		gen_log (0,0, "cb[%d]=%d\n", j, cb[j]);
+		nmxp_gen_log (0,0, "cb[%d]=%d\n", j, cb[j]);
 		*/
 		switch (cb[j]) 
 		{   
@@ -169,7 +169,7 @@ int unpack_bundle (int *outdata, unsigned char *indata, int *prev)
 		for (i=0; i<k; i++) {
 			*outdata = *prev + d4[i];
 			/*
-				gen_log(0,0, "val = %d, diff[%d] = %d, *prev = %d\n",
+				nmxp_gen_log(0,0, "val = %d, diff[%d] = %d, *prev = %d\n",
 						*outdata, i, d4[i], *prev);
 						*/
 			*prev = *outdata;
@@ -183,12 +183,12 @@ int unpack_bundle (int *outdata, unsigned char *indata, int *prev)
 
 /**************************************************************************
  *
- *   Function:  lookupChannelKey
+ *   Function:  lookupnmxp_ChannelKey
  *
- *     Purpose:  looks up a channel key in the ChannelList using the name
+ *     Purpose:  looks up a channel key in the nmxp_ChannelList using the name
  *
  *      ------------------------------------------------------------------------*/
-int lookupChannelKey(char* name, ChannelList *channelList)
+int lookupnmxp_ChannelKey(char* name, nmxp_ChannelList *channelList)
 {
     int length = channelList->number;
     int ich = 0;
@@ -206,10 +206,10 @@ int lookupChannelKey(char* name, ChannelList *channelList)
  *
  *   Function:  lookupChannelName
  *
- *     Purpose:  looks up a channel name in the ChannelList using a key
+ *     Purpose:  looks up a channel name in the nmxp_ChannelList using a key
  *
  *      ------------------------------------------------------------------------*/
-char *lookupChannelName(int key, ChannelList *channelList)
+char *lookupChannelName(int key, nmxp_ChannelList *channelList)
 {
     int length = channelList->number;
     int ich = 0;
@@ -231,7 +231,7 @@ char *lookupChannelName(int key, ChannelList *channelList)
             to the controlling SeedLink server.
 
  ------------------------------------------------------------------------*/
-void processDecompressedData(char* buffer, int length, ChannelList *channelList)
+void nmxp_processDecompressedData(char* buffer, int length, nmxp_ChannelList *channelList)
 {
   int32_t   netInt    = 0;
   int32_t   pKey      = 0;
@@ -270,7 +270,7 @@ void processDecompressedData(char* buffer, int length, ChannelList *channelList)
   /* Lookup the station and channel code */
   sta = strdup(lookupChannelName(pKey, channelList));
   if ( (chan = strchr(sta, '.')) == NULL ) {
-    gen_log(1,0, "Channel name not in STN.CHAN format: %s\n", sta);
+    nmxp_gen_log(1,0, "Channel name not in STN.CHAN format: %s\n", sta);
     free(sta);
     return;
   }
@@ -279,23 +279,23 @@ void processDecompressedData(char* buffer, int length, ChannelList *channelList)
   /* Send it off to the controlling SeedLink server */
   /*
   if ( send_raw_depoch(sta, chan, pTime, 0, 100, pDataPtr, pNSamp) < 0 ) {
-    gen_log(1,0, "cannot send data to seedlink: %s", strerror(errno));
+    nmxp_gen_log(1,0, "cannot send data to seedlink: %s", strerror(errno));
     exit(1);
   }
   */
 
-  gen_log(0, 0, "%10d %5s_%3s %10.4f, %04d, %04d, %03d\n", pKey, sta, chan, pTime, length, pNSamp, pSampRate);
+  nmxp_gen_log(0, 0, "%10d %5s_%3s %10.4f, %04d, %04d, %03d\n", pKey, sta, chan, pTime, length, pNSamp, pSampRate);
   
   /* print out header and/or data for different packet types */
-  gen_log(0,1, "Received uncompressed data for stream %ld (%s_%s)\n",
+  nmxp_gen_log(0,1, "Received uncompressed data for stream %ld (%s_%s)\n",
 	  pKey, sta, chan);
-  gen_log(0,1, "  length: %d, nsamp: %d, samprate: %d, time: %f\n",
+  nmxp_gen_log(0,1, "  length: %d, nsamp: %d, samprate: %d, time: %f\n",
 	  length, pNSamp, pSampRate, pTime);
   
   free(sta);
 }
 
-void processCompressedData(char* buffer_data, int length_data, ChannelList *channelList)
+void nmxp_processCompressedData(char* buffer_data, int length_data, nmxp_ChannelList *channelList)
 {
     int32_t   pKey      = 0;
     double    pTime     = 0.0;
@@ -331,17 +331,17 @@ void processCompressedData(char* buffer_data, int length_data, ChannelList *chan
 	int prev_xn;
 
 	my_order = get_my_wordorder();
-	gen_log(0, 1, "my_order is %d\n", my_order);
+	nmxp_gen_log(0, 1, "my_order is %d\n", my_order);
 
 	memcpy(&nmx_oldest_sequence_number, buffer_data, 4);
-	gen_log(0, 1, "Oldest sequence number = %d\n", nmx_oldest_sequence_number);
+	nmxp_gen_log(0, 1, "Oldest sequence number = %d\n", nmx_oldest_sequence_number);
 
 	memcpy(nmx_hdr, buffer_data+4, 17);
 	/* Decode the Nanometrics packet header bundle. */
 	memcpy (&nmx_ptype, nmx_hdr+0, 1);
 	if ( (nmx_ptype & 0xf) == 9) {
 	    /* Filler packet.  Discard entire packet.   */
-	    gen_log (1,0, "Filler packet - discarding\n");
+	    nmxp_gen_log (1,0, "Filler packet - discarding\n");
 	    //m continue;
 	    exit(0);
 	}
@@ -358,7 +358,7 @@ void processCompressedData(char* buffer_data, int length_data, ChannelList *chan
 	const unsigned int high_scale_p = 4096 * 4096;
 	/* check if nmx_x0 is negative like as signed 3-byte int */
 	if( (nmx_x0 & high_scale) ==  high_scale) {
-	    // gen_log(0, 0, "WARNING: changed nmx_x0, old value = %d\n",  nmx_x0);
+	    // nmxp_gen_log(0, 0, "WARNING: changed nmx_x0, old value = %d\n",  nmx_x0);
 	    nmx_x0 -= high_scale_p;
 	}
 	if (my_order != SEED_LITTLE_ENDIAN) {
@@ -375,17 +375,17 @@ void processCompressedData(char* buffer_data, int length_data, ChannelList *chan
 	chan_code = nmx_sample_rate&7;
 	this_sample_rate = nmx_rate_code_to_sample_rate[rate_code];
 
-	gen_log(0, 1, "nmx_ptype          = %d\n", nmx_ptype);
-	gen_log(0, 1, "nmx_seconds        = %d\n", nmx_seconds);
-	gen_log(0, 1, "nmx_ticks          = %d\n", nmx_ticks);
+	nmxp_gen_log(0, 1, "nmx_ptype          = %d\n", nmx_ptype);
+	nmxp_gen_log(0, 1, "nmx_seconds        = %d\n", nmx_seconds);
+	nmxp_gen_log(0, 1, "nmx_ticks          = %d\n", nmx_ticks);
 
-	gen_log(0, 1, "nmx_seconds_double = %f\n", nmx_seconds_double);
-	gen_log(0, 1, "nmx_x0             = %d\n", nmx_x0);
+	nmxp_gen_log(0, 1, "nmx_seconds_double = %f\n", nmx_seconds_double);
+	nmxp_gen_log(0, 1, "nmx_x0             = %d\n", nmx_x0);
 
-	gen_log(0, 1, "nmx_instr_id       = %d\n", nmx_instr_id);
-	gen_log(0, 1, "nmx_seqno          = %d\n", nmx_seqno);
-	gen_log(0, 1, "nmx_sample_rate    = %d\n", nmx_sample_rate);
-	gen_log(0, 1, "this_sample_rate    = %d\n", this_sample_rate);
+	nmxp_gen_log(0, 1, "nmx_instr_id       = %d\n", nmx_instr_id);
+	nmxp_gen_log(0, 1, "nmx_seqno          = %d\n", nmx_seqno);
+	nmxp_gen_log(0, 1, "nmx_sample_rate    = %d\n", nmx_sample_rate);
+	nmxp_gen_log(0, 1, "this_sample_rate    = %d\n", this_sample_rate);
 
 	comp_bytecount = length_data-21;
 	indata = (unsigned char *) buffer_data + 21;
@@ -396,23 +396,23 @@ void processCompressedData(char* buffer_data, int length_data, ChannelList *chan
 	nout = 1;
 	for (i=0; i<comp_bytecount; i+=17) {
 	    if (i+17>comp_bytecount) {
-		gen_log (1,0, "comp_bytecount = %d, i+17 = %d\n",
+		nmxp_gen_log (1,0, "comp_bytecount = %d, i+17 = %d\n",
 			comp_bytecount, i+17);
 		exit(1);
 	    }
 	    if (nout+16 > MAX_OUTDATA)  {
-		gen_log (1,0, "Output buffer size too small\n");
+		nmxp_gen_log (1,0, "Output buffer size too small\n");
 		exit(1);
 	    }
 	    k = unpack_bundle (outdata+nout,indata+i,&prev_xn);
-	    if (k < 0) gen_log (1,0, "Break: %d\n", __LINE__);
+	    if (k < 0) nmxp_gen_log (1,0, "Break: %d\n", __LINE__);
 	    if (k < 0) break;
 	    nout += k;
 	    /* prev_xn = outdata[nout-1]; */
 	}
 	nout--;
 
-	gen_log(0, 1, "Unpacked %d samples.\n", nout);
+	nmxp_gen_log(0, 1, "Unpacked %d samples.\n", nout);
 
 	pKey = (nmx_instr_id << 16) | ( 1 << 8) | ( chan_code);
 
@@ -425,66 +425,66 @@ void processCompressedData(char* buffer_data, int length_data, ChannelList *chan
 	/* Lookup the station and channel code */
 	sta = strdup(lookupChannelName(pKey, channelList));
 	if ( (chan = strchr(sta, '.')) == NULL ) {
-	    gen_log(1,0, "Channel name not in STN.CHAN format: %s\n", sta);
+	    nmxp_gen_log(1,0, "Channel name not in STN.CHAN format: %s\n", sta);
 	    free(sta);
 	    return;
 	}
 	*chan++ = '\0';
 
-	gen_log(0, 1, "Channel key %d for %s.%s\n", pKey, sta, chan);
+	nmxp_gen_log(0, 1, "Channel key %d for %s.%s\n", pKey, sta, chan);
 
 	/* Send it off to the controlling SeedLink server */
 	/*
 	  f ( send_raw_depoch(sta, chan, pTime, 0, 100, pDataPtr, pNSamp) < 0 ) {
-	    gen_log(1,0, "cannot send data to seedlink: %s", strerror(errno));
+	    nmxp_gen_log(1,0, "cannot send data to seedlink: %s", strerror(errno));
 	    exit(1);
 	}
 	*/
 
-	gen_log(0, 0, "%10d %5s_%3s %10.4f, %04d, %04d, %03d\n", pKey, sta, chan, pTime, length_data, pNSamp, pSampRate);
+	nmxp_gen_log(0, 0, "%10d %5s_%3s %10.4f, %04d, %04d, %03d\n", pKey, sta, chan, pTime, length_data, pNSamp, pSampRate);
 
 	/* print out header and/or data for different packet types */
-	gen_log(0,2, "Received compressed data for stream %ld (%s_%s)\n",
+	nmxp_gen_log(0,2, "Received compressed data for stream %ld (%s_%s)\n",
 		pKey, sta, chan);
-	gen_log(0,2, "  length: %d, nsamp: %d, samprate: %d, time: %f\n",
+	nmxp_gen_log(0,2, "  length: %d, nsamp: %d, samprate: %d, time: %f\n",
 		length_data, pNSamp, pSampRate, pTime);
 
 	free(sta);
 }
 
-int receiveCompressedData(int isock, ChannelList *channelList) {
+int nmxp_receiveCompressedData(int isock, nmxp_ChannelList *channelList) {
     int ret;
 
     enum NMXP_MSG_SERVER type;
     void *buffer;
     uint32_t length;
 
-    ret = receiveMessage(isock, &type, &buffer, &length);
+    ret = nmxp_receiveMessage(isock, &type, &buffer, &length);
 
     if(type != NMXPMSG_COMPRESSED) {
-	gen_log(1, 0, "Type %d is not NMXPMSG_COMPRESSED!\n", type);
+	nmxp_gen_log(1, 0, "Type %d is not NMXPMSG_COMPRESSED!\n", type);
     } else {
 
-	processCompressedData(buffer, length, channelList);
+	nmxp_processCompressedData(buffer, length, channelList);
     }
 
     return ret;
 }
 
-int receiveDecompressedData(int isock, ChannelList *channelList) {
+int nmxp_receiveDecompressedData(int isock, nmxp_ChannelList *channelList) {
     int ret;
 
     enum NMXP_MSG_SERVER type;
     void *buffer;
     uint32_t length;
 
-    ret = receiveMessage(isock, &type, &buffer, &length);
+    ret = nmxp_receiveMessage(isock, &type, &buffer, &length);
 
     if(type != NMXPMSG_DECOMPRESSED) {
-	gen_log(1, 0, "Type %d is not NMXPMSG_DECOMPRESSED!\n", type);
+	nmxp_gen_log(1, 0, "Type %d is not NMXPMSG_DECOMPRESSED!\n", type);
     } else {
 
-	processDecompressedData(buffer, length, channelList);
+	nmxp_processDecompressedData(buffer, length, channelList);
     }
 
     return ret;
