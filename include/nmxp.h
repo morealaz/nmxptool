@@ -49,6 +49,13 @@
 #include "nmxp_chan.h"
 #include "nmxp_crc32.h"
 
+/*! \brief Flag for buffered packets */
+typedef enum {
+    NMXP_BUFFER_NO			= 0,
+    NMXP_BUFFER_YES			= 1
+} NMXP_BUFFER_FLAG;
+
+
 /*! \brief Sends the message "Connect" on a socket
  *
  * \param isock A descriptor referencing the socket.
@@ -70,10 +77,10 @@ int nmxp_sendConnect(int isock);
  * \retval SOCKET_ERROR on error
  * 
  */
-int nmxp_sendTerminateSubscription(int isock, enum NMXP_REASON_SHUTDOWN reason, char *message);
+int nmxp_sendTerminateSubscription(int isock, NMXP_REASON_SHUTDOWN reason, char *message);
 
 
-/*! \brief Receive message "nmxp_ChannelList" from a socket
+/*! \brief Receive message "NMXP_CHAN_LIST" from a socket
  *
  * \param isock A descriptor referencing the socket.
  * \param pchannelList[out] List of channels. It will need to be freed!
@@ -82,13 +89,8 @@ int nmxp_sendTerminateSubscription(int isock, enum NMXP_REASON_SHUTDOWN reason, 
  * \retval SOCKET_ERROR on error
  * 
  */
-int nmxp_receiveChannelList(int isock, nmxp_ChannelList **pchannelList);
+int nmxp_receiveChannelList(int isock, NMXP_CHAN_LIST **pchannelList);
 
-
-enum NMXP_BUFFER_FLAG {
-    NMXP_BUFFER_NO			= 0,
-    NMXP_BUFFER_YES			= 1
-};
 
 /*! \brief Sends the message "AddTimeSeriesChannels" on a socket
  *
@@ -105,7 +107,7 @@ enum NMXP_BUFFER_FLAG {
  * \retval SOCKET_ERROR on error
  * 
  */
-int nmxp_sendAddTimeSeriesChannel(int isock, nmxp_ChannelList *channelList, uint32_t shortTermCompletion, uint32_t out_format, enum NMXP_BUFFER_FLAG buffer_flag);
+int nmxp_sendAddTimeSeriesChannel(int isock, NMXP_CHAN_LIST *channelList, uint32_t shortTermCompletion, uint32_t out_format, NMXP_BUFFER_FLAG buffer_flag);
 
 
 /*! \brief Receive Compress Data message from a socket
@@ -116,13 +118,13 @@ int nmxp_sendAddTimeSeriesChannel(int isock, nmxp_ChannelList *channelList, uint
  * \retval SOCKET_ERROR on error
  * 
  */
-int nmxp_receiveCompressedData(int isock, nmxp_ChannelList *channelList);
+int nmxp_receiveCompressedData(int isock, NMXP_CHAN_LIST *channelList);
 
-int nmxp_receiveDecompressedData(int isock, nmxp_ChannelList *channelList);
+int nmxp_receiveDecompressedData(int isock, NMXP_CHAN_LIST *channelList);
 
-void nmxp_processCompressedData(char* buffer_data, int length_data, nmxp_ChannelList *channelList);
+void nmxp_processCompressedData(char* buffer_data, int length_data, NMXP_CHAN_LIST *channelList);
 
-void nmxp_processDecompressedData(char* buffer, int length, nmxp_ChannelList *channelList);
+void nmxp_processDecompressedData(char* buffer, int length, NMXP_CHAN_LIST *channelList);
 
 #endif
 

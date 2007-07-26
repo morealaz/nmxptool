@@ -28,14 +28,14 @@
 #define NMX_SIGNATURE 0x7abcde0f
 
 /*! \brief Defines the type for reason of shutdown */
-enum NMXP_REASON_SHUTDOWN {
+typedef enum {
     NMXP_NORMAL_SHUTDOWN		= 1,
     NMXP_ERROR_SHUTDOWN			= 2,
     NMXP_TIMEOUT_SHUTDOWN		= 3
-};
+} NMXP_REASON_SHUTDOWN;
 
 /*! \brief Defines the client message types */
-enum NMXP_MSG_CLIENT {
+typedef enum {
    NMXPMSG_CONNECT			= 100,
    NMXPMSG_REQUESTPENDIG		= 110,
    NMXPMSG_TERMINATESUBSCRIPTION	= 200,
@@ -61,10 +61,10 @@ enum NMXP_MSG_CLIENT {
    NMXPMSG_TRIGGERREQUEST		= 231,
    NMXPMSG_EVENTREQUEST			= 232
    
-};
+} NMXP_MSG_CLIENT;
 
 /*! \brief Defines the server message types. */
-enum NMXP_MSG_SERVER {
+typedef enum {
     NMXPMSG_CHANNELLIST			= 150,
     NMXPMSG_ERROR			= 190,
     NMXPMSG_COMPRESSED			= 1,
@@ -79,16 +79,15 @@ enum NMXP_MSG_SERVER {
     NMXPMSG_NAQSEVENT			= 260,
     NAQSTRIGGER				= 259
 
-};
+} NMXP_MSG_SERVER;
 
 
 /*! \brief Header for all messages. */
-typedef struct nmxp_MessageHeader
-{
-  uint32_t signature;
-  uint32_t type;
-  uint32_t length;
-} nmxp_MessageHeader;
+typedef struct {
+    uint32_t signature;
+    uint32_t type;
+    uint32_t length;
+} NMXP_MESSAGE_HEADER;
 
 
 /*! \brief Looks up target host, opens a socket and connects
@@ -152,7 +151,7 @@ int nmxp_recv_ctrl(int isock, void *buffer, int length);
  * \retval NMXP_SOCKET_ERROR on error
  *
  */
-int nmxp_sendHeader(int isock, enum NMXP_MSG_CLIENT type, uint32_t length);
+int nmxp_sendHeader(int isock, NMXP_MSG_CLIENT type, uint32_t length);
 
 
 /*! \brief Receives header of a message.
@@ -165,7 +164,7 @@ int nmxp_sendHeader(int isock, enum NMXP_MSG_CLIENT type, uint32_t length);
  * \retval NMXP_SOCKET_ERROR on error
  *
  */
-int nmxp_receiveHeader(int isock, enum NMXP_MSG_SERVER *type, uint32_t *length);
+int nmxp_receiveHeader(int isock, NMXP_MSG_SERVER *type, uint32_t *length);
 
 
 /*! \brief Sends header and body of a message.
@@ -179,7 +178,7 @@ int nmxp_receiveHeader(int isock, enum NMXP_MSG_SERVER *type, uint32_t *length);
  * \retval NMXP_SOCKET_ERROR on error
  *
  */
-int nmxp_sendMessage(int isock, enum NMXP_MSG_CLIENT type, void *buffer, uint32_t length);
+int nmxp_sendMessage(int isock, NMXP_MSG_CLIENT type, void *buffer, uint32_t length);
 
 
 /*! \brief Receives header and body of a message.
@@ -195,7 +194,7 @@ int nmxp_sendMessage(int isock, enum NMXP_MSG_CLIENT type, void *buffer, uint32_
  * \retval NMXP_SOCKET_ERROR on error
  *
  */
-int nmxp_receiveMessage(int isock, enum NMXP_MSG_SERVER *type, void **buffer, uint32_t *length);
+int nmxp_receiveMessage(int isock, NMXP_MSG_SERVER *type, void **buffer, uint32_t *length);
 
 
 /*! \brief A generic logging/printing routine
@@ -220,7 +219,7 @@ int nmxp_receiveMessage(int isock, enum NMXP_MSG_SERVER *type, void **buffer, ui
  *   \param verb
  *   \param ...
  */
-int nmxp_gen_log(int level, int verb, ... );
+int nmxp_log(int level, int verb, ... );
 
 #endif
 

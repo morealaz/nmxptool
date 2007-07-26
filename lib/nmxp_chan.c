@@ -13,7 +13,7 @@
 
 #include <string.h>
 
-int lookupChannelKey(char* name, nmxp_ChannelList *channelList)
+int nmxp_chan_lookupKey(char* name, NMXP_CHAN_LIST *channelList)
 {
     int length = channelList->number;
     int ich = 0;
@@ -27,7 +27,7 @@ int lookupChannelKey(char* name, nmxp_ChannelList *channelList)
     return -1;
 }
 
-char *lookupChannelName(int key, nmxp_ChannelList *channelList)
+char *nmxp_chan_lookupName(uint32_t key, NMXP_CHAN_LIST *channelList)
 {
     int length = channelList->number;
     int ich = 0;

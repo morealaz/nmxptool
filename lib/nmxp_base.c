@@ -35,12 +35,12 @@ int nmxp_openSocket(char *hostname, int portNum)
   
   if (!hostname)
   {
-    nmxp_gen_log(1,0, "Empty host name?\n");
+    nmxp_log(1,0, "Empty host name?\n");
     return -1;
   }
 
   if ( (hostinfo = gethostbyname(hostname)) == NULL) {
-    nmxp_gen_log(1,0, "Cannot lookup host: %s\n", hostname);
+    nmxp_log(1,0, "Cannot lookup host: %s\n", hostname);
     return -1;
   }
 
@@ -49,7 +49,7 @@ int nmxp_openSocket(char *hostname, int portNum)
     isock = socket (AF_INET, SOCK_STREAM, 0);
     if (isock < 0)
     {
-      nmxp_gen_log (1,0, "Can't open stream socket\n");
+      nmxp_log (1,0, "Can't open stream socket\n");
       exit(1);
     }
 
@@ -63,19 +63,19 @@ int nmxp_openSocket(char *hostname, int portNum)
     /* Report action and resolved address */
     memcpy(&hostaddr.s_addr, *hostinfo->h_addr_list,
 	   sizeof (hostaddr.s_addr));
-    nmxp_gen_log(0,1, "Attempting to connect to %s port %d\n",
+    nmxp_log(0,1, "Attempting to connect to %s port %d\n",
 	    inet_ntoa(hostaddr), portNum);
 
     if (connect(isock, (struct sockaddr *)&psServAddr, sizeof(psServAddr)) >= 0)
     {
       sleepTime = 1;
-      nmxp_gen_log(0, 1, "Connection established: socket=%i,IP=%s,port=%d\n",
+      nmxp_log(0, 1, "Connection established: socket=%i,IP=%s,port=%d\n",
 	      isock, inet_ntoa(hostaddr), portNum);
       return isock;
     }
     else
     {
-      nmxp_gen_log(0, 1, "Trying again later...Sleeping\n");
+      nmxp_log(0, 1, "Trying again later...Sleeping\n");
       close (isock);
       sleep (sleepTime);
       sleepTime *= 2;
@@ -127,7 +127,7 @@ int nmxp_recv_ctrl(int isock, void* buffer, int length)
 			  strcpy(recv_errno_str, "DEFAULT_NO_VALUE");
 			  break;
 	  }
-    nmxp_gen_log(0,0, "nmxp_recv_ctrl(): (recvCount != length) %d != %d - errno = %d (%s)\n", recvCount, length, recv_errno, recv_errno_str);
+    nmxp_log(0,0, "nmxp_recv_ctrl(): (recvCount != length) %d != %d - errno = %d (%s)\n", recvCount, length, recv_errno, recv_errno_str);
 	    
     return NMXP_SOCKET_ERROR;
   }
@@ -136,24 +136,24 @@ int nmxp_recv_ctrl(int isock, void* buffer, int length)
 }
 
 
-int nmxp_sendHeader(int isock, enum NMXP_MSG_CLIENT type, uint32_t length)
+int nmxp_sendHeader(int isock, NMXP_MSG_CLIENT type, uint32_t length)
 {  
-    nmxp_MessageHeader msg;
+    NMXP_MESSAGE_HEADER msg;
 
     msg.signature = htonl(NMX_SIGNATURE);
     msg.type      = htonl(type);
     msg.length    = htonl(length);
 
-    return nmxp_send_ctrl(isock, &msg, sizeof(nmxp_MessageHeader));
+    return nmxp_send_ctrl(isock, &msg, sizeof(NMXP_MESSAGE_HEADER));
 }
 
 
-int nmxp_receiveHeader(int isock, enum NMXP_MSG_SERVER *type, uint32_t *length)
+int nmxp_receiveHeader(int isock, NMXP_MSG_SERVER *type, uint32_t *length)
 {  
     int ret ;
-    nmxp_MessageHeader msg;
+    NMXP_MESSAGE_HEADER msg;
 
-    ret = nmxp_recv_ctrl(isock, &msg, sizeof(nmxp_MessageHeader));
+    ret = nmxp_recv_ctrl(isock, &msg, sizeof(NMXP_MESSAGE_HEADER));
 
     *type = 0;
     *length = 0;
@@ -163,13 +163,13 @@ int nmxp_receiveHeader(int isock, enum NMXP_MSG_SERVER *type, uint32_t *length)
 	msg.type      = ntohl(msg.type);
 	msg.length    = ntohl(msg.length);
 
-	nmxp_gen_log(0,1, "nmxp_receiveHeader(): signature = %d, type = %d, length = %d\n",
+	nmxp_log(0,1, "nmxp_receiveHeader(): signature = %d, type = %d, length = %d\n",
 		    msg.signature, msg.type, msg.length);
 
 	if (msg.signature != NMX_SIGNATURE)
 	{
 	    ret = NMXP_SOCKET_ERROR;
-	    nmxp_gen_log(1,0, "nmxp_receiveHeader(): signature mismatches. signature = %d, type = %d, length = %d\n",
+	    nmxp_log(1,0, "nmxp_receiveHeader(): signature mismatches. signature = %d, type = %d, length = %d\n",
 		    msg.signature, msg.type, msg.length);
 	} else {
 	    *type = msg.type;
@@ -181,7 +181,7 @@ int nmxp_receiveHeader(int isock, enum NMXP_MSG_SERVER *type, uint32_t *length)
 }
 
 
-int nmxp_sendMessage(int isock, enum NMXP_MSG_CLIENT type, void *buffer, uint32_t length) {
+int nmxp_sendMessage(int isock, NMXP_MSG_CLIENT type, void *buffer, uint32_t length) {
     int ret;
     ret = nmxp_sendHeader(isock, type, length);
     if( ret == NMXP_SOCKET_OK) {
@@ -193,7 +193,7 @@ int nmxp_sendMessage(int isock, enum NMXP_MSG_CLIENT type, void *buffer, uint32_
 }
 
 
-int nmxp_receiveMessage(int isock, enum NMXP_MSG_SERVER *type, void **buffer, uint32_t *length) {
+int nmxp_receiveMessage(int isock, NMXP_MSG_SERVER *type, void **buffer, uint32_t *length) {
     int ret;
     *buffer = NULL;
     *length = 0;
@@ -204,16 +204,16 @@ int nmxp_receiveMessage(int isock, enum NMXP_MSG_SERVER *type, void **buffer, ui
 	     *buffer = malloc(*length);
 	     ret = nmxp_recv_ctrl(isock, *buffer, *length);
 	 } else {
-	     nmxp_gen_log(1,0, "Error in nmxp_receiveMessage()\n");
+	     nmxp_log(1,0, "Error in nmxp_receiveMessage()\n");
 	 }
     } else {
-	nmxp_gen_log(1,0, "Error in nmxp_receiveMessage()\n");
+	nmxp_log(1,0, "Error in nmxp_receiveMessage()\n");
     }
     return ret;
 }
 
 
-int nmxp_gen_log(int level, int verb, ... )
+int nmxp_log(int level, int verb, ... )
 {
   static int staticverb = 0;
   int retvalue = 0;
@@ -252,4 +252,4 @@ int nmxp_gen_log(int level, int verb, ... )
   }
 
   return retvalue;
-} /* End of nmxp_gen_log() */
+} /* End of nmxp_log() */

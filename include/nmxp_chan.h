@@ -15,40 +15,40 @@
 #include <sys/types.h>
 
 /*! \brief The key/name info for one channel */
-typedef struct nmxp_ChannelKey
-{
+typedef struct {
     uint32_t key;
     char name[12];
-} nmxp_ChannelKey;
+} NMXP_CHAN_KEY;
 
+/*! \brief Max number of channels */
 #define MAX_N_CHAN 1000
-/*! \brief Channel List */
-typedef struct nmxp_ChannelList
-{
+
+/*! \brief Channel list */
+typedef struct {
     uint32_t number;
-    nmxp_ChannelKey channel[MAX_N_CHAN];
-} nmxp_ChannelList;
+    NMXP_CHAN_KEY channel[MAX_N_CHAN];
+} NMXP_CHAN_LIST;
 
 
-/*! \brief Looks up a channel key in the nmxp_ChannelList using the name
+/*! \brief Looks up a channel key in the NMXP_CHAN_LIST using the name
  *
- * \param name
- * \param channelList
+ * \param name Channel name.
+ * \param channelList Channel list.
  *
- * \retval
+ * \return Key of the channel with name. -1 On error.
  *
  */
-int lookupChannelKey(char* name, nmxp_ChannelList *channelList);
+int nmxp_chan_lookupKey(char* name, NMXP_CHAN_LIST *channelList);
 
-/*! \brief Looks up a channel name in the nmxp_ChannelList using a key
+/*! \brief Looks up a channel name in the NMXP_CHAN_LIST using a key
  *
- * \param key
- * \param channelList
+ * \param key Channel key.
+ * \param channelList Channel list.
  *
- * \retval
+ * \return Name of channel with key. NULL on error.
  *
  */
-char *lookupChannelName(int key, nmxp_ChannelList *channelList);
+char *nmxp_chan_lookupName(uint32_t key, NMXP_CHAN_LIST *channelList);
 
 #endif
 
