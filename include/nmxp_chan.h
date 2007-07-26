@@ -70,5 +70,21 @@ char *nmxp_chan_lookupName(uint32_t key, NMXP_CHAN_LIST *channelList);
  */
 NMXP_CHAN_LIST *nmxp_chan_getType(NMXP_CHAN_LIST *channelList, NMXP_DATATYPE dataType);
 
+
+/*! Sort list by channel key
+ *
+ * \param channelList Channel List
+ *
+ */
+void nmxp_chan_sortByKey(NMXP_CHAN_LIST *channelList);
+
+
+/*! Sort list by channel name
+ *
+ * \param channelList Channel List
+ *
+ */
+void nmxp_chan_sortByName(NMXP_CHAN_LIST *channelList);
+
 #endif
 

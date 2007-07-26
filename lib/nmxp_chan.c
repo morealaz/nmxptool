@@ -63,3 +63,36 @@ NMXP_CHAN_LIST *nmxp_chan_getType(NMXP_CHAN_LIST *channelList, NMXP_DATATYPE dat
     return ret_channelList;
 }
 
+
+// Comparison Key Function
+int chan_key_compare(const void *a, const void *b)
+{
+    int ret = 0;
+    NMXP_CHAN_KEY *pa = (NMXP_CHAN_KEY *) a; 
+    NMXP_CHAN_KEY *pb = (NMXP_CHAN_KEY *) b;
+
+    if(pa->key > pb->key) {
+	ret = 1;
+    } else if(pa->key < pb->key) {
+	ret = -1;
+    }
+    return ret;
+}
+
+void nmxp_chan_sortByKey(NMXP_CHAN_LIST *channelList) {
+    qsort (channelList->channel, channelList->number, sizeof (NMXP_CHAN_KEY), chan_key_compare);
+}
+
+// Comparison Name Function
+int chan_name_compare(const void *a, const void *b)
+{
+    NMXP_CHAN_KEY *pa = (NMXP_CHAN_KEY *) a; 
+    NMXP_CHAN_KEY *pb = (NMXP_CHAN_KEY *) b;
+
+    return strcmp(pa->name, pb->name);
+}
+
+void nmxp_chan_sortByName(NMXP_CHAN_LIST *channelList) {
+    qsort (channelList->channel, channelList->number, sizeof (NMXP_CHAN_KEY), chan_name_compare);
+}
+
