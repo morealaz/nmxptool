@@ -60,8 +60,8 @@
  *
  */
 
-#ifndef NMXPCRC32_H
-#define NMXPCRC32_H 1
+#ifndef NMXP_CRC32_H
+#define NMXP_CRC32_H 1
 
 /*! \brief Computes a 32 bit crc of the data in the buffer,
  * and returns the crc.  the polynomial used is 0xedb88320. */
