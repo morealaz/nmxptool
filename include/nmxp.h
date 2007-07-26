@@ -77,7 +77,7 @@ int nmxp_sendConnect(int isock);
  * \retval SOCKET_ERROR on error
  * 
  */
-int nmxp_sendTerminateSubscription(int isock, NMXP_REASON_SHUTDOWN reason, char *message);
+int nmxp_sendTerminateSubscription(int isock, NMXP_SHUTDOWN_REASON reason, char *message);
 
 
 /*! \brief Receive message "NMXP_CHAN_LIST" from a socket
