@@ -14,6 +14,8 @@
 
 #include <sys/types.h>
 
+#include "nmxp_chan.h"
+
 /*! Maximum time between connection attempts (seconds). */
 #define NMXP_SLEEPMAX 10
 
@@ -195,6 +197,34 @@ int nmxp_sendMessage(int isock, NMXP_MSG_CLIENT type, void *buffer, uint32_t len
  *
  */
 int nmxp_receiveMessage(int isock, NMXP_MSG_SERVER *type, void **buffer, uint32_t *length);
+
+
+/*! \brief Unpack a 17-byte Nanometrics compressed data bundle.           
+ *
+ * \param outdata[out]
+ * \param indata
+ * \param prev
+ *
+ * \return Number of unpacked data samples, -1 if null bundle. 
+ *
+ * Author:  Doug Neuhauser
+ *          UC Berkeley Seismological Laboratory
+ *          doug@seismo.berkeley.edu
+ *
+ */
+int nmxp_unpack_bundle (int *outdata, unsigned char *indata, int *prev);
+
+
+/*! \brief Process Compressed Data message
+ *
+ */
+void nmxp_processCompressedData(char* buffer_data, int length_data, NMXP_CHAN_LIST *channelList);
+
+
+/*! \brief Process decompressed Data message
+ *
+ */
+void nmxp_processDecompressedData(char* buffer, int length, NMXP_CHAN_LIST *channelList);
 
 
 /*! \brief A generic logging/printing routine
