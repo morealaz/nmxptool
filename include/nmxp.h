@@ -56,6 +56,22 @@ typedef enum {
 } NMXP_BUFFER_FLAG;
 
 
+/*! \brief Body of ConnectRequest message*/
+typedef struct {
+    char username[12];
+    uint32_t version;
+    uint32_t connection_time;
+    uint32_t crc32;
+} NMXP_CONNECT_REQUEST; 
+
+/*! \brief Body of DataRequest message*/
+typedef struct {
+    uint32_t chan_key;
+    uint32_t start_time;
+    uint32_t end_time;
+} NMXP_DATA_REQUEST;
+
+
 /*! \brief Sends the message "Connect" on a socket
  *
  * \param isock A descriptor referencing the socket.
@@ -132,6 +148,57 @@ int nmxp_receiveCompressedData(int isock, NMXP_CHAN_LIST *channelList);
  * 
  */
 int nmxp_receiveDecompressedData(int isock, NMXP_CHAN_LIST *channelList);
+
+
+/*! \brief Sends the message "ConnectRequest" on a socket
+ *
+ * \param isock A descriptor referencing the socket.
+ * \param naqs_username User name (maximum 11 characters), zero terminated.
+ * \param naqs_password Password.
+ * \param connection_time Time that the connection was opened.
+ *
+ * \retval SOCKET_OK on success
+ * \retval SOCKET_ERROR on error
+ * 
+ */
+int nmxp_sendConnectRequest(int isock, char *naqs_username, char *naqs_password, uint32_t connection_time);
+
+
+/*! \brief Read connection time from a socket
+ *
+ * \param isock A descriptor referencing the socket.
+ * \param[out] connection_time Time in epoch.
+ *
+ * \retval SOCKET_OK on success
+ * \retval SOCKET_ERROR on error
+ * 
+ */
+int nmxp_readConnectionTime(int isock, uint32_t *connection_time);
+
+
+/*! \brief Wait the message "Ready" from a socket
+ *
+ * \param isock A descriptor referencing the socket.
+ *
+ * \retval SOCKET_OK on success
+ * \retval SOCKET_ERROR on error
+ * 
+ */
+int nmxp_waitReady(int isock);
+
+
+/*! \brief Sends the message "DataRequest" on a socket
+ *
+ * \param isock A descriptor referencing the socket.
+ * \param key Channel key for which data are requested.
+ * \param start_time Start time of the interval for which data are requested. Epoch time.
+ * \param end_time End time of the interval for which data are requested. Epoch time.
+ *
+ * \retval SOCKET_OK on success
+ * \retval SOCKET_ERROR on error
+ * 
+ */
+int nmxp_sendDataRequest(int isock, uint32_t key, uint32_t start_time, uint32_t end_time);
 
 #endif
 
