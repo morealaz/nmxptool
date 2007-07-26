@@ -48,7 +48,7 @@ int nmxp_receiveChannelList(int isock, NMXP_CHAN_LIST **pchannelList) {
 
 	for(i=0; i < (*pchannelList)->number; i++) {
 	    (*pchannelList)->channel[i].key = ntohl((*pchannelList)->channel[i].key);
-	    nmxp_log(0, 1, "%d %s\n", (*pchannelList)->channel[i].key, (*pchannelList)->channel[i].name);
+	    nmxp_log(0, 1, "%12d %s\n", (*pchannelList)->channel[i].key, (*pchannelList)->channel[i].name);
 	}
 
     }
@@ -271,4 +271,57 @@ int nmxp_sendDataRequest(int isock, uint32_t key, uint32_t start_time, uint32_t 
     return ret;
 }
 
+
+NMXP_CHAN_LIST *nmxp_getAvailableChannelList(char * hostname, int portnum, NMXP_DATATYPE datatype) {
+    int naqssock;
+    NMXP_CHAN_LIST *channelList = NULL, *channelList_subset = NULL;
+    int i;
+
+    // 1. Open a socket
+    naqssock = nmxp_openSocket(hostname, portnum);
+
+    if(naqssock != NMXP_SOCKET_ERROR) {
+
+	// 2. Send a Connect
+	if(nmxp_sendConnect(naqssock) == NMXP_SOCKET_OK) {
+
+	    // 3. Receive ChannelList
+	     if(nmxp_receiveChannelList(naqssock, &channelList) == NMXP_SOCKET_OK) {
+
+		 channelList_subset = nmxp_chan_getType(channelList, datatype);
+		 nmxp_log(0, 1, "%d / %d\n", channelList_subset->number, channelList->number);
+
+		 // nmxp_chan_sortByKey(channelList_subset);
+		 nmxp_chan_sortByName(channelList_subset);
+
+		 for(i=0; i < channelList_subset->number; i++) {
+		     nmxp_log(0, 1, "%12d %s\n", channelList_subset->channel[i].key, channelList_subset->channel[i].name);
+		 }
+
+		 // 4. Send a Request Pending (optional)
+
+		 // 5. Send AddChannels
+
+		 // 6. Repeat until finished: receive and handle packets
+
+		 // 7. Send Terminate Subscription
+		 nmxp_sendTerminateSubscription(naqssock, NMXP_SHUTDOWN_NORMAL, "Good Bye!");
+
+	     } else {
+		 printf("Error on receiveChannelList()\n");
+	     }
+	} else {
+	    printf("Error on sendConnect()\n");
+	}
+
+	// 8. Close the socket
+	nmxp_closeSocket(naqssock);
+    }
+
+    if(channelList) {
+	free(channelList);
+    }
+
+    return channelList_subset;
+}
 

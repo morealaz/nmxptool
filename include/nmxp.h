@@ -200,5 +200,19 @@ int nmxp_waitReady(int isock);
  */
 int nmxp_sendDataRequest(int isock, uint32_t key, uint32_t start_time, uint32_t end_time);
 
+
+/*! \brief Get the list of available channels from a server 
+ *
+ * \param hostname host name
+ * \param portnum port number
+ * \param datatype Type of data contained in the channel.
+ *
+ * \return Channel list. It will need to be freed.
+ *
+ * \warning Returned value will need to be freed.
+ * 
+ */
+NMXP_CHAN_LIST *nmxp_getAvailableChannelList(char * hostname, int portnum, NMXP_DATATYPE datatype);
+
 #endif
 
