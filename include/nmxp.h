@@ -4,6 +4,10 @@
  *
  * This is the introduction.
  *
+ * \section dependencies_sec Dependencies
+ *
+ * qlib2
+ *
  * \section install_sec Installation
  *
  * ./configure
@@ -42,6 +46,8 @@
 #define NMXP_H 1
 
 #include "nmxp_base.h"
+#include "nmxp_chan.h"
+#include "nmxp_crc32.h"
 
 /*! \brief Sends the message "Connect" on a socket
  *
@@ -65,22 +71,6 @@ int nmxp_sendConnect(int isock);
  * 
  */
 int nmxp_sendTerminateSubscription(int isock, enum NMXP_REASON_SHUTDOWN reason, char *message);
-
-
-/*! \brief The key/name info for one channel */
-typedef struct nmxp_ChannelKey
-{
-    uint32_t key;
-    char name[12];
-} nmxp_ChannelKey;
-
-#define MAX_N_CHAN 1000
-/*! \brief Channel List */
-typedef struct nmxp_ChannelList
-{
-    uint32_t number;
-    nmxp_ChannelKey channel[MAX_N_CHAN];
-} nmxp_ChannelList;
 
 
 /*! \brief Receive message "nmxp_ChannelList" from a socket

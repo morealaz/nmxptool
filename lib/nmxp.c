@@ -181,47 +181,6 @@ int unpack_bundle (int *outdata, unsigned char *indata, int *prev)
 	return (nsamples);
 }
 
-/**************************************************************************
- *
- *   Function:  lookupnmxp_ChannelKey
- *
- *     Purpose:  looks up a channel key in the nmxp_ChannelList using the name
- *
- *      ------------------------------------------------------------------------*/
-int lookupnmxp_ChannelKey(char* name, nmxp_ChannelList *channelList)
-{
-    int length = channelList->number;
-    int ich = 0;
-
-    for (ich = 0; ich < length; ich++)
-    {
-	if (strcasecmp(name, channelList->channel[ich].name) == 0)
-	    return channelList->channel[ich].key;
-    }
-
-    return -1;
-}
-
-/**************************************************************************
- *
- *   Function:  lookupChannelName
- *
- *     Purpose:  looks up a channel name in the nmxp_ChannelList using a key
- *
- *      ------------------------------------------------------------------------*/
-char *lookupChannelName(int key, nmxp_ChannelList *channelList)
-{
-    int length = channelList->number;
-    int ich = 0;
-
-    for (ich = 0; ich < length; ich++)
-    {
-	if ( key == channelList->channel[ich].key )
-	    return &channelList->channel[ich].name[0];
-    }
-
-    return NULL;
-}
 
 /**************************************************************************
 
