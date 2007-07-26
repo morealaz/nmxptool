@@ -41,7 +41,7 @@
 #ifndef NMXP_H
 #define NMXP_H 1
 
-#include "nmxpbase.h"
+#include "nmxp_base.h"
 
 /*! \brief Sends the message "Connect" on a socket
  *
