@@ -83,7 +83,7 @@ int nmxp_sendTerminateSubscription(int isock, NMXP_REASON_SHUTDOWN reason, char 
 /*! \brief Receive message "NMXP_CHAN_LIST" from a socket
  *
  * \param isock A descriptor referencing the socket.
- * \param pchannelList[out] List of channels. It will need to be freed!
+ * \param[out] pchannelList List of channels. It will need to be freed!
  *
  * \retval SOCKET_OK on success
  * \retval SOCKET_ERROR on error

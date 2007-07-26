@@ -201,7 +201,7 @@ int nmxp_receiveMessage(int isock, NMXP_MSG_SERVER *type, void **buffer, uint32_
 
 /*! \brief Unpack a 17-byte Nanometrics compressed data bundle.           
  *
- * \param outdata[out]
+ * \param[out] outdata
  * \param indata
  * \param prev
  *
