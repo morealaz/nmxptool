@@ -30,7 +30,7 @@ typedef struct {
 } NMXP_CHAN_LIST;
 
 
-/*! \brief Looks up a channel key in the NMXP_CHAN_LIST using the name
+/*! \brief Looks up a channel key in the list using the name
  *
  * \param name Channel name.
  * \param channelList Channel list.
@@ -40,7 +40,7 @@ typedef struct {
  */
 int nmxp_chan_lookupKey(char* name, NMXP_CHAN_LIST *channelList);
 
-/*! \brief Looks up a channel name in the NMXP_CHAN_LIST using a key
+/*! \brief Looks up a channel name in the list using a key
  *
  * \param key Channel key.
  * \param channelList Channel list.
@@ -49,6 +49,18 @@ int nmxp_chan_lookupKey(char* name, NMXP_CHAN_LIST *channelList);
  *
  */
 char *nmxp_chan_lookupName(uint32_t key, NMXP_CHAN_LIST *channelList);
+
+/*! \brief Looks up a channel with specified data type.
+ *
+ * \param channelList Channel list.
+ * \param dataType Type of channel.
+ *
+ * \return Channel list with specified dataType. It will need to be freed!
+ *
+ * \warning Returned value will need to be freed!
+ *
+ */
+NMXP_CHAN_LIST *nmxp_chan_getType(NMXP_CHAN_LIST *channelList, uint8_t dataType);
 
 #endif
 
