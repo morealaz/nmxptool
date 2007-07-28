@@ -96,6 +96,12 @@ int nmxp_sendAddTimeSeriesChannel(int isock, NMXP_CHAN_LIST *channelList, uint32
 }
 
 
+int xxxxx(NMXP_PROCESS_DATA *pd) {
+    nmxp_log(0, 0, "%12d %5s_%3s time: %10.4f, length: %04d, nsamp: %04d, samprate: %03d, %10.4f\n", pd->key, pd->sta, pd->chan, pd->time, pd->length, pd->nSamp, pd->sampRate, pd->time + ((double) pd->nSamp / (double) pd->sampRate));
+	return 0;
+}
+
+
 int nmxp_receiveCompressedData(int isock, NMXP_CHAN_LIST *channelList) {
     int ret;
 
@@ -108,7 +114,7 @@ int nmxp_receiveCompressedData(int isock, NMXP_CHAN_LIST *channelList) {
     if(type != NMXP_MSG_COMPRESSED) {
 	nmxp_log(1, 0, "Type %d is not NMXP_MSG_COMPRESSED!\n", type);
     } else {
-	nmxp_processCompressedData(buffer, length, channelList);
+	nmxp_processCompressedData(buffer, length, channelList, &xxxxx);
     }
 
     if(buffer) {
@@ -132,7 +138,7 @@ int nmxp_receiveDecompressedData(int isock, NMXP_CHAN_LIST *channelList) {
 	nmxp_log(1, 0, "Type %d is not NMXP_MSG_DECOMPRESSED!\n", type);
     } else {
 
-	nmxp_processDecompressedData(buffer, length, channelList);
+	nmxp_processDecompressedDataFunc(buffer, length, channelList, &xxxxx);
     }
 
     if(buffer) {
