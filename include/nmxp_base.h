@@ -94,7 +94,7 @@ typedef struct {
 
 
 /*! \brief Parameter structure for functions that process data */
-Parameter structure struct {
+typedef struct {
     int key;		/*!< \brief Channel Key */
     char *sta;		/*!< \brief Station code */
     char *chan;		/*!< \brief Channel code */
