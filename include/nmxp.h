@@ -126,7 +126,7 @@ int nmxp_receiveChannelList(int isock, NMXP_CHAN_LIST **pchannelList);
 int nmxp_sendAddTimeSeriesChannel(int isock, NMXP_CHAN_LIST *channelList, uint32_t shortTermCompletion, uint32_t out_format, NMXP_BUFFER_FLAG buffer_flag);
 
 
-/*! \brief Receive Compressed Data message from a socket
+/*! \brief Receive Compressed or Decompressed Data message from a socket
  *
  * \param isock A descriptor referencing the socket.
  * \param channelList Channel list.
@@ -135,19 +135,7 @@ int nmxp_sendAddTimeSeriesChannel(int isock, NMXP_CHAN_LIST *channelList, uint32
  * \retval SOCKET_ERROR on error
  * 
  */
-int nmxp_receiveCompressedData(int isock, NMXP_CHAN_LIST *channelList);
-
-
-/*! \brief Receive Decompressed Data message from a socket
- *
- * \param isock A descriptor referencing the socket.
- * \param channelList Channel list.
- *
- * \retval SOCKET_OK on success
- * \retval SOCKET_ERROR on error
- * 
- */
-int nmxp_receiveDecompressedData(int isock, NMXP_CHAN_LIST *channelList);
+int nmxp_receiveData(int isock, NMXP_CHAN_LIST *channelList);
 
 
 /*! \brief Sends the message "ConnectRequest" on a socket
