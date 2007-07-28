@@ -360,6 +360,7 @@ void nmxp_processDecompressedDataFunc(char* buffer, int length, NMXP_CHAN_LIST *
   pd.sta = sta;
   pd.chan = chan;
   pd.time = pTime;
+  pd.buffer = buffer;
   pd.length = length;
   pd.nSamp = pNSamp;
   pd.pDataPtr = pDataPtr;
@@ -527,6 +528,7 @@ void nmxp_processCompressedDataFunc(char* buffer_data, int length_data, NMXP_CHA
   pd.sta = sta;
   pd.chan = chan;
   pd.time = pTime;
+  pd.buffer = buffer_data;
   pd.length = length_data;
   pd.nSamp = pNSamp;
   pd.pDataPtr = pDataPtr;

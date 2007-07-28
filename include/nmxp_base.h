@@ -93,24 +93,17 @@ typedef struct {
 } NMXP_MESSAGE_HEADER;
 
 
-/*! \brief Prototype for function manages data
- *
- * sta
- * cha
- * pTime
- * pDataPtr
- * pNSamp
- *
- */
-typedef struct {
-    int key;
-    char *sta;
-    char *chan;
-    double time;
-    int length;
-    int *pDataPtr;
-    int nSamp;
-    int sampRate;
+/*! \brief Parameter structure for functions that process data */
+Parameter structure struct {
+    int key;		/*!< \brief Channel Key */
+    char *sta;		/*!< \brief Station code */
+    char *chan;		/*!< \brief Channel code */
+    double time;	/*!< \brief Time first sample. Epochs. */
+    void *buffer;	/*!< \brief Nanometrics packet data  */
+    int length;		/*!< \brief Packet length */
+    int *pDataPtr;	/*!< \brief Array of samples */
+    int nSamp;		/*!< \brief Number or samples */
+    int sampRate;	/*!< \brief Sample rate */
 } NMXP_PROCESS_DATA;
 
 
