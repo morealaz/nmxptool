@@ -294,6 +294,12 @@ int nmxp_unpack_bundle (int *outdata, unsigned char *indata, int *prev)
 }
 
 
+int nmxp_log_process_data(NMXP_PROCESS_DATA *pd) {
+    nmxp_log(0, 0, "%12d %5s_%3s time: %10.4f, length: %04d, nsamp: %04d, samprate: %03d, %10.4f\n", pd->key, pd->sta, pd->chan, pd->time, pd->length, pd->nSamp, pd->sampRate, pd->time + ((double) pd->nSamp / (double) pd->sampRate));
+	return 0;
+}
+
+
 void nmxp_processDecompressedDataFunc(char* buffer, int length, NMXP_CHAN_LIST *channelList,
 	int (*func_processData)(NMXP_PROCESS_DATA *pd)
 	)
@@ -365,7 +371,7 @@ void nmxp_processDecompressedDataFunc(char* buffer, int length, NMXP_CHAN_LIST *
 }
 
 
-void nmxp_processCompressedData(char* buffer_data, int length_data, NMXP_CHAN_LIST *channelList,
+void nmxp_processCompressedDataFunc(char* buffer_data, int length_data, NMXP_CHAN_LIST *channelList,
 	int (*func_processData)(NMXP_PROCESS_DATA *pd)
 	)
 {

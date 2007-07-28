@@ -236,11 +236,18 @@ int nmxp_receiveMessage(int isock, NMXP_MSG_SERVER *type, void **buffer, uint32_
  */
 int nmxp_unpack_bundle (int *outdata, unsigned char *indata, int *prev);
 
+/*! \brief Print info about struct NMXP_PROCESS_DATA
+ *
+ * \param pd Pointer to struct NMXP_PROCESS_DATA
+ *
+ */
+int nmxp_log_process_data(NMXP_PROCESS_DATA *pd);
+
 
 /*! \brief Process Compressed Data message
  *
  */
-void nmxp_processCompressedData(char* buffer_data, int length_data, NMXP_CHAN_LIST *channelList,
+void nmxp_processCompressedDataFunc(char* buffer_data, int length_data, NMXP_CHAN_LIST *channelList,
 	int (*func_processData)(NMXP_PROCESS_DATA *pd)
 	);
 
