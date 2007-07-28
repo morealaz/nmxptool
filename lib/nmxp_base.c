@@ -294,7 +294,9 @@ int nmxp_unpack_bundle (int *outdata, unsigned char *indata, int *prev)
 }
 
 
-void nmxp_processDecompressedData(char* buffer, int length, NMXP_CHAN_LIST *channelList)
+void nmxp_processDecompressedDataFunc(char* buffer, int length, NMXP_CHAN_LIST *channelList,
+	int (*func_processData)(NMXP_PROCESS_DATA *pd)
+	)
 {
   int32_t   netInt    = 0;
   int32_t   pKey      = 0;
@@ -346,14 +348,26 @@ void nmxp_processDecompressedData(char* buffer, int length, NMXP_CHAN_LIST *chan
     exit(1);
   }
   */
+  NMXP_PROCESS_DATA pd;
 
-  nmxp_log(0, 0, "%12d %5s_%3s time: %10.4f, length: %04d, nsamp: %04d, samprate: %03d, %10.4f\n", pKey, sta, chan, pTime, length, pNSamp, pSampRate, pTime + ((double) pNSamp / (double) pSampRate));
-  
+  pd.key = pKey;
+  pd.sta = sta;
+  pd.chan = chan;
+  pd.time = pTime;
+  pd.length = length;
+  pd.nSamp = pNSamp;
+  pd.pDataPtr = pDataPtr;
+  pd.sampRate = pSampRate;
+
+  func_processData(&pd);
+
   free(sta);
 }
 
 
-void nmxp_processCompressedData(char* buffer_data, int length_data, NMXP_CHAN_LIST *channelList)
+void nmxp_processCompressedData(char* buffer_data, int length_data, NMXP_CHAN_LIST *channelList,
+	int (*func_processData)(NMXP_PROCESS_DATA *pd)
+	)
 {
     int32_t   pKey      = 0;
     double    pTime     = 0.0;
@@ -501,7 +515,18 @@ void nmxp_processCompressedData(char* buffer_data, int length_data, NMXP_CHAN_LI
 	}
 	*/
 
-	nmxp_log(0, 0, "%12d %5s_%3s time: %10.4f, length: %04d, nsamp: %04d, samprate: %03d, %10.4f\n", pKey, sta, chan, pTime, length_data, pNSamp, pSampRate, pTime + ((double) pNSamp / (double) pSampRate));
+  NMXP_PROCESS_DATA pd;
+
+  pd.key = pKey;
+  pd.sta = sta;
+  pd.chan = chan;
+  pd.time = pTime;
+  pd.length = length_data;
+  pd.nSamp = pNSamp;
+  pd.pDataPtr = pDataPtr;
+  pd.sampRate = pSampRate;
+
+  func_processData(&pd);
 
 	free(sta);
 }

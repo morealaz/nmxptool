@@ -93,6 +93,27 @@ typedef struct {
 } NMXP_MESSAGE_HEADER;
 
 
+/*! \brief Prototype for function manages data
+ *
+ * sta
+ * cha
+ * pTime
+ * pDataPtr
+ * pNSamp
+ *
+ */
+typedef struct {
+    int key;
+    char *sta;
+    char *chan;
+    double time;
+    int length;
+    int *pDataPtr;
+    int nSamp;
+    int sampRate;
+} NMXP_PROCESS_DATA;
+
+
 /*! \brief Looks up target host, opens a socket and connects
  *
  *  \param hostname	hostname
@@ -219,13 +240,22 @@ int nmxp_unpack_bundle (int *outdata, unsigned char *indata, int *prev);
 /*! \brief Process Compressed Data message
  *
  */
-void nmxp_processCompressedData(char* buffer_data, int length_data, NMXP_CHAN_LIST *channelList);
+void nmxp_processCompressedData(char* buffer_data, int length_data, NMXP_CHAN_LIST *channelList,
+	int (*func_processData)(NMXP_PROCESS_DATA *pd)
+	);
 
 
 /*! \brief Process decompressed Data message
  *
+ * \param buffer
+ * \param length
+ * \param channelList
+ * \param func_processData
+ *
  */
-void nmxp_processDecompressedData(char* buffer, int length, NMXP_CHAN_LIST *channelList);
+void nmxp_processDecompressedDataFunc(char* buffer, int length, NMXP_CHAN_LIST *channelList,
+	int (*func_processData)(NMXP_PROCESS_DATA *pd)
+  );
 
 
 /*! \brief A generic logging/printing routine
