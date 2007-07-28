@@ -27,6 +27,23 @@
 #include <qlib2.h>
 
 
+int nmxp_init_process_data(NMXP_PROCESS_DATA *pd) {
+    pd->key = -1;
+    pd->sta = NULL;
+    pd->chan = NULL;
+    pd->packet_type = -1;
+    pd->x0 = -1;
+    pd->seq_no = -1;
+    pd->time = -1.0;
+    pd->buffer = NULL;
+    pd->length = 0;
+    pd->pDataPtr = NULL;
+    pd->nSamp = 0;
+    pd->sampRate = -1;
+    return 0;
+}
+
+
 int nmxp_openSocket(char *hostname, int portNum)
 {
   static int sleepTime = 1;
@@ -295,7 +312,18 @@ int nmxp_unpack_bundle (int *outdata, unsigned char *indata, int *prev)
 
 
 int nmxp_log_process_data(NMXP_PROCESS_DATA *pd) {
-    nmxp_log(0, 0, "%12d %5s_%3s time: %10.4f, length: %04d, nsamp: %04d, samprate: %03d, %10.4f\n", pd->key, pd->sta, pd->chan, pd->time, pd->length, pd->nSamp, pd->sampRate, pd->time + ((double) pd->nSamp / (double) pd->sampRate));
+    nmxp_log(0, 0, "%12d %5s_%3s, %d, %d, %6d, time: %10.4f len: %04d, nsamp: %04d, srate: %03d, %10.4f\n",
+	    pd->key,
+	    pd->sta,
+	    pd->chan,
+	    pd->packet_type,
+	    pd->x0,
+	    pd->seq_no,
+	    pd->time,
+	    pd->length,
+	    pd->nSamp,
+	    pd->sampRate,
+	    pd->time + ((double) pd->nSamp / (double) pd->sampRate));
 	return 0;
 }
 
@@ -356,9 +384,14 @@ void nmxp_processDecompressedDataFunc(char* buffer, int length, NMXP_CHAN_LIST *
   */
   NMXP_PROCESS_DATA pd;
 
+  nmxp_init_process_data(&pd);
+
   pd.key = pKey;
   pd.sta = sta;
   pd.chan = chan;
+  pd.packet_type = NMXP_MSG_DECOMPRESSED;
+  // pd.x0 = ;
+  // pd.seq_no = ;
   pd.time = pTime;
   pd.buffer = buffer;
   pd.length = length;
@@ -524,9 +557,14 @@ void nmxp_processCompressedDataFunc(char* buffer_data, int length_data, NMXP_CHA
 
   NMXP_PROCESS_DATA pd;
 
+  nmxp_init_process_data(&pd);
+
   pd.key = pKey;
   pd.sta = sta;
   pd.chan = chan;
+  pd.packet_type = nmx_ptype;
+  pd.x0 = nmx_x0;
+  pd.seq_no = nmx_seqno;
   pd.time = pTime;
   pd.buffer = buffer_data;
   pd.length = length_data;

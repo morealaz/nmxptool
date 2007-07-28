@@ -98,6 +98,9 @@ typedef struct {
     int key;		/*!< \brief Channel Key */
     char *sta;		/*!< \brief Station code */
     char *chan;		/*!< \brief Channel code */
+    int packet_type;	/*!< \brief Packet type */
+    int x0;		/*!< \brief First sample */
+    int seq_no;		/*!< \brief Sequence number */
     double time;	/*!< \brief Time first sample. Epochs. */
     void *buffer;	/*!< \brief Nanometrics packet data  */
     int length;		/*!< \brief Packet length */
@@ -105,6 +108,14 @@ typedef struct {
     int nSamp;		/*!< \brief Number or samples */
     int sampRate;	/*!< \brief Sample rate */
 } NMXP_PROCESS_DATA;
+
+
+/*! \brief Initialize a structure NMXP_PROCESS_DATA
+ *
+ *  \param pd
+ *
+ */
+int nmxp_init_process_data(NMXP_PROCESS_DATA *pd);
 
 
 /*! \brief Looks up target host, opens a socket and connects
