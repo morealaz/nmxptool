@@ -53,10 +53,35 @@ NMXP_CHAN_LIST *nmxp_chan_getType(NMXP_CHAN_LIST *channelList, NMXP_DATATYPE dat
 
     for (i_chan = 0; i_chan < chan_number; i_chan++)
     {
-	if ( ((channelList->channel[i_chan].key >> 8) & 0xff) == dataType) {
+	if ( getDataTypeFromKey(channelList->channel[i_chan].key) == dataType) {
 	    ret_channelList->channel[ret_channelList->number].key = channelList->channel[i_chan].key;
 	    strcpy(ret_channelList->channel[ret_channelList->number].name, channelList->channel[i_chan].name);
 	    ret_channelList->number++;
+	}
+    }
+
+    return ret_channelList;
+}
+
+
+NMXP_CHAN_LIST *nmxp_chan_subset(NMXP_CHAN_LIST *channelList, NMXP_DATATYPE dataType, char *sta_chan_list) {
+    NMXP_CHAN_LIST *ret_channelList = NULL;
+
+    int chan_number = channelList->number;
+    int i_chan = 0;
+
+    ret_channelList = (NMXP_CHAN_LIST *) malloc(sizeof(NMXP_CHAN_LIST));
+    ret_channelList->number = 0;
+
+    for (i_chan = 0; i_chan < chan_number; i_chan++)
+    {
+	if ( getDataTypeFromKey(channelList->channel[i_chan].key) == dataType) {
+	    if(strstr(sta_chan_list, channelList->channel[i_chan].name)) {
+		// TODO improve the previous check if needed
+		    ret_channelList->channel[ret_channelList->number].key = channelList->channel[i_chan].key;
+		    strcpy(ret_channelList->channel[ret_channelList->number].name, channelList->channel[i_chan].name);
+		    ret_channelList->number++;
+	    }
 	}
     }
 

@@ -38,6 +38,10 @@ typedef enum {
 } NMXP_DATATYPE;
 
 
+/*! \brief Return type of data from a channel key */
+#define getDataTypeFromKey(key) ((key >> 8) & 0xff)
+
+
 /*! \brief Looks up a channel key in the list using the name
  *
  * \param name Channel name.
@@ -58,6 +62,7 @@ int nmxp_chan_lookupKey(char* name, NMXP_CHAN_LIST *channelList);
  */
 char *nmxp_chan_lookupName(uint32_t key, NMXP_CHAN_LIST *channelList);
 
+
 /*! \brief Looks up a channel with specified data type.
  *
  * \param channelList Channel list.
@@ -69,6 +74,20 @@ char *nmxp_chan_lookupName(uint32_t key, NMXP_CHAN_LIST *channelList);
  *
  */
 NMXP_CHAN_LIST *nmxp_chan_getType(NMXP_CHAN_LIST *channelList, NMXP_DATATYPE dataType);
+
+
+/*! \brief Looks up a channel with specified data type.
+ *
+ * \param channelList Channel list.
+ * \param dataType Type of channel.
+ * \param sta_chan_list String list of item STA.CHAN, separeted by space
+ *
+ * \return Channel list with specified dataType. It will need to be freed!
+ *
+ * \warning Returned value will need to be freed!
+ *
+ */
+NMXP_CHAN_LIST *nmxp_chan_subset(NMXP_CHAN_LIST *channelList, NMXP_DATATYPE dataType, char *sta_chan_list);
 
 
 /*! Sort list by channel key
