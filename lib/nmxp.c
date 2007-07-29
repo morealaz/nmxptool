@@ -168,7 +168,7 @@ int nmxp_readConnectionTime(int isock, uint32_t *connection_time) {
 }
 
 
-int nmpx_waitReady(int isock) {
+int nmxp_waitReady(int isock) {
     int times = 0;
     int rc = NMXP_SOCKET_OK;
     unsigned long signature;
