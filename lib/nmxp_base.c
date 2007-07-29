@@ -549,30 +549,30 @@ void nmxp_processCompressedDataFunc(char* buffer_data, int length_data, NMXP_CHA
 
 	/* Send it off to the controlling SeedLink server */
 	/*
-	  f ( send_raw_depoch(sta, chan, pTime, 0, 100, pDataPtr, pNSamp) < 0 ) {
-	    nmxp_log(1,0, "cannot send data to seedlink: %s", strerror(errno));
-	    exit(1);
-	}
-	*/
+	   f ( send_raw_depoch(sta, chan, pTime, 0, 100, pDataPtr, pNSamp) < 0 ) {
+	   nmxp_log(1,0, "cannot send data to seedlink: %s", strerror(errno));
+	   exit(1);
+	   }
+	   */
 
-  NMXP_PROCESS_DATA pd;
+	NMXP_PROCESS_DATA pd;
 
-  nmxp_init_process_data(&pd);
+	nmxp_init_process_data(&pd);
 
-  pd.key = pKey;
-  pd.sta = sta;
-  pd.chan = chan;
-  pd.packet_type = nmx_ptype;
-  pd.x0 = nmx_x0;
-  pd.seq_no = nmx_seqno;
-  pd.time = pTime;
-  pd.buffer = buffer_data;
-  pd.length = length_data;
-  pd.nSamp = pNSamp;
-  pd.pDataPtr = pDataPtr;
-  pd.sampRate = pSampRate;
+	pd.key = pKey;
+	pd.sta = sta;
+	pd.chan = chan;
+	pd.packet_type = nmx_ptype;
+	pd.x0 = nmx_x0;
+	pd.seq_no = nmx_seqno;
+	pd.time = pTime;
+	pd.buffer = buffer_data;
+	pd.length = length_data;
+	pd.nSamp = pNSamp;
+	pd.pDataPtr = pDataPtr;
+	pd.sampRate = pSampRate;
 
-  func_processData(&pd);
+	func_processData(&pd);
 
 	free(sta);
 }
