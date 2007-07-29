@@ -38,6 +38,10 @@ typedef enum {
 } NMXP_DATATYPE;
 
 
+/*! \brief Character separator for channel list */
+#define sep_chan_list  ','
+
+
 /*! \brief Return type of data from a channel key */
 #define getDataTypeFromKey(key) ((key >> 8) & 0xff)
 
@@ -80,7 +84,7 @@ NMXP_CHAN_LIST *nmxp_chan_getType(NMXP_CHAN_LIST *channelList, NMXP_DATATYPE dat
  *
  * \param channelList Channel list.
  * \param dataType Type of channel.
- * \param sta_chan_list String list of item STA.CHAN, separeted by space
+ * \param sta_chan_list String list of item STA.CHAN, separeted by comma.
  *
  * \return Channel list with specified dataType. It will need to be freed!
  *

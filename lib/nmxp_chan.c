@@ -14,6 +14,7 @@
 #include <string.h>
 #include <stdlib.h>
 
+
 int nmxp_chan_lookupKey(char* name, NMXP_CHAN_LIST *channelList)
 {
     int chan_number = channelList->number;
@@ -66,24 +67,33 @@ NMXP_CHAN_LIST *nmxp_chan_getType(NMXP_CHAN_LIST *channelList, NMXP_DATATYPE dat
 
 NMXP_CHAN_LIST *nmxp_chan_subset(NMXP_CHAN_LIST *channelList, NMXP_DATATYPE dataType, char *sta_chan_list) {
     NMXP_CHAN_LIST *ret_channelList = NULL;
-
-    int chan_number = channelList->number;
-    int i_chan = 0;
+    int istalist, ista;
+    char sta_chan_code[100];
+    uint32_t sta_chan_key;
 
     ret_channelList = (NMXP_CHAN_LIST *) malloc(sizeof(NMXP_CHAN_LIST));
     ret_channelList->number = 0;
 
-    for (i_chan = 0; i_chan < chan_number; i_chan++)
-    {
-	if ( getDataTypeFromKey(channelList->channel[i_chan].key) == dataType) {
-	    if(strstr(sta_chan_list, channelList->channel[i_chan].name)) {
-		// TODO improve the previous check if needed
-		    ret_channelList->channel[ret_channelList->number].key = channelList->channel[i_chan].key;
-		    strcpy(ret_channelList->channel[ret_channelList->number].name, channelList->channel[i_chan].name);
-		    ret_channelList->number++;
-	    }
+    istalist = 0;
+    while(sta_chan_list[istalist] != sep_chan_list  &&  sta_chan_list[istalist] != 0) {
+	ista = 0;
+	while(sta_chan_list[istalist] != sep_chan_list  &&  sta_chan_list[istalist] != 0) {
+	    sta_chan_code[ista++] = sta_chan_list[istalist++];
+	}
+	sta_chan_code[ista] = 0;
+	if(sta_chan_list[istalist] == sep_chan_list) {
+	    istalist++;
+	}
+	sta_chan_key = nmxp_chan_lookupKey(sta_chan_code, channelList);
+	if(sta_chan_key != -1  && getDataTypeFromKey(sta_chan_key) == dataType) {
+	    ret_channelList->channel[ret_channelList->number].key = sta_chan_key;
+	    strcpy(ret_channelList->channel[ret_channelList->number].name, sta_chan_code);
+	    ret_channelList->number++;
+	} else {
+	    nmxp_log(1, 0, "Channel %s not found!\n", sta_chan_code);
 	}
     }
+
 
     return ret_channelList;
 }
