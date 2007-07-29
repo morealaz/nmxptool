@@ -312,18 +312,21 @@ int nmxp_unpack_bundle (int *outdata, unsigned char *indata, int *prev)
 
 
 int nmxp_log_process_data(NMXP_PROCESS_DATA *pd) {
-    nmxp_log(0, 0, "%12d %5s_%3s, %d, %d, %6d, time: %10.4f len: %04d, nsamp: %04d, srate: %03d, %10.4f\n",
+    nmxp_log(0, 0, "%12d %5s.%3s (%10.4f - %10.4f) nsamp: %04d, srate: %03d, len: %04d [%d, %d] (%d, %d, %d)\n",
 	    pd->key,
 	    pd->sta,
 	    pd->chan,
-	    pd->packet_type,
-	    pd->x0,
-	    pd->seq_no,
 	    pd->time,
-	    pd->length,
+	    pd->time + ((double) pd->nSamp / (double) pd->sampRate),
 	    pd->nSamp,
 	    pd->sampRate,
-	    pd->time + ((double) pd->nSamp / (double) pd->sampRate));
+	    pd->length,
+	    pd->packet_type,
+	    pd->seq_no,
+	    pd->x0,
+	    pd->pDataPtr[0],
+	    pd->pDataPtr[pd->nSamp-1]
+	    );
 	return 0;
 }
 
