@@ -331,7 +331,7 @@ int nmxp_log_process_data(NMXP_PROCESS_DATA *pd) {
 }
 
 
-void nmxp_processDecompressedDataFunc(char* buffer, int length, NMXP_CHAN_LIST *channelList,
+void nmxp_processDecompressedDataFunc(char* buffer_data, int length_data, NMXP_CHAN_LIST *channelList,
 	int (*func_processData)(NMXP_PROCESS_DATA *pd)
 	)
 {
@@ -348,20 +348,20 @@ void nmxp_processDecompressedDataFunc(char* buffer, int length, NMXP_CHAN_LIST *
   char *chan = 0;     /* The channel code */
 
   /* copy the header contents into local fields and swap */
-  memcpy(&netInt, &buffer[0], 4);
+  memcpy(&netInt, &buffer_data[0], 4);
   pKey = ntohl(netInt);
   if ( pKey != netInt ) { swap = 1; }
 
-  memcpy(&pTime, &buffer[4], 8);
+  memcpy(&pTime, &buffer_data[4], 8);
   if ( swap ) { swab8(&pTime); }
 
-  memcpy(&netInt, &buffer[12], 4);
+  memcpy(&netInt, &buffer_data[12], 4);
   pNSamp = ntohl(netInt);
-  memcpy(&netInt, &buffer[16], 4);
+  memcpy(&netInt, &buffer_data[16], 4);
   pSampRate = ntohl(netInt);
 
-  /* There should be (length - 20) bytes of data as 32-bit ints here */
-  pDataPtr = (int32_t *) &buffer[20];
+  /* There should be (length_data - 20) bytes of data as 32-bit ints here */
+  pDataPtr = (int32_t *) &buffer_data[20];
 
   /* Swap the data samples to host order */
   for ( idx=0; idx < pNSamp; idx++ ) {
@@ -396,13 +396,15 @@ void nmxp_processDecompressedDataFunc(char* buffer, int length, NMXP_CHAN_LIST *
   // pd.x0 = ;
   // pd.seq_no = ;
   pd.time = pTime;
-  pd.buffer = buffer;
-  pd.length = length;
+  pd.buffer = buffer_data;
+  pd.length = length_data;
   pd.nSamp = pNSamp;
   pd.pDataPtr = pDataPtr;
   pd.sampRate = pSampRate;
 
-  func_processData(&pd);
+  if(func_processData) {
+      func_processData(&pd);
+  }
 
   free(sta);
 }
@@ -575,7 +577,9 @@ void nmxp_processCompressedDataFunc(char* buffer_data, int length_data, NMXP_CHA
 	pd.pDataPtr = pDataPtr;
 	pd.sampRate = pSampRate;
 
-	func_processData(&pd);
+	if(func_processData) {
+	    func_processData(&pd);
+	}
 
 	free(sta);
 }

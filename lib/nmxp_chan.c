@@ -10,6 +10,7 @@
  */
 
 #include "nmxp_chan.h"
+#include "nmxp_base.h"
 
 #include <string.h>
 #include <stdlib.h>

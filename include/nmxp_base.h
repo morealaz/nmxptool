@@ -248,7 +248,12 @@ int nmxp_unpack_bundle (int *outdata, unsigned char *indata, int *prev);
 int nmxp_log_process_data(NMXP_PROCESS_DATA *pd);
 
 
-/*! \brief Process Compressed Data message
+/*! \brief Process Compressed Data message by function func_processData().
+ *
+ * \param buffer_data Pointer to the data buffer containing Compressed Nanometrics packets.
+ * \param length_data Buffer length in bytes.
+ * \param channelList Pointer to the Channel List.
+ * \param func_processData Pointer to the function manages data extracted. It could be NULL.
  *
  */
 void nmxp_processCompressedDataFunc(char* buffer_data, int length_data, NMXP_CHAN_LIST *channelList,
@@ -256,15 +261,15 @@ void nmxp_processCompressedDataFunc(char* buffer_data, int length_data, NMXP_CHA
 	);
 
 
-/*! \brief Process decompressed Data message
+/*! \brief Process decompressed Data message by function func_processData().
  *
- * \param buffer
- * \param length
- * \param channelList
- * \param func_processData
+ * \param buffer_data Pointer to the data buffer containing Decompressed Nanometrics packets.
+ * \param length_data Buffer length in bytes.
+ * \param channelList Pointer to the Channel List.
+ * \param func_processData Pointer to the function manages data extracted. It could be NULL.
  *
  */
-void nmxp_processDecompressedDataFunc(char* buffer, int length, NMXP_CHAN_LIST *channelList,
+void nmxp_processDecompressedDataFunc(char* buffer_data, int length_data, NMXP_CHAN_LIST *channelList,
 	int (*func_processData)(NMXP_PROCESS_DATA *pd)
   );
 

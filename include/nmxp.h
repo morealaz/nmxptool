@@ -6,7 +6,7 @@
  *
  * \section dependencies_sec Dependencies
  *
- * qlib2
+ * qlib2 ftp://quake.geo.berkeley.edu/pub/quanterra/ucb/
  *
  * \section install_sec Installation
  *
@@ -24,7 +24,7 @@
  *
  * \section about_sec About
  *
- * Author:
+ * Author: \n
  * 	Matteo Quintiliani
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
@@ -126,11 +126,11 @@ int nmxp_receiveChannelList(int isock, NMXP_CHAN_LIST **pchannelList);
 int nmxp_sendAddTimeSeriesChannel(int isock, NMXP_CHAN_LIST *channelList, uint32_t shortTermCompletion, uint32_t out_format, NMXP_BUFFER_FLAG buffer_flag);
 
 
-/*! \brief Receive Compressed or Decompressed Data message from a socket
+/*! \brief Receive Compressed or Decompressed Data message from a socket and launch func_processData() on the extracted data
  *
  * \param isock A descriptor referencing the socket.
  * \param channelList Channel list.
- * \param func_processData
+ * \param func_processData Pointer to the function manages data extracted. It could be NULL.
  *
  * \retval SOCKET_OK on success
  * \retval SOCKET_ERROR on error
