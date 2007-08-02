@@ -47,6 +47,9 @@
 
 #include "nmxp_base.h"
 
+#include <stdio.h>
+
+
 /*! \brief Flag for buffered packets */
 typedef enum {
     NMXP_BUFFER_NO			= 0,
@@ -129,13 +132,14 @@ int nmxp_sendAddTimeSeriesChannel(int isock, NMXP_CHAN_LIST *channelList, uint32
  * \param isock A descriptor referencing the socket.
  * \param channelList Channel list.
  * \param func_processData Pointer to the function manages data extracted. It could be NULL.
+ * \param outfile If is not NULL write buffer contents.
  *
  * \retval SOCKET_OK on success
  * \retval SOCKET_ERROR on error
  * 
  */
 int nmxp_receiveData(int isock, NMXP_CHAN_LIST *channelList,
-	int (*func_processData)(NMXP_PROCESS_DATA *pd)
+	int (*func_processData)(NMXP_DATA_PROCESS *pd)
 	);
 
 

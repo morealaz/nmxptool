@@ -34,11 +34,13 @@ char *nmxp_chan_lookupName(uint32_t key, NMXP_CHAN_LIST *channelList)
 {
     int chan_number = channelList->number;
     int i_chan = 0;
+    static char ret[12];
 
     for (i_chan = 0; i_chan < chan_number; i_chan++)
     {
 	if ( key == channelList->channel[i_chan].key )
-	    return &channelList->channel[i_chan].name[0];
+	    strcpy(ret, channelList->channel[i_chan].name);
+	    return ret;
     }
 
     return NULL;

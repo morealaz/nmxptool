@@ -12,8 +12,6 @@
 #ifndef NMXP_DATA_H
 #define NMXP_DATA_H 1
 
-#include "nmxp_chan.h"
-
 #include <sys/types.h>
 
 /*! First 4 bytes of all messages. */
@@ -97,15 +95,15 @@ typedef struct {
     int *pDataPtr;	/*!< \brief Array of samples */
     int nSamp;		/*!< \brief Number or samples */
     int sampRate;	/*!< \brief Sample rate */
-} NMXP_PROCESS_DATA;
+} NMXP_DATA_PROCESS;
 
 
-/*! \brief Initialize a structure NMXP_PROCESS_DATA
+/*! \brief Initialize a structure NMXP_DATA_PROCESS
  *
  *  \param pd
  *
  */
-int nmxp_init_process_data(NMXP_PROCESS_DATA *pd);
+int nmxp_data_init(NMXP_DATA_PROCESS *pd);
 
 
 /*! \brief Unpack a 17-byte Nanometrics compressed data bundle.           
@@ -121,41 +119,14 @@ int nmxp_init_process_data(NMXP_PROCESS_DATA *pd);
  *          doug@seismo.berkeley.edu
  *
  */
-int nmxp_unpack_bundle (int *outdata, unsigned char *indata, int *prev);
+int nmxp_data_unpack_bundle (int *outdata, unsigned char *indata, int *prev);
 
-/*! \brief Print info about struct NMXP_PROCESS_DATA
+/*! \brief Print info about struct NMXP_DATA_PROCESS
  *
- * \param pd Pointer to struct NMXP_PROCESS_DATA
- *
- */
-int nmxp_log_process_data(NMXP_PROCESS_DATA *pd);
-
-
-/*! \brief Process Compressed Data message by function func_processData().
- *
- * \param buffer_data Pointer to the data buffer containing Compressed Nanometrics packets.
- * \param length_data Buffer length in bytes.
- * \param channelList Pointer to the Channel List.
- * \param func_processData Pointer to the function manages data extracted. It could be NULL.
+ * \param pd Pointer to struct NMXP_DATA_PROCESS
  *
  */
-void nmxp_processCompressedDataFunc(char* buffer_data, int length_data, NMXP_CHAN_LIST *channelList,
-	int (*func_processData)(NMXP_PROCESS_DATA *pd)
-	);
-
-
-/*! \brief Process decompressed Data message by function func_processData().
- *
- * \param buffer_data Pointer to the data buffer containing Decompressed Nanometrics packets.
- * \param length_data Buffer length in bytes.
- * \param channelList Pointer to the Channel List.
- * \param func_processData Pointer to the function manages data extracted. It could be NULL.
- *
- */
-void nmxp_processDecompressedDataFunc(char* buffer_data, int length_data, NMXP_CHAN_LIST *channelList,
-	int (*func_processData)(NMXP_PROCESS_DATA *pd)
-  );
-
+int nmxp_data_log(NMXP_DATA_PROCESS *pd);
 
 #endif
 

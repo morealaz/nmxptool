@@ -12,10 +12,8 @@
 #ifndef NMXP_BASE_H
 #define NMXP_BASE_H 1
 
-#include <sys/types.h>
-
-#include "nmxp_chan.h"
 #include "nmxp_data.h"
+#include "nmxp_chan.h"
 #include "nmxp_log.h"
 
 /*! Maximum time between connection attempts (seconds). */
@@ -133,6 +131,30 @@ int nmxp_sendMessage(int isock, NMXP_MSG_CLIENT type, void *buffer, uint32_t len
  *
  */
 int nmxp_receiveMessage(int isock, NMXP_MSG_SERVER *type, void **buffer, uint32_t *length);
+
+
+/*! \brief Process Compressed Data message by function func_processData().
+ *
+ * \param buffer_data Pointer to the data buffer containing Compressed Nanometrics packets.
+ * \param length_data Buffer length in bytes.
+ * \param channelList Pointer to the Channel List.
+ *
+ * \return Return a pointer to static struct NMXP_DATA_PROCESS.
+ *
+ */
+NMXP_DATA_PROCESS *nmxp_processCompressedDataFunc(char* buffer_data, int length_data, NMXP_CHAN_LIST *channelList);
+
+
+/*! \brief Process decompressed Data message by function func_processData().
+ *
+ * \param buffer_data Pointer to the data buffer containing Decompressed Nanometrics packets.
+ * \param length_data Buffer length in bytes.
+ * \param channelList Pointer to the Channel List.
+ *
+ * \return Return a pointer to static struct NMXP_DATA_PROCESS.
+ *
+ */
+NMXP_DATA_PROCESS *nmxp_processDecompressedDataFunc(char* buffer_data, int length_data, NMXP_CHAN_LIST *channelList);
 
 #endif
 
