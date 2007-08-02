@@ -109,21 +109,67 @@ int nmxp_data_unpack_bundle (int *outdata, unsigned char *indata, int *prev)
 }
 
 
+void nmxp_data_ext_time_to_str(char *s, EXT_TIME et) {
+    // typedef struct _ext_time {
+	// int         year;           /* Year.                        */
+	// int         doy;            /* Day of year (1-366)          */
+	// int         month;          /* Month (1-12)                 */
+	// int         day;            /* Day of month (1-31)          */
+	// int         hour;           /* Hour (0-23)                  */
+	// int         minute;         /* Minute (0-59)                */
+	// int         second;         /* Second (0-60 (leap))         */
+	// int         usec;           /* Microseconds (0-999999)      */
+    // } EXT_TIME;
+    //
+    //
+    sprintf(s, "%04d/%02d/%02d %02d:%02d:%02d.%04d",
+	    et.year,
+	    et.month,
+	    et.day,
+	    et.hour,
+	    et.minute,
+	    et.second,
+	    et.usec / 100
+	   );
+
+}
+
 int nmxp_data_log(NMXP_DATA_PROCESS *pd) {
-    nmxp_log(0, 1, "%12d %5s.%3s (%10.4f - %10.4f) nsamp: %04d, srate: %03d, len: %04d [%d, %d] (%d, %d, %d)\n",
+
+    INT_TIME int_time_start, int_time_end;
+    EXT_TIME ext_time_start, ext_time_end;
+    char str_start[200], str_end[200];
+    
+    int_time_start = tepoch_to_int(pd->time);
+    int_time_end = tepoch_to_int(pd->time + ((double) pd->nSamp / (double) pd->sampRate));
+
+    ext_time_start = int_to_ext(int_time_start);
+    ext_time_end = int_to_ext(int_time_end);
+
+    nmxp_data_ext_time_to_str(str_start, ext_time_start);
+    nmxp_data_ext_time_to_str(str_end, ext_time_end);
+
+    // nmxp_log(0, 0, "%12d %5s.%3s (%10.4f - %10.4f) nsamp: %04d, srate: %03d, len: %04d [%d, %d] (%d, %d, %d, %d)\n",
+    // nmxp_log(0, 0, "%12d %5s.%3s (%10.4f - %10.4f) (%s - %s) nsamp: %04d, srate: %03d, len: %04d [%d, %d] (%d, %d, %d, %d)\n",
+    nmxp_log(0, 0, "%12d %5s.%3s (%s - %s) nsamp: %04d, srate: %03d, len: %04d [%d, %d] (%d, %d, %d, %d)\n",
 	    pd->key,
-	    pd->sta,
-	    pd->chan,
+	    (pd->sta == NULL)? "XXXX" : pd->sta,
+	    (pd->chan == NULL)? "XXX" : pd->chan,
+	    /*
 	    pd->time,
 	    pd->time + ((double) pd->nSamp / (double) pd->sampRate),
+	    */
+	    str_start,
+	    str_end,
 	    pd->nSamp,
 	    pd->sampRate,
 	    pd->length,
 	    pd->packet_type,
 	    pd->seq_no,
 	    pd->x0,
-	    pd->pDataPtr[0],
-	    pd->pDataPtr[pd->nSamp-1]
+	    (pd->pDataPtr == NULL)? 0 : pd->pDataPtr[0],
+	    (pd->pDataPtr == NULL || pd->nSamp < 1)? 0 : pd->pDataPtr[pd->nSamp-1],
+	    (pd->pDataPtr == NULL || pd->nSamp < 1)? 0 : pd->pDataPtr[pd->nSamp]
 	    );
 	return 0;
 }
