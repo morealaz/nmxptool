@@ -153,9 +153,9 @@ int nmxp_sendConnectRequest(int isock, char *naqs_username, char *naqs_password,
     ret = nmxp_sendMessage(isock, NMXP_MSG_CONNECTREQUEST, &connectRequest, sizeof(NMXP_CONNECT_REQUEST));
 
     if(ret == NMXP_SOCKET_OK) {
-	nmxp_log(0,0, "Send a ConnectRequest crc32buf = (%s), crc32 = %d\n", crc32buf, crc32);
+	nmxp_log(0, 1, "Send a ConnectRequest crc32buf = (%s), crc32 = %d\n", crc32buf, crc32);
     } else {
-	nmxp_log(1,0, "Send a ConnectRequest.\n");
+	nmxp_log(1, 0, "Send a ConnectRequest.\n");
     }
 
     return ret;
@@ -166,9 +166,9 @@ int nmxp_readConnectionTime(int isock, uint32_t *connection_time) {
     int ret;
     ret = nmxp_recv_ctrl(isock, connection_time, sizeof(connection_time));
     *connection_time = ntohl(*connection_time);
-    nmxp_log(0,0, "Read connection time from socket %d.\n", *connection_time);
+    nmxp_log(0, 1, "Read connection time from socket %d.\n", *connection_time);
     if(ret != NMXP_SOCKET_OK) {
-	nmxp_log(1,0, "Read connection time from socket.\n");
+	nmxp_log(1, 0, "Read connection time from socket.\n");
     }
     return ret;
 }
@@ -186,7 +186,7 @@ int nmxp_waitReady(int isock) {
 	if(rc != NMXP_SOCKET_OK) return rc;
 	signature = ntohl(signature);
 	if(signature == 0) {
-	    nmxp_log(0, 0, "signature is equal to zero. receive again.\n");
+	    nmxp_log(0, 1, "signature is equal to zero. receive again.\n");
 	    rc = nmxp_recv_ctrl(isock, &signature, sizeof(signature));
 	    signature = ntohl(signature);
 	}
@@ -199,7 +199,7 @@ int nmxp_waitReady(int isock) {
 	if(rc != NMXP_SOCKET_OK) return rc;
 	type = ntohl(type);
 	if(type != NMXP_MSG_READY) {
-	    nmxp_log(0, 0, "type is not READY. type = %d\n", type);
+	    nmxp_log(0, 1, "type is not READY. type = %d\n", type);
 	    rc = nmxp_recv_ctrl(isock, &length, sizeof(length));
 	    if(rc != NMXP_SOCKET_OK) return rc;
 	    length = ntohl(length);

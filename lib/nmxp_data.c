@@ -58,7 +58,7 @@ int nmxp_data_unpack_bundle (int *outdata, unsigned char *indata, int *prev)
 
 	for (j=0; j<4; j++) {
 		/*
-		nmxp_log (0,0, "cb[%d]=%d\n", j, cb[j]);
+		nmxp_log (0,1, "cb[%d]=%d\n", j, cb[j]);
 		*/
 		switch (cb[j]) 
 		{   
@@ -96,7 +96,7 @@ int nmxp_data_unpack_bundle (int *outdata, unsigned char *indata, int *prev)
 		for (i=0; i<k; i++) {
 			*outdata = *prev + d4[i];
 			/*
-				nmxp_log(0,0, "val = %d, diff[%d] = %d, *prev = %d\n",
+				nmxp_log(0, 1, "val = %d, diff[%d] = %d, *prev = %d\n",
 						*outdata, i, d4[i], *prev);
 						*/
 			*prev = *outdata;
@@ -110,7 +110,7 @@ int nmxp_data_unpack_bundle (int *outdata, unsigned char *indata, int *prev)
 
 
 int nmxp_data_log(NMXP_DATA_PROCESS *pd) {
-    nmxp_log(0, 0, "%12d %5s.%3s (%10.4f - %10.4f) nsamp: %04d, srate: %03d, len: %04d [%d, %d] (%d, %d, %d)\n",
+    nmxp_log(0, 1, "%12d %5s.%3s (%10.4f - %10.4f) nsamp: %04d, srate: %03d, len: %04d [%d, %d] (%d, %d, %d)\n",
 	    pd->key,
 	    pd->sta,
 	    pd->chan,

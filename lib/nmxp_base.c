@@ -130,7 +130,7 @@ int nmxp_recv_ctrl(int isock, void* buffer, int length)
 			  strcpy(recv_errno_str, "DEFAULT_NO_VALUE");
 			  break;
 	  }
-    nmxp_log(0,0, "nmxp_recv_ctrl(): (recvCount != length) %d != %d - errno = %d (%s)\n", recvCount, length, recv_errno, recv_errno_str);
+    nmxp_log(0, 1, "nmxp_recv_ctrl(): (recvCount != length) %d != %d - errno = %d (%s)\n", recvCount, length, recv_errno, recv_errno_str);
 	    
     return NMXP_SOCKET_ERROR;
   }
@@ -358,7 +358,7 @@ NMXP_DATA_PROCESS *nmxp_processCompressedDataFunc(char* buffer_data, int length_
 	const unsigned int high_scale_p = 4096 * 4096;
 	/* check if nmx_x0 is negative like as signed 3-byte int */
 	if( (nmx_x0 & high_scale) ==  high_scale) {
-	    // nmxp_log(0, 0, "WARNING: changed nmx_x0, old value = %d\n",  nmx_x0);
+	    // nmxp_log(0, 1, "WARNING: changed nmx_x0, old value = %d\n",  nmx_x0);
 	    nmx_x0 -= high_scale_p;
 	}
 	if (my_order != SEED_LITTLE_ENDIAN) {
