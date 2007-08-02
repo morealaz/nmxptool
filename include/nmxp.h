@@ -132,7 +132,6 @@ int nmxp_sendAddTimeSeriesChannel(int isock, NMXP_CHAN_LIST *channelList, uint32
  * \param isock A descriptor referencing the socket.
  * \param channelList Channel list.
  * \param func_processData Pointer to the function manages data extracted. It could be NULL.
- * \param outfile If is not NULL write buffer contents.
  *
  * \retval SOCKET_OK on success
  * \retval SOCKET_ERROR on error
