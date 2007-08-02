@@ -46,8 +46,6 @@
 #define NMXP_H 1
 
 #include "nmxp_base.h"
-#include "nmxp_chan.h"
-#include "nmxp_crc32.h"
 
 /*! \brief Flag for buffered packets */
 typedef enum {
