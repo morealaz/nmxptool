@@ -134,11 +134,22 @@ int nmxp_sendConnectRequest(int isock, char *naqs_username, char *naqs_password,
     char crc32buf[100];
     NMXP_CONNECT_REQUEST connectRequest;
 
-    strcpy(connectRequest.username, naqs_username);
+    if(naqs_username) {
+	strcpy(connectRequest.username, naqs_username);
+    } else {
+	int i;
+	for(i=0; i < 12; i++) {
+	    connectRequest.username[i] = 0;
+	}
+    }
     connectRequest.version = htonl(0);
     connectRequest.connection_time = htonl(connection_time);
 
-    if(strlen(naqs_username) == 0  &&  strlen(naqs_password) == 0 ) {
+    nmxp_log(0, 0, "TODO improve check username and password!\n");
+
+    if(naqs_username == NULL  &&  naqs_password == NULL ) {
+	sprintf(crc32buf, "%d%d", connectRequest.version, connection_time);
+    } else if(strlen(naqs_username) == 0  &&  strlen(naqs_password) == 0 ) {
 	sprintf(crc32buf, "%d%d", connectRequest.version, connection_time);
     } else if(strlen(naqs_username) != 0  &&  strlen(naqs_password) != 0 ) {
 	sprintf(crc32buf, "%s%d%d%s", naqs_username, connectRequest.version,
