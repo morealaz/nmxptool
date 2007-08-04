@@ -135,8 +135,6 @@ int nmxp_sendConnectRequest(int isock, char *naqs_username, char *naqs_password,
     NMXP_CONNECT_REQUEST connectRequest;
     int naqs_username_length, naqs_password_length;
 
-    nmxp_log(0, 0, "TODO improve check username and password!\n");
-
     naqs_username_length = (naqs_username)? strlen(naqs_username) : 0;
     naqs_password_length = (naqs_password)? strlen(naqs_password) : 0;
 
