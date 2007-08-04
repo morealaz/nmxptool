@@ -32,18 +32,24 @@ int nmxp_chan_lookupKey(char* name, NMXP_CHAN_LIST *channelList)
 
 char *nmxp_chan_lookupName(uint32_t key, NMXP_CHAN_LIST *channelList)
 {
-    int chan_number = channelList->number;
     int i_chan = 0;
     static char ret[12];
 
-    for (i_chan = 0; i_chan < chan_number; i_chan++)
+    ret[0] = 0;
+
+    for (i_chan = 0; i_chan < channelList->number; i_chan++)
     {
-	if ( key == channelList->channel[i_chan].key )
+	if ( key == channelList->channel[i_chan].key ) {
 	    strcpy(ret, channelList->channel[i_chan].name);
-	    return ret;
+	}
     }
 
-    return NULL;
+    if(ret[0] == 0) {
+	nmxp_log(1, 0, "Key %d not found!", key);
+	return NULL;
+    } else {
+	return ret;
+    }
 }
 
 NMXP_CHAN_LIST *nmxp_chan_getType(NMXP_CHAN_LIST *channelList, NMXP_DATATYPE dataType) {
