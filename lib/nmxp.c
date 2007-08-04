@@ -133,30 +133,29 @@ int nmxp_sendConnectRequest(int isock, char *naqs_username, char *naqs_password,
     int ret;
     char crc32buf[100];
     NMXP_CONNECT_REQUEST connectRequest;
+    int naqs_username_length, naqs_password_length;
 
-    if(naqs_username) {
-	strcpy(connectRequest.username, naqs_username);
+    nmxp_log(0, 0, "TODO improve check username and password!\n");
+
+    naqs_username_length = (naqs_username)? strlen(naqs_username) : 0;
+    naqs_password_length = (naqs_password)? strlen(naqs_password) : 0;
+
+    if(naqs_username_length == 0) {
+	connectRequest.username[0] = 0;
     } else {
-	int i;
-	for(i=0; i < 12; i++) {
-	    connectRequest.username[i] = 0;
-	}
+	strcpy(connectRequest.username, naqs_username);
     }
     connectRequest.version = htonl(0);
     connectRequest.connection_time = htonl(connection_time);
 
-    nmxp_log(0, 0, "TODO improve check username and password!\n");
-
-    if(naqs_username == NULL  &&  naqs_password == NULL ) {
+    if(naqs_username_length == 0  &&  naqs_password_length == 0 ) {
 	sprintf(crc32buf, "%d%d", connectRequest.version, connection_time);
-    } else if(strlen(naqs_username) == 0  &&  strlen(naqs_password) == 0 ) {
-	sprintf(crc32buf, "%d%d", connectRequest.version, connection_time);
-    } else if(strlen(naqs_username) != 0  &&  strlen(naqs_password) != 0 ) {
+    } else if(naqs_username_length != 0  &&  naqs_password_length != 0 ) {
 	sprintf(crc32buf, "%s%d%d%s", naqs_username, connectRequest.version,
 		connection_time, naqs_password);
-    } else if(strlen(naqs_username) != 0 ) {
+    } else if(naqs_username_length != 0 ) {
 	sprintf(crc32buf, "%s%d%d", naqs_username, connectRequest.version, connection_time);
-    } else if(strlen(naqs_password) != 0 ) {
+    } else if(naqs_password_length != 0 ) {
 	sprintf(crc32buf, "%d%d%s", connectRequest.version, connection_time, naqs_password);
     }
     connectRequest.crc32 = htonl(crc32((unsigned char *) crc32buf, strlen(crc32buf)));
