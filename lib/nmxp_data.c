@@ -140,8 +140,8 @@ int nmxp_data_log(NMXP_DATA_PROCESS *pd) {
     EXT_TIME ext_time_start, ext_time_end;
     char str_start[200], str_end[200];
     
-    int_time_start = tepoch_to_int(pd->time);
-    int_time_end = tepoch_to_int(pd->time + ((double) pd->nSamp / (double) pd->sampRate));
+    int_time_start = nepoch_to_int(pd->time);
+    int_time_end = nepoch_to_int(pd->time + ((double) pd->nSamp / (double) pd->sampRate));
 
     ext_time_start = int_to_ext(int_time_start);
     ext_time_end = int_to_ext(int_time_end);
