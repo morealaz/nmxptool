@@ -1,6 +1,6 @@
 /*! \file
  *
- * \brief Channels for Nanometrics Protocol Libray
+ * \brief Channels for Nanometrics Protocol Library
  *
  * Author:
  * 	Matteo Quintiliani

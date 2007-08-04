@@ -1,6 +1,6 @@
 /*! \file
  *
- * \brief Base for Nanometrics Protocol Libray
+ * \brief Base for Nanometrics Protocol Library
  *
  * Author:
  * 	Matteo Quintiliani
