@@ -18,6 +18,8 @@
 
 #include <time.h>
 
+#include "config.h"
+
 #define MAX_LOG_MESSAGE_LENGTH 200
 
 
@@ -49,10 +51,10 @@ int nmxp_log(int level, int verb, ... )
     retvalue = vsnprintf(message, MAX_LOG_MESSAGE_LENGTH, format, listptr);
 
     if ( level == 1 ) {
-      printf("%s - libnmxp: error: %s",timestr, message);
+      printf("%s - %s: error: %s", timestr, PACKAGE_NAME, message);
     }
     else {
-      printf("%s - libnmxp: %s", timestr, message);
+      printf("%s - %s: %s", timestr, PACKAGE_NAME, message);
     }
 
     fflush(stdout);
