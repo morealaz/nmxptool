@@ -2,11 +2,13 @@
  *
  * \section intro_sec Introduction
  *
- * This is the introduction.
+ * This is the documentation for Nanometrics Protocol Library.
+ *
  *
  * \section dependencies_sec Dependencies
  *
  * qlib2 ftp://quake.geo.berkeley.edu/pub/quanterra/ucb/
+ *
  *
  * \section install_sec Installation
  *
@@ -16,24 +18,34 @@
  *
  * make install
  *
- * \section usage_sec Usage
  *
- * \subsection step1 Step 1: Opening the box
+ * \section tools_sec Tools
+ *
+ * \subsection nmxp_pds nmxp_pds
+ *
+ * This tool implements the <i>Nanometrics Private Data Stream Protocol 1.4</i> and permits to retrieve data in near-realtime.
  *  
+ *
+ * \subsection nmxp_dap nmxp_dap
+ *
+ * This tool implements the <i>Nanometrics Data Access Protocol 1.0</i> and permits to retrieve backward data.
+ *
+ *
+ * \section examples_sec Examples
+ *
  * etc...
+ *
  *
  * \section about_sec About
  *
- * Author: \n
- * 	Matteo Quintiliani
- * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
- *	quintiliani@ingv.it
+ * Author:
+ * 	Matteo Quintiliani - <i>Istituto Nazionale di Geofisica e Vulcanologia</i> - Italy - quintiliani@ingv.it
  */
 
 
 /*! \file
  *
- * \brief Nanometrics Protocol Libray
+ * \brief Nanometrics Protocol Library
  *
  * Author:
  * 	Matteo Quintiliani
