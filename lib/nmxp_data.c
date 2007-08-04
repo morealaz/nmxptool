@@ -21,8 +21,8 @@
 
 int nmxp_data_init(NMXP_DATA_PROCESS *pd) {
     pd->key = -1;
-    pd->sta = NULL;
-    pd->chan = NULL;
+    pd->station[0] = 0;
+    pd->channel[0] = 0;
     pd->packet_type = -1;
     pd->x0 = -1;
     pd->seq_no = -1;
@@ -153,8 +153,8 @@ int nmxp_data_log(NMXP_DATA_PROCESS *pd) {
     // nmxp_log(0, 0, "%12d %5s.%3s (%10.4f - %10.4f) (%s - %s) nsamp: %04d, srate: %03d, len: %04d [%d, %d] (%d, %d, %d, %d)\n",
     nmxp_log(0, 0, "%12d %5s.%3s (%s - %s) nsamp: %04d, srate: %03d, len: %04d [%d, %d] (%d, %d, %d, %d)\n",
 	    pd->key,
-	    (pd->sta == NULL)? "XXXX" : pd->sta,
-	    (pd->chan == NULL)? "XXX" : pd->chan,
+	    (strlen(pd->station) == 0)? "XXXX" : pd->station,
+	    (strlen(pd->channel) == 0)? "XXX" : pd->channel,
 	    /*
 	    pd->time,
 	    pd->time + ((double) pd->nSamp / (double) pd->sampRate),

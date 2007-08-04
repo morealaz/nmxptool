@@ -275,8 +275,12 @@ NMXP_DATA_PROCESS *nmxp_processDecompressedDataFunc(char* buffer_data, int lengt
   nmxp_data_init(&pd);
 
   pd.key = pKey;
-  pd.sta = sta;
-  pd.chan = chan;
+  if(sta) {
+      strlcpy(pd.station, sta, STATION_LENGTH);
+  }
+  if(chan) {
+      strlcpy(pd.channel, chan, CHANNEL_LENGTH);
+  }
   pd.packet_type = NMXP_MSG_DECOMPRESSED;
   // pd.x0 = ;
   // pd.seq_no = ;
@@ -427,7 +431,7 @@ NMXP_DATA_PROCESS *nmxp_processCompressedDataFunc(char* buffer_data, int length_
 	/* Lookup the station and channel code */
 	sta = strdup(nmxp_chan_lookupName(pKey, channelList));
 	if ( (chan = strchr(sta, '.')) == NULL ) {
-	    nmxp_log(1,0, "Channel name not in STN.CHAN format: %s\n", sta);
+	    nmxp_log(1, 0, "Channel name not in STN.CHAN format: %s\n", sta);
 	    /*
 	    free(sta);
 	    return;
@@ -442,8 +446,12 @@ NMXP_DATA_PROCESS *nmxp_processCompressedDataFunc(char* buffer_data, int length_
 	nmxp_data_init(&pd);
 
 	pd.key = pKey;
-	pd.sta = sta;
-	pd.chan = chan;
+	if(sta) {
+	    strlcpy(pd.station, sta, STATION_LENGTH);
+	}
+	if(chan) {
+	    strlcpy(pd.channel, chan, CHANNEL_LENGTH);
+	}
 	pd.packet_type = nmx_ptype;
 	pd.x0 = nmx_x0;
 	pd.seq_no = nmx_seqno;

@@ -81,20 +81,26 @@ typedef struct {
 } NMXP_MESSAGE_HEADER;
 
 
+/*! \brief Length in bytes of station strings */
+#define STATION_LENGTH 10
+
+/*! \brief Length in bytes of channel strings */
+#define CHANNEL_LENGTH 10
+
 /*! \brief Parameter structure for functions that process data */
 typedef struct {
-    int key;		/*!< \brief Channel Key */
-    char *sta;		/*!< \brief Station code */
-    char *chan;		/*!< \brief Channel code */
-    int packet_type;	/*!< \brief Packet type */
-    int x0;		/*!< \brief First sample */
-    int seq_no;		/*!< \brief Sequence number */
-    double time;	/*!< \brief Time first sample. Epochs. */
-    void *buffer;	/*!< \brief Nanometrics packet data  */
-    int length;		/*!< \brief Packet length */
-    int *pDataPtr;	/*!< \brief Array of samples */
-    int nSamp;		/*!< \brief Number or samples */
-    int sampRate;	/*!< \brief Sample rate */
+    int key;				/*!< \brief Channel Key */
+    char station[STATION_LENGTH];	/*!< \brief Station code */
+    char channel[CHANNEL_LENGTH];	/*!< \brief Channel code */
+    int packet_type;			/*!< \brief Packet type */
+    int x0;				/*!< \brief First sample */
+    int seq_no;				/*!< \brief Sequence number */
+    double time;			/*!< \brief Time first sample. Epochs. */
+    void *buffer;			/*!< \brief Nanometrics packet data  */
+    int length;				/*!< \brief Packet length */
+    int *pDataPtr;			/*!< \brief Array of samples */
+    int nSamp;				/*!< \brief Number or samples */
+    int sampRate;			/*!< \brief Sample rate */
 } NMXP_DATA_PROCESS;
 
 
