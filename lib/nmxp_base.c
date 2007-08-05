@@ -276,10 +276,10 @@ NMXP_DATA_PROCESS *nmxp_processDecompressedDataFunc(char* buffer_data, int lengt
 
   pd.key = pKey;
   if(sta) {
-      strlcpy(pd.station, sta, STATION_LENGTH);
+      strncpy(pd.station, sta, STATION_LENGTH);
   }
   if(chan) {
-      strlcpy(pd.channel, chan, CHANNEL_LENGTH);
+      strncpy(pd.channel, chan, CHANNEL_LENGTH);
   }
   pd.packet_type = NMXP_MSG_DECOMPRESSED;
   // pd.x0 = ;
@@ -447,10 +447,10 @@ NMXP_DATA_PROCESS *nmxp_processCompressedDataFunc(char* buffer_data, int length_
 
 	pd.key = pKey;
 	if(sta) {
-	    strlcpy(pd.station, sta, STATION_LENGTH);
+	    strncpy(pd.station, sta, STATION_LENGTH);
 	}
 	if(chan) {
-	    strlcpy(pd.channel, chan, CHANNEL_LENGTH);
+	    strncpy(pd.channel, chan, CHANNEL_LENGTH);
 	}
 	pd.packet_type = nmx_ptype;
 	pd.x0 = nmx_x0;
