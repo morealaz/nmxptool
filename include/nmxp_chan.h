@@ -12,7 +12,7 @@
 #ifndef NMXP_CHAN_H
 #define NMXP_CHAN_H 1
 
-#include <sys/types.h>
+#include <stdint.h>
 
 /*! \brief The key/name info for one channel */
 typedef struct {

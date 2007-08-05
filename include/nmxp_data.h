@@ -12,7 +12,7 @@
 #ifndef NMXP_DATA_H
 #define NMXP_DATA_H 1
 
-#include <sys/types.h>
+#include <stdint.h>
 
 /*! First 4 bytes of all messages. */
 #define NMX_SIGNATURE 0x7abcde0f
