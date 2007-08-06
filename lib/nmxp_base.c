@@ -24,7 +24,6 @@
 #include <time.h>
 #include <unistd.h>
 
-#include <qlib2.h>
 #include <libmseed.h>
 
 

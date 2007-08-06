@@ -16,7 +16,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <qlib2.h>
 #include <libmseed.h>
 
 
@@ -114,75 +113,52 @@ int nmxp_data_unpack_bundle (int *outdata, unsigned char *indata, int *prev)
 }
 
 
-void nmxp_data_ext_time_to_str(char *s, EXT_TIME et) {
-    // typedef struct _ext_time {
-	// int         year;           /* Year.                        */
-	// int         doy;            /* Day of year (1-366)          */
-	// int         month;          /* Month (1-12)                 */
-	// int         day;            /* Day of month (1-31)          */
-	// int         hour;           /* Hour (0-23)                  */
-	// int         minute;         /* Minute (0-59)                */
-	// int         second;         /* Second (0-60 (leap))         */
-	// int         usec;           /* Microseconds (0-999999)      */
-    // } EXT_TIME;
-    //
-    //
-    sprintf(s, "%04d/%02d/%02d %02d:%02d:%02d.%04d",
-	    et.year,
-	    et.month,
-	    et.day,
-	    et.hour,
-	    et.minute,
-	    et.second,
-	    et.usec / 100
+int nmxp_data_to_str(char *out_str, double time_d) {
+    time_t time_t_start_time = (time_t) time_d;
+    struct tm *tm_start_time = gmtime(&time_t_start_time);
+    
+    // sprintf(out_str, "%04d/%02d/%02d %02d:%02d:%02d.%04d",
+    sprintf(out_str, "%04d.%d %02d:%02d:%02d.%04d",
+	    tm_start_time->tm_year + 1900,
+	    /*
+	    tm_start_time->tm_mon + 1,
+	    tm_start_time->tm_mday,
+	    */
+	    tm_start_time->tm_yday + 1,
+	    tm_start_time->tm_hour,
+	    tm_start_time->tm_min,
+	    tm_start_time->tm_sec,
+	    (int) (  ((time_d - (double) time_t_start_time)) * 10000.0 )
 	   );
-
+    
+    return 0;
 }
 
 int nmxp_data_log(NMXP_DATA_PROCESS *pd) {
 
-    /*
-    INT_TIME int_time_start, int_time_end;
-    EXT_TIME ext_time_start, ext_time_end;
-    */
     char str_start[200], str_end[200];
 
     str_start[0] = 0;
     str_end[0] = 0;
     
+    nmxp_data_to_str(str_start, pd->time);
+    nmxp_data_to_str(str_end, pd->time + ((double) pd->nSamp / (double) pd->sampRate));
 
-    /* TODO avoiding to use qlib2
-    int_time_start = nepoch_to_int(pd->time);
-    int_time_end = nepoch_to_int(pd->time + ((double) pd->nSamp / (double) pd->sampRate));
-
-    ext_time_start = int_to_ext(int_time_start);
-    ext_time_end = int_to_ext(int_time_end);
-
-    nmxp_data_ext_time_to_str(str_start, ext_time_start);
-    nmxp_data_ext_time_to_str(str_end, ext_time_end);
-    */
-
-    nmxp_log(0, 0, "%12d %5s.%3s (%10.4f - %10.4f) nsamp: %04d, srate: %03d, len: %04d [%d, %d] (%d, %d, %d, %d)\n",
-    // nmxp_log(0, 0, "%12d %5s.%3s (%10.4f - %10.4f) (%s - %s) nsamp: %04d, srate: %03d, len: %04d [%d, %d] (%d, %d, %d, %d)\n",
-    // nmxp_log(0, 0, "%12d %5s.%3s (%s - %s) nsamp: %04d, srate: %03d, len: %04d [%d, %d] (%d, %d, %d, %d)\n",
+    nmxp_log(0, 0, "%12d %5s.%3s rate=%03d (%s - %s) [%d, %d] pts=%04d (%d, %d, %d, %d) len=%d\n",
 	    pd->key,
 	    (strlen(pd->station) == 0)? "XXXX" : pd->station,
 	    (strlen(pd->channel) == 0)? "XXX" : pd->channel,
-	    pd->time,
-	    pd->time + ((double) pd->nSamp / (double) pd->sampRate),
-	    /*
+	    pd->sampRate,
 	    str_start,
 	    str_end,
-	    */
-	    pd->nSamp,
-	    pd->sampRate,
-	    pd->length,
 	    pd->packet_type,
 	    pd->seq_no,
+	    pd->nSamp,
 	    pd->x0,
 	    (pd->pDataPtr == NULL)? 0 : pd->pDataPtr[0],
 	    (pd->pDataPtr == NULL || pd->nSamp < 1)? 0 : pd->pDataPtr[pd->nSamp-1],
-	    (pd->pDataPtr == NULL || pd->nSamp < 1)? 0 : pd->pDataPtr[pd->nSamp]
+	    (pd->pDataPtr == NULL || pd->nSamp < 1)? 0 : pd->pDataPtr[pd->nSamp],
+	    pd->length
 	    );
 	return 0;
 }
@@ -199,10 +175,10 @@ int nmxp_data_seed_init(NMXP_DATA_SEED *data_seed) {
 	NMXP_DATA_SEED *data_seed = pdata_seed;
 	if( data_seed->outfile_mseed ) {
 	    if ( fwrite(record, reclen, 1, data_seed->outfile_mseed) != 1 ) {
-		ms_log (2, "Error writing %s to output file", data_seed->filename_mseed);
+		ms_log (2, "Error writing %s to output file\n", data_seed->filename_mseed);
 	    }
 	} else {
-		ms_log (2, "Error opening file %s", data_seed->filename_mseed);
+		ms_log (2, "Error opening file %s\n", data_seed->filename_mseed);
 	}
     }
 
@@ -212,7 +188,7 @@ int nmxp_data_msr_pack(NMXP_DATA_PROCESS *pd, NMXP_DATA_SEED *data_seed) {
     int psamples;
     int precords;
     MSRecord *msr;
-    flag verbose = 1;
+    flag verbose = 0;
 
     msr = msr_init (NULL);
 
@@ -245,7 +221,8 @@ int nmxp_data_msr_pack(NMXP_DATA_PROCESS *pd, NMXP_DATA_SEED *data_seed) {
     /* Pack the record(s) */
     precords = msr_pack (msr, &nmxp_data_msr_write_handler, data_seed->srcname, &psamples, 1, verbose);
 
-    ms_log (0, "Packed %d samples into %d records", psamples, precords);
+    // ms_log (0, "Packed %d samples into %d records\n", psamples, precords);
+    nmxp_log (0, 1, "Packed %d samples into %d records\n", psamples, precords);
 
     msr_free (&msr);
 
