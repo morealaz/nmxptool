@@ -13,6 +13,7 @@
 #define NMXP_DATA_H 1
 
 #include <stdint.h>
+#include <stdio.h>
 
 /*! First 4 bytes of all messages. */
 #define NMX_SIGNATURE 0x7abcde0f
@@ -81,6 +82,9 @@ typedef struct {
 } NMXP_MESSAGE_HEADER;
 
 
+/*! \brief Length in bytes of channel strings */
+#define NETWORK_LENGTH 10
+
 /*! \brief Length in bytes of station strings */
 #define STATION_LENGTH 10
 
@@ -90,6 +94,7 @@ typedef struct {
 /*! \brief Parameter structure for functions that process data */
 typedef struct {
     int key;				/*!< \brief Channel Key */
+    char network[NETWORK_LENGTH];	/*!< \brief Network code */
     char station[STATION_LENGTH];	/*!< \brief Station code */
     char channel[CHANNEL_LENGTH];	/*!< \brief Channel code */
     int packet_type;			/*!< \brief Packet type */
@@ -104,9 +109,16 @@ typedef struct {
 } NMXP_DATA_PROCESS;
 
 
+/*! \brief Parameter structure for functions that handle mini-seed records */
+typedef struct {
+    char srcname[50];
+    FILE *outfile_mseed;
+    char filename_mseed[500];
+} NMXP_DATA_SEED;
+
 /*! \brief Initialize a structure NMXP_DATA_PROCESS
  *
- *  \param pd
+ *  \param pd Pointer to a NMXP_DATA_PROCESS structure.
  *
  */
 int nmxp_data_init(NMXP_DATA_PROCESS *pd);
@@ -133,6 +145,25 @@ int nmxp_data_unpack_bundle (int *outdata, unsigned char *indata, int *prev);
  *
  */
 int nmxp_data_log(NMXP_DATA_PROCESS *pd);
+
+
+/*! \brief Initialize a structure NMXP_DATA_SEED
+ *
+ *  \param data_seed Pointer to a NMXP_DATA_SEED structure.
+ *
+ */
+int nmxp_data_seed_init(NMXP_DATA_SEED *data_seed);
+
+
+/*! \brief Write mini-seed records from a NMXP_DATA_PROCESS structure.
+ *
+ * \param pd Pointer to struct NMXP_DATA_PROCESS
+ * \param data_seed Pointer to struct NMXP_DATA_SEED
+ *
+ * \return Returns the number records created on success and -1 on error. Return value of msr_pack().
+ *
+ */
+int nmxp_data_msr_pack(NMXP_DATA_PROCESS *pd, NMXP_DATA_SEED *data_seed);
 
 #endif
 

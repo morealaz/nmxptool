@@ -17,10 +17,12 @@
 #include <string.h>
 
 #include <qlib2.h>
+#include <libmseed.h>
 
 
 int nmxp_data_init(NMXP_DATA_PROCESS *pd) {
     pd->key = -1;
+    pd->network[0] = 0;
     pd->station[0] = 0;
     pd->channel[0] = 0;
     pd->packet_type = -1;
@@ -174,3 +176,66 @@ int nmxp_data_log(NMXP_DATA_PROCESS *pd) {
 	return 0;
 }
 
+int nmxp_data_seed_init(NMXP_DATA_SEED *data_seed) {
+    data_seed->srcname[0] = 0;
+    data_seed->outfile_mseed = NULL;
+    data_seed->filename_mseed[0] = 0;
+}
+
+/* Private function for writing mini-seed records */
+    static void nmxp_data_msr_write_handler (char *record, int reclen, void *pdata_seed) {
+	NMXP_DATA_SEED *data_seed = pdata_seed;
+	if( data_seed->outfile_mseed ) {
+	    if ( fwrite(record, reclen, 1, data_seed->outfile_mseed) != 1 ) {
+		ms_log (2, "Error writing %s to output file", data_seed->filename_mseed);
+	    }
+	} else {
+		ms_log (2, "Error opening file %s", data_seed->filename_mseed);
+	}
+    }
+
+int nmxp_data_msr_pack(NMXP_DATA_PROCESS *pd, NMXP_DATA_SEED *data_seed) {
+    int ret =0;
+
+    int psamples;
+    int precords;
+    MSRecord *msr;
+    flag verbose = 1;
+
+    msr = msr_init (NULL);
+
+    /* Populate MSRecord values */
+    strcpy (msr->network, pd->network);
+    strcpy (msr->station, pd->station);
+    strcpy (msr->channel, pd->channel);
+    // TODO
+    // msr->starttime = ms_seedtimestr2hptime ("2004,350,00:00:00.00");
+    msr->starttime = MS_EPOCH2HPTIME(pd->time);
+    msr->samprate = pd->sampRate;
+    // TODO
+    // msr->reclen = 4096;         /* 4096 byte record length */
+    msr->reclen = 512;         /* byte record length */
+    // TODO
+    // msr->encoding = DE_STEIM2;  /* Steim 2 compression */
+    msr->encoding = DE_STEIM1;  /* Steim 1 compression */
+    // TODO
+    // msr->byteorder = 0;         /* big endian byte order */
+    msr->byteorder = ms_bigendianhost ();
+
+    int sizetoallocate = sizeof(int) * (pd->nSamp + 1);
+    msr->datasamples = malloc (sizetoallocate); 
+    memcpy(msr->datasamples, pd->pDataPtr, sizetoallocate); /* pointer to 32-bit integer data samples */
+    msr->numsamples = pd->nSamp + 1;
+    msr->sampletype = 'i';      /* declare type to be 32-bit integers */
+
+    msr_srcname (msr, data_seed->srcname, 0);
+
+    /* Pack the record(s) */
+    precords = msr_pack (msr, &nmxp_data_msr_write_handler, data_seed->srcname, &psamples, 1, verbose);
+
+    ms_log (0, "Packed %d samples into %d records", psamples, precords);
+
+    msr_free (&msr);
+
+    return ret;
+}
