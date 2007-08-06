@@ -3,7 +3,7 @@
  * \section intro_sec Introduction
  *
  * This is the documentation for the <i>APIs</i> that implement the <tt>Nanometrics Protocols</tt>.
- * They have been developed for interacting with \c NaqsServer and \c DataServer
+ * They have been developed for interacting with \c NaqsServer and \c DataServer.
  *
  * The Nanometrics \c NaqsServer provides online access to time-series, serial data, triggers, and state-of-health data via TCP subscription.
  * 
@@ -24,13 +24,18 @@
  *
  * Some library is needed to install and use \c libnmxp:
  *
- * \li \c qlib2: ftp://quake.geo.berkeley.edu/pub/quanterra/ucb/
- * \li \c libmseed: http://www.iris.edu/manuals/
+ * \li \c qlib2: ftp://quake.geo.berkeley.edu/pub/quanterra/ucb/\n
+ * Subroutine library for Quanterra data and MiniSEED data manipulation.
+ * \li \c libmseed: http://www.iris.edu/manuals/\n
+ * The Mini-SEED library. A C library framework for manipulating and managing SEED data records.\n
+ * Author: Chad Trabant, <i>IRIS DMC</i>\n
  *
  *
  * \section install_sec Installation
  *
- * Please, refer to the file \b README and \b INSTALL for more details.
+ * \c nmxp library has been developed using <i>GNU Build Tools</i> (\c automake, \c autoconf and \c configure script)
+ * taking in account the Cross-Platform aspects.
+ * So you should be able to compile and install it everywhere you can launch the following commands:
  *
  * <tt>./configure</tt>
  * 
@@ -38,6 +43,7 @@
  *
  * <tt>make install</tt>
  *
+ * Please, refer to the file \b README and \b INSTALL for more details.
  *
  * \section tools_sec Tools
  *
@@ -52,6 +58,7 @@
  * \subsection examples_sec Examples
  *
  * etc...
+ *
  *
  * \section license_sec License
  *
@@ -71,7 +78,9 @@
  *
  * \section about_sec About
  *
- * Matteo Quintiliani - <i>Istituto Nazionale di Geofisica e Vulcanologia</i> - Italy - quintiliani@ingv.it
+ * Matteo Quintiliani - <i>Istituto Nazionale di Geofisica e Vulcanologia</i> - Italy
+ *
+ * Mail bug reports and suggestions to <quintiliani@ingv.it>
  *
  */
 
