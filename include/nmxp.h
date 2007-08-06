@@ -2,45 +2,79 @@
  *
  * \section intro_sec Introduction
  *
- * This is the documentation for Nanometrics Protocol Library.
+ * This is the documentation for the <i>APIs</i> that implement the <tt>Nanometrics Protocols</tt>.
+ * They have been developed for interacting with \c NaqsServer and \c DataServer
+ *
+ * The Nanometrics \c NaqsServer provides online access to time-series, serial data, triggers, and state-of-health data via TCP subscription.
+ * 
+ * The Nanometrics \c DataServer provides local and remote access to nanometrics, serial, and state-of-health data via TCP/IP.
+ *
+ * The library offers APIs to:
+ * \li interact with \c NaqsServer that uses version 1.4 of the <i>Private Data Stream Protocol</i>
+ * \li interact with \c DataServer that uses version 1.0 of the <i>Nanometrics Data Access Protocol</i>
+ * \li manage Nanometrics data formats
+ * \li request, receive and interpret online and offline data
+ *
+ * moreover, you can use them to develop software to:
+ * \li analyze data in realtime (waveforms, triggers, ...)
+ * \li retrieve and convert on the fly data into the mini-SEED records
  *
  *
  * \section dependencies_sec Dependencies
  *
- * qlib2 ftp://quake.geo.berkeley.edu/pub/quanterra/ucb/
+ * Some library is needed to install and use \c libnmxp:
+ *
+ * \li \c qlib2: ftp://quake.geo.berkeley.edu/pub/quanterra/ucb/
+ * \li \c libmseed: http://www.iris.edu/manuals/
  *
  *
  * \section install_sec Installation
  *
- * ./configure
- * 
- * make
+ * Please, refer to the file \b README and \b INSTALL for more details.
  *
- * make install
+ * <tt>./configure</tt>
+ * 
+ * <tt>make</tt>
+ *
+ * <tt>make install</tt>
  *
  *
  * \section tools_sec Tools
  *
- * \subsection nmxp_pds nmxp_pds
+ * Inside the distribution are available two tools that are clients to interact respectively to \c NaqsServer and \c DataServer.
  *
- * This tool implements the <i>Nanometrics Private Data Stream Protocol 1.4</i> and permits to retrieve data in near-realtime.
- *  
- *
- * \subsection nmxp_dap nmxp_dap
- *
- * This tool implements the <i>Nanometrics Data Access Protocol 1.0</i> and permits to retrieve backward data.
+ * \li \c nmxp_pds: implements the <i>Nanometrics Private Data Stream Protocol 1.4</i> and permits to retrieve data in near-realtime.\n
+ * Please, refer to the \b README file or help <tt>nmxp_pds --help</tt>.
+ * \li \c nmxp_dap: implements the <i>Nanometrics Data Access Protocol 1.0</i> and permits to retrieve backward data.\n
+ * Please, refer to the \b README file or help <tt>nmxp_dap --help</tt>.
  *
  *
- * \section examples_sec Examples
+ * \subsection examples_sec Examples
  *
  * etc...
+ *
+ * \section license_sec License
+ *
+ * This library is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Library General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or (at your
+ * option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.
+ *
+ * See the GNU Library General Public License (GNU-LGPL) for more details.
+ * File \b COPYING inside this distribution.
+ * The GNU-LGPL and further information can be found here: http://www.gnu.org/
  *
  *
  * \section about_sec About
  *
- * Author:
- * 	Matteo Quintiliani - <i>Istituto Nazionale di Geofisica e Vulcanologia</i> - Italy - quintiliani@ingv.it
+ * Matteo Quintiliani - <i>Istituto Nazionale di Geofisica e Vulcanologia</i> - Italy - quintiliani@ingv.it
+ *
  */
+
 
 
 /*! \file
@@ -58,8 +92,8 @@
 #define NMXP_H 1
 
 #include "nmxp_base.h"
+#include "nmxp_crc32.h"
 
-#include <stdio.h>
 
 
 /*! \brief Flag for buffered packets */
