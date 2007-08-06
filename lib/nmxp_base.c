@@ -25,6 +25,7 @@
 #include <unistd.h>
 
 #include <qlib2.h>
+#include <libmseed.h>
 
 
 int nmxp_openSocket(char *hostname, int portNum)
@@ -243,7 +244,7 @@ NMXP_DATA_PROCESS *nmxp_processDecompressedDataFunc(char* buffer_data, int lengt
   if ( pKey != netInt ) { swap = 1; }
 
   memcpy(&pTime, &buffer_data[4], 8);
-  if ( swap ) { swab8(&pTime); }
+  if ( swap ) { nmxp_data_swap_8b((int64_t *) &pTime); }
 
   memcpy(&netInt, &buffer_data[12], 4);
   pNSamp = ntohl(netInt);
@@ -334,8 +335,9 @@ NMXP_DATA_PROCESS *nmxp_processCompressedDataFunc(char* buffer_data, int length_
 	int nout, i, k;
 	int prev_xn;
 
-	int my_order = get_my_wordorder();
-	nmxp_log(0, 1, "my_order is %d\n", my_order);
+	// TOREMOVE int my_order = get_my_wordorder();
+	int my_host_is_bigendian = ms_bigendianhost();
+	nmxp_log(0, 1, "my_host_is_bigendian %d\n", my_host_is_bigendian);
 
 	memcpy(&nmx_oldest_sequence_number, buffer_data, 4);
 	nmxp_log(0, 1, "Oldest sequence number = %d\n", nmx_oldest_sequence_number);
@@ -365,13 +367,14 @@ NMXP_DATA_PROCESS *nmxp_processCompressedDataFunc(char* buffer_data, int length_
 	    // nmxp_log(0, 1, "WARNING: changed nmx_x0, old value = %d\n",  nmx_x0);
 	    nmx_x0 -= high_scale_p;
 	}
-	if (my_order != SEED_LITTLE_ENDIAN) {
-	    swab4 ((int *)&nmx_seconds);
-	    swab2 (&nmx_ticks);
-	    swab2 (&nmx_instr_id);
-	    swab4 (&nmx_seqno);
+	/* TOREMOVE if (my_order != SEED_LITTLE_ENDIAN) { */
+	if (my_host_is_bigendian) {
+	    nmxp_data_swap_4b ((int *)&nmx_seconds);
+	    nmxp_data_swap_2b (&nmx_ticks);
+	    nmxp_data_swap_2b (&nmx_instr_id);
+	    nmxp_data_swap_4b (&nmx_seqno);
 	    nmx_x0 = nmx_x0 >> 8;
-	    swab4 (&nmx_x0);
+	    nmxp_data_swap_4b (&nmx_x0);
 	    nmx_x0 = nmx_x0 >> 8;
 	}
 	nmx_seconds_double = (double) nmx_seconds + ( (double) nmx_ticks / 10000.0 );

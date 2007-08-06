@@ -47,7 +47,8 @@ int nmxp_data_unpack_bundle (int *outdata, unsigned char *indata, int *prev)
 	//mtheo int i, j, k;
 	int i, j, k=0;
 	unsigned char cbits;
-	int my_order = get_my_wordorder();
+	/* TOREMOVE int my_order = get_my_wordorder(); */
+	int my_host_is_bigendian = ms_bigendianhost();
 
 	cbits = (unsigned char)indata[0];
 	if (cbits == 9) return (-1);
@@ -77,9 +78,10 @@ int nmxp_data_unpack_bundle (int *outdata, unsigned char *indata, int *prev)
 			case 2:       /* 2 16-bit diffs */
 				memcpy (&d2[0],indata,2);
 				memcpy (&d2[1],indata+2,2);
-				if (my_order != SEED_LITTLE_ENDIAN) {
-					swab2 (&d2[0]);
-					swab2 (&d2[1]);
+				/* TOREMOVE if (my_order != SEED_LITTLE_ENDIAN) { */
+				if (my_host_is_bigendian) {
+					nmxp_data_swap_2b (&d2[0]);
+					nmxp_data_swap_2b (&d2[1]);
 				}
 				d4[0] = d2[0];
 				d4[1] = d2[1];
@@ -87,8 +89,9 @@ int nmxp_data_unpack_bundle (int *outdata, unsigned char *indata, int *prev)
 				break;
 			case 3:       /* 1 32-bit diff */
 				memcpy (&d4[0],indata,4);
-				if (my_order != SEED_LITTLE_ENDIAN) {
-					swab4 (&d4[0]);
+				/* TOREMOVE if (my_order != SEED_LITTLE_ENDIAN) { */
+				if (my_host_is_bigendian) {
+					nmxp_data_swap_4b (&d4[0]);
 				}
 				k=1;
 				break;
@@ -138,10 +141,17 @@ void nmxp_data_ext_time_to_str(char *s, EXT_TIME et) {
 
 int nmxp_data_log(NMXP_DATA_PROCESS *pd) {
 
+    /*
     INT_TIME int_time_start, int_time_end;
     EXT_TIME ext_time_start, ext_time_end;
+    */
     char str_start[200], str_end[200];
+
+    str_start[0] = 0;
+    str_end[0] = 0;
     
+
+    /* TODO avoiding to use qlib2
     int_time_start = nepoch_to_int(pd->time);
     int_time_end = nepoch_to_int(pd->time + ((double) pd->nSamp / (double) pd->sampRate));
 
@@ -150,19 +160,20 @@ int nmxp_data_log(NMXP_DATA_PROCESS *pd) {
 
     nmxp_data_ext_time_to_str(str_start, ext_time_start);
     nmxp_data_ext_time_to_str(str_end, ext_time_end);
+    */
 
-    // nmxp_log(0, 0, "%12d %5s.%3s (%10.4f - %10.4f) nsamp: %04d, srate: %03d, len: %04d [%d, %d] (%d, %d, %d, %d)\n",
+    nmxp_log(0, 0, "%12d %5s.%3s (%10.4f - %10.4f) nsamp: %04d, srate: %03d, len: %04d [%d, %d] (%d, %d, %d, %d)\n",
     // nmxp_log(0, 0, "%12d %5s.%3s (%10.4f - %10.4f) (%s - %s) nsamp: %04d, srate: %03d, len: %04d [%d, %d] (%d, %d, %d, %d)\n",
-    nmxp_log(0, 0, "%12d %5s.%3s (%s - %s) nsamp: %04d, srate: %03d, len: %04d [%d, %d] (%d, %d, %d, %d)\n",
+    // nmxp_log(0, 0, "%12d %5s.%3s (%s - %s) nsamp: %04d, srate: %03d, len: %04d [%d, %d] (%d, %d, %d, %d)\n",
 	    pd->key,
 	    (strlen(pd->station) == 0)? "XXXX" : pd->station,
 	    (strlen(pd->channel) == 0)? "XXX" : pd->channel,
-	    /*
 	    pd->time,
 	    pd->time + ((double) pd->nSamp / (double) pd->sampRate),
-	    */
+	    /*
 	    str_start,
 	    str_end,
+	    */
 	    pd->nSamp,
 	    pd->sampRate,
 	    pd->length,
@@ -180,6 +191,7 @@ int nmxp_data_seed_init(NMXP_DATA_SEED *data_seed) {
     data_seed->srcname[0] = 0;
     data_seed->outfile_mseed = NULL;
     data_seed->filename_mseed[0] = 0;
+    return 0;
 }
 
 /* Private function for writing mini-seed records */
@@ -239,3 +251,53 @@ int nmxp_data_msr_pack(NMXP_DATA_PROCESS *pd, NMXP_DATA_SEED *data_seed) {
 
     return ret;
 }
+
+
+
+void nmxp_data_swap_2b (int16_t *in) {
+    unsigned char *p = (unsigned char *)in;
+    unsigned char tmp;
+    tmp = *p;
+    *p = *(p+1);    
+    *(p+1) = tmp;
+}   
+
+
+void nmxp_data_swap_3b (unsigned char *in) {
+    unsigned char *p = (unsigned char *)in;
+    unsigned char tmp;
+    tmp = *p;
+    *p = *(p+2);    
+    *(p+2) = tmp;
+}   
+
+
+void nmxp_data_swap_4b (int32_t *in) {
+    unsigned char *p = (unsigned char *)in;
+    unsigned char tmp;
+    tmp = *p;
+    *p = *(p+3);
+    *(p+3) = tmp;
+    tmp = *(p+1);
+    *(p+1) = *(p+2);
+    *(p+2) = tmp;
+}
+
+
+void nmxp_data_swap_8b (int64_t *in) {
+    unsigned char *p = (unsigned char *)in;
+    unsigned char tmp;
+    tmp = *p;
+    *p = *(p+7);
+    *(p+7) = tmp;
+    tmp = *(p+1);
+    *(p+1) = *(p+6);
+    *(p+6) = tmp;
+    tmp = *(p+2);
+    *(p+2) = *(p+5);
+    *(p+5) = tmp;
+    tmp = *(p+3);
+    *(p+3) = *(p+4);
+    *(p+4) = tmp;
+}
+

@@ -18,14 +18,13 @@
  * moreover, you can use them to develop software to:
  * \li analyze data in realtime (waveforms, triggers, ...)
  * \li retrieve and convert on the fly data into the mini-SEED records
+ * \li feed SeedLink server
  *
  *
  * \section dependencies_sec Dependencies
  *
- * Some library is needed to install and use \c libnmxp:
+ * A library is needed to install and use \c libnmxp:
  *
- * \li \c qlib2: ftp://quake.geo.berkeley.edu/pub/quanterra/ucb/\n
- * Subroutine library for Quanterra data and MiniSEED data manipulation.
  * \li \c libmseed: http://www.iris.edu/manuals/\n
  * The Mini-SEED library. A C library framework for manipulating and managing SEED data records.\n
  * Author: Chad Trabant, <i>IRIS DMC</i>\n

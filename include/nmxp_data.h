@@ -165,5 +165,38 @@ int nmxp_data_seed_init(NMXP_DATA_SEED *data_seed);
  */
 int nmxp_data_msr_pack(NMXP_DATA_PROCESS *pd, NMXP_DATA_SEED *data_seed);
 
+
+/*! \brief Swap 2 bytes. 
+ *
+ * \param in Variable length 2 bytes.
+ *
+ * */
+void nmxp_data_swap_2b (int16_t *in);
+
+
+/*! \brief Swap 3 bytes. 
+ *
+ * \param in Variable length 3 bytes.
+ *
+ * */
+void nmxp_data_swap_3b (unsigned char *in);
+
+
+/*! \brief Swap 4 bytes. 
+ *
+ * \param in Variable length 4 bytes.
+ *
+ * */
+void nmxp_data_swap_4b (int32_t *in);
+
+
+/*! \brief Swap 8 bytes. 
+ *
+ * \param in Variable length 8 bytes.
+ *
+ * */
+void nmxp_data_swap_8b (int64_t *in);
+
+
 #endif
 
