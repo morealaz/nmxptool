@@ -10,7 +10,6 @@
  */
 
 #include "nmxp.h"
-#include "nmxp_crc32.h"
 
 #include <stdio.h>
 #include <stdlib.h>
