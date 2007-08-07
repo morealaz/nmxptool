@@ -14,9 +14,14 @@
 
 #include <stdint.h>
 #include <stdio.h>
+#include <time.h>
 
 /*! First 4 bytes of all messages. */
 #define NMX_SIGNATURE 0x7abcde0f
+
+/*! */
+#define NMXP_DATA_IS_LEAP(yr)     ( yr%400==0 || (yr%4==0 && yr%100!=0) )
+
 
 /*! \brief Defines the type for reason of shutdown */
 typedef enum {
@@ -145,6 +150,20 @@ int nmxp_data_unpack_bundle (int *outdata, unsigned char *indata, int *prev);
  *
  */
 int nmxp_data_log(NMXP_DATA_PROCESS *pd);
+
+
+/*! \brief Parse string and set value in ret_tm
+ *
+ *
+ */
+int nmxp_data_parse_date(const char *pstr_date, struct tm *ret_tm);
+
+
+/*! \brief Wrapper for timegm
+ *
+ *
+ */
+time_t nmxp_data_tm_to_time(struct tm *tm);
 
 
 /*! \brief Initialize a structure NMXP_DATA_SEED

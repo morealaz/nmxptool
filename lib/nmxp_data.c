@@ -15,7 +15,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
+#include <errno.h>
 
 #include <libmseed.h>
 
@@ -164,6 +164,229 @@ int nmxp_data_log(NMXP_DATA_PROCESS *pd) {
 	return 0;
 }
 
+
+int nmxp_data_parse_date(const char *pstr_date, struct tm *ret_tm) {
+/* Input formats: 
+ *     <date>,<time> | <date>
+ *
+ * where:
+ *     <date> = yyyy/mm/dd | yyy.jjj
+ *     <time> = hh:mm:ss | hh:mm
+ *
+ *     yyyy = year
+ *     mm   = month       (1-12)
+ *     dd   = day         (1-31)
+ *     jjj  = day-of-year (1-365)
+ *     hh   = hour        (0-23)
+ *     mm   = minute      (0-59)
+ *     ss   = second      (0-59)
+ */
+
+    int ret = 0;
+
+#define MAX_LENGTH_STR_MESSAGE 30
+    char str_date[MAX_LENGTH_STR_MESSAGE] = "NO DATE";
+
+#define MAX_LENGTH_ERR_MESSAGE 500
+    char err_message[MAX_LENGTH_ERR_MESSAGE] = "NO MESSAGE";
+
+    char *pEnd = NULL;
+    long int app;
+    int state;
+    int flag_finished = 0;
+
+    nmxp_log(0, 1, "Date to validate '%s'\n", pstr_date);
+	
+    strncpy(str_date, pstr_date, MAX_LENGTH_STR_MESSAGE);
+    pEnd = str_date;
+    app = strtol(str_date, &pEnd, 10);
+    state = 0;
+    if(  errno == EINVAL ||  errno == ERANGE ) {
+	nmxp_log(1, 0, "%s\n", strerror(errno));
+	ret = -1;
+    }
+
+    if(pEnd[0] != 0  &&  ret != -1) {
+	ret = 0;
+    } else {
+	strncpy(err_message, "Error parsing year!", MAX_LENGTH_ERR_MESSAGE);
+	ret = -1;
+    }
+
+    /* initialize ret_tm */
+    time_t time_now;
+    struct tm *tm_now;
+    time(&time_now);
+    tm_now = gmtime(&time_now);
+
+    ret_tm->tm_sec = 0 ;
+    ret_tm->tm_min = 0;
+    ret_tm->tm_hour = 0;
+    ret_tm->tm_mday = tm_now->tm_mday;
+    ret_tm->tm_mon = tm_now->tm_mon;
+    ret_tm->tm_year = tm_now->tm_year;
+    ret_tm->tm_wday = tm_now->tm_wday;
+    ret_tm->tm_yday = tm_now->tm_yday;
+    ret_tm->tm_isdst = tm_now->tm_isdst;
+    ret_tm->tm_gmtoff = tm_now->tm_gmtoff;
+
+    
+    /* loop for parsing by a finite state machine */
+    while( 
+	    !flag_finished
+	    && ret == 0
+	    &&  errno != EINVAL
+	    &&  errno != ERANGE
+	    ) {
+
+    nmxp_log(0, 1, "state=%d value=%d flag_finished=%d ret=%d pEnd[0]=%c [%d]  (%s)\n", state, app, flag_finished, ret, (pEnd[0]==0)? '_' : pEnd[0], pEnd[0], pEnd);
+
+	/* switch on state */
+	switch(state) {
+	    case 0: /* Parse year */
+		ret_tm->tm_year = app - 1900;
+		if(pEnd[0] == '/') {
+		    state = 1; /* Month */
+		} else if(pEnd[0] == '.') {
+		    state = 3; /* Julian Day */
+		} else {
+		    strncpy(err_message, "Wrong separator after year!", MAX_LENGTH_ERR_MESSAGE);
+		    ret = -1;
+		}
+		break;
+
+	    case 1: /* Parse month */
+		ret_tm->tm_mon = app - 1;
+		if(pEnd[0] == '/')
+		    state = 2; /* Day of month */
+		else {
+		    strncpy(err_message, "Wrong separator after month!", MAX_LENGTH_ERR_MESSAGE);
+		    ret = -1;
+		}
+		break;
+
+	    case 2: /* Parse day of month */
+		ret_tm->tm_mday = app;
+		if(pEnd[0] == 0) {
+		    flag_finished = 1;
+		} else if(pEnd[0] == ',') {
+		    state = 4; /* Hour */
+		} else {
+			strncpy(err_message, "Wrong separator after day of month!", MAX_LENGTH_ERR_MESSAGE);
+			ret = -1;
+		    }
+		break;
+
+	    case 3: /* Parse Julian Day */
+		ret_tm->tm_yday = app - 1;
+
+		int month_days[12] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+		int m, d, day_sum, jday=app;
+
+		if(NMXP_DATA_IS_LEAP(ret_tm->tm_year)) {
+		    month_days[1]++;
+		}
+
+		m=0;
+		day_sum = 0;
+		while(month_days[m] < (jday - day_sum)) {
+		    day_sum += month_days[m++];
+		}
+		d = jday-day_sum;
+
+		ret_tm->tm_mon = m;
+		ret_tm->tm_mday = d;
+
+		nmxp_log(0, 1, "Month %d Day %d\n", m, d);
+
+		if(pEnd[0] == 0) {
+		    flag_finished = 1;
+		} else if(pEnd[0] == ',') {
+		    state = 4; /* Hour */
+		} else {
+		    strncpy(err_message, "Wrong separator after julian day!", MAX_LENGTH_ERR_MESSAGE);
+		    ret = -1;
+		}
+		break;
+
+	    case 4: /* Parse hour */
+		ret_tm->tm_hour = app;
+		if(pEnd[0] == ':') {
+		    state = 5; /* Minute */
+		} else {
+		    strncpy(err_message, "Wrong separator after hour!", MAX_LENGTH_ERR_MESSAGE);
+		    ret = -1;
+		}
+		break;
+
+	    case 5: /* Parse minute */
+		ret_tm->tm_min = app;
+		if(pEnd[0] == 0) {
+		    flag_finished = 1;
+		} else if(pEnd[0] == ':') {
+		    state = 6; /* Second */
+		} else {
+		    strncpy(err_message, "Wrong separator after minute!", MAX_LENGTH_ERR_MESSAGE);
+		    ret = -1;
+		}
+		break;
+
+	    case 6: /* Parse second */
+		ret_tm->tm_sec = app;
+		if(pEnd[0] == 0) {
+		    flag_finished = 1;
+		} else {
+		    strncpy(err_message, "Error parsing after second!", MAX_LENGTH_ERR_MESSAGE);
+		    ret = -1;
+		}
+		break;
+
+	    default : /* NOT DEFINED */
+		snprintf(err_message, MAX_LENGTH_ERR_MESSAGE, "State %d not defined!", state);
+		ret = -1;
+		break;
+	}
+	if(pEnd[0] != 0  && !flag_finished  &&  ret == 0) {
+	    pEnd[0] = ' '; /* overwrite separator with space */
+	    app = strtol(pEnd, &pEnd, 10);
+	    if(  errno == EINVAL ||  errno == ERANGE ) {
+		nmxp_log(1, 0, "%s\n", strerror(errno));
+		ret = -1;
+	    }
+	}
+    }
+
+    nmxp_log(0, 1, "FINAL: state=%d value=%d flag_finished=%d ret=%d pEnd[0]=%c [%d]  (%s)\n", state, app, flag_finished, ret, (pEnd[0]==0)? '_' : pEnd[0], pEnd[0], pEnd);
+
+    if(!flag_finished && (ret == 0)) {
+	strncpy(err_message, "Date incomplete!", MAX_LENGTH_ERR_MESSAGE);
+	ret = -1;
+    }
+
+    if(ret == -1) {
+	nmxp_log(1, 0, "in date '%s' %s\n", pstr_date, err_message);
+    } else {
+	nmxp_log(0, 1, "Date '%s' has been validate! %04d/%02d/%02d %02d:%02d:%02d\n",
+		pstr_date,
+		ret_tm->tm_year,
+		ret_tm->tm_mon,
+		ret_tm->tm_mday,
+		ret_tm->tm_hour,
+		ret_tm->tm_min,
+		ret_tm->tm_sec
+		);
+    }
+
+    return ret;
+}
+
+time_t nmxp_data_tm_to_time(struct tm *tm) {
+    time_t ret_t = 0;
+    
+    ret_t = timegm(tm);
+
+    return ret_t;
+}
 int nmxp_data_seed_init(NMXP_DATA_SEED *data_seed) {
     data_seed->srcname[0] = 0;
     data_seed->outfile_mseed = NULL;
