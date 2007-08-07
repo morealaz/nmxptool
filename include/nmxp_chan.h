@@ -109,5 +109,13 @@ void nmxp_chan_sortByKey(NMXP_CHAN_LIST *channelList);
  */
 void nmxp_chan_sortByName(NMXP_CHAN_LIST *channelList);
 
+
+/*! Print channel information
+ *
+ * \param channelList Channel List
+ *
+ */
+void nmxp_chan_print_channelList(NMXP_CHAN_LIST *channelList);
+
 #endif
 

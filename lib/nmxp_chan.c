@@ -140,3 +140,16 @@ void nmxp_chan_sortByName(NMXP_CHAN_LIST *channelList) {
     qsort (channelList->channel, channelList->number, sizeof (NMXP_CHAN_KEY), chan_name_compare);
 }
 
+void nmxp_chan_print_channelList(NMXP_CHAN_LIST *channelList) {
+    int chan_number = channelList->number;
+    int i_chan = 0;
+
+    nmxp_log(0, 0, "%04d channels:\n", chan_number);
+
+    for (i_chan = 0; i_chan < chan_number; i_chan++)
+    {
+	nmxp_log(0, 0, "%04d %12d %s\n", i_chan+1, channelList->channel[i_chan].key, channelList->channel[i_chan].name);
+    }
+
+}
+
