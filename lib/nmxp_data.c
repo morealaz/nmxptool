@@ -156,15 +156,17 @@ int nmxp_data_log(NMXP_DATA_PROCESS *pd) {
     nmxp_data_to_str(str_start, pd->time);
     nmxp_data_to_str(str_end, pd->time + ((double) pd->nSamp / (double) pd->sampRate));
 
-    latency = (pd->time + ((double) pd->nSamp / (double) pd->sampRate)) - (double) time_now;
+    latency = (pd->time + ((double) pd->nSamp / (double) pd->sampRate)) - ((double) time_now);
 
-    nmxp_log(0, 0, "%12d %5s.%3s rate=%03d (%s - %s) [%d, %d] pts=%04d (%d, %d, %d, %d) lat=%.1f len=%d\n",
+    // nmxp_log(0, 0, "%12d %5s.%3s rate=%03d (%s - %s) [%d, %d] pts=%04d (%d, %d, %d, %d) lat=%.1f len=%d\n",
+    printf("%10d %5s.%3s rate=%03d (%s - %s) lat=%.1fs [%d, %d] pts=%04d (%d, %d, %d, %d) len=%d\n",
 	    pd->key,
 	    (strlen(pd->station) == 0)? "XXXX" : pd->station,
 	    (strlen(pd->channel) == 0)? "XXX" : pd->channel,
 	    pd->sampRate,
 	    str_start,
 	    str_end,
+	    latency,
 	    pd->packet_type,
 	    pd->seq_no,
 	    pd->nSamp,
@@ -172,7 +174,6 @@ int nmxp_data_log(NMXP_DATA_PROCESS *pd) {
 	    (pd->pDataPtr == NULL)? 0 : pd->pDataPtr[0],
 	    (pd->pDataPtr == NULL || pd->nSamp < 1)? 0 : pd->pDataPtr[pd->nSamp-1],
 	    (pd->pDataPtr == NULL || pd->nSamp < 1)? 0 : pd->pDataPtr[pd->nSamp],
-	    latency,
 	    pd->length
 	    );
 	return 0;
