@@ -166,9 +166,6 @@ int nmxp_data_parse_date(const char *pstr_date, struct tm *ret_tm);
 time_t nmxp_data_tm_to_time(struct tm *tm);
 
 
-/* THIS DO NOT WORK ;-) */
-#ifdef HAVE_LIBMSEED
-
 /*! \brief Initialize a structure NMXP_DATA_SEED
  *
  *  \param data_seed Pointer to a NMXP_DATA_SEED structure.
@@ -186,8 +183,6 @@ int nmxp_data_seed_init(NMXP_DATA_SEED *data_seed);
  *
  */
 int nmxp_data_msr_pack(NMXP_DATA_PROCESS *pd, NMXP_DATA_SEED *data_seed);
-
-#endif
 
 
 /*! \brief Swap 2 bytes. 
