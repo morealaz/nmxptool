@@ -159,8 +159,9 @@ int nmxp_data_log(NMXP_DATA_PROCESS *pd) {
     latency = (pd->time + ((double) pd->nSamp / (double) pd->sampRate)) - ((double) time_now);
 
     // nmxp_log(0, 0, "%12d %5s.%3s rate=%03d (%s - %s) [%d, %d] pts=%04d (%d, %d, %d, %d) lat=%.1f len=%d\n",
-    printf("%10d %5s.%3s rate=%03d (%s - %s) lat=%.1fs [%d, %d] pts=%04d (%d, %d, %d, %d) len=%d\n",
-	    pd->key,
+    // printf("%10d %5s.%3s 03dHz (%s - %s) lat=%.1fs [%d, %d] pts=%04d (%d, %d, %d, %d) len=%d\n",
+    printf("%5s.%3s %03dHz (%s - %s) lat=%.1fs [%d, %d] pts=%04d (%d, %d, %d, %d) %d\n",
+	    /* pd->key, */
 	    (strlen(pd->station) == 0)? "XXXX" : pd->station,
 	    (strlen(pd->channel) == 0)? "XXX" : pd->channel,
 	    pd->sampRate,
