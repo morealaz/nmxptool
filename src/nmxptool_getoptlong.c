@@ -338,13 +338,8 @@ int nmxptool_check_params(NMXPTOOL_PARAMS *params) {
     } else if(params->channels == NULL) {
 	ret = -1;
 	printf("<STA.CHAN> is required!\n");
-    } else if(params->start_time == 0) {
-	ret = -1;
-	printf("<start_time> is required!\n");
-    } else if(params->end_time == 0) {
-	ret = -1;
-	printf("<end_time> is required!\n");
-    } else if (params->start_time >= params->end_time) {
+    } else if(params->start_time != 0   &&   params->end_time != 0
+	    && params->start_time >= params->end_time) {
 	ret = -1;
 	printf("<start_time> is less than <end_time>!\n");
     }
