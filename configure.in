@@ -1,0 +1,68 @@
+#                                               -*- Autoconf -*-
+# Process this file with autoconf to produce a configure script.
+
+AC_PREREQ(2.61)
+
+dnl Name your program here
+m4_define([full_package_name], [nmxptool])
+
+dnl These three define the plug-in version number
+m4_define([major_version], [0])
+m4_define([minor_version], [3])
+m4_define([micro_version], [0])
+
+m4_define([version],
+	            [major_version.minor_version.micro_version])
+
+m4_define([bug_report_address], [quintiliani@ingv.it])
+
+# AC_INIT(FULL_PACKAGE_NAME, VERSION, BUG_REPORT_ADDRESS)
+AC_INIT([full_package_name], [version], [bug_report_address])
+AC_CONFIG_SRCDIR([src/nmxptool.c])
+AC_CONFIG_HEADER([config.h])
+
+#mtheo
+# AM_INIT_AUTOMAKE(FULL_PACKAGE_NAME,VERSION)
+AM_INIT_AUTOMAKE([full_package_name], [version])
+
+# Checks for programs.
+AC_PROG_CC
+
+# Checks for libraries.
+# AC_CHECK_LIB([mseed], [msr_init], [], [AC_MSG_ERROR([library mseed is not installed!])])
+AC_CHECK_LIB([mseed], [msr_init], [], [AC_MSG_WARN([
+                    Library libmseed not found!
+                    Capability about management of mini-SEED will not available!
+	])])
+AC_CHECK_LIB([nmxp], [nmxp_openSocket], [], [AC_MSG_ERROR([library nmxp is not installed!])])
+
+
+# Checks for header files.
+AC_HEADER_STDC
+AC_CHECK_HEADERS([stdint.h stdlib.h string.h])
+AC_CHECK_HEADER(libmseed.h, [], [AC_MSG_WARN([
+                    Header file <libmseed.h> not found!
+                    Capability about management of mini-SEED will not available!
+	])])
+AC_CHECK_HEADER(nmxp.h, [], [AC_MSG_ERROR([header file <nmxp.h> is required])])
+
+
+# Checks for files.
+# TODO optional
+AC_CHECK_FILES([./src/seedlink_plugin.c ./src/seedlink_plugin.h], [], AC_MSG_ERROR([seedlink plug-in sources not found!]))
+
+
+# Checks for typedefs, structures, and compiler characteristics.
+AC_C_CONST
+AC_TYPE_INT32_T
+AC_TYPE_SIZE_T
+AC_TYPE_SSIZE_T
+AC_STRUCT_TM
+AC_TYPE_UINT32_T
+
+# Checks for library functions.
+AC_CHECK_FUNCS([memset strchr strdup])
+
+AC_CONFIG_FILES([Makefile
+                 src/Makefile])
+AC_OUTPUT

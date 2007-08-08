@@ -1,0 +1,319 @@
+#include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
+
+#include "config.h"
+#include "nmxp.h"
+
+#include "nmxptool_getoptlong.h"
+
+
+const NMXP_DAP_PARAMS NMXP_DAP_PARAMS_DEFAULT =
+{
+    NULL,
+    28002,
+    28000,
+    NULL,
+    NULL,
+    NULL,
+    0,
+    0,
+    NULL,
+    NULL,
+    0,
+    0,
+    0,
+    0,
+    0
+};
+
+void nmxptool_usage(struct option long_options[])
+{
+    printf("\
+%s %s, Nanometrics Data Access Protocol 1.0 tool\n\n\
+Usage: %s -H hostname -C channellist -s date -e date [...]\n\
+       %s -H hostname --listchannels [...]\n\
+\n\
+Required arguments:\n\
+  -H, --hostname=HOST     Nanometrics hostname.\n\
+  -C, --channels=LIST     Channel list STA1.CHAN1,STA2.CHAN2,...\n\
+  -s, --start_time=DATE   Start time in date format.\n\
+  -e, --end_time=DATE     End time in date format.\n\
+\n\
+                          DATE can be in formats:\n\
+                              <date>,<time> | <date>\n\
+                          where:\n\
+                              <date> = yyyy/mm/dd | yyy.jjj\n\
+                              <time> = hh:mm:ss | hh:mm\n\
+\n\
+Optional arguments:\n\
+  -P, --portpds=PORT      NaqsServer port number (default 28000).\n\
+  -D, --portdap=PORT      DataServer port number (default 28002).\n\
+  -N, --network=NET       Network code for writing file (default %s).\n\
+  -L, --location=LOC      Location code for writing file.\n\
+  -u, --username=USER     DataServer username.\n\
+  -p, --password=PASS     DataServer password.\n\
+\n\
+Flags:\n\
+  -v, --verbose           Be verbose.\n\
+  -q, --quiet             Quiet (almost no output).\n\
+  -l, --listchannels      Output list of channel available on NaqsServer.\n",
+	    PACKAGE_NAME, PACKAGE_VERSION,
+	    PACKAGE_NAME,
+	    PACKAGE_NAME,
+	    DEFAULT_NETWORK
+		);
+
+#ifdef HAVE_LIBMSEED
+    printf("\
+  -m, --writeseed         Pack received data in Mini-SEED records and append to a file.\n");
+#endif
+
+    printf("\
+  -w, --writefile         Write received data to a file.\n");
+
+#ifdef HAVE___SRC_PLUGIN_C
+    printf("\
+  -k, --seedlink          Send received data to SeedLink (SL-plugin).\n");
+#endif
+
+    printf("\n\
+  -h, --help              Print this help.\n\
+\n\
+Mail bug reports and suggestions to <%s>.\n",
+	    PACKAGE_BUGREPORT
+	    );
+
+    /*
+    if(long_options) {
+	int i=0;
+	while(long_options[i].name) {
+	    printf("%s %d %d %d %c\n", long_options[i].name, long_options[i].has_arg, (long_options[i].flag)? *(long_options[i].flag) : 0, long_options[i].val, long_options[i].val);
+	    i++;
+	}
+    }
+    */
+}
+
+
+int nmxptool_getopt_long(int argc, char **argv, NMXP_DAP_PARAMS *params)
+{
+    struct option long_options[] =
+    {
+	/* These options set a flag. */
+	/* It is not safe use reference to params in this way */
+	/* {"verbose",        no_argument,       &(params->flag_verbose), 1}, */
+	/* {"quiet",          no_argument,       &(params->flag_verbose), 0}, */
+	/* These options don't set a flag.
+	 *                   We distinguish them by their indices. */
+	{"hostname",     required_argument, 0, 'H'},
+	{"portpds",      required_argument, 0, 'P'},
+	{"portdap",      required_argument, 0, 'D'},
+	{"channels",     required_argument, 0, 'C'},
+	{"network",      required_argument, 0, 'N'},
+	{"location",     required_argument, 0, 'L'},
+	{"start_time",   required_argument, 0, 's'},
+	{"end_time",     required_argument, 0, 'e'},
+	{"username",     required_argument, 0, 'u'},
+	{"password",     required_argument, 0, 'p'},
+	/* Following are flags */
+	{"verbose",      no_argument,       0, 'v'},
+	{"quiet",        no_argument,       0, 'q'},
+	{"listchannels", no_argument,       0, 'l'},
+#ifdef HAVE_LIBMSEED
+	{"writeseed",    no_argument,       0, 'm'},
+#endif
+	{"writefile",    no_argument,       0, 'w'},
+#ifdef HAVE___SRC_PLUGIN_C
+	{"seedlink",     no_argument,       0, 'k'},
+#endif
+	{"help",         no_argument,       0, 'h'},
+	{0, 0, 0, 0}
+    };
+
+    int ret_errors = 0;
+
+    struct tm tmp_tm;
+    int i;
+    char one_time_option[255];
+
+    int c;
+
+
+    /* getopt_long stores the option index here. */
+    int option_index = 0;
+
+    /* init array for checking one time option */
+    for(i=0; i<255; i++) {
+	one_time_option[i] = 0;
+    }
+
+
+    /* init params */
+    memcpy(params, &NMXP_DAP_PARAMS_DEFAULT, sizeof(NMXP_DAP_PARAMS_DEFAULT));
+
+    char optstr[100] = "H:P:D:C:N:L:s:e:u:p:vqlwh";
+
+#ifdef HAVE_LIBMSEED
+    strcat(optstr, "m");
+#endif
+
+#ifdef HAVE___SRC_PLUGIN_C
+    strcat(optstr, "k");
+#endif
+
+    while ( (c = getopt_long (argc, argv, optstr, long_options, &option_index)) != -1) {
+
+	/* BE CAREFUL if use synonym options !!! */
+	one_time_option[c]++;
+
+	if(one_time_option[c] > 1) {
+	    ret_errors++;
+	    printf ("Replicated option -%c (value %d)\n", c, atoi(optarg));
+	} else {
+	    switch (c)
+	    {
+		case 0:
+		    /* If this option set a flag, do nothing else now. */
+		    if (long_options[option_index].flag != 0)
+			break;
+		    printf ("option %s", long_options[option_index].name);
+		    if (optarg)
+			printf (" with arg %s", optarg);
+		    printf ("\n");
+		    break;
+
+		case 'H':
+		    params->hostname = optarg;
+		    break;
+
+		case 'P':
+		    params->portnumberpds = atoi(optarg);
+		    break;
+
+		case 'D':
+		    params->portnumberdap = atoi(optarg);
+		    break;
+
+		case 'C':
+		    params->channels = optarg;
+		    break;
+
+		case 'N':
+		    params->network = optarg;
+		    break;
+
+		case 'L':
+		    params->location = optarg;
+		    break;
+
+		case 's':
+		    if(nmxp_data_parse_date(optarg, &tmp_tm) == -1) {
+			// MESSAGE ERROR
+		    } else {
+			params->start_time = nmxp_data_tm_to_time(&tmp_tm);
+		    }
+		    break;
+
+		case 'e':
+		    if(nmxp_data_parse_date(optarg, &tmp_tm) == -1) {
+			// MESSAGE ERROR
+		    } else {
+			params->end_time = nmxp_data_tm_to_time(&tmp_tm);
+		    }
+		    break;
+
+		case 'u':
+		    params->datas_username = optarg;
+		    break;
+
+		case 'p':
+		    params->datas_password = optarg;
+		    break;
+
+		case 'v':
+		    params->flag_verbose = 1;
+		    break;
+
+		case 'q':
+		    params->flag_verbose = 0;
+		    break;
+
+		case 'l':
+		    params->flag_listchannels = 1;
+		    break;
+
+#ifdef HAVE_LIBMSEED
+		case 'm':
+		    params->flag_writeseed = 1;
+		    break;
+#endif
+
+		case 'w':
+		    params->flag_writefile = 1;
+		    break;
+
+#ifdef HAVE___SRC_PLUGIN_C
+		case 'k':
+		    params->flag_writeseedlink = 1;
+		    break;
+#endif
+
+		case 'h':
+		    nmxptool_usage(long_options);
+		    exit (1);
+		    break;
+
+		case '?':
+		    /* getopt_long already printed an error message. */
+		    ret_errors++;
+		    break;
+
+		default:
+		    nmxptool_usage(long_options);
+		    exit (1);
+	    }
+	}
+    }
+
+    /* Print any remaining command line arguments (not options). */
+    if (optind < argc)
+    {
+	ret_errors += optind;
+
+	printf ("non-option ARGV-elements: ");
+	while (optind < argc)
+	    printf ("%s ", argv[optind++]);
+	putchar ('\n');
+    }
+
+    return ret_errors;
+}
+
+
+int nmxptool_check_params(NMXP_DAP_PARAMS *params) {
+    int ret = 0;
+
+    if(params->hostname == NULL) {
+	ret = -1;
+	printf("<hostname> is required!\n");
+    } else if(params->flag_listchannels) {
+	/* Do nothing */
+    } else if(params->hostname == NULL) {
+	ret = -1;
+	printf("<hostname> is required!\n");
+    } else if(params->channels == NULL) {
+	ret = -1;
+	printf("<STA.CHAN> is required!\n");
+    } else if(params->start_time == 0) {
+	ret = -1;
+	printf("<start_time> is required!\n");
+    } else if(params->end_time == 0) {
+	ret = -1;
+	printf("<end_time> is required!\n");
+    } else if (params->start_time >= params->end_time) {
+	ret = -1;
+	printf("<start_time> is less than <end_time>!\n");
+    }
+    return ret;
+}
