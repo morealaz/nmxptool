@@ -166,6 +166,9 @@ int nmxp_data_parse_date(const char *pstr_date, struct tm *ret_tm);
 time_t nmxp_data_tm_to_time(struct tm *tm);
 
 
+/* THIS DO NOT WORK ;-) */
+#ifdef HAVE_LIBMSEED
+
 /*! \brief Initialize a structure NMXP_DATA_SEED
  *
  *  \param data_seed Pointer to a NMXP_DATA_SEED structure.
@@ -184,12 +187,14 @@ int nmxp_data_seed_init(NMXP_DATA_SEED *data_seed);
  */
 int nmxp_data_msr_pack(NMXP_DATA_PROCESS *pd, NMXP_DATA_SEED *data_seed);
 
+#endif
+
 
 /*! \brief Swap 2 bytes. 
  *
  * \param in Variable length 2 bytes.
  *
- * */
+ */
 void nmxp_data_swap_2b (int16_t *in);
 
 
@@ -197,7 +202,7 @@ void nmxp_data_swap_2b (int16_t *in);
  *
  * \param in Variable length 3 bytes.
  *
- * */
+ */
 void nmxp_data_swap_3b (unsigned char *in);
 
 
@@ -205,7 +210,7 @@ void nmxp_data_swap_3b (unsigned char *in);
  *
  * \param in Variable length 4 bytes.
  *
- * */
+ */
 void nmxp_data_swap_4b (int32_t *in);
 
 
@@ -213,8 +218,19 @@ void nmxp_data_swap_4b (int32_t *in);
  *
  * \param in Variable length 8 bytes.
  *
- * */
+ */
 void nmxp_data_swap_8b (int64_t *in);
+
+
+/*! \brief Determine the byte order of the host machine. 
+ *  Due to the lack of portable defines to determine host byte order this
+ *  run-time test is provided.  The code below actually tests for
+ *  little-endianess, the only other alternative is assumed to be big endian.
+ *
+ *  \retval 0 if the host is little endian.
+ *  \retval 1 otherwise.
+ */
+int nmxp_data_bigendianhost ();
 
 
 #endif

@@ -24,7 +24,11 @@
 #include <time.h>
 #include <unistd.h>
 
+#include "config.h"
+
+#ifdef HAVE_LIBMSEED
 #include <libmseed.h>
+#endif
 
 
 int nmxp_openSocket(char *hostname, int portNum)
@@ -335,7 +339,7 @@ NMXP_DATA_PROCESS *nmxp_processCompressedDataFunc(char* buffer_data, int length_
 	int prev_xn;
 
 	// TOREMOVE int my_order = get_my_wordorder();
-	int my_host_is_bigendian = ms_bigendianhost();
+	int my_host_is_bigendian = nmxp_data_bigendianhost();
 	nmxp_log(0, 1, "my_host_is_bigendian %d\n", my_host_is_bigendian);
 
 	memcpy(&nmx_oldest_sequence_number, buffer_data, 4);

@@ -17,7 +17,11 @@
 #include <string.h>
 #include <errno.h>
 
+#include "config.h"
+
+#ifdef HAVE_LIBMSEED
 #include <libmseed.h>
+#endif
 
 
 int nmxp_data_init(NMXP_DATA_PROCESS *pd) {
@@ -48,7 +52,7 @@ int nmxp_data_unpack_bundle (int *outdata, unsigned char *indata, int *prev)
 	int i, j, k=0;
 	unsigned char cbits;
 	/* TOREMOVE int my_order = get_my_wordorder(); */
-	int my_host_is_bigendian = ms_bigendianhost();
+	int my_host_is_bigendian = nmxp_data_bigendianhost();
 
 	cbits = (unsigned char)indata[0];
 	if (cbits == 9) return (-1);
@@ -394,6 +398,8 @@ int nmxp_data_seed_init(NMXP_DATA_SEED *data_seed) {
     return 0;
 }
 
+#ifdef HAVE_LIBMSEED
+
 /* Private function for writing mini-seed records */
     static void nmxp_data_msr_write_handler (char *record, int reclen, void *pdata_seed) {
 	NMXP_DATA_SEED *data_seed = pdata_seed;
@@ -405,6 +411,7 @@ int nmxp_data_seed_init(NMXP_DATA_SEED *data_seed) {
 		ms_log (2, "Error opening file %s\n", data_seed->filename_mseed);
 	}
     }
+
 
 int nmxp_data_msr_pack(NMXP_DATA_PROCESS *pd, NMXP_DATA_SEED *data_seed) {
     int ret =0;
@@ -432,7 +439,7 @@ int nmxp_data_msr_pack(NMXP_DATA_PROCESS *pd, NMXP_DATA_SEED *data_seed) {
     msr->encoding = DE_STEIM1;  /* Steim 1 compression */
     // TODO
     // msr->byteorder = 0;         /* big endian byte order */
-    msr->byteorder = ms_bigendianhost ();
+    msr->byteorder = nmxp_data_bigendianhost ();
 
     int sizetoallocate = sizeof(int) * (pd->nSamp + 1);
     msr->datasamples = malloc (sizetoallocate); 
@@ -452,6 +459,8 @@ int nmxp_data_msr_pack(NMXP_DATA_PROCESS *pd, NMXP_DATA_SEED *data_seed) {
 
     return ret;
 }
+
+#endif
 
 
 
@@ -502,3 +511,8 @@ void nmxp_data_swap_8b (int64_t *in) {
     *(p+4) = tmp;
 }
 
+
+int nmxp_data_bigendianhost () {
+    int16_t host = 1;
+    return !(*((int8_t *)(&host)));
+} 
