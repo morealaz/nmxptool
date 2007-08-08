@@ -269,7 +269,7 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 		    break;
 
 		case 'b':
-		    params->flag_buffered = 0;
+		    params->flag_buffered = 1;
 		    break;
 
 		case 'l':
