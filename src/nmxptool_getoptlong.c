@@ -8,11 +8,11 @@
 #include "nmxptool_getoptlong.h"
 
 
-const NMXP_DAP_PARAMS NMXP_DAP_PARAMS_DEFAULT =
+const NMXPTOOL_PARAMS NMXPTOOL_PARAMS_DEFAULT =
 {
     NULL,
-    28002,
-    28000,
+    DEFAULT_PORT_DAP,
+    DEFAULT_PORT_PDS,
     NULL,
     NULL,
     NULL,
@@ -20,6 +20,9 @@ const NMXP_DAP_PARAMS NMXP_DAP_PARAMS_DEFAULT =
     0,
     NULL,
     NULL,
+    DEFAULT_STC,
+    DEFAULT_RATE,
+    0,
     0,
     0,
     0,
@@ -30,38 +33,54 @@ const NMXP_DAP_PARAMS NMXP_DAP_PARAMS_DEFAULT =
 void nmxptool_usage(struct option long_options[])
 {
     printf("\
-%s %s, Nanometrics Data Access Protocol 1.0 tool\n\n\
-Usage: %s -H hostname -C channellist -s date -e date [...]\n\
-       %s -H hostname --listchannels [...]\n\
+%s %s, Nanometrics tool (Data Access Protocol 1.0, Private Data Stream 1.4)\n\n\
+Usage: %s -H hostname --listchannels [...]\n\
+             Receive list of available channels on the host\n\
 \n\
-Required arguments:\n\
+       %s -H hostname -C channellist [...]\n\
+             Receive data by PDS\n\
+\n\
+       %s -H hostname -C channellist -s DATE -e DATE [...]\n\
+             Receive data by DAP\n\
+\n\
+Arguments:\n\
   -H, --hostname=HOST     Nanometrics hostname.\n\
   -C, --channels=LIST     Channel list STA1.CHAN1,STA2.CHAN2,...\n\
-  -s, --start_time=DATE   Start time in date format.\n\
-  -e, --end_time=DATE     End time in date format.\n\
+  -s, --start_time=DATE   Start time in date format. ONLY DAP.\n\
+  -e, --end_time=DATE     End time in date format. ONLY DAP.\n\
 \n\
                           DATE can be in formats:\n\
                               <date>,<time> | <date>\n\
                           where:\n\
                               <date> = yyyy/mm/dd | yyy.jjj\n\
                               <time> = hh:mm:ss | hh:mm\n\
-\n\
+\n",
+	    PACKAGE_NAME, PACKAGE_VERSION,
+	    PACKAGE_NAME,
+	    PACKAGE_NAME,
+	    PACKAGE_NAME
+    );
+
+    printf("\
 Optional arguments:\n\
-  -P, --portpds=PORT      NaqsServer port number (default 28000).\n\
-  -D, --portdap=PORT      DataServer port number (default 28002).\n\
+  -P, --portpds=PORT      NaqsServer port number (default %d).\n\
+  -D, --portdap=PORT      DataServer port number (default %d).\n\
   -N, --network=NET       Network code for writing file (default %s).\n\
   -L, --location=LOC      Location code for writing file.\n\
-  -u, --username=USER     DataServer username.\n\
-  -p, --password=PASS     DataServer password.\n\
+  -S, --stc=SECs          Short-term-completion  (default %d secs). ONLY PDS.\n\
+  -R, --rate=HZ           Receive decompressed data with specified sample rate. ONLY PDS.\n\
+  -u, --username=USER     DataServer username. ONLY DAP.\n\
+  -p, --password=PASS     DataServer password. ONLY DAP.\n\
 \n\
 Flags:\n\
   -v, --verbose           Be verbose.\n\
   -q, --quiet             Quiet (almost no output).\n\
+  -b, --buffered          Receive recent packets into the past. ONLY PDS.\n\
   -l, --listchannels      Output list of channel available on NaqsServer.\n",
-	    PACKAGE_NAME, PACKAGE_VERSION,
-	    PACKAGE_NAME,
-	    PACKAGE_NAME,
-	    DEFAULT_NETWORK
+	    DEFAULT_PORT_PDS,
+	    DEFAULT_PORT_DAP,
+	    DEFAULT_NETWORK,
+	    DEFAULT_STC
 		);
 
 #ifdef HAVE_LIBMSEED
@@ -72,11 +91,10 @@ Flags:\n\
     printf("\
   -w, --writefile         Write received data to a file.\n");
 
-#ifdef HAVE___SRC_PLUGIN_C
+#ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
     printf("\
   -k, --seedlink          Send received data to SeedLink (SL-plugin).\n");
 #endif
-
     printf("\n\
   -h, --help              Print this help.\n\
 \n\
@@ -96,7 +114,7 @@ Mail bug reports and suggestions to <%s>.\n",
 }
 
 
-int nmxptool_getopt_long(int argc, char **argv, NMXP_DAP_PARAMS *params)
+int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 {
     struct option long_options[] =
     {
@@ -112,6 +130,8 @@ int nmxptool_getopt_long(int argc, char **argv, NMXP_DAP_PARAMS *params)
 	{"channels",     required_argument, 0, 'C'},
 	{"network",      required_argument, 0, 'N'},
 	{"location",     required_argument, 0, 'L'},
+	{"stc",          required_argument, 0, 'S'},
+	{"rate",         required_argument, 0, 'R'},
 	{"start_time",   required_argument, 0, 's'},
 	{"end_time",     required_argument, 0, 'e'},
 	{"username",     required_argument, 0, 'u'},
@@ -119,12 +139,13 @@ int nmxptool_getopt_long(int argc, char **argv, NMXP_DAP_PARAMS *params)
 	/* Following are flags */
 	{"verbose",      no_argument,       0, 'v'},
 	{"quiet",        no_argument,       0, 'q'},
+	{"buffered",     no_argument,       0, 'b'},
 	{"listchannels", no_argument,       0, 'l'},
 #ifdef HAVE_LIBMSEED
 	{"writeseed",    no_argument,       0, 'm'},
 #endif
 	{"writefile",    no_argument,       0, 'w'},
-#ifdef HAVE___SRC_PLUGIN_C
+#ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
 	{"seedlink",     no_argument,       0, 'k'},
 #endif
 	{"help",         no_argument,       0, 'h'},
@@ -150,15 +171,15 @@ int nmxptool_getopt_long(int argc, char **argv, NMXP_DAP_PARAMS *params)
 
 
     /* init params */
-    memcpy(params, &NMXP_DAP_PARAMS_DEFAULT, sizeof(NMXP_DAP_PARAMS_DEFAULT));
+    memcpy(params, &NMXPTOOL_PARAMS_DEFAULT, sizeof(NMXPTOOL_PARAMS_DEFAULT));
 
-    char optstr[100] = "H:P:D:C:N:L:s:e:u:p:vqlwh";
+    char optstr[100] = "H:P:D:C:N:L:S:R:s:e:u:p:vqblwh";
 
 #ifdef HAVE_LIBMSEED
     strcat(optstr, "m");
 #endif
 
-#ifdef HAVE___SRC_PLUGIN_C
+#ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
     strcat(optstr, "k");
 #endif
 
@@ -207,6 +228,14 @@ int nmxptool_getopt_long(int argc, char **argv, NMXP_DAP_PARAMS *params)
 		    params->location = optarg;
 		    break;
 
+		case 'S':
+		    params->stc = atoi(optarg);
+		    break;
+
+		case 'R':
+		    params->rate = atoi(optarg);
+		    break;
+
 		case 's':
 		    if(nmxp_data_parse_date(optarg, &tmp_tm) == -1) {
 			// MESSAGE ERROR
@@ -239,6 +268,10 @@ int nmxptool_getopt_long(int argc, char **argv, NMXP_DAP_PARAMS *params)
 		    params->flag_verbose = 0;
 		    break;
 
+		case 'b':
+		    params->flag_buffered = 0;
+		    break;
+
 		case 'l':
 		    params->flag_listchannels = 1;
 		    break;
@@ -253,7 +286,7 @@ int nmxptool_getopt_long(int argc, char **argv, NMXP_DAP_PARAMS *params)
 		    params->flag_writefile = 1;
 		    break;
 
-#ifdef HAVE___SRC_PLUGIN_C
+#ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
 		case 'k':
 		    params->flag_writeseedlink = 1;
 		    break;
@@ -291,7 +324,7 @@ int nmxptool_getopt_long(int argc, char **argv, NMXP_DAP_PARAMS *params)
 }
 
 
-int nmxptool_check_params(NMXP_DAP_PARAMS *params) {
+int nmxptool_check_params(NMXPTOOL_PARAMS *params) {
     int ret = 0;
 
     if(params->hostname == NULL) {

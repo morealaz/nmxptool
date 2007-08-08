@@ -8,8 +8,8 @@
 
 #include "config.h"
 
-#ifdef HAVE___SRC_PLUGIN_H
-#include "plugin.h"
+#ifdef HAVE___SRC_SEEDLINK_PLUGIN_H
+#include "seedlink_plugin.h"
 #endif
 
 
@@ -32,7 +32,7 @@ int main (int argc, char **argv) {
 
     NMXP_DATA_PROCESS *pd;
 
-    NMXP_DAP_PARAMS params;
+    NMXPTOOL_PARAMS params;
 
 #ifdef HAVE_LIBMSEED
     /* Mini-SEED variables */
@@ -185,7 +185,7 @@ int main (int argc, char **argv) {
 		}
 #endif
 
-#ifdef HAVE___SRC_PLUGIN_C
+#ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
 		/* Send data to SeedLink Server */
 		if(params.flag_writeseedlink) {
 
