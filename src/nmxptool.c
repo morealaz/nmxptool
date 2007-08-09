@@ -12,11 +12,31 @@
 #include "seedlink_plugin.h"
 #endif
 
+typedef struct {
+    int significant;
+    double last_time;
+    int prev_xn;
+} NMXP_CHAN_SUPPORT;
+
+
+static void clientShutdown(int sig);
+static void clientDummyHandler(int sig);
+
+
+/* Global variable for main program and handling terminitation program */
+NMXPTOOL_PARAMS params;
+int naqssock = 0;
+FILE *outfile = NULL;
+NMXP_CHAN_LIST *channelList = NULL;
+NMXP_CHAN_LIST *channelList_subset = NULL;
+#ifdef HAVE_LIBMSEED
+/* Mini-SEED variables */
+NMXP_DATA_SEED data_seed;
+NMXP_CHAN_SUPPORT *channelListSupport = NULL;
+#endif
+
 
 int main (int argc, char **argv) {
-    int naqssock;
-    NMXP_CHAN_LIST *channelList;
-    NMXP_CHAN_LIST *channelList_subset;
     uint32_t connection_time;
     int request_SOCKET_OK;
     int i_chan;
@@ -26,23 +46,37 @@ int main (int argc, char **argv) {
     uint32_t length;
     int ret;
 
-    FILE *outfile = NULL;
     char filename[500];
     char *station_code = NULL, *channel_code = NULL;
 
     NMXP_DATA_PROCESS *pd;
 
-    NMXPTOOL_PARAMS params;
-
 #ifdef HAVE_LIBMSEED
-    /* Mini-SEED variables */
-    NMXP_DATA_SEED data_seed;
-
     /* Init mini-SEED variables */
     nmxp_data_seed_init(&data_seed);
 #endif
 
+#ifndef WIN32
+    /* Signal handling, use POSIX calls with standardized semantics */
+    struct sigaction sa;
 
+    sa.sa_handler = clientDummyHandler;
+    sa.sa_flags = SA_RESTART;
+    sigemptyset(&sa.sa_mask);
+    sigaction(SIGALRM, &sa, NULL);
+
+    sa.sa_handler = clientShutdown;
+    sigaction(SIGINT, &sa, NULL);
+    sigaction(SIGQUIT, &sa, NULL); 
+    sigaction(SIGTERM, &sa, NULL);
+
+    sa.sa_handler = SIG_IGN;
+    sigaction(SIGHUP, &sa, NULL);
+    sigaction(SIGPIPE, &sa, NULL); 
+#endif
+
+
+    /* Default is normal output */
     nmxp_log(-1, 0);
 
     /* Initialize params from argument values */
@@ -78,6 +112,16 @@ int main (int argc, char **argv) {
 	return 1;
     } else {
 	nmxp_chan_print_channelList(channelList_subset);
+
+#ifdef HAVE_LIBMSEED
+	/* init channelListSupport */
+	channelListSupport = (NMXP_CHAN_SUPPORT *) malloc(sizeof(NMXP_CHAN_SUPPORT) * channelList_subset->number);
+	for(i_chan = 0; i_chan < channelList_subset->number; i_chan++) {
+	    channelListSupport[i_chan].significant = 0;
+	    channelListSupport[i_chan].last_time = 0.0;
+	    channelListSupport[i_chan].prev_xn = 0;
+	}
+#endif
     }
 
     /* Free the complete channel list */
@@ -85,6 +129,8 @@ int main (int argc, char **argv) {
 	free(channelList);
 	channelList = NULL;
     }
+
+    nmxp_log(0, 1, "Starting comunication.\n");
 
 
     /* TODO condition starting DAP */
@@ -131,10 +177,13 @@ int main (int argc, char **argv) {
 
 		if(params.flag_writefile) {
 		    /* Open output file */
-		    sprintf(filename, "%s.%s.%d.%d.%d.nmx", (params.network)? params.network : DEFAULT_NETWORK, channelList_subset->channel[i_chan].name, channelList_subset->channel[i_chan].key, params.start_time, params.end_time);
+		    sprintf(filename, "%s.%s.%d.%d.%d.nmx",
+			    (params.network)? params.network : DEFAULT_NETWORK,
+			    channelList_subset->channel[i_chan].name,
+			    channelList_subset->channel[i_chan].key,
+			    params.start_time, params.end_time);
 
 		    outfile = fopen(filename, "w");
-
 		    if(!outfile) {
 			nmxp_log(1, 0, "Can not to open file %s!", filename);
 		    }
@@ -143,10 +192,14 @@ int main (int argc, char **argv) {
 #ifdef HAVE_LIBMSEED
 		if(params.flag_writeseed) {
 		    /* Open output Mini-SEED file */
-		    sprintf(data_seed.filename_mseed, "%s.%s.%d.%d.%d.miniseed", (params.network)? params.network : DEFAULT_NETWORK, channelList_subset->channel[i_chan].name, channelList_subset->channel[i_chan].key, params.start_time, params.end_time);
+		    sprintf(data_seed.filename_mseed, "%s.%s.%d.%d.%d.miniseed",
+			    (params.network)? params.network : DEFAULT_NETWORK,
+			    channelList_subset->channel[i_chan].name,
+			    channelList_subset->channel[i_chan].key,
+			    params.start_time,
+			    params.end_time);
 
 		    data_seed.outfile_mseed = fopen(data_seed.filename_mseed, "w");
-
 		    if(!data_seed.outfile_mseed) {
 			nmxp_log(1, 0, "Can not to open file %s!", data_seed.filename_mseed);
 		    }
@@ -183,33 +236,29 @@ int main (int argc, char **argv) {
 		while(ret == NMXP_SOCKET_OK   &&    type != NMXP_MSG_READY) {
 
 		    /* Process a packet and return value in NMXP_DATA_PROCESS structure */
-		    pd = nmxp_processCompressedDataFunc(buffer, length, channelList_subset);
+		    pd = nmxp_processCompressedData(buffer, length, channelList_subset);
+
+		    /* Log contents of last packet */
+		    nmxp_data_log(pd);
 
 #ifdef HAVE_LIBMSEED
 		    /* Write Mini-SEED record */
 		    if(params.flag_writeseed) {
-
-			nmxp_data_msr_pack(pd, &data_seed);
-
+			nmxp_data_msr_pack(pd, &data_seed, NULL);
 		    }
 #endif
 
 #ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
 		    /* Send data to SeedLink Server */
 		    if(params.flag_writeseedlink) {
-
 			/* TODO Set values */
 			const int usec_correction = 0;
 			const int timing_quality = 100;
 
 			send_raw_depoch(pd->station, pd->channel, pd->time, usec_correction, timing_quality,
 				pd->pDataPtr, pd->nSamp);
-
 		    }
 #endif
-
-		    /* Log contents of last packet */
-		    nmxp_data_log(pd);
 
 		    if(params.flag_writefile  &&  outfile) {
 			/* Write buffer to the output file */
@@ -221,8 +270,9 @@ int main (int argc, char **argv) {
 			}
 		    }
 
-		    if(buffer) {
-			free(buffer);
+		    if(pd->buffer) {
+			free(pd->buffer);
+			pd->buffer = NULL;
 		    }
 
 		    /* Receive Data */
@@ -233,12 +283,14 @@ int main (int argc, char **argv) {
 		if(params.flag_writefile  &&  outfile) {
 		    /* Close output file */
 		    fclose(outfile);
+		    outfile = NULL;
 		}
 
 #ifdef HAVE_LIBMSEED
 		if(params.flag_writeseed  &&  data_seed.outfile_mseed) {
 		    /* Close output Mini-SEED file */
 		    fclose(data_seed.outfile_mseed);
+		    data_seed.outfile_mseed = NULL;
 		}
 #endif
 
@@ -295,9 +347,73 @@ int main (int argc, char **argv) {
 
 	/* PDS Step 6: Repeat until finished: receive and handle packets */
 
+#ifdef HAVE_LIBMSEED
+	if(params.flag_writeseed) {
+	    /* Open output Mini-SEED file */
+	    sprintf(data_seed.filename_mseed, "%s.realtime.miniseed",
+		    (params.network)? params.network : DEFAULT_NETWORK);
+
+	    data_seed.outfile_mseed = fopen(data_seed.filename_mseed, "w");
+	    if(!data_seed.outfile_mseed) {
+		nmxp_log(1, 0, "Can not to open file %s!", data_seed.filename_mseed);
+	    } else {
+		nmxp_log(0, 1, "Opened file %s!\n", data_seed.filename_mseed);
+	    }
+	}
+#endif
+
 	while(1) {
 	    /* Process Compressed or Decompressed Data */
-	    nmxp_receiveData(naqssock, channelList_subset, &nmxp_data_log);
+	    pd = nmxp_receiveData(naqssock, channelList_subset);
+
+	    /* Log contents of last packet */
+	    nmxp_data_log(pd);
+
+
+#ifdef HAVE_LIBMSEED
+	    /* Write Mini-SEED record */
+	    if(params.flag_writeseed) {
+		int *pprev_xn = NULL;
+		
+		if( (i_chan = nmxp_chan_lookupKeyIndex(pd->key, channelList_subset)) != -1) {
+		    if(channelListSupport[i_chan].significant) {
+			pprev_xn = &(channelListSupport[i_chan].prev_xn);
+		    }
+
+		    nmxp_data_msr_pack(pd, &data_seed, NULL);
+
+		    /* First time */
+		    if(!channelListSupport[i_chan].significant) {
+			channelListSupport[i_chan].significant = 1;
+			channelListSupport[i_chan].prev_xn = pd->pDataPtr[pd->nSamp-1];
+		    }
+
+		    channelListSupport[i_chan].last_time = pd->time + ((double) pd->nSamp / (double) pd->sampRate);
+		} else {
+		    nmxp_log(1, 0, "Key %d not found in channelList_subset!\n", pd->key);
+		}
+	    }
+#endif
+
+	    if(pd->buffer) {
+		free(pd->buffer);
+		pd->buffer = NULL;
+	    }
+
+	}
+
+#ifdef HAVE_LIBMSEED
+	if(params.flag_writeseed  &&  data_seed.outfile_mseed) {
+	    /* Close output Mini-SEED file */
+	    fclose(data_seed.outfile_mseed);
+	}
+	if(channelListSupport) {
+	    free(channelListSupport);
+	}
+#endif
+
+	if(channelList_subset) {
+	    free(channelList_subset);
 	}
 
 	/* PDS Step 7: Send Terminate Subscription */
@@ -320,4 +436,42 @@ int main (int argc, char **argv) {
 
 
 
+/* Do any needed cleanup and exit */
+static void clientShutdown(int sig) {
+    nmxp_log(0, 0, "Program interrupted!\n");
 
+    if(params.flag_writefile  &&  outfile) {
+	/* Close output file */
+	fclose(outfile);
+    }
+
+#ifdef HAVE_LIBMSEED
+    if(params.flag_writeseed  &&  data_seed.outfile_mseed) {
+	/* Close output Mini-SEED file */
+	fclose(data_seed.outfile_mseed);
+    }
+#endif
+
+    /* PDS Step 7: Send Terminate Subscription */
+    nmxp_sendTerminateSubscription(naqssock, NMXP_SHUTDOWN_NORMAL, "Good Bye!");
+
+    /* PDS Step 8: Close the socket */
+    nmxp_closeSocket(naqssock);
+
+    if(channelList == NULL) {
+	free(channelList);
+    }
+    if(channelList_subset == NULL) {
+	free(channelList_subset);
+    }
+    if(channelListSupport == NULL) {
+	free(channelListSupport);
+    }
+
+    exit( sig );
+} /* End of clientShutdown() */
+
+
+/* Empty signal handler routine */
+static void clientDummyHandler(int sig) {
+}
