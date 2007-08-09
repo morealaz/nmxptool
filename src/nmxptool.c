@@ -72,6 +72,8 @@ int main (int argc, char **argv) {
     if(channelList_subset->number <= 0) {
 	nmxp_log(1, 0, "Channels not found!\n");
 	return 1;
+    } else {
+	nmxp_chan_print_channelList(channelList_subset);
     }
 
     /* Free the complete channel list */
