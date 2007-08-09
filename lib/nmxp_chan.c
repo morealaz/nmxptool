@@ -121,6 +121,24 @@ int nmxp_chan_lookupKey(char* name, NMXP_CHAN_LIST *channelList)
 }
 
 
+int nmxp_chan_lookupKeyIndex(uint32_t key, NMXP_CHAN_LIST *channelList)
+{
+    int i_chan = 0;
+    int ret = -1;
+
+    i_chan = 0;
+    while(i_chan < channelList->number  &&  ret == -1)
+    {
+	if ( key == channelList->channel[i_chan].key ) {
+	    ret = i_chan;
+	}
+	i_chan++;
+    }
+
+    return ret;
+}
+
+
 char *nmxp_chan_lookupName(uint32_t key, NMXP_CHAN_LIST *channelList)
 {
     int i_chan = 0;
@@ -142,6 +160,7 @@ char *nmxp_chan_lookupName(uint32_t key, NMXP_CHAN_LIST *channelList)
 	return ret;
     }
 }
+
 
 NMXP_CHAN_LIST *nmxp_chan_getType(NMXP_CHAN_LIST *channelList, NMXP_DATATYPE dataType) {
     NMXP_CHAN_LIST *ret_channelList = NULL;

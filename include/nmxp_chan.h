@@ -72,6 +72,18 @@ int nmxp_chan_match(const char *station_dot_channel, char *pattern);
  */
 int nmxp_chan_lookupKey(char* name, NMXP_CHAN_LIST *channelList);
 
+
+/*! \brief Looks up a channel name in the list using a key
+ *
+ * \param key Channel key.
+ * \param channelList Channel list.
+ *
+ * \return Index of channel with key. -1 on error.
+ *
+ */
+int nmxp_chan_lookupKeyIndex(uint32_t key, NMXP_CHAN_LIST *channelList);
+
+
 /*! \brief Looks up a channel name in the list using a key
  *
  * \param key Channel key.
