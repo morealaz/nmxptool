@@ -460,6 +460,8 @@ NMXP_DATA_PROCESS *nmxp_processCompressedDataFunc(char* buffer_data, int length_
 	}
 	pd.packet_type = nmx_ptype;
 	pd.x0 = nmx_x0;
+	pd.xn = pDataPtr[nout];
+	pd.oldest_seq_no = nmx_oldest_sequence_number;
 	pd.seq_no = nmx_seqno;
 	pd.time = pTime;
 	pd.buffer = buffer_data;

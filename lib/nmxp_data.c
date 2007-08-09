@@ -31,6 +31,8 @@ int nmxp_data_init(NMXP_DATA_PROCESS *pd) {
     pd->channel[0] = 0;
     pd->packet_type = -1;
     pd->x0 = -1;
+    pd->xn = -1;
+    pd->oldest_seq_no = -1;
     pd->seq_no = -1;
     pd->time = -1.0;
     pd->buffer = NULL;
@@ -156,11 +158,11 @@ int nmxp_data_log(NMXP_DATA_PROCESS *pd) {
     nmxp_data_to_str(str_start, pd->time);
     nmxp_data_to_str(str_end, pd->time + ((double) pd->nSamp / (double) pd->sampRate));
 
-    latency = (pd->time + ((double) pd->nSamp / (double) pd->sampRate)) - ((double) time_now);
+    latency = ((double) time_now) - (pd->time + ((double) pd->nSamp / (double) pd->sampRate));
 
     // nmxp_log(0, 0, "%12d %5s.%3s rate=%03d (%s - %s) [%d, %d] pts=%04d (%d, %d, %d, %d) lat=%.1f len=%d\n",
     // printf("%10d %5s.%3s 03dHz (%s - %s) lat=%.1fs [%d, %d] pts=%04d (%d, %d, %d, %d) len=%d\n",
-    printf("%5s.%3s %03dHz (%s - %s) lat=%.1fs [%d, %d] pts=%04d (%d, %d, %d, %d) %d\n",
+    printf("%5s.%3s %3dHz (%s - %s) lat %.1fs [%d, %d] (%d) %4dpts (%d, %d, %d, %d) %d\n",
 	    /* pd->key, */
 	    (strlen(pd->station) == 0)? "XXXX" : pd->station,
 	    (strlen(pd->channel) == 0)? "XXX" : pd->channel,
@@ -170,11 +172,12 @@ int nmxp_data_log(NMXP_DATA_PROCESS *pd) {
 	    latency,
 	    pd->packet_type,
 	    pd->seq_no,
+	    pd->oldest_seq_no,
 	    pd->nSamp,
 	    pd->x0,
 	    (pd->pDataPtr == NULL)? 0 : pd->pDataPtr[0],
 	    (pd->pDataPtr == NULL || pd->nSamp < 1)? 0 : pd->pDataPtr[pd->nSamp-1],
-	    (pd->pDataPtr == NULL || pd->nSamp < 1)? 0 : pd->pDataPtr[pd->nSamp],
+	    pd->xn,
 	    pd->length
 	    );
 	return 0;
@@ -452,6 +455,8 @@ int nmxp_data_msr_pack(NMXP_DATA_PROCESS *pd, NMXP_DATA_SEED *data_seed) {
     // TODO
     // msr->byteorder = 0;         /* big endian byte order */
     msr->byteorder = nmxp_data_bigendianhost ();
+
+    msr->sequence_number = pd->seq_no;
 
     int sizetoallocate = sizeof(int) * (pd->nSamp + 1);
     msr->datasamples = malloc (sizetoallocate); 
