@@ -156,33 +156,38 @@ int nmxp_data_log(NMXP_DATA_PROCESS *pd) {
     str_start[0] = 0;
     str_end[0] = 0;
     
-    nmxp_data_to_str(str_start, pd->time);
-    nmxp_data_to_str(str_end, pd->time + ((double) pd->nSamp / (double) pd->sampRate));
+    if(pd) {
+	nmxp_data_to_str(str_start, pd->time);
+	nmxp_data_to_str(str_end, pd->time + ((double) pd->nSamp / (double) pd->sampRate));
 
-    latency = ((double) time_now) - (pd->time + ((double) pd->nSamp / (double) pd->sampRate));
+	latency = ((double) time_now) - (pd->time + ((double) pd->nSamp / (double) pd->sampRate));
 
-    // nmxp_log(0, 0, "%12d %5s.%3s rate=%03d (%s - %s) [%d, %d] pts=%04d (%d, %d, %d, %d) lat=%.1f len=%d\n",
-    // printf("%10d %5s.%3s 03dHz (%s - %s) lat=%.1fs [%d, %d] pts=%04d (%d, %d, %d, %d) len=%d\n",
-    printf("%5s.%3s %3dHz (%s - %s) lat %.1fs [%d, %d] (%d) %4dpts (%d, %d, %d, %d, %d) %d\n",
-	    /* pd->key, */
-	    (strlen(pd->station) == 0)? "XXXX" : pd->station,
-	    (strlen(pd->channel) == 0)? "XXX" : pd->channel,
-	    pd->sampRate,
-	    str_start,
-	    str_end,
-	    latency,
-	    pd->packet_type,
-	    pd->seq_no,
-	    pd->oldest_seq_no,
-	    pd->nSamp,
-	    pd->x0,
-	    (pd->pDataPtr == NULL)? 0 : pd->pDataPtr[0],
-	    (pd->pDataPtr == NULL || pd->nSamp < 1)? 0 : pd->pDataPtr[pd->nSamp-1],
-	    pd->xn,
-	    pd->x0n_significant,
-	    pd->length
-	    );
-	return 0;
+	// nmxp_log(0, 0, "%12d %5s.%3s rate=%03d (%s - %s) [%d, %d] pts=%04d (%d, %d, %d, %d) lat=%.1f len=%d\n",
+	// printf("%10d %5s.%3s 03dHz (%s - %s) lat=%.1fs [%d, %d] pts=%04d (%d, %d, %d, %d) len=%d\n",
+	printf("%5s.%3s %3dHz (%s - %s) lat %.1fs [%d, %d] (%d) %4dpts (%d, %d, %d, %d, %d) %d\n",
+		/* pd->key, */
+		(strlen(pd->station) == 0)? "XXXX" : pd->station,
+		(strlen(pd->channel) == 0)? "XXX" : pd->channel,
+		pd->sampRate,
+		str_start,
+		str_end,
+		latency,
+		pd->packet_type,
+		pd->seq_no,
+		pd->oldest_seq_no,
+		pd->nSamp,
+		pd->x0,
+		(pd->pDataPtr == NULL)? 0 : pd->pDataPtr[0],
+		(pd->pDataPtr == NULL || pd->nSamp < 1)? 0 : pd->pDataPtr[pd->nSamp-1],
+		pd->xn,
+		pd->x0n_significant,
+		pd->length
+	      );
+    } else {
+	printf("Pointer to NMXP_DATA_PROCESS is NULL!\n");
+    }
+
+    return 0;
 }
 
 
@@ -430,7 +435,7 @@ int nmxp_data_seed_init(NMXP_DATA_SEED *data_seed) {
     }
 
 
-int nmxp_data_msr_pack(NMXP_DATA_PROCESS *pd, NMXP_DATA_SEED *data_seed) {
+int nmxp_data_msr_pack(NMXP_DATA_PROCESS *pd, NMXP_DATA_SEED *data_seed, int *prev_xn) {
     int ret =0;
 
     int psamples;
@@ -438,49 +443,50 @@ int nmxp_data_msr_pack(NMXP_DATA_PROCESS *pd, NMXP_DATA_SEED *data_seed) {
     MSRecord *msr;
     flag verbose = 0;
 
-    msr = msr_init (NULL);
+    if(pd) {
 
-    /* Populate MSRecord values */
-    strcpy (msr->network, pd->network);
-    strcpy (msr->station, pd->station);
-    strcpy (msr->channel, pd->channel);
-    // TODO
-    // msr->starttime = ms_seedtimestr2hptime ("2004,350,00:00:00.00");
-    msr->starttime = MS_EPOCH2HPTIME(pd->time);
-    msr->samprate = pd->sampRate;
-    // TODO
-    // msr->reclen = 4096;         /* 4096 byte record length */
-    msr->reclen = 512;         /* byte record length */
-    // TODO
-    // msr->encoding = DE_STEIM2;  /* Steim 2 compression */
-    msr->encoding = DE_STEIM1;  /* Steim 1 compression */
-    // TODO
-    // msr->byteorder = 0;         /* big endian byte order */
-    msr->byteorder = nmxp_data_bigendianhost ();
+	msr = msr_init (NULL);
 
-    msr->sequence_number = pd->seq_no;
+	/* Populate MSRecord values */
+	strcpy (msr->network, pd->network);
+	strcpy (msr->station, pd->station);
+	strcpy (msr->channel, pd->channel);
+	// TODO
+	// msr->starttime = ms_seedtimestr2hptime ("2004,350,00:00:00.00");
+	msr->starttime = MS_EPOCH2HPTIME(pd->time);
+	msr->samprate = pd->sampRate;
+	// TODO
+	// msr->reclen = 4096;         /* 4096 byte record length */
+	msr->reclen = 512;         /* byte record length */
+	// TODO
+	// msr->encoding = DE_STEIM2;  /* Steim 2 compression */
+	msr->encoding = DE_STEIM1;  /* Steim 1 compression */
+	// TODO
+	// msr->byteorder = 0;         /* big endian byte order */
+	msr->byteorder = nmxp_data_bigendianhost ();
 
-    msr->sampletype = 'i';      /* declare type to be 32-bit integers */
-    msr->numsamples = pd->nSamp;
+	msr->sequence_number = pd->seq_no % 1000000;
 
-    if(pd->x0n_significant) {
-	msr->numsamples++;
+	msr->sampletype = 'i';      /* declare type to be 32-bit integers */
+
+	msr->numsamples = pd->nSamp;
+	msr->datasamples = malloc (sizeof(int) * (msr->numsamples)); 
+	memcpy(msr->datasamples, pd->pDataPtr, sizeof(int) * pd->nSamp); /* pointer to 32-bit integer data samples */
+
+	msr_srcname (msr, data_seed->srcname, 0);
+
+	int *pDataDest = msr->datasamples;
+	nmxp_log(0, 1, "x0 %d, xn %d\n", pDataDest[0], pDataDest[msr->numsamples-1]);
+
+	/* Pack the record(s) */
+	precords = msr_pack (msr, &nmxp_data_msr_write_handler, data_seed->srcname, &psamples, 1, verbose);
+
+	// ms_log (0, "Packed %d samples into %d records\n", psamples, precords);
+	nmxp_log (0, 1, "Packed %d samples into %d records\n", psamples, precords);
+
+	msr_free (&msr);
+
     }
-    msr->datasamples = malloc (sizeof(int) * (msr->numsamples)); 
-    memcpy(msr->datasamples, pd->pDataPtr, pd->nSamp); /* pointer to 32-bit integer data samples */
-    if(pd->x0n_significant) {
-	((int *)msr->datasamples)[msr->numsamples-1] = pd->xn;
-    }
-
-    msr_srcname (msr, data_seed->srcname, 0);
-
-    /* Pack the record(s) */
-    precords = msr_pack (msr, &nmxp_data_msr_write_handler, data_seed->srcname, &psamples, 1, verbose);
-
-    // ms_log (0, "Packed %d samples into %d records\n", psamples, precords);
-    nmxp_log (0, 1, "Packed %d samples into %d records\n", psamples, precords);
-
-    msr_free (&msr);
 
     return ret;
 }
