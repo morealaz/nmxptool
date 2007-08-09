@@ -31,6 +31,10 @@
 #endif
 
 
+#define MAX_OUTDATA 4096
+
+
+
 int nmxp_openSocket(char *hostname, int portNum)
 {
   static int sleepTime = 1;
@@ -225,7 +229,7 @@ int nmxp_receiveMessage(int isock, NMXP_MSG_SERVER *type, void **buffer, uint32_
 }
 
 
-NMXP_DATA_PROCESS *nmxp_processDecompressedDataFunc(char* buffer_data, int length_data, NMXP_CHAN_LIST *channelList)
+NMXP_DATA_PROCESS *nmxp_processDecompressedData(char* buffer_data, int length_data, NMXP_CHAN_LIST *channelList)
 {
   int32_t   netInt    = 0;
   int32_t   pKey      = 0;
@@ -235,6 +239,7 @@ NMXP_DATA_PROCESS *nmxp_processDecompressedDataFunc(char* buffer_data, int lengt
   int32_t  *pDataPtr  = 0;
   int       swap      = 0;
   int       idx;
+  int32_t outdata[MAX_OUTDATA];
 
   char *sta = 0;      /* The station code */
   char *chan = 0;     /* The channel code */
@@ -255,7 +260,8 @@ NMXP_DATA_PROCESS *nmxp_processDecompressedDataFunc(char* buffer_data, int lengt
   pSampRate = ntohl(netInt);
 
   /* There should be (length_data - 20) bytes of data as 32-bit ints here */
-  pDataPtr = (int32_t *) &buffer_data[20];
+  memcpy(outdata , (int32_t *) &buffer_data[20], length_data - 20);
+  pDataPtr = outdata;
 
   /* Swap the data samples to host order */
   for ( idx=0; idx < pNSamp; idx++ ) {
@@ -305,7 +311,7 @@ NMXP_DATA_PROCESS *nmxp_processDecompressedDataFunc(char* buffer_data, int lengt
 }
 
 
-NMXP_DATA_PROCESS *nmxp_processCompressedDataFunc(char* buffer_data, int length_data, NMXP_CHAN_LIST *channelList)
+NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data, NMXP_CHAN_LIST *channelList)
 {
     int32_t   pKey      = 0;
     double    pTime     = 0.0;
@@ -337,7 +343,6 @@ NMXP_DATA_PROCESS *nmxp_processCompressedDataFunc(char* buffer_data, int length_
 
 	int comp_bytecount;
 	unsigned char *indata;
-#define MAX_OUTDATA 4096
 	int32_t outdata[MAX_OUTDATA];
 	int nout, i, k;
 	int prev_xn;

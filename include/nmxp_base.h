@@ -142,7 +142,7 @@ int nmxp_receiveMessage(int isock, NMXP_MSG_SERVER *type, void **buffer, uint32_
  * \return Return a pointer to static struct NMXP_DATA_PROCESS.
  *
  */
-NMXP_DATA_PROCESS *nmxp_processCompressedDataFunc(char* buffer_data, int length_data, NMXP_CHAN_LIST *channelList);
+NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data, NMXP_CHAN_LIST *channelList);
 
 
 /*! \brief Process decompressed Data message by function func_processData().
@@ -154,7 +154,7 @@ NMXP_DATA_PROCESS *nmxp_processCompressedDataFunc(char* buffer_data, int length_
  * \return Return a pointer to static struct NMXP_DATA_PROCESS.
  *
  */
-NMXP_DATA_PROCESS *nmxp_processDecompressedDataFunc(char* buffer_data, int length_data, NMXP_CHAN_LIST *channelList);
+NMXP_DATA_PROCESS *nmxp_processDecompressedData(char* buffer_data, int length_data, NMXP_CHAN_LIST *channelList);
 
 #endif
 
