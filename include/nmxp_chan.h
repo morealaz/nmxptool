@@ -46,6 +46,22 @@ typedef enum {
 #define getDataTypeFromKey(key) ((key >> 8) & 0xff)
 
 
+
+/*! \brief Match station_dot_channel against pattern, treating errors as no match.
+ *
+ * \param station_dot_channel STA.CHAN format
+ * \param pattern STA.?HZ or STA.H?Z or STA.HH? or STA.?H? or ....
+ *
+ * \retval 1 for match
+ * \retval 0 for no match
+ * \retval -1 on error for invalid pattern
+ * \retval -2 on error for invalid station_dot_channel
+ *
+ */
+int nmxp_chan_match(const char *station_dot_channel, char *pattern);
+
+
+
 /*! \brief Looks up a channel key in the list using the name
  *
  * \param name Channel name.
