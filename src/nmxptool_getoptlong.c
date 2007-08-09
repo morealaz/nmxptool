@@ -33,22 +33,22 @@ const NMXPTOOL_PARAMS NMXPTOOL_PARAMS_DEFAULT =
 void nmxptool_usage(struct option long_options[])
 {
     printf("\
-%s %s, Nanometrics tool (Data Access Protocol 1.0, Private Data Stream 1.4)\n\n\
+%s %s, Nanometrics tool (Data Access Protocol 1.0, Private Data Stream 1.4)\n\
+\n\
 Usage: %s -H hostname --listchannels [...]\n\
              Receive list of available channels on the host\n\
 \n\
        %s -H hostname -C channellist [...]\n\
-             Receive data by PDS\n\
+             Receive data from hostname by PDS\n\
 \n\
        %s -H hostname -C channellist -s DATE -e DATE [...]\n\
-             Receive data by DAP\n\
+             Receive data from hostname by DAP\n\
 \n\
 Arguments:\n\
   -H, --hostname=HOST     Nanometrics hostname.\n\
-  -C, --channels=LIST     Channel list STA1.CHAN1,STA2.CHAN2,...\n\
+  -C, --channels=LIST     Channel list STA1.HH?,STA2.??Z,...\n\
   -s, --start_time=DATE   Start time in date format. ONLY DAP.\n\
   -e, --end_time=DATE     End time in date format. ONLY DAP.\n\
-\n\
                           DATE can be in formats:\n\
                               <date>,<time> | <date>\n\
                           where:\n\
@@ -74,7 +74,6 @@ Optional arguments:\n\
 \n\
 Flags:\n\
   -v, --verbose           Be verbose.\n\
-  -q, --quiet             Quiet (almost no output).\n\
   -b, --buffered          Receive recent packets into the past. ONLY PDS.\n\
   -l, --listchannels      Output list of channel available on NaqsServer.\n",
 	    DEFAULT_PORT_PDS,
@@ -98,6 +97,7 @@ Flags:\n\
     printf("\n\
   -h, --help              Print this help.\n\
 \n\
+Matteo Quintiliani - Istituto Nazionale di Geofisica e Vulcanologia - Italy\n\
 Mail bug reports and suggestions to <%s>.\n",
 	    PACKAGE_BUGREPORT
 	    );
@@ -138,7 +138,6 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 	{"password",     required_argument, 0, 'p'},
 	/* Following are flags */
 	{"verbose",      no_argument,       0, 'v'},
-	{"quiet",        no_argument,       0, 'q'},
 	{"buffered",     no_argument,       0, 'b'},
 	{"listchannels", no_argument,       0, 'l'},
 #ifdef HAVE_LIBMSEED
@@ -173,7 +172,7 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
     /* init params */
     memcpy(params, &NMXPTOOL_PARAMS_DEFAULT, sizeof(NMXPTOOL_PARAMS_DEFAULT));
 
-    char optstr[100] = "H:P:D:C:N:L:S:R:s:e:u:p:vqblwh";
+    char optstr[100] = "H:P:D:C:N:L:S:R:s:e:u:p:vblwh";
 
 #ifdef HAVE_LIBMSEED
     strcat(optstr, "m");
@@ -262,10 +261,6 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 
 		case 'v':
 		    params->flag_verbose = 1;
-		    break;
-
-		case 'q':
-		    params->flag_verbose = 0;
 		    break;
 
 		case 'b':

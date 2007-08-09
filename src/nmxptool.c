@@ -55,6 +55,10 @@ int main (int argc, char **argv) {
 	return 1;
     }
 
+    if(params.flag_verbose) {
+	nmxp_log(-1, 2);
+    }
+
     /* List available channels on server */
     if(params.flag_listchannels) {
 
