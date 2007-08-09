@@ -286,7 +286,11 @@ NMXP_DATA_PROCESS *nmxp_processDecompressedDataFunc(char* buffer_data, int lengt
       strncpy(pd.channel, chan, CHANNEL_LENGTH);
   }
   pd.packet_type = NMXP_MSG_DECOMPRESSED;
-  // pd.x0 = ;
+  pd.x0 = -1;
+  pd.xn = -1;
+  pd.x0n_significant = 0;
+  // TODO
+  // pd.oldest_seq_no = ;
   // pd.seq_no = ;
   pd.time = pTime;
   pd.buffer = buffer_data;
@@ -461,6 +465,7 @@ NMXP_DATA_PROCESS *nmxp_processCompressedDataFunc(char* buffer_data, int length_
 	pd.packet_type = nmx_ptype;
 	pd.x0 = nmx_x0;
 	pd.xn = pDataPtr[nout];
+	pd.x0n_significant = 1;
 	pd.oldest_seq_no = nmx_oldest_sequence_number;
 	pd.seq_no = nmx_seqno;
 	pd.time = pTime;

@@ -32,6 +32,7 @@ int nmxp_data_init(NMXP_DATA_PROCESS *pd) {
     pd->packet_type = -1;
     pd->x0 = -1;
     pd->xn = -1;
+    pd->x0n_significant = 0;
     pd->oldest_seq_no = -1;
     pd->seq_no = -1;
     pd->time = -1.0;
@@ -162,7 +163,7 @@ int nmxp_data_log(NMXP_DATA_PROCESS *pd) {
 
     // nmxp_log(0, 0, "%12d %5s.%3s rate=%03d (%s - %s) [%d, %d] pts=%04d (%d, %d, %d, %d) lat=%.1f len=%d\n",
     // printf("%10d %5s.%3s 03dHz (%s - %s) lat=%.1fs [%d, %d] pts=%04d (%d, %d, %d, %d) len=%d\n",
-    printf("%5s.%3s %3dHz (%s - %s) lat %.1fs [%d, %d] (%d) %4dpts (%d, %d, %d, %d) %d\n",
+    printf("%5s.%3s %3dHz (%s - %s) lat %.1fs [%d, %d] (%d) %4dpts (%d, %d, %d, %d, %d) %d\n",
 	    /* pd->key, */
 	    (strlen(pd->station) == 0)? "XXXX" : pd->station,
 	    (strlen(pd->channel) == 0)? "XXX" : pd->channel,
@@ -178,6 +179,7 @@ int nmxp_data_log(NMXP_DATA_PROCESS *pd) {
 	    (pd->pDataPtr == NULL)? 0 : pd->pDataPtr[0],
 	    (pd->pDataPtr == NULL || pd->nSamp < 1)? 0 : pd->pDataPtr[pd->nSamp-1],
 	    pd->xn,
+	    pd->x0n_significant,
 	    pd->length
 	    );
 	return 0;
@@ -458,11 +460,17 @@ int nmxp_data_msr_pack(NMXP_DATA_PROCESS *pd, NMXP_DATA_SEED *data_seed) {
 
     msr->sequence_number = pd->seq_no;
 
-    int sizetoallocate = sizeof(int) * (pd->nSamp + 1);
-    msr->datasamples = malloc (sizetoallocate); 
-    memcpy(msr->datasamples, pd->pDataPtr, sizetoallocate); /* pointer to 32-bit integer data samples */
-    msr->numsamples = pd->nSamp + 1;
     msr->sampletype = 'i';      /* declare type to be 32-bit integers */
+    msr->numsamples = pd->nSamp;
+
+    if(pd->x0n_significant) {
+	msr->numsamples++;
+    }
+    msr->datasamples = malloc (sizeof(int) * (msr->numsamples)); 
+    memcpy(msr->datasamples, pd->pDataPtr, pd->nSamp); /* pointer to 32-bit integer data samples */
+    if(pd->x0n_significant) {
+	((int *)msr->datasamples)[msr->numsamples-1] = pd->xn;
+    }
 
     msr_srcname (msr, data_seed->srcname, 0);
 

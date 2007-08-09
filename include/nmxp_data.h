@@ -103,8 +103,9 @@ typedef struct {
     char station[STATION_LENGTH];	/*!< \brief Station code */
     char channel[CHANNEL_LENGTH];	/*!< \brief Channel code */
     int packet_type;			/*!< \brief Packet type */
-    int x0;				/*!< \brief First sample */
-    int xn;				/*!< \brief Last sample */
+    int x0;				/*!< \brief First sample. It is significant only if x0n_significant != 0 */
+    int xn;				/*!< \brief Last sample. It is significant only if x0n_significant != 0 */
+    int x0n_significant;			/*!< \brief Declare if xn significant */
     int oldest_seq_no;			/*!< \brief Oldest Sequence number */
     int seq_no;				/*!< \brief Sequence number */
     double time;			/*!< \brief Time first sample. Epochs. */
