@@ -27,6 +27,7 @@ const NMXPTOOL_PARAMS NMXPTOOL_PARAMS_DEFAULT =
     0,
     0,
     0,
+    0,
     0
 };
 
@@ -74,6 +75,7 @@ Optional arguments:\n\
 \n\
 Flags:\n\
   -v, --verbose           Be verbose.\n\
+  -d, --logdata           Log nanometrics data.\n\
   -b, --buffered          Receive recent packets into the past. ONLY PDS.\n\
   -l, --listchannels      Output list of channel available on NaqsServer.\n",
 	    DEFAULT_PORT_PDS,
@@ -138,6 +140,7 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 	{"password",     required_argument, 0, 'p'},
 	/* Following are flags */
 	{"verbose",      no_argument,       0, 'v'},
+	{"logdata",      no_argument,       0, 'd'},
 	{"buffered",     no_argument,       0, 'b'},
 	{"listchannels", no_argument,       0, 'l'},
 #ifdef HAVE_LIBMSEED
@@ -172,7 +175,7 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
     /* init params */
     memcpy(params, &NMXPTOOL_PARAMS_DEFAULT, sizeof(NMXPTOOL_PARAMS_DEFAULT));
 
-    char optstr[100] = "H:P:D:C:N:L:S:R:s:e:u:p:vblwh";
+    char optstr[100] = "H:P:D:C:N:L:S:R:s:e:u:p:vdblwh";
 
 #ifdef HAVE_LIBMSEED
     strcat(optstr, "m");
@@ -261,6 +264,10 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 
 		case 'v':
 		    params->flag_verbose = 1;
+		    break;
+
+		case 'd':
+		    params->flag_logdata = 1;
 		    break;
 
 		case 'b':

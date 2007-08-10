@@ -31,6 +31,7 @@ typedef struct {
     int flag_writefile;
     int flag_writeseedlink;
     int flag_buffered;
+    int flag_logdata;
 } NMXPTOOL_PARAMS;
 
 /*! \brief Print the usage of paramters */

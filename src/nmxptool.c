@@ -279,7 +279,9 @@ int main (int argc, char **argv) {
 		    pd = nmxp_processCompressedData(buffer, length, channelList_subset);
 
 		    /* Log contents of last packet */
-		    nmxp_data_log(pd);
+		    if(params.flag_logdata) {
+			nmxp_data_log(pd);
+		    }
 
 		    /* Management of gaps */
 		    cur_chan = nmxp_chan_lookupKeyIndex(pd->key, channelList_subset);
@@ -429,7 +431,9 @@ int main (int argc, char **argv) {
 	    pd = nmxp_receiveData(naqssock, channelList_subset);
 
 	    /* Log contents of last packet */
-	    nmxp_data_log(pd);
+	    if(params.flag_logdata) {
+		nmxp_data_log(pd);
+	    }
 
 	    /* Management of gaps */
 	    cur_chan = nmxp_chan_lookupKeyIndex(pd->key, channelList_subset);
