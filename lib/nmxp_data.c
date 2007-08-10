@@ -164,8 +164,9 @@ int nmxp_data_log(NMXP_DATA_PROCESS *pd) {
 
 	// nmxp_log(0, 0, "%12d %5s.%3s rate=%03d (%s - %s) [%d, %d] pts=%04d (%d, %d, %d, %d) lat=%.1f len=%d\n",
 	// printf("%10d %5s.%3s 03dHz (%s - %s) lat=%.1fs [%d, %d] pts=%04d (%d, %d, %d, %d) len=%d\n",
-	printf("%5s.%3s %3dHz (%s - %s) lat %.1fs [%d, %d] (%d) %4dpts (%d, %d, %d, %d, %d) %d\n",
+	printf("%s.%s.%3s %3dHz (%s - %s) lat %.1fs [%d, %d] (%d) %4dpts (%d, %d, %d, %d, %d) %d\n",
 		/* pd->key, */
+		pd->network,
 		(strlen(pd->station) == 0)? "XXXX" : pd->station,
 		(strlen(pd->channel) == 0)? "XXX" : pd->channel,
 		pd->sampRate,
@@ -435,33 +436,25 @@ int nmxp_data_seed_init(NMXP_DATA_SEED *data_seed) {
     }
 
 
-int nmxp_data_msr_pack(NMXP_DATA_PROCESS *pd, NMXP_DATA_SEED *data_seed, int *prev_xn) {
+int nmxp_data_msr_pack(NMXP_DATA_PROCESS *pd, NMXP_DATA_SEED *data_seed, void *pmsr) {
     int ret =0;
 
+    MSRecord *msr = pmsr;
     int psamples;
     int precords;
-    MSRecord *msr;
-    flag verbose = 0;
+    flag verbose = 1;
+
+    int *pDataDest = NULL;
 
     if(pd) {
 
-	msr = msr_init (NULL);
-
 	/* Populate MSRecord values */
-	strcpy (msr->network, pd->network);
-	strcpy (msr->station, pd->station);
-	strcpy (msr->channel, pd->channel);
+
 	// TODO
 	// msr->starttime = ms_seedtimestr2hptime ("2004,350,00:00:00.00");
 	msr->starttime = MS_EPOCH2HPTIME(pd->time);
 	msr->samprate = pd->sampRate;
-	// TODO
-	// msr->reclen = 4096;         /* 4096 byte record length */
-	msr->reclen = 512;         /* byte record length */
-	// TODO
-	// msr->encoding = DE_STEIM2;  /* Steim 2 compression */
-	msr->encoding = DE_STEIM1;  /* Steim 1 compression */
-	// TODO
+
 	// msr->byteorder = 0;         /* big endian byte order */
 	msr->byteorder = nmxp_data_bigendianhost ();
 
@@ -475,16 +468,20 @@ int nmxp_data_msr_pack(NMXP_DATA_PROCESS *pd, NMXP_DATA_SEED *data_seed, int *pr
 
 	msr_srcname (msr, data_seed->srcname, 0);
 
-	int *pDataDest = msr->datasamples;
-	nmxp_log(0, 1, "x0 %d, xn %d\n", pDataDest[0], pDataDest[msr->numsamples-1]);
+	pDataDest = msr->datasamples;
+	nmxp_log(0, 0, "x0 %d, xn %d\n", pDataDest[0], pDataDest[msr->numsamples-1]);
 
 	/* Pack the record(s) */
+	msr_print(msr, 2);
+
 	precords = msr_pack (msr, &nmxp_data_msr_write_handler, data_seed->srcname, &psamples, 1, verbose);
 
-	// ms_log (0, "Packed %d samples into %d records\n", psamples, precords);
-	nmxp_log (0, 1, "Packed %d samples into %d records\n", psamples, precords);
+	msr_print(msr, 2);
 
-	msr_free (&msr);
+	if ( precords == -1 )
+	    ms_log (2, "Cannot pack records\n");
+	else
+	    ms_log (1, "Packed %d samples into %d records\n", psamples, precords);
 
     }
 

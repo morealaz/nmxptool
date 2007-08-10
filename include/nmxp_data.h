@@ -16,6 +16,7 @@
 #include <stdio.h>
 #include <time.h>
 
+
 /*! First 4 bytes of all messages. */
 #define NMX_SIGNATURE 0x7abcde0f
 
@@ -181,12 +182,12 @@ int nmxp_data_seed_init(NMXP_DATA_SEED *data_seed);
  *
  * \param pd Pointer to struct NMXP_DATA_PROCESS
  * \param data_seed Pointer to struct NMXP_DATA_SEED
- * \param[in,out] prev_xn if not pd->x0n_significant then prev_xn value is used, otherwise prev_xn has to be NULL. Current xn is set!
+ * \param msr Pointer to mini-SEED record
  *
  * \return Returns the number records created on success and -1 on error. Return value of msr_pack().
  *
  */
-int nmxp_data_msr_pack(NMXP_DATA_PROCESS *pd, NMXP_DATA_SEED *data_seed, int *prev_xn);
+int nmxp_data_msr_pack(NMXP_DATA_PROCESS *pd, NMXP_DATA_SEED *data_seed, void *pmsr);
 
 
 /*! \brief Swap 2 bytes. 
