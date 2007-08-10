@@ -47,6 +47,21 @@ typedef enum {
 
 
 
+/*! \brief Copy station code and channel code from name
+ *
+ * \param name string containing STA.CHAN
+ * \param[out] station_code Pointer to string for station code
+ * \param[out] channel_code Pointer to string for char code
+ *
+ * \warning Parametes can not be NULL!
+ *
+ * \retval 1 on success
+ * \retval 0 on error
+ *
+ */
+int nmxp_chan_cpy_sta_chan(const char *station_dot_channel, char *station_code, char *channel_code);
+
+
 /*! \brief Match station_dot_channel against pattern, treating errors as no match.
  *
  * \param station_dot_channel STA.CHAN format

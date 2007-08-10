@@ -442,7 +442,7 @@ int nmxp_data_msr_pack(NMXP_DATA_PROCESS *pd, NMXP_DATA_SEED *data_seed, void *p
     MSRecord *msr = pmsr;
     int psamples;
     int precords;
-    flag verbose = 1;
+    flag verbose = 0;
 
     int *pDataDest = NULL;
 
@@ -469,19 +469,18 @@ int nmxp_data_msr_pack(NMXP_DATA_PROCESS *pd, NMXP_DATA_SEED *data_seed, void *p
 	msr_srcname (msr, data_seed->srcname, 0);
 
 	pDataDest = msr->datasamples;
-	nmxp_log(0, 0, "x0 %d, xn %d\n", pDataDest[0], pDataDest[msr->numsamples-1]);
+	nmxp_log(0, 1, "x0 %d, xn %d\n", pDataDest[0], pDataDest[msr->numsamples-1]);
+
+	/* msr_print(msr, 2); */
 
 	/* Pack the record(s) */
-	msr_print(msr, 2);
-
 	precords = msr_pack (msr, &nmxp_data_msr_write_handler, data_seed->srcname, &psamples, 1, verbose);
-
-	msr_print(msr, 2);
 
 	if ( precords == -1 )
 	    ms_log (2, "Cannot pack records\n");
-	else
-	    ms_log (1, "Packed %d samples into %d records\n", psamples, precords);
+	else {
+	    /* ms_log (1, "Packed %d samples into %d records\n", psamples, precords); */
+	}
 
     }
 

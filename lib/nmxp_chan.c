@@ -15,6 +15,37 @@
 #include <string.h>
 #include <stdlib.h>
 
+int nmxp_chan_cpy_sta_chan(const char *station_dot_channel, char *station_code, char *channel_code) {
+    int ret = 0;
+    char *sta_code_tmp, *cha_code_tmp;
+
+    if(station_dot_channel || station_code || channel_code) {
+	station_code[0] = 0;
+	channel_code[0] = 0;
+
+	/* validate pattern channel */
+	sta_code_tmp = strdup(station_dot_channel);
+	if( (cha_code_tmp = strchr(sta_code_tmp, '.')) == NULL ) {
+	    nmxp_log(1, 0, "Name %s is not in STA.CHAN format!\n", station_dot_channel);
+	} else {
+	    if(cha_code_tmp) {
+		*cha_code_tmp++ = '\0';
+		strcpy(station_code, sta_code_tmp);
+		strcpy(channel_code, cha_code_tmp);
+		free(sta_code_tmp);
+		ret = 1;
+	    } else {
+		nmxp_log(1, 0, "Name %s is not in STA.CHAN format! Channel is missing?\n", station_dot_channel);
+	    }
+	}
+    } else {
+	nmxp_log(1, 0, "Some parameter is NULL in nmxp_chan_cpy_sta_chan().\n",  station_dot_channel);
+    }
+
+    return ret;
+}
+
+
 
 /*
  * Match string against the extended regular expression in
