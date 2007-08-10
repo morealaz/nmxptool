@@ -3,6 +3,11 @@
 #include <string.h>
 
 #include <nmxp.h>
+
+#ifndef WIN32
+#include <signal.h>
+#endif
+
 #include "config.h"
 #include "nmxptool_getoptlong.h"
 
