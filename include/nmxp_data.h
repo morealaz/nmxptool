@@ -182,7 +182,9 @@ int nmxp_data_seed_init(NMXP_DATA_SEED *data_seed);
  *
  * \param pd Pointer to struct NMXP_DATA_PROCESS
  * \param data_seed Pointer to struct NMXP_DATA_SEED
- * \param msr Pointer to mini-SEED record
+ * \param pmsr Pointer to mini-SEED record
+ *
+ * \warning pmsr is used like (void *) but it has to be a pointer to MSRecord !!!
  *
  * \return Returns the number records created on success and -1 on error. Return value of msr_pack().
  *

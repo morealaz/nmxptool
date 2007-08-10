@@ -49,7 +49,7 @@ typedef enum {
 
 /*! \brief Copy station code and channel code from name
  *
- * \param name string containing STA.CHAN
+ * \param station_dot_channel string containing STA.CHAN
  * \param[out] station_code Pointer to string for station code
  * \param[out] channel_code Pointer to string for char code
  *
