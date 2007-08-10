@@ -189,7 +189,7 @@ int nmxp_data_seed_init(NMXP_DATA_SEED *data_seed);
  * \return Returns the number records created on success and -1 on error. Return value of msr_pack().
  *
  */
-int nmxp_data_msr_pack(NMXP_DATA_PROCESS *pd, NMXP_DATA_SEED *data_seed, void *pmsr);
+int nmxp_data_msr_pack(NMXP_DATA_PROCESS *pd, NMXP_DATA_SEED *data_seed, void *pmsr, int32_t x_1);
 
 
 /*! \brief Swap 2 bytes. 

@@ -25,6 +25,7 @@
 typedef struct {
     int significant;
     double last_time;
+    int32_t x_1;
 } NMXPTOOL_CHAN_SEQ;
 
 
@@ -142,6 +143,7 @@ int main (int argc, char **argv) {
 	for(i_chan = 0; i_chan < channelList_subset->number; i_chan++) {
 	    channelListSeq[i_chan].significant = 0;
 	    channelListSeq[i_chan].last_time = 0.0;
+	    channelListSeq[i_chan].x_1 = 0;
 	}
 
 #ifdef HAVE_LIBMSEED
@@ -304,13 +306,14 @@ int main (int argc, char **argv) {
 		    if(params.flag_writeseed) {
 			if( (cur_chan = nmxp_chan_lookupKeyIndex(pd->key, channelList_subset)) != -1) {
 
-			    nmxp_data_msr_pack(pd, &data_seed, msr_list_chan[cur_chan]);
+			    nmxp_data_msr_pack(pd, &data_seed, msr_list_chan[cur_chan], channelListSeq[cur_chan].x_1);
 
 			} else {
 			    nmxp_log(1, 0, "Key %d not found in channelList_subset!\n", pd->key);
 			}
 		    }
 #endif
+		    channelListSeq[cur_chan].x_1 = pd->pDataPtr[pd->nSamp-1];
 
 #ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
 		    /* Send data to SeedLink Server */
@@ -457,13 +460,14 @@ int main (int argc, char **argv) {
 	    if(params.flag_writeseed) {
 		if( (cur_chan = nmxp_chan_lookupKeyIndex(pd->key, channelList_subset)) != -1) {
 
-		    nmxp_data_msr_pack(pd, &data_seed, msr_list_chan[cur_chan]);
+		    nmxp_data_msr_pack(pd, &data_seed, msr_list_chan[cur_chan], channelListSeq[cur_chan].x_1);
 
 		} else {
 		    nmxp_log(1, 0, "Key %d not found in channelList_subset!\n", pd->key);
 		}
 	    }
 #endif
+	    channelListSeq[cur_chan].x_1 = pd->pDataPtr[pd->nSamp-1];
 
 #ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
 		    /* Send data to SeedLink Server */

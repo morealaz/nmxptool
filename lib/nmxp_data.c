@@ -436,7 +436,7 @@ int nmxp_data_seed_init(NMXP_DATA_SEED *data_seed) {
     }
 
 
-int nmxp_data_msr_pack(NMXP_DATA_PROCESS *pd, NMXP_DATA_SEED *data_seed, void *pmsr) {
+int nmxp_data_msr_pack(NMXP_DATA_PROCESS *pd, NMXP_DATA_SEED *data_seed, void *pmsr, int32_t x_1) {
     int ret =0;
 
     MSRecord *msr = pmsr;
@@ -474,7 +474,7 @@ int nmxp_data_msr_pack(NMXP_DATA_PROCESS *pd, NMXP_DATA_SEED *data_seed, void *p
 	/* msr_print(msr, 2); */
 
 	/* Pack the record(s) */
-	precords = msr_pack (msr, &nmxp_data_msr_write_handler, data_seed->srcname, &psamples, 1, verbose);
+	precords = msr_pack (msr, &nmxp_data_msr_write_handler, data_seed->srcname, &psamples, 1, verbose, x_1);
 
 	if ( precords == -1 )
 	    ms_log (2, "Cannot pack records\n");
