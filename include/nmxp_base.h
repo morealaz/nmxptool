@@ -138,11 +138,12 @@ int nmxp_receiveMessage(int isock, NMXP_MSG_SERVER *type, void **buffer, uint32_
  * \param buffer_data Pointer to the data buffer containing Compressed Nanometrics packets.
  * \param length_data Buffer length in bytes.
  * \param channelList Pointer to the Channel List.
+ * \param network_code Network code. It can be NULL.
  *
  * \return Return a pointer to static struct NMXP_DATA_PROCESS.
  *
  */
-NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data, NMXP_CHAN_LIST *channelList);
+NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data, NMXP_CHAN_LIST *channelList, const char *network_code);
 
 
 /*! \brief Process decompressed Data message by function func_processData().
@@ -150,11 +151,12 @@ NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data
  * \param buffer_data Pointer to the data buffer containing Decompressed Nanometrics packets.
  * \param length_data Buffer length in bytes.
  * \param channelList Pointer to the Channel List.
+ * \param network_code Network code. It can be NULL.
  *
  * \return Return a pointer to static struct NMXP_DATA_PROCESS.
  *
  */
-NMXP_DATA_PROCESS *nmxp_processDecompressedData(char* buffer_data, int length_data, NMXP_CHAN_LIST *channelList);
+NMXP_DATA_PROCESS *nmxp_processDecompressedData(char* buffer_data, int length_data, NMXP_CHAN_LIST *channelList, const char *network_code);
 
 #endif
 

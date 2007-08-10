@@ -229,7 +229,7 @@ int nmxp_receiveMessage(int isock, NMXP_MSG_SERVER *type, void **buffer, uint32_
 }
 
 
-NMXP_DATA_PROCESS *nmxp_processDecompressedData(char* buffer_data, int length_data, NMXP_CHAN_LIST *channelList)
+NMXP_DATA_PROCESS *nmxp_processDecompressedData(char* buffer_data, int length_data, NMXP_CHAN_LIST *channelList, const char *network_code)
 {
   int32_t   netInt    = 0;
   int32_t   pKey      = 0;
@@ -285,6 +285,9 @@ NMXP_DATA_PROCESS *nmxp_processDecompressedData(char* buffer_data, int length_da
   nmxp_data_init(&pd);
 
   pd.key = pKey;
+  if(network_code) {
+      strcpy(pd.network, network_code);
+  }
   if(sta) {
       strncpy(pd.station, sta, STATION_LENGTH);
   }
@@ -311,7 +314,7 @@ NMXP_DATA_PROCESS *nmxp_processDecompressedData(char* buffer_data, int length_da
 }
 
 
-NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data, NMXP_CHAN_LIST *channelList)
+NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data, NMXP_CHAN_LIST *channelList, const char *network_code)
 {
     int32_t   pKey      = 0;
     double    pTime     = 0.0;
@@ -461,6 +464,9 @@ NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data
 	nmxp_data_init(&pd);
 
 	pd.key = pKey;
+	if(network_code) {
+	    strcpy(pd.network, network_code);
+	}
 	if(sta) {
 	    strncpy(pd.station, sta, STATION_LENGTH);
 	}

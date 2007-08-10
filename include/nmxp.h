@@ -185,12 +185,13 @@ int nmxp_sendAddTimeSeriesChannel(int isock, NMXP_CHAN_LIST *channelList, uint32
  *
  * \param isock A descriptor referencing the socket.
  * \param channelList Channel list.
+ * \param network_code Network code. It can be NULL.
  *
  * \retval Pointer to the structure NMXP_DATA_PROCESS on success
  * \retval NULL on error
  * 
  */
-NMXP_DATA_PROCESS *nmxp_receiveData(int isock, NMXP_CHAN_LIST *channelList);
+NMXP_DATA_PROCESS *nmxp_receiveData(int isock, NMXP_CHAN_LIST *channelList, const char *network_code);
 
 
 /*! \brief Sends the message "ConnectRequest" on a socket
