@@ -3,21 +3,34 @@
 #include <string.h>
 
 #include <nmxp.h>
-
+#include "config.h"
 #include "nmxptool_getoptlong.h"
 
-#include "config.h"
+#ifdef HAVE_LIBMSEED
+#include <libmseed.h>
+#endif
 
 #ifdef HAVE___SRC_SEEDLINK_PLUGIN_H
 #include "seedlink_plugin.h"
 #endif
 
+
 typedef struct {
     int significant;
     double last_time;
-    int prev_xn;
-} NMXP_CHAN_SUPPORT;
+} NMXPTOOL_CHAN_SEQ;
 
+
+#define GAP_TOLLERANCE 0.001
+
+void nmxptool_check_and_log_gap(double time1, double time2, const double gap_tollerance, const char *station, const char *channel) {
+    double gap = time1 - time2 ;
+    if(gap > gap_tollerance) {
+	nmxp_log(1, 0, "Gap %.2f sec. for %s.%s from %d to %d!\n", gap, station, channel, time1, time2);
+    } else if (gap < -gap_tollerance) {
+	nmxp_log(1, 0, "Overlap %.2f sec. for %s.%s from %d to %d!\n", gap, station, channel, time2, time1);
+    }
+}
 
 static void clientShutdown(int sig);
 static void clientDummyHandler(int sig);
@@ -29,17 +42,19 @@ int naqssock = 0;
 FILE *outfile = NULL;
 NMXP_CHAN_LIST *channelList = NULL;
 NMXP_CHAN_LIST *channelList_subset = NULL;
+NMXPTOOL_CHAN_SEQ *channelListSeq = NULL;
+
 #ifdef HAVE_LIBMSEED
 /* Mini-SEED variables */
 NMXP_DATA_SEED data_seed;
-NMXP_CHAN_SUPPORT *channelListSupport = NULL;
+MSRecord *msr_list_chan[MAX_N_CHAN];
 #endif
 
 
 int main (int argc, char **argv) {
     uint32_t connection_time;
     int request_SOCKET_OK;
-    int i_chan;
+    int i_chan, cur_chan;
 
     NMXP_MSG_SERVER type;
     void *buffer;
@@ -47,7 +62,7 @@ int main (int argc, char **argv) {
     int ret;
 
     char filename[500];
-    char *station_code = NULL, *channel_code = NULL;
+    char station_code[20], channel_code[20];
 
     NMXP_DATA_PROCESS *pd;
 
@@ -113,15 +128,45 @@ int main (int argc, char **argv) {
     } else {
 	nmxp_chan_print_channelList(channelList_subset);
 
-#ifdef HAVE_LIBMSEED
-	/* init channelListSupport */
-	channelListSupport = (NMXP_CHAN_SUPPORT *) malloc(sizeof(NMXP_CHAN_SUPPORT) * channelList_subset->number);
+	nmxp_log(0, 1, "Init channelListSeq.\n");
+
+	/* init channelListSeq */
+	channelListSeq = (NMXPTOOL_CHAN_SEQ *) malloc(sizeof(NMXPTOOL_CHAN_SEQ) * channelList_subset->number);
 	for(i_chan = 0; i_chan < channelList_subset->number; i_chan++) {
-	    channelListSupport[i_chan].significant = 0;
-	    channelListSupport[i_chan].last_time = 0.0;
-	    channelListSupport[i_chan].prev_xn = 0;
+	    channelListSeq[i_chan].significant = 0;
+	    channelListSeq[i_chan].last_time = 0.0;
+	}
+
+#ifdef HAVE_LIBMSEED
+	nmxp_log(0, 1, "Init mini-SEED record list.\n");
+
+	/* Init mini-SEED record list */
+	for(i_chan = 0; i_chan < channelList_subset->number; i_chan++) {
+
+	    nmxp_log(0, 1, "Init mini-SEED record for %s\n", channelList_subset->channel[i_chan].name);
+
+	    msr_list_chan[i_chan] = msr_init(NULL);
+
+	    /* Separate station_code and channel_code */
+	    if(nmxp_chan_cpy_sta_chan(channelList_subset->channel[i_chan].name, station_code, channel_code)) {
+
+		nmxp_log(0, 1, "%s.%s.%s\n", (params.network)? params.network : DEFAULT_NETWORK, station_code, channel_code);
+
+		strcpy(msr_list_chan[i_chan]->network, (params.network)? params.network : DEFAULT_NETWORK);
+		strcpy(msr_list_chan[i_chan]->station, station_code);
+		strcpy(msr_list_chan[i_chan]->channel, channel_code);
+
+		msr_list_chan[i_chan]->reclen = 512;         /* byte record length */
+		msr_list_chan[i_chan]->encoding = DE_STEIM1;  /* Steim 1 compression */
+
+	    } else {
+		nmxp_log(1, 0, "Channels %s error in format!\n");
+		return 1;
+	    }
+
 	}
 #endif
+
     }
 
     /* Free the complete channel list */
@@ -133,8 +178,11 @@ int main (int argc, char **argv) {
     nmxp_log(0, 1, "Starting comunication.\n");
 
 
-    /* TODO condition starting DAP */
+    /* TODO condition starting DAP or PDS */
     if(params.start_time != 0   &&   params.end_time != 0) {
+
+
+
 
 	/* ************************************************************** */
 	/* Start subscription protocol "DATA ACCESS PROTOCOL" version 1.0 */
@@ -209,24 +257,16 @@ int main (int argc, char **argv) {
 		if(params.flag_writefile  &&  outfile) {
 		    /* Compute SNCL line */
 
-		    /* Separate station_code and channel_code */
-		    station_code = NULL;
-		    channel_code = NULL;
-
-		    station_code = strdup(channelList_subset->channel[i_chan].name);
-		    if ( (channel_code = strchr(station_code, '.')) == NULL ) {
-			nmxp_log(1,0, "Channel name not in STA.CHAN format: %s\n", station_code);
-		    }     
-		    if(channel_code) {
-			*channel_code++ = '\0'; 
-		    }     
-
-		    if(station_code) {
-			free(station_code);
+		    /* Separate station_code_old_way and channel_code_old_way */
+		    if(nmxp_chan_cpy_sta_chan(channelList_subset->channel[i_chan].name, station_code, channel_code)) {
+			/* Write SNCL line */
+			fprintf(outfile, "%s.%s.%s.%s\n",
+				station_code,
+				(params.network)? params.network : DEFAULT_NETWORK,
+				channel_code,
+				(params.location)? params.location : "");
 		    }
 
-		    /* Write SNCL line */
-		    fprintf(outfile, "%s.%s.%s.%s\n", station_code, (params.network)? params.network : DEFAULT_NETWORK, channel_code, (params.location)? params.location : "");
 		}
 
 		/* DAP Step 6: Receive Data until receiving a Ready message */
@@ -241,10 +281,25 @@ int main (int argc, char **argv) {
 		    /* Log contents of last packet */
 		    nmxp_data_log(pd);
 
+		    /* Management of gaps */
+		    cur_chan = nmxp_chan_lookupKeyIndex(pd->key, channelList_subset);
+		    if(!channelListSeq[cur_chan].significant) {
+			channelListSeq[cur_chan].significant = 1;
+		    } else {
+			nmxptool_check_and_log_gap(pd->time, channelListSeq[cur_chan].last_time, GAP_TOLLERANCE, pd->station, pd->channel);
+		    }
+		    channelListSeq[cur_chan].last_time = pd->time + ((double) pd->nSamp / (double) pd->sampRate);
+
 #ifdef HAVE_LIBMSEED
 		    /* Write Mini-SEED record */
 		    if(params.flag_writeseed) {
-			nmxp_data_msr_pack(pd, &data_seed, NULL);
+			if( (cur_chan = nmxp_chan_lookupKeyIndex(pd->key, channelList_subset)) != -1) {
+
+			    nmxp_data_msr_pack(pd, &data_seed, msr_list_chan[cur_chan]);
+
+			} else {
+			    nmxp_log(1, 0, "Key %d not found in channelList_subset!\n", pd->key);
+			}
 		    }
 #endif
 
@@ -309,7 +364,14 @@ int main (int argc, char **argv) {
 	/* End subscription protocol "DATA ACCESS PROTOCOL" version 1.0 */
 	/* ************************************************************ */
 
+
+
+
     } else {
+
+
+
+
 
 	/* ************************************************************* */
 	/* Start subscription protocol "PRIVATE DATA STREAM" version 1.4 */
@@ -369,30 +431,39 @@ int main (int argc, char **argv) {
 	    /* Log contents of last packet */
 	    nmxp_data_log(pd);
 
+	    /* Management of gaps */
+	    cur_chan = nmxp_chan_lookupKeyIndex(pd->key, channelList_subset);
+	    if(!channelListSeq[cur_chan].significant) {
+		channelListSeq[cur_chan].significant = 1;
+	    } else {
+		nmxptool_check_and_log_gap(pd->time, channelListSeq[cur_chan].last_time, GAP_TOLLERANCE, pd->station, pd->channel);
+	    }
+	    channelListSeq[cur_chan].last_time = pd->time + ((double) pd->nSamp / (double) pd->sampRate);
+
 
 #ifdef HAVE_LIBMSEED
 	    /* Write Mini-SEED record */
 	    if(params.flag_writeseed) {
-		int *pprev_xn = NULL;
-		
-		if( (i_chan = nmxp_chan_lookupKeyIndex(pd->key, channelList_subset)) != -1) {
-		    if(channelListSupport[i_chan].significant) {
-			pprev_xn = &(channelListSupport[i_chan].prev_xn);
-		    }
+		if( (cur_chan = nmxp_chan_lookupKeyIndex(pd->key, channelList_subset)) != -1) {
 
-		    nmxp_data_msr_pack(pd, &data_seed, NULL);
+		    nmxp_data_msr_pack(pd, &data_seed, msr_list_chan[cur_chan]);
 
-		    /* First time */
-		    if(!channelListSupport[i_chan].significant) {
-			channelListSupport[i_chan].significant = 1;
-			channelListSupport[i_chan].prev_xn = pd->pDataPtr[pd->nSamp-1];
-		    }
-
-		    channelListSupport[i_chan].last_time = pd->time + ((double) pd->nSamp / (double) pd->sampRate);
 		} else {
 		    nmxp_log(1, 0, "Key %d not found in channelList_subset!\n", pd->key);
 		}
 	    }
+#endif
+
+#ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
+		    /* Send data to SeedLink Server */
+		    if(params.flag_writeseedlink) {
+			/* TODO Set values */
+			const int usec_correction = 0;
+			const int timing_quality = 100;
+
+			send_raw_depoch(pd->station, pd->channel, pd->time, usec_correction, timing_quality,
+				pd->pDataPtr, pd->nSamp);
+		    }
 #endif
 
 	    if(pd->buffer) {
@@ -407,14 +478,8 @@ int main (int argc, char **argv) {
 	    /* Close output Mini-SEED file */
 	    fclose(data_seed.outfile_mseed);
 	}
-	if(channelListSupport) {
-	    free(channelListSupport);
-	}
 #endif
 
-	if(channelList_subset) {
-	    free(channelList_subset);
-	}
 
 	/* PDS Step 7: Send Terminate Subscription */
 	nmxp_sendTerminateSubscription(naqssock, NMXP_SHUTDOWN_NORMAL, "Good Bye!");
@@ -426,11 +491,33 @@ int main (int argc, char **argv) {
 	/* End subscription protocol "PRIVATE DATA STREAM" version 1.4 */
 	/* *********************************************************** */
 
+
+
+
     }
+
+#ifdef HAVE_LIBMSEED
+	if(*msr_list_chan) {
+	    for(i_chan = 0; i_chan < channelList_subset->number; i_chan++) {
+		if(msr_list_chan[i_chan]) {
+		    msr_free(&(msr_list_chan[i_chan]));
+		}
+	    }
+	}
+#endif
+
+	if(channelListSeq) {
+	    free(channelListSeq);
+	}
+
+	/* This has to be tha last */
+	if(channelList_subset) {
+	    free(channelList_subset);
+	}
 
 
     return 0;
-}
+} /* End MAIN */
 
 
 
@@ -452,20 +539,36 @@ static void clientShutdown(int sig) {
     }
 #endif
 
+
     /* PDS Step 7: Send Terminate Subscription */
     nmxp_sendTerminateSubscription(naqssock, NMXP_SHUTDOWN_NORMAL, "Good Bye!");
 
     /* PDS Step 8: Close the socket */
     nmxp_closeSocket(naqssock);
 
+
     if(channelList == NULL) {
 	free(channelList);
     }
+
+#ifdef HAVE_LIBMSEED
+    int i_chan;
+    if(*msr_list_chan) {
+	for(i_chan = 0; i_chan < channelList_subset->number; i_chan++) {
+	    if(msr_list_chan[i_chan]) {
+		msr_free(&(msr_list_chan[i_chan]));
+	    }
+	}
+    }
+#endif
+
+    if(channelListSeq) {
+	free(channelListSeq);
+    }
+
+    /* This has to be the last */
     if(channelList_subset == NULL) {
 	free(channelList_subset);
-    }
-    if(channelListSupport == NULL) {
-	free(channelListSupport);
     }
 
     exit( sig );
