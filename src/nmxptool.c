@@ -15,6 +15,8 @@
 #endif
 
 
+#define CURRENT_NETWORK (params.network)? params.network : DEFAULT_NETWORK
+
 typedef struct {
     int significant;
     double last_time;
@@ -150,9 +152,9 @@ int main (int argc, char **argv) {
 	    /* Separate station_code and channel_code */
 	    if(nmxp_chan_cpy_sta_chan(channelList_subset->channel[i_chan].name, station_code, channel_code)) {
 
-		nmxp_log(0, 1, "%s.%s.%s\n", (params.network)? params.network : DEFAULT_NETWORK, station_code, channel_code);
+		nmxp_log(0, 1, "%s.%s.%s\n", CURRENT_NETWORK, station_code, channel_code);
 
-		strcpy(msr_list_chan[i_chan]->network, (params.network)? params.network : DEFAULT_NETWORK);
+		strcpy(msr_list_chan[i_chan]->network, CURRENT_NETWORK);
 		strcpy(msr_list_chan[i_chan]->station, station_code);
 		strcpy(msr_list_chan[i_chan]->channel, channel_code);
 
@@ -226,7 +228,7 @@ int main (int argc, char **argv) {
 		if(params.flag_writefile) {
 		    /* Open output file */
 		    sprintf(filename, "%s.%s.%d.%d.%d.nmx",
-			    (params.network)? params.network : DEFAULT_NETWORK,
+			    CURRENT_NETWORK,
 			    channelList_subset->channel[i_chan].name,
 			    channelList_subset->channel[i_chan].key,
 			    params.start_time, params.end_time);
@@ -241,7 +243,7 @@ int main (int argc, char **argv) {
 		if(params.flag_writeseed) {
 		    /* Open output Mini-SEED file */
 		    sprintf(data_seed.filename_mseed, "%s.%s.%d.%d.%d.miniseed",
-			    (params.network)? params.network : DEFAULT_NETWORK,
+			    CURRENT_NETWORK,
 			    channelList_subset->channel[i_chan].name,
 			    channelList_subset->channel[i_chan].key,
 			    params.start_time,
@@ -262,7 +264,7 @@ int main (int argc, char **argv) {
 			/* Write SNCL line */
 			fprintf(outfile, "%s.%s.%s.%s\n",
 				station_code,
-				(params.network)? params.network : DEFAULT_NETWORK,
+				CURRENT_NETWORK,
 				channel_code,
 				(params.location)? params.location : "");
 		    }
@@ -276,7 +278,7 @@ int main (int argc, char **argv) {
 		while(ret == NMXP_SOCKET_OK   &&    type != NMXP_MSG_READY) {
 
 		    /* Process a packet and return value in NMXP_DATA_PROCESS structure */
-		    pd = nmxp_processCompressedData(buffer, length, channelList_subset);
+		    pd = nmxp_processCompressedData(buffer, length, channelList_subset, CURRENT_NETWORK);
 
 		    /* Log contents of last packet */
 		    if(params.flag_logdata) {
@@ -415,7 +417,7 @@ int main (int argc, char **argv) {
 	if(params.flag_writeseed) {
 	    /* Open output Mini-SEED file */
 	    sprintf(data_seed.filename_mseed, "%s.realtime.miniseed",
-		    (params.network)? params.network : DEFAULT_NETWORK);
+		    CURRENT_NETWORK);
 
 	    data_seed.outfile_mseed = fopen(data_seed.filename_mseed, "w");
 	    if(!data_seed.outfile_mseed) {
@@ -428,7 +430,7 @@ int main (int argc, char **argv) {
 
 	while(1) {
 	    /* Process Compressed or Decompressed Data */
-	    pd = nmxp_receiveData(naqssock, channelList_subset);
+	    pd = nmxp_receiveData(naqssock, channelList_subset, CURRENT_NETWORK);
 
 	    /* Log contents of last packet */
 	    if(params.flag_logdata) {
