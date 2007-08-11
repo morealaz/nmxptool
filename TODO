@@ -1,3 +1,11 @@
 
 - Check params for different protocol PDS and DAP
 
+- Params for DAP, <start_time> <interval_time>, for example 2007/08/11,00:00:00 30s
+
+- From DAP receive data continously with a big latency, for example 3 hours
+
+- Exit conditions for PDS loop
+	* after t time amount of data, for example 10 seconds of data
+	* after n packets, for example like "ping"
+
