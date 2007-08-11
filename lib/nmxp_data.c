@@ -142,6 +142,76 @@ int nmxp_data_to_str(char *out_str, double time_d) {
     return 0;
 }
 
+
+int nmxp_data_trim(NMXP_DATA_PROCESS *pd, double trim_start_time, double trim_end_time) {
+    int ret = 0;
+    double first_time, last_time;
+    int first_nsamples_to_remove = 0;
+    int last_nsamples_to_remove = 0;
+    int new_nSamp = 0;
+    int i;
+
+
+    if(pd) {
+	first_time = pd->time;
+	last_time = pd->time + ((double) pd->nSamp / (double) pd->sampRate);
+	if(first_time < trim_start_time &&  trim_start_time < last_time) {
+	    first_nsamples_to_remove = (trim_start_time - first_time) * (double) pd->sampRate;
+	}
+	if(first_time < trim_end_time  &&  trim_end_time < last_time) {
+	    last_nsamples_to_remove = (last_time - trim_end_time) * (double) pd->sampRate;
+	}
+
+	nmxp_log(0, 2, "first_time=%.2f last_time=%.2f trim_start_time=%.2f trim_end_time=%.2f\n",
+		first_time, last_time, trim_start_time, trim_end_time);
+	nmxp_log(0, 2, "first_nsamples_to_remove=%d last_nsamples_to_remove=%d pd->nSamp=%d\n",
+		first_nsamples_to_remove,
+		last_nsamples_to_remove,
+		pd->nSamp);
+
+	if(first_nsamples_to_remove > 0 || last_nsamples_to_remove > 0) {
+
+	    new_nSamp = pd->nSamp - (first_nsamples_to_remove + last_nsamples_to_remove);
+
+	    if(new_nSamp > 0) {
+
+		for(i=0; i < first_nsamples_to_remove; i++) {
+		    pd->pDataPtr[i] = pd->pDataPtr[first_nsamples_to_remove + i];
+		}
+		pd->nSamp = new_nSamp;
+		pd->time += ((double) first_nsamples_to_remove / (double) pd->sampRate);
+
+		ret = 1;
+
+
+	    } else if(new_nSamp == 0) {
+		if(pd->pDataPtr) {
+		    free(pd->pDataPtr);
+		    pd->pDataPtr = NULL;
+		}
+		pd->nSamp = 0;
+		ret = 1;
+	    } else {
+		    nmxp_log(1, 0, "Error in nmxp_data_trim() nSamp = %d\n", new_nSamp);
+	    }
+
+	} else {
+	    ret = 2;
+	}
+    } else {
+	nmxp_log(1, 0, "nmxp_data_trim() is called with pd = NULL\n");
+    }
+
+    if(ret == 1) {
+	nmxp_log(0, 0, "nmxp_data_trim() trimmed data! (Output %d samples)\n", pd->nSamp);
+    }
+
+    nmxp_log(0, 2, "nmxp_data_trim() exit ret=%d\n", ret);
+
+    return ret;
+}
+
+
 int nmxp_data_log(NMXP_DATA_PROCESS *pd) {
 
     char str_start[200], str_end[200];
