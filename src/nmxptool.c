@@ -286,6 +286,7 @@ int main (int argc, char **argv) {
 
 		    /* Process a packet and return value in NMXP_DATA_PROCESS structure */
 		    pd = nmxp_processCompressedData(buffer, length, channelList_subset, CURRENT_NETWORK);
+		    nmxp_data_trim(pd, params.start_time, params.end_time);
 
 		    /* Log contents of last packet */
 		    if(params.flag_logdata) {
