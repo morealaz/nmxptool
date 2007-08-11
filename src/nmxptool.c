@@ -63,6 +63,7 @@ int main (int argc, char **argv) {
     uint32_t connection_time;
     int request_SOCKET_OK;
     int i_chan, cur_chan;
+    int exitpdscondition;
 
     NMXP_MSG_SERVER type;
     void *buffer;
@@ -437,7 +438,10 @@ int main (int argc, char **argv) {
 	}
 #endif
 
-	while(1) {
+	// TODO
+	exitpdscondition = 1;
+
+	while(exitpdscondition) {
 	    /* Process Compressed or Decompressed Data */
 	    pd = nmxp_receiveData(naqssock, channelList_subset, CURRENT_NETWORK);
 
@@ -487,6 +491,8 @@ int main (int argc, char **argv) {
 		pd->buffer = NULL;
 	    }
 
+	    // TODO
+	    exitpdscondition = 1;
 	}
 
 #ifdef HAVE_LIBMSEED
