@@ -48,45 +48,32 @@ Usage: %s -H hostname --listchannels [...]\n\
 Arguments:\n\
   -H, --hostname=HOST     Nanometrics hostname.\n\
   -C, --channels=LIST     Channel list STA1.HH?,STA2.??Z,...\n\
-  -s, --start_time=DATE   Start time in date format. ONLY DAP.\n\
-  -e, --end_time=DATE     End time in date format. ONLY DAP.\n\
-                          DATE can be in formats:\n\
-                              <date>,<time> | <date>\n\
-                          where:\n\
-                              <date> = yyyy/mm/dd | yyy.jjj\n\
-                              <time> = hh:mm:ss | hh:mm\n\
-\n",
+\n\
+",
 	    PACKAGE_NAME, PACKAGE_VERSION,
 	    PACKAGE_NAME,
 	    PACKAGE_NAME,
 	    PACKAGE_NAME
-    );
+	  );
 
     printf("\
-Optional arguments:\n\
+Other arguments:\n\
   -P, --portpds=PORT      NaqsServer port number (default %d).\n\
   -D, --portdap=PORT      DataServer port number (default %d).\n\
-  -N, --network=NET       Network code for writing file (default %s).\n\
+  -N, --network=NET       Declare Network code for all stations (default %s).\n\
   -L, --location=LOC      Location code for writing file.\n\
-  -S, --stc=SECs          Short-term-completion  (default %d secs). ONLY PDS.\n\
-  -R, --rate=HZ           Receive decompressed data with specified sample rate. ONLY PDS.\n\
-  -u, --username=USER     DataServer username. ONLY DAP.\n\
-  -p, --password=PASS     DataServer password. ONLY DAP.\n\
-\n\
-Flags:\n\
   -v, --verbose           Be verbose.\n\
-  -d, --logdata           Log nanometrics data.\n\
-  -b, --buffered          Receive recent packets into the past. ONLY PDS.\n\
-  -l, --listchannels      Output list of channel available on NaqsServer.\n",
+  -d, --logdata           Print info about data.\n\
+  -l, --listchannels      Output list of channel available on NaqsServer.\n\
+",
 	    DEFAULT_PORT_PDS,
 	    DEFAULT_PORT_DAP,
-	    DEFAULT_NETWORK,
-	    DEFAULT_STC
+	    DEFAULT_NETWORK
 		);
 
 #ifdef HAVE_LIBMSEED
     printf("\
-  -m, --writeseed         Pack received data in Mini-SEED records and append to a file.\n");
+  -m, --writeseed         Pack received data in Mini-SEED records and write to a file.\n");
 #endif
 
     printf("\
@@ -94,11 +81,39 @@ Flags:\n\
 
 #ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
     printf("\
-  -k, --seedlink          Send received data to SeedLink (SL-plugin).\n");
+  -k, --seedlink          Send received data to SeedLink.\n\
+                          This tool become a SeedLink plug-in.\n");
 #endif
-    printf("\n\
+    printf("\
   -h, --help              Print this help.\n\
+\n");
+
+    printf("\
+DAP Arguments:\n\
+  -s, --start_time=DATE   Start time in date format.\n\
+  -e, --end_time=DATE     End time in date format.\n\
+                          DATE can be in formats:\n\
+                              <date>,<time> | <date>\n\
+                          where:\n\
+                              <date> = yyyy/mm/dd | yyy.jjj\n\
+                              <time> = hh:mm:ss | hh:mm\n\
+  -u, --username=USER     DataServer username.\n\
+  -p, --password=PASS     DataServer password.\n\
 \n\
+");
+
+    printf("\
+PDS arguments:\n\
+  -S, --stc=SECs          Short-term-completion  (default %d secs).\n\
+  -R, --rate=HZ           Receive decompressed data with specified sample rate.\n\
+                          0 is for orginal sample rate.\n\
+  -b, --buffered          Request also recent packets into the past.\n\
+\n\
+",
+	    DEFAULT_STC
+	  );
+
+    printf("\
 Matteo Quintiliani - Istituto Nazionale di Geofisica e Vulcanologia - Italy\n\
 Mail bug reports and suggestions to <%s>.\n",
 	    PACKAGE_BUGREPORT
