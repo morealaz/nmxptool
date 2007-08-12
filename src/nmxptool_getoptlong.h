@@ -9,6 +9,7 @@
 #define DEFAULT_PORT_PDS 28000
 #define DEFAULT_STC      30
 #define DEFAULT_RATE     -1
+#define DEFAULT_DELAY    600
 
 
 /*! \brief Struct that stores information about parameter of the program */
@@ -26,6 +27,7 @@ typedef struct {
     int stc;
     int rate;
     char *plugin_slink;
+    int delay;
     int flag_writeseed;
     int flag_verbose;
     int flag_listchannels;

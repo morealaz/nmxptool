@@ -23,6 +23,7 @@ const NMXPTOOL_PARAMS NMXPTOOL_PARAMS_DEFAULT =
     DEFAULT_STC,
     DEFAULT_RATE,
     NULL,
+    DEFAULT_DELAY,
     0,
     0,
     0,
@@ -64,7 +65,7 @@ Other arguments:\n\
   -N, --network=NET       Declare Network code for all stations (default %s).\n\
   -L, --location=LOC      Location code for writing file.\n\
   -v, --verbose           Be verbose.\n\
-  -d, --logdata           Print info about data.\n\
+  -g, --logdata           Print info about data.\n\
   -l, --listchannels      Output list of channel available on NaqsServer.\n\
 ",
 	    DEFAULT_PORT_PDS,
@@ -82,9 +83,9 @@ Other arguments:\n\
 
 #ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
     printf("\
-  -k, --slink=[plug_name] Send received data to SeedLink like as plug-in.\n\
-                          plug_name is optional and SeisComP sets it.\n\
-                          THIS OPTION MUST BE THE LAST!\n");
+  -k, --slink=plug_name   Send received data to SeedLink like as plug-in.\n\
+                          plug_name is set by SeisComP daemon.\n\
+                          THIS OPTION MUST BE THE LAST WITHOUT plug_name IN seedlink.ini!\n");
 #endif
     printf("\
   -h, --help              Print this help.\n\
@@ -99,16 +100,20 @@ DAP Arguments:\n\
                           where:\n\
                               <date> = yyyy/mm/dd | yyy.jjj\n\
                               <time> = hh:mm:ss | hh:mm\n\
+  -d, --delay=secs        Receive continuosly data with delay.\n\
   -u, --username=USER     DataServer username.\n\
   -p, --password=PASS     DataServer password.\n\
 \n\
-");
+",
+DEFAULT_DELAY);
 
     printf("\
 PDS arguments:\n\
   -S, --stc=SECs          Short-term-completion  (default %d secs).\n\
   -R, --rate=HZ           Receive decompressed data with specified sample rate.\n\
-                          0 is for orginal sample rate.\n\
+                          -1 is for original sample rate and compressed data.\n\
+                           0 is for original sample rate and decompressed data.\n\
+                          >0 is for specified sample rate and decompressed data.\n\
   -b, --buffered          Request also recent packets into the past.\n\
 \n\
 ",
@@ -153,11 +158,12 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 	{"rate",         required_argument, 0, 'R'},
 	{"start_time",   required_argument, 0, 's'},
 	{"end_time",     required_argument, 0, 'e'},
+	{"delay",        required_argument, 0, 'd'},
 	{"username",     required_argument, 0, 'u'},
 	{"password",     required_argument, 0, 'p'},
 	/* Following are flags */
 	{"verbose",      no_argument,       0, 'v'},
-	{"logdata",      no_argument,       0, 'd'},
+	{"logdata",      no_argument,       0, 'g'},
 	{"buffered",     no_argument,       0, 'b'},
 	{"listchannels", no_argument,       0, 'l'},
 #ifdef HAVE_LIBMSEED
@@ -165,7 +171,7 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 #endif
 	{"writefile",    no_argument,       0, 'w'},
 #ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
-	{"slink",        optional_argument, 0, 'k'},
+	{"slink",        required_argument, 0, 'k'},
 #endif
 	{"help",         no_argument,       0, 'h'},
 	{0, 0, 0, 0}
@@ -192,14 +198,14 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
     /* init params */
     memcpy(params, &NMXPTOOL_PARAMS_DEFAULT, sizeof(NMXPTOOL_PARAMS_DEFAULT));
 
-    char optstr[100] = "H:P:D:C:N:L:S:R:s:e:u:p:vdblwh";
+    char optstr[100] = "H:P:D:C:N:L:S:R:s:e:d:u:p:vgblwh";
 
 #ifdef HAVE_LIBMSEED
     strcat(optstr, "m");
 #endif
 
 #ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
-    strcat(optstr, "k");
+    strcat(optstr, "k:");
 #endif
 
     while ( (c = getopt_long (argc, argv, optstr, long_options, &option_index)) != -1) {
@@ -271,6 +277,10 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 		    }
 		    break;
 
+		case 'd':
+		    params->delay = atoi(optarg);
+		    break;
+
 		case 'u':
 		    params->datas_username = optarg;
 		    break;
@@ -290,7 +300,7 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 		    params->flag_verbose = 1;
 		    break;
 
-		case 'd':
+		case 'g':
 		    params->flag_logdata = 1;
 		    break;
 
