@@ -64,6 +64,11 @@ int main (int argc, char **argv) {
     int request_SOCKET_OK;
     int i_chan, cur_chan;
     int exitpdscondition;
+    int exitdapcondition;
+
+    int span_interval = 5;
+    int time_to_sleep = 0;
+
 
     NMXP_MSG_SERVER type;
     void *buffer;
@@ -187,13 +192,21 @@ int main (int argc, char **argv) {
 
     nmxp_log(0, 1, "Starting comunication.\n");
 
-
     /* TODO condition starting DAP or PDS */
     if( (params.start_time != 0   &&   params.end_time != 0)
 	    || params.delay > 0
 	    ) {
 
+	if(params.delay > 0) {
+	    params.start_time = time(NULL) - params.delay;
+	    params.end_time = params.start_time + span_interval;
+	}
 
+	exitdapcondition = 1;
+
+	while(exitdapcondition) {
+
+	nmxp_log(0, 0, "start_time = %d - end_time = %d\n", params.start_time, params.end_time);
 
 
 	/* ************************************************************** */
@@ -381,7 +394,18 @@ int main (int argc, char **argv) {
 	/* ************************************************************ */
 
 
+	if(params.delay > 0) {
+	    time_to_sleep = (params.end_time - params.start_time) - (time(NULL) - (params.start_time + params.delay));
+	    nmxp_log(0, 0, "time to sleep %dsec.\n", time_to_sleep);
+	    sleep(time_to_sleep);
+	    params.start_time = params.end_time;
+	    params.end_time = params.start_time + span_interval;
+	} else {
+	    exitdapcondition = 0;
+	}
 
+
+    } /* END while(exitdapcondition) */
 
     } else {
 
