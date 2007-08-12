@@ -25,11 +25,12 @@ typedef struct {
     char *datas_password;
     int stc;
     int rate;
+    char *plugin_slink;
     int flag_writeseed;
     int flag_verbose;
     int flag_listchannels;
     int flag_writefile;
-    int flag_writeseedlink;
+    int flag_slink;
     int flag_buffered;
     int flag_logdata;
 } NMXPTOOL_PARAMS;

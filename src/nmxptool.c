@@ -319,7 +319,7 @@ int main (int argc, char **argv) {
 
 #ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
 		    /* Send data to SeedLink Server */
-		    if(params.flag_writeseedlink) {
+		    if(params.flag_slink) {
 			/* TODO Set values */
 			const int usec_correction = 0;
 			const int timing_quality = 100;
@@ -476,7 +476,7 @@ int main (int argc, char **argv) {
 
 #ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
 		    /* Send data to SeedLink Server */
-		    if(params.flag_writeseedlink) {
+		    if(params.flag_slink) {
 			/* TODO Set values */
 			const int usec_correction = 0;
 			const int timing_quality = 100;

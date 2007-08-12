@@ -22,6 +22,7 @@ const NMXPTOOL_PARAMS NMXPTOOL_PARAMS_DEFAULT =
     NULL,
     DEFAULT_STC,
     DEFAULT_RATE,
+    NULL,
     0,
     0,
     0,
@@ -81,8 +82,9 @@ Other arguments:\n\
 
 #ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
     printf("\
-  -k, --seedlink          Send received data to SeedLink.\n\
-                          This tool become a SeedLink plug-in.\n");
+  -k, --slink=[plug_name] Send received data to SeedLink like as plug-in.\n\
+                          plug_name is optional and SeisComP sets it.\n\
+                          THIS OPTION MUST BE THE LAST!\n");
 #endif
     printf("\
   -h, --help              Print this help.\n\
@@ -163,7 +165,7 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 #endif
 	{"writefile",    no_argument,       0, 'w'},
 #ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
-	{"seedlink",     no_argument,       0, 'k'},
+	{"slink",        optional_argument, 0, 'k'},
 #endif
 	{"help",         no_argument,       0, 'h'},
 	{0, 0, 0, 0}
@@ -277,6 +279,13 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 		    params->datas_password = optarg;
 		    break;
 
+#ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
+		case 'k':
+		    params->flag_slink = 1;
+		    params->plugin_slink = optarg;
+		    break;
+#endif
+
 		case 'v':
 		    params->flag_verbose = 1;
 		    break;
@@ -302,12 +311,6 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 		case 'w':
 		    params->flag_writefile = 1;
 		    break;
-
-#ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
-		case 'k':
-		    params->flag_writeseedlink = 1;
-		    break;
-#endif
 
 		case 'h':
 		    nmxptool_usage(long_options);
