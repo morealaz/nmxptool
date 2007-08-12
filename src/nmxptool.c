@@ -189,7 +189,9 @@ int main (int argc, char **argv) {
 
 
     /* TODO condition starting DAP or PDS */
-    if(params.start_time != 0   &&   params.end_time != 0) {
+    if( (params.start_time != 0   &&   params.end_time != 0)
+	    || params.delay > 0
+	    ) {
 
 
 
