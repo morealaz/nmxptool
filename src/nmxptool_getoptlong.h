@@ -9,7 +9,7 @@
 #define DEFAULT_PORT_PDS 28000
 #define DEFAULT_STC      30
 #define DEFAULT_RATE     -1
-#define DEFAULT_DELAY    600
+#define DEFAULT_DELAY    0
 
 
 /*! \brief Struct that stores information about parameter of the program */
