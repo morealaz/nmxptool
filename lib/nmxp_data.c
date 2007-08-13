@@ -153,27 +153,27 @@ int nmxp_data_trim(NMXP_DATA_PROCESS *pd, double trim_start_time, double trim_en
 
 
     if(pd) {
-	nmxp_log(0, 0, "nmxp_data_trim(..., %.4f, %.4f, %d!\n", trim_start_time, trim_end_time, exclude_bitmap);
+	nmxp_log(0, 1, "nmxp_data_trim(..., %.4f, %.4f, %d!\n", trim_start_time, trim_end_time, exclude_bitmap);
 	first_time = pd->time;
 	last_time = pd->time + ((double) pd->nSamp / (double) pd->sampRate);
 	if(first_time <= trim_start_time &&  trim_start_time <= last_time) {
 	    first_nsamples_to_remove = (int) ( ((trim_start_time - first_time) * (double) pd->sampRate) + 0.5 );
 	    if((exclude_bitmap & NMXP_DATA_TRIM_EXCLUDE_FIRST)) {
 		first_nsamples_to_remove++;
-		nmxp_log(0, 0, "Excluded the first sample!\n");
+		nmxp_log(0, 1, "Excluded the first sample!\n");
 	    }
 	}
 	if(first_time <= trim_end_time  &&  trim_end_time <= last_time) {
 	    last_nsamples_to_remove = (int) ( ((last_time - trim_end_time) * (double) pd->sampRate) + 0.5 );
 	    if((exclude_bitmap & NMXP_DATA_TRIM_EXCLUDE_LAST)) {
 		last_nsamples_to_remove++;
-		nmxp_log(0, 0, "Excluded the last sample!\n");
+		nmxp_log(0, 1, "Excluded the last sample!\n");
 	    }
 	}
 
-	nmxp_log(0, 0, "first_time=%.2f last_time=%.2f trim_start_time=%.2f trim_end_time=%.2f\n",
+	nmxp_log(0, 1, "first_time=%.2f last_time=%.2f trim_start_time=%.2f trim_end_time=%.2f\n",
 		first_time, last_time, trim_start_time, trim_end_time);
-	nmxp_log(0, 0, "first_nsamples_to_remove=%d last_nsamples_to_remove=%d pd->nSamp=%d\n",
+	nmxp_log(0, 1, "first_nsamples_to_remove=%d last_nsamples_to_remove=%d pd->nSamp=%d\n",
 		first_nsamples_to_remove,
 		last_nsamples_to_remove,
 		pd->nSamp);
@@ -212,10 +212,10 @@ int nmxp_data_trim(NMXP_DATA_PROCESS *pd, double trim_start_time, double trim_en
     }
 
     if(ret == 1) {
-	nmxp_log(0, 0, "nmxp_data_trim() trimmed data! (Output %d samples)\n", pd->nSamp);
+	nmxp_log(0, 1, "nmxp_data_trim() trimmed data! (Output %d samples)\n", pd->nSamp);
     }
 
-    nmxp_log(0, 2, "nmxp_data_trim() exit ret=%d\n", ret);
+    nmxp_log(0, 1, "nmxp_data_trim() exit ret=%d\n", ret);
 
     return ret;
 }
