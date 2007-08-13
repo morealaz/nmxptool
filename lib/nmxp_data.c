@@ -107,10 +107,9 @@ int nmxp_data_unpack_bundle (int *outdata, unsigned char *indata, int *prev)
 
 		for (i=0; i<k; i++) {
 			*outdata = *prev + d4[i];
-			/*
-				nmxp_log(0, 1, "val = %d, diff[%d] = %d, *prev = %d\n",
-						*outdata, i, d4[i], *prev);
-						*/
+			/* nmxp_log(0, 0, "val = %d, diff[%d] = %d, *prev = %d\n",
+				*outdata, i, d4[i], *prev);
+				*/
 			*prev = *outdata;
 
 			outdata++;
@@ -192,7 +191,7 @@ int nmxp_data_trim(NMXP_DATA_PROCESS *pd, double trim_start_time, double trim_en
 		    pd->xn = pd->pDataPtr[pd->nSamp - last_nsamples_to_remove];
 		}
 
-		for(i=0; i < first_nsamples_to_remove; i++) {
+		for(i=0; i < pd->nSamp - first_nsamples_to_remove; i++) {
 		    pd->pDataPtr[i] = pd->pDataPtr[first_nsamples_to_remove + i];
 		}
 		pd->nSamp = new_nSamp;
@@ -272,6 +271,18 @@ int nmxp_data_log(NMXP_DATA_PROCESS *pd) {
 		pd->x0n_significant,
 		pd->length
 	      );
+	/*
+	if(pd->nSamp > 0) {
+	    int i;
+	    for(i=0; i < pd->nSamp; i++) {
+		printf("%6d ", pd->pDataPtr[i]);
+		if((i + 1) % 20 == 0) {
+		    printf("\n");
+		}
+	    }
+	    printf("\n");
+	}
+	*/
     } else {
 	printf("Pointer to NMXP_DATA_PROCESS is NULL!\n");
     }
