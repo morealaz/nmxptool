@@ -34,9 +34,9 @@ typedef struct {
 void nmxptool_check_and_log_gap(double time1, double time2, const double gap_tollerance, const char *station, const char *channel) {
     double gap = time1 - time2 ;
     if(gap > gap_tollerance) {
-	nmxp_log(1, 0, "Gap %.2f sec. for %s.%s from %d to %d!\n", gap, station, channel, time1, time2);
+	nmxp_log(1, 0, "Gap %.2f sec. for %s.%s from %.2f to %.2f!\n", gap, station, channel, time1, time2);
     } else if (gap < -gap_tollerance) {
-	nmxp_log(1, 0, "Overlap %.2f sec. for %s.%s from %d to %d!\n", gap, station, channel, time2, time1);
+	nmxp_log(1, 0, "Overlap %.2f sec. for %s.%s from %.2f to %.2f!\n", gap, station, channel, time2, time1);
     }
 }
 
