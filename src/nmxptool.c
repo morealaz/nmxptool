@@ -311,12 +311,16 @@ int main (int argc, char **argv) {
 
 		    /* Management of gaps */
 		    cur_chan = nmxp_chan_lookupKeyIndex(pd->key, channelList_subset);
-		    if(!channelListSeq[cur_chan].significant) {
+		    if(!channelListSeq[cur_chan].significant && pd->nSamp > 0) {
 			channelListSeq[cur_chan].significant = 1;
 		    } else {
-			nmxptool_check_and_log_gap(pd->time, channelListSeq[cur_chan].last_time, GAP_TOLLERANCE, pd->station, pd->channel);
+			if(channelListSeq[cur_chan].significant) {
+			    nmxptool_check_and_log_gap(pd->time, channelListSeq[cur_chan].last_time, GAP_TOLLERANCE, pd->station, pd->channel);
+			}
 		    }
-		    channelListSeq[cur_chan].last_time = pd->time + ((double) pd->nSamp / (double) pd->sampRate);
+		    if(channelListSeq[cur_chan].significant) {
+			channelListSeq[cur_chan].last_time = pd->time + ((double) pd->nSamp / (double) pd->sampRate);
+		    }
 
 #ifdef HAVE_LIBMSEED
 		    /* Write Mini-SEED record */
@@ -482,12 +486,16 @@ int main (int argc, char **argv) {
 
 	    /* Management of gaps */
 	    cur_chan = nmxp_chan_lookupKeyIndex(pd->key, channelList_subset);
-	    if(!channelListSeq[cur_chan].significant) {
+	    if(!channelListSeq[cur_chan].significant && pd->nSamp > 0) {
 		channelListSeq[cur_chan].significant = 1;
 	    } else {
-		nmxptool_check_and_log_gap(pd->time, channelListSeq[cur_chan].last_time, GAP_TOLLERANCE, pd->station, pd->channel);
+		if(channelListSeq[cur_chan].significant) {
+		    nmxptool_check_and_log_gap(pd->time, channelListSeq[cur_chan].last_time, GAP_TOLLERANCE, pd->station, pd->channel);
+		}
 	    }
-	    channelListSeq[cur_chan].last_time = pd->time + ((double) pd->nSamp / (double) pd->sampRate);
+	    if(channelListSeq[cur_chan].significant) {
+		channelListSeq[cur_chan].last_time = pd->time + ((double) pd->nSamp / (double) pd->sampRate);
+	    }
 
 
 #ifdef HAVE_LIBMSEED
