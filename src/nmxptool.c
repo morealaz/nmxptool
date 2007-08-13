@@ -66,7 +66,7 @@ int main (int argc, char **argv) {
     int exitpdscondition;
     int exitdapcondition;
 
-    int span_interval = 5;
+    int span_interval = 10;
     int time_to_sleep = 0;
 
 
@@ -198,7 +198,7 @@ int main (int argc, char **argv) {
 	    ) {
 
 	if(params.delay > 0) {
-	    params.start_time = time(NULL) - params.delay;
+	    params.start_time = ((time(NULL) - params.delay) / 10) * 10;
 	    params.end_time = params.start_time + span_interval;
 	}
 
@@ -244,7 +244,7 @@ int main (int argc, char **argv) {
 	while(request_SOCKET_OK == NMXP_SOCKET_OK  &&  i_chan < channelList_subset->number) {
 
 	    /* DAP Step 5: Send Data Request */
-	    request_SOCKET_OK = nmxp_sendDataRequest(naqssock, channelList_subset->channel[i_chan].key, params.start_time, params.end_time);
+	    request_SOCKET_OK = nmxp_sendDataRequest(naqssock, channelList_subset->channel[i_chan].key, (double) params.start_time, (double) params.end_time);
 
 	    if(request_SOCKET_OK == NMXP_SOCKET_OK) {
 
@@ -302,7 +302,7 @@ int main (int argc, char **argv) {
 
 		    /* Process a packet and return value in NMXP_DATA_PROCESS structure */
 		    pd = nmxp_processCompressedData(buffer, length, channelList_subset, CURRENT_NETWORK);
-		    nmxp_data_trim(pd, params.start_time, params.end_time);
+		    nmxp_data_trim(pd, params.start_time, params.end_time, 0);
 
 		    /* Log contents of last packet */
 		    if(params.flag_logdata) {
