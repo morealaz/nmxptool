@@ -10,7 +10,3 @@ TODO LIST:
 	* after t time amount of data, for example 10 seconds of data
 	* after n packets, for example like "ping"
 
-- Add following messages:
-	* PrecisList
-	* ChannelHeader
-
