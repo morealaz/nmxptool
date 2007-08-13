@@ -149,18 +149,25 @@ int nmxp_data_init(NMXP_DATA_PROCESS *pd);
 int nmxp_data_unpack_bundle (int *outdata, unsigned char *indata, int *prev);
 
 
+/* \brief Value for parameter exclude_bitmap in the function nmxp_data_trim() */
+#define NMXP_DATA_TRIM_EXCLUDE_FIRST 2
+
+/* \brief Value for parameter exclude_bitmap in the function nmxp_data_trim() */
+#define NMXP_DATA_TRIM_EXCLUDE_LAST  4
+
 /*! \brief Trim data within a time interval
  *
  * \param pd Pointer to struct NMXP_DATA_PROCESS
  * \param trim_start_time Start time.
  * \param trim_end_time End time.
+ * \param exclude_bitmap Bitmap for excluding or not the first and/or the last sample.
  *
  * \retval 2 On success, data has not been trimmed.
  * \retval 1 On success, data has been trimmed.
  * \retval 0 On error.
  *
  */
-int nmxp_data_trim(NMXP_DATA_PROCESS *pd, double trim_start_time, double trim_end_time);
+int nmxp_data_trim(NMXP_DATA_PROCESS *pd, double trim_start_time, double trim_end_time, unsigned char exclude_bitmap);
 
 
 /*! \brief Print info about struct NMXP_DATA_PROCESS
