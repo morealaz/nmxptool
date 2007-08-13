@@ -310,3 +310,95 @@ NMXP_CHAN_LIST *nmxp_getAvailableChannelList(char * hostname, int portnum, NMXP_
     return channelList_subset;
 }
 
+
+NMXP_CHAN_PRECISLIST *nmxp_getPrecisChannelList(char * hostname, int portnum, NMXP_DATATYPE datatype) {
+    int naqssock;
+    NMXP_CHAN_PRECISLIST *precisChannelList = NULL;
+    int i;
+    uint32_t connection_time;
+    char *datas_username = NULL, *datas_password = NULL;
+    int ret_sock;
+
+    NMXP_MSG_SERVER type;
+    void *buffer = NULL;
+    uint32_t length;
+    NMXP_PRECISLISTREQUESTBODY precisListRequestBody;
+
+    char str_start[200], str_end[200];
+    str_start[0] = 0;
+    str_end[0] = 0;
+    
+
+    /* DAP Step 1: Open a socket */
+    if( (naqssock = nmxp_openSocket(hostname, portnum)) == NMXP_SOCKET_ERROR) {
+	nmxp_log(1, 0, "Error opening socket!\n");
+	return NULL;
+    }
+
+    /* DAP Step 2: Read connection time */
+    if(nmxp_readConnectionTime(naqssock, &connection_time) != NMXP_SOCKET_OK) {
+	nmxp_log(1, 0, "Error reading connection time from server!\n");
+	return NULL;
+    }
+
+    /* DAP Step 3: Send a ConnectRequest */
+    if(nmxp_sendConnectRequest(naqssock, datas_username, datas_password, connection_time) != NMXP_SOCKET_OK) {
+	nmxp_log(1, 0, "Error sending connect request!\n");
+	return NULL;
+    }
+
+    /* DAP Step 4: Wait for a Ready message */
+    if(nmxp_waitReady(naqssock) != NMXP_SOCKET_OK) {
+	nmxp_log(1, 0, "Error waiting Ready message!\n");
+	return NULL;
+    }
+
+    /* DAP Step 5: Send Data Request */
+    precisListRequestBody.instr_id = htonl(-1);
+    precisListRequestBody.datatype = htonl(NMXP_DATA_TIMESERIES);
+    precisListRequestBody.type_of_channel = htonl(-1);
+
+    nmxp_sendMessage(naqssock, NMXP_MSG_PRECISLISTREQUEST, &precisListRequestBody, sizeof(NMXP_PRECISLISTREQUESTBODY));
+
+    /* DAP Step 6: Receive Data until receiving a Ready message */
+    ret_sock = nmxp_receiveMessage(naqssock, &type, &buffer, &length);
+    nmxp_log(0, 0, "ret_sock = %d, type = %d, length = %d\n", ret_sock, type, length);
+
+    while(ret_sock == NMXP_SOCKET_OK   &&    type != NMXP_MSG_READY) {
+	precisChannelList = buffer;
+
+	precisChannelList->number = ntohl(precisChannelList->number);
+	for(i = 0; i < precisChannelList->number; i++) {
+	    precisChannelList->channel[i].key = ntohl(precisChannelList->channel[i].key);
+	    precisChannelList->channel[i].start_time = ntohl(precisChannelList->channel[i].start_time);
+	    precisChannelList->channel[i].end_time = ntohl(precisChannelList->channel[i].end_time);
+
+	    nmxp_data_to_str(str_start, precisChannelList->channel[i].start_time);
+	    nmxp_data_to_str(str_end, precisChannelList->channel[i].end_time);
+
+	    nmxp_log(0, 0, "%12d %12s %10d %10d %20s %20s\n",
+		    precisChannelList->channel[i].key, precisChannelList->channel[i].name,
+		    precisChannelList->channel[i].start_time, precisChannelList->channel[i].end_time,
+		    str_start, str_end);
+	}
+
+	nmxp_log(0, 0, "Precis Channel List %d\n", precisChannelList->number);
+
+	/* Receive Message */
+	ret_sock = nmxp_receiveMessage(naqssock, &type, &buffer, &length);
+	nmxp_log(0, 0, "ret_sock = %d, type = %d, length = %d\n", ret_sock, type, length);
+    }
+
+
+
+    /* DAP Step 7: Repeat steps 5 and 6 for each data request */
+
+    /* DAP Step 8: Send a Terminate message (optional) */
+    nmxp_sendTerminateSubscription(naqssock, NMXP_SHUTDOWN_NORMAL, "Bye!");
+
+    /* DAP Step 9: Close the socket */
+    nmxp_closeSocket(naqssock);
+
+    return precisChannelList;
+}
+

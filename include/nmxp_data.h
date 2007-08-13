@@ -155,6 +155,11 @@ int nmxp_data_unpack_bundle (int *outdata, unsigned char *indata, int *prev);
 /* \brief Value for parameter exclude_bitmap in the function nmxp_data_trim() */
 #define NMXP_DATA_TRIM_EXCLUDE_LAST  4
 
+/*! \brief Convert epoch in string
+ */
+int nmxp_data_to_str(char *out_str, double time_d);
+
+
 /*! \brief Trim data within a time interval
  *
  * \param pd Pointer to struct NMXP_DATA_PROCESS

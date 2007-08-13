@@ -128,6 +128,8 @@ int main (int argc, char **argv) {
 	channelList = nmxp_getAvailableChannelList(params.hostname, params.portnumberpds, NMXP_DATA_TIMESERIES);
 	nmxp_chan_print_channelList(channelList);
 
+	nmxp_getPrecisChannelList(params.hostname, params.portnumberdap, NMXP_DATA_TIMESERIES);
+
 	return 1;
     }
 

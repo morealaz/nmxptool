@@ -14,6 +14,13 @@
 
 #include <stdint.h>
 
+/*! \brief Type of Data */
+typedef enum {
+    NMXP_DATA_TIMESERIES	= 1,
+    NMXP_DATA_SOH		= 2,
+    NMXP_DATA_TRANSERIAL	= 6
+} NMXP_DATATYPE;
+
 /*! \brief The key/name info for one channel */
 typedef struct {
     uint32_t key;
@@ -29,13 +36,26 @@ typedef struct {
     NMXP_CHAN_KEY channel[MAX_N_CHAN];
 } NMXP_CHAN_LIST;
 
+/*! \brief Precis Channel item */
+typedef struct {
+    uint32_t key;
+    char name[12];
+    uint32_t start_time;
+    uint32_t end_time;
+} NMXP_CHAN_PRECISITEM;
 
-/*! \brief Type of Data */
-typedef enum {
-    NMXP_DATA_TIMESERIES	= 1,
-    NMXP_DATA_SOH		= 2,
-    NMXP_DATA_TRANSERIAL	= 6
-} NMXP_DATATYPE;
+/*! \brief Precis Channel list */
+typedef struct {
+    uint32_t number;
+    NMXP_CHAN_PRECISITEM channel[MAX_N_CHAN];
+} NMXP_CHAN_PRECISLIST;
+
+/*! \brief Precis list requst body */
+typedef struct {
+    int32_t instr_id;
+    NMXP_DATATYPE datatype;
+    int32_t type_of_channel;
+} NMXP_PRECISLISTREQUESTBODY;
 
 
 /*! \brief Character separator for channel list */

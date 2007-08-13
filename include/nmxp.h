@@ -258,5 +258,19 @@ int nmxp_sendDataRequest(int isock, uint32_t key, uint32_t start_time, uint32_t 
  */
 NMXP_CHAN_LIST *nmxp_getAvailableChannelList(char * hostname, int portnum, NMXP_DATATYPE datatype);
 
+
+/*! \brief Get the list of the start and end time for the available data for each channel.
+ *
+ * \param hostname host name
+ * \param portnum port number
+ * \param datatype Type of data contained in the channel.
+ *
+ * \return Channel list. It will need to be freed.
+ *
+ * \warning Returned value will need to be freed.
+ * 
+ */
+NMXP_CHAN_PRECISLIST *nmxp_getPrecisChannelList(char * hostname, int portnum, NMXP_DATATYPE datatype);
+
 #endif
 
