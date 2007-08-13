@@ -10,3 +10,4 @@ TODO LIST:
 	* after t time amount of data, for example 10 seconds of data
 	* after n packets, for example like "ping"
 
+- Improved "delay" way avoiding to open and close the socket
