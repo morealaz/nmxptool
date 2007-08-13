@@ -241,8 +241,8 @@ NMXP_DATA_PROCESS *nmxp_processDecompressedData(char* buffer_data, int length_da
   int       idx;
   int32_t outdata[MAX_OUTDATA];
 
-  char *sta = 0;      /* The station code */
-  char *chan = 0;     /* The channel code */
+  char station_code[20];
+  char channel_code[20];
 
   static NMXP_DATA_PROCESS pd;
 
@@ -269,17 +269,8 @@ NMXP_DATA_PROCESS *nmxp_processDecompressedData(char* buffer_data, int length_da
       pDataPtr[idx] = netInt;
   }
 
-  /* Lookup the station and channel code */
-  sta = strdup(nmxp_chan_lookupName(pKey, channelList));
-  if ( (chan = strchr(sta, '.')) == NULL ) {
-    nmxp_log(1,0, "Channel name not in STN.CHAN format: %s\n", sta);
-    /*
-    free(sta);
-    return;
-    */
-  }
-  if(chan) {
-      *chan++ = '\0';
+  if(!nmxp_chan_cpy_sta_chan(nmxp_chan_lookupName(pKey, channelList), station_code, channel_code)) {
+    nmxp_log(1,0, "Channel name not in STN.CHAN format: %s\n", nmxp_chan_lookupName(pKey, channelList));
   }
   
   nmxp_data_init(&pd);
@@ -288,11 +279,11 @@ NMXP_DATA_PROCESS *nmxp_processDecompressedData(char* buffer_data, int length_da
   if(network_code) {
       strcpy(pd.network, network_code);
   }
-  if(sta) {
-      strncpy(pd.station, sta, STATION_LENGTH);
+  if(station_code[0] != 0) {
+      strncpy(pd.station, station_code, STATION_LENGTH);
   }
-  if(chan) {
-      strncpy(pd.channel, chan, CHANNEL_LENGTH);
+  if(channel_code[0] != 0) {
+      strncpy(pd.channel, channel_code, CHANNEL_LENGTH);
   }
   pd.packet_type = NMXP_MSG_DECOMPRESSED;
   pd.x0 = -1;
@@ -308,8 +299,6 @@ NMXP_DATA_PROCESS *nmxp_processDecompressedData(char* buffer_data, int length_da
   pd.pDataPtr = pDataPtr;
   pd.sampRate = pSampRate;
 
-  free(sta);
-
   return &pd;
 }
 
@@ -322,8 +311,8 @@ NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data
     int32_t   pSampRate = 0;
     int32_t  *pDataPtr  = 0;
 
-    char *sta = 0;      /* The station code */
-    char *chan = 0;     /* The channel code */
+    char station_code[20];
+    char channel_code[20];
 
     static NMXP_DATA_PROCESS pd;
 
@@ -446,20 +435,11 @@ NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data
 
 	pSampRate = this_sample_rate;
 
-	/* Lookup the station and channel code */
-	sta = strdup(nmxp_chan_lookupName(pKey, channelList));
-	if ( (chan = strchr(sta, '.')) == NULL ) {
-	    nmxp_log(1, 0, "Channel name not in STN.CHAN format: %s\n", sta);
-	    /*
-	    free(sta);
-	    return;
-	    */
+	if(!nmxp_chan_cpy_sta_chan(nmxp_chan_lookupName(pKey, channelList), station_code, channel_code)) {
+	    nmxp_log(1,0, "Channel name not in STN.CHAN format: %s\n", nmxp_chan_lookupName(pKey, channelList));
 	}
-	if(chan) {
-	    *chan++ = '\0';
-	}
-
-	nmxp_log(0, 1, "Channel key %d for %s.%s\n", pKey, sta, chan);
+  
+	nmxp_log(0, 1, "Channel key %d for %s.%s\n", pKey, station_code, channel_code);
 
 	nmxp_data_init(&pd);
 
@@ -467,11 +447,11 @@ NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data
 	if(network_code) {
 	    strcpy(pd.network, network_code);
 	}
-	if(sta) {
-	    strncpy(pd.station, sta, STATION_LENGTH);
+	if(station_code[0] != 0) {
+	    strncpy(pd.station, station_code, STATION_LENGTH);
 	}
-	if(chan) {
-	    strncpy(pd.channel, chan, CHANNEL_LENGTH);
+	if(channel_code[0] != 0) {
+	    strncpy(pd.channel, channel_code, CHANNEL_LENGTH);
 	}
 	pd.packet_type = nmx_ptype;
 	pd.x0 = nmx_x0;
@@ -485,8 +465,6 @@ NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data
 	pd.nSamp = pNSamp;
 	pd.pDataPtr = pDataPtr;
 	pd.sampRate = pSampRate;
-
-	free(sta);
 
 	return &pd;
 }
