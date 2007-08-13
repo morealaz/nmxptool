@@ -104,8 +104,7 @@ DAP Arguments:\n\
   -u, --username=USER     DataServer username.\n\
   -p, --password=PASS     DataServer password.\n\
 \n\
-",
-DEFAULT_DELAY);
+");
 
     printf("\
 PDS arguments:\n\
@@ -255,6 +254,7 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 
 		case 'S':
 		    params->stc = atoi(optarg);
+		    nmxp_log(0, 0, "Short-Term-Completion %d\n", params->stc);
 		    break;
 
 		case 'R':

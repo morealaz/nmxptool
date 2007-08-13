@@ -59,7 +59,7 @@ int nmxp_receiveChannelList(int isock, NMXP_CHAN_LIST **pchannelList) {
 }
 
 
-int nmxp_sendAddTimeSeriesChannel(int isock, NMXP_CHAN_LIST *channelList, uint32_t shortTermCompletion, uint32_t out_format, NMXP_BUFFER_FLAG buffer_flag) {
+int nmxp_sendAddTimeSeriesChannel(int isock, NMXP_CHAN_LIST *channelList, int32_t shortTermCompletion, uint32_t out_format, NMXP_BUFFER_FLAG buffer_flag) {
     int ret;
     uint32_t buffer_length = 16 + (4 * channelList->number); 
     char *buffer = malloc(buffer_length);
