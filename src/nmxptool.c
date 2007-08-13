@@ -198,7 +198,7 @@ int main (int argc, char **argv) {
 	    ) {
 
 	if(params.delay > 0) {
-	    params.start_time = ((time(NULL) - params.delay) / 10) * 10;
+	    params.start_time = ((time(NULL) - params.delay - span_interval) / 10) * 10;
 	    params.end_time = params.start_time + span_interval;
 	}
 
@@ -206,7 +206,7 @@ int main (int argc, char **argv) {
 
 	while(exitdapcondition) {
 
-	nmxp_log(0, 0, "start_time = %d - end_time = %d\n", params.start_time, params.end_time);
+	nmxp_log(0, 1, "start_time = %d - end_time = %d\n", params.start_time, params.end_time);
 
 
 	/* ************************************************************** */
@@ -395,9 +395,13 @@ int main (int argc, char **argv) {
 
 
 	if(params.delay > 0) {
-	    time_to_sleep = (params.end_time - params.start_time) - (time(NULL) - (params.start_time + params.delay));
-	    nmxp_log(0, 0, "time to sleep %dsec.\n", time_to_sleep);
-	    sleep(time_to_sleep);
+	    time_to_sleep = (params.end_time - params.start_time) - (time(NULL) - (params.start_time + params.delay + span_interval));
+	    if(time_to_sleep >= 0) {
+		sleep(time_to_sleep);
+	    } else {
+		nmxp_log(1, 0, "time to sleep %dsec.\n", time_to_sleep);
+		sleep(3);
+	    }
 	    params.start_time = params.end_time;
 	    params.end_time = params.start_time + span_interval;
 	} else {
