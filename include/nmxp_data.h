@@ -202,9 +202,10 @@ int nmxp_data_seed_init(NMXP_DATA_SEED *data_seed);
 
 /*! \brief Write mini-seed records from a NMXP_DATA_PROCESS structure.
  *
- * \param pd Pointer to struct NMXP_DATA_PROCESS
- * \param data_seed Pointer to struct NMXP_DATA_SEED
- * \param pmsr Pointer to mini-SEED record
+ * \param pd Pointer to struct NMXP_DATA_PROCESS.
+ * \param data_seed Pointer to struct NMXP_DATA_SEED.
+ * \param pmsr Pointer to mini-SEED record.
+ * \param x_1 Last sample value of the last received packet.
  *
  * \warning pmsr is used like (void *) but it has to be a pointer to MSRecord !!!
  *
