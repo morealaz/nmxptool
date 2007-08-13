@@ -184,6 +184,14 @@ int nmxp_data_trim(NMXP_DATA_PROCESS *pd, double trim_start_time, double trim_en
 
 	    if(new_nSamp > 0) {
 
+		if(first_nsamples_to_remove > 0) {
+		    pd->x0 = pd->pDataPtr[first_nsamples_to_remove];
+		}
+
+		if(last_nsamples_to_remove > 0) {
+		    pd->xn = pd->pDataPtr[pd->nSamp - last_nsamples_to_remove];
+		}
+
 		for(i=0; i < first_nsamples_to_remove; i++) {
 		    pd->pDataPtr[i] = pd->pDataPtr[first_nsamples_to_remove + i];
 		}
@@ -195,10 +203,11 @@ int nmxp_data_trim(NMXP_DATA_PROCESS *pd, double trim_start_time, double trim_en
 
 	    } else if(new_nSamp == 0) {
 		if(pd->pDataPtr) {
-		    free(pd->pDataPtr);
-		    pd->pDataPtr = NULL;
+		    nmxp_log(0, 0, "nmxp_data_trim() nSamp = %d\n", new_nSamp);
 		}
 		pd->nSamp = 0;
+		pd->x0 = -1;
+		pd->xn = -1;
 		ret = 1;
 	    } else {
 		    nmxp_log(1, 0, "Error in nmxp_data_trim() nSamp = %d\n", new_nSamp);
