@@ -13,3 +13,5 @@ TODO LIST:
 - Improve "delay" way avoiding to open and close the socket
 
 - Add option for output directory
+
+- params.start_time and params.start_time has to become double
