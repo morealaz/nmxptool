@@ -55,7 +55,7 @@ typedef struct {
     int32_t instr_id;
     NMXP_DATATYPE datatype;
     int32_t type_of_channel;
-} NMXP_PRECISLISTREQUESTBODY;
+} NMXP_MSGBODY_PRECISLISTREQUEST;
 
 
 /*! \brief Character separator for channel list */

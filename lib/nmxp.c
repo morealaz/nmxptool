@@ -322,7 +322,7 @@ NMXP_CHAN_PRECISLIST *nmxp_getPrecisChannelList(char * hostname, int portnum, NM
     NMXP_MSG_SERVER type;
     void *buffer = NULL;
     uint32_t length;
-    NMXP_PRECISLISTREQUESTBODY precisListRequestBody;
+    NMXP_MSGBODY_PRECISLISTREQUEST precisListRequestBody;
 
     char str_start[200], str_end[200];
     str_start[0] = 0;
@@ -358,7 +358,11 @@ NMXP_CHAN_PRECISLIST *nmxp_getPrecisChannelList(char * hostname, int portnum, NM
     precisListRequestBody.datatype = htonl(NMXP_DATA_TIMESERIES);
     precisListRequestBody.type_of_channel = htonl(-1);
 
-    nmxp_sendMessage(naqssock, NMXP_MSG_PRECISLISTREQUEST, &precisListRequestBody, sizeof(NMXP_PRECISLISTREQUESTBODY));
+    nmxp_sendMessage(naqssock, NMXP_MSG_PRECISLISTREQUEST, &precisListRequestBody, sizeof(NMXP_MSGBODY_PRECISLISTREQUEST));
+    /*
+    NMXP_MSG_CHANNELLISTREQUEST
+    NMXP_MSG_CHANNELINFOREQUEST
+    */
 
     /* DAP Step 6: Receive Data until receiving a Ready message */
     ret_sock = nmxp_receiveMessage(naqssock, &type, &buffer, &length);
