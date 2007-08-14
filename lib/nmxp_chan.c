@@ -58,18 +58,14 @@ int nmxp_chan_match(const char *station_dot_channel, char *pattern)
     int ret = 0;
     int i, l;
     char sta_pattern[20];
-    char *cha_pattern;
+    char cha_pattern[20];
     char sta_sdc[20];
     char *cha_sdc;
 
     /* validate pattern channel */
-    strcpy(sta_pattern, pattern);
-    if( (cha_pattern = strchr(sta_pattern, '.')) == NULL ) {
+    if(!nmxp_chan_cpy_sta_chan(pattern, sta_pattern, cha_pattern)) {
 	nmxp_log(1, 0, "Channel pattern %s is not in STA.CHAN format!\n", pattern);
 	return -1;
-    }
-    if(cha_pattern) {
-	*cha_pattern++ = '\0';
     }
 
     l = strlen(sta_pattern);
