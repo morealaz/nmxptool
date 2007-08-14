@@ -125,7 +125,7 @@ int nmxp_data_to_str(char *out_str, double time_d) {
     struct tm *tm_start_time = gmtime(&time_t_start_time);
     
     // sprintf(out_str, "%04d/%02d/%02d %02d:%02d:%02d.%04d",
-    sprintf(out_str, "%04d.%d %02d:%02d:%02d.%04d",
+    sprintf(out_str, "%04d.%03d %02d:%02d:%02d.%04d",
 	    tm_start_time->tm_year + 1900,
 	    /*
 	    tm_start_time->tm_mon + 1,
