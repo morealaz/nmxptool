@@ -15,3 +15,6 @@ TODO LIST:
 - Add option for output directory
 
 - params.start_time and params.start_time has to become double
+
+- Define a nmxptool_log or use printf
+
