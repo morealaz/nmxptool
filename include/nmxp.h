@@ -17,13 +17,13 @@
  *
  * moreover, you can use them to develop software to:
  * \li analyze data in realtime (waveforms, triggers, ...)
- * \li retrieve and convert on the fly data into the mini-SEED records
- * \li feed SeedLink server
+ * \li retrieve and convert on the fly data into the mini-SEED records (optional)
+ * \li feed SeedLink server (optional)
  *
  *
  * \section dependencies_sec Dependencies
  *
- * A library is needed to install and use \c libnmxp:
+ * An optional library is needed to allow \c libnmxp to save mini-SEED records:
  *
  * \li \c libmseed: http://www.iris.edu/manuals/\n
  * The Mini-SEED library. A C library framework for manipulating and managing SEED data records.\n
@@ -33,7 +33,7 @@
  * \section install_sec Installation
  *
  * \c nmxp library has been developed using <i>GNU Build Tools</i> (\c automake, \c autoconf and \c configure script)
- * taking in account the Cross-Platform aspects.
+ * taking in account the POSIX Cross-Platform aspects.
  * So you should be able to compile and install it everywhere you can launch the following commands:
  *
  * <tt>./configure</tt>
@@ -46,12 +46,12 @@
  *
  * \section tools_sec Tools
  *
- * Inside the distribution are available two tools that are clients to interact respectively to \c NaqsServer and \c DataServer.
+ * Inside the distribution is available a tool which is a client that interact with \c NaqsServer and \c DataServer.
  *
- * \li \c nmxp_pds: implements the <i>Nanometrics Private Data Stream Protocol 1.4</i> and permits to retrieve data in near-realtime.\n
- * Please, refer to the \b README file or help <tt>nmxp_pds --help</tt>.
- * \li \c nmxp_dap: implements the <i>Nanometrics Data Access Protocol 1.0</i> and permits to retrieve backward data.\n
- * Please, refer to the \b README file or help <tt>nmxp_dap --help</tt>.
+ * \c nmxptool:
+ * 	\li implements the <i>Nanometrics Private Data Stream Protocol 1.4</i> and permits to retrieve data in near-realtime.\n
+ * 	\li implements the <i>Nanometrics Data Access Protocol 1.0</i> and permits to retrieve backward data.\n
+ * Please, refer to the \b README file or help <tt>nmxptool --help</tt>.
  *
  *
  * \subsection examples_sec Examples
