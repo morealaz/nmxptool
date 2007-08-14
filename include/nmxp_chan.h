@@ -14,16 +14,20 @@
 
 #include <stdint.h>
 
-/*! \brief Type of Data */
-typedef enum {
-    NMXP_DATA_TIMESERIES	= 1,
-    NMXP_DATA_SOH		= 2,
-    NMXP_DATA_TRANSERIAL	= 6
-} NMXP_DATATYPE;
+/*! \brief Channel list */
+typedef struct NMXP_META_CHAN_LIST {
+    int32_t key;
+    char name[12];
+    int32_t start_time;
+    int32_t end_time;
+    char network[12];
+    struct NMXP_META_CHAN_LIST *next;
+} NMXP_META_CHAN_LIST;
+
 
 /*! \brief The key/name info for one channel */
 typedef struct {
-    uint32_t key;
+    int32_t key;
     char name[12];
 } NMXP_CHAN_KEY;
 
@@ -38,7 +42,7 @@ typedef struct {
 
 /*! \brief Precis Channel item */
 typedef struct {
-    uint32_t key;
+    int32_t key;
     char name[12];
     uint32_t start_time;
     uint32_t end_time;
@@ -50,12 +54,32 @@ typedef struct {
     NMXP_CHAN_PRECISITEM channel[MAX_N_CHAN];
 } NMXP_CHAN_PRECISLIST;
 
-/*! \brief Precis list requst body */
+/*! \brief Type of Data */
+typedef enum {
+    NMXP_DATA_TIMESERIES	= 1,
+    NMXP_DATA_SOH		= 2,
+    NMXP_DATA_TRANSERIAL	= 6
+} NMXP_DATATYPE;
+
+/*! \brief Precis list request body */
 typedef struct {
     int32_t instr_id;
     NMXP_DATATYPE datatype;
     int32_t type_of_channel;
 } NMXP_MSGBODY_PRECISLISTREQUEST;
+
+/*! \brief Channel info request body */
+typedef struct {
+    int32_t key;
+    char name[12];
+    char network[12];
+} NMXP_MSGBODY_CHANNELINFORESPONSE;
+
+/*! \brief Channel info request body */
+typedef struct {
+    int32_t key;
+    int32_t ignored;
+} NMXP_MSGBODY_CHANNELINFOREQUEST;
 
 
 /*! \brief Character separator for channel list */
@@ -64,6 +88,9 @@ typedef struct {
 
 /*! \brief Return type of data from a channel key */
 #define getDataTypeFromKey(key) ((key >> 8) & 0xff)
+
+/*! \brief Return channel number from a channel key */
+#define getChannelNumberFromKey(key) ((key) & 0x000f)
 
 
 
@@ -116,7 +143,7 @@ int nmxp_chan_lookupKey(char* name, NMXP_CHAN_LIST *channelList);
  * \return Index of channel with key. -1 on error.
  *
  */
-int nmxp_chan_lookupKeyIndex(uint32_t key, NMXP_CHAN_LIST *channelList);
+int nmxp_chan_lookupKeyIndex(int32_t key, NMXP_CHAN_LIST *channelList);
 
 
 /*! \brief Looks up a channel name in the list using a key
@@ -127,7 +154,7 @@ int nmxp_chan_lookupKeyIndex(uint32_t key, NMXP_CHAN_LIST *channelList);
  * \return Name of channel with key. NULL on error.
  *
  */
-char *nmxp_chan_lookupName(uint32_t key, NMXP_CHAN_LIST *channelList);
+char *nmxp_chan_lookupName(int32_t key, NMXP_CHAN_LIST *channelList);
 
 
 /*! \brief Looks up a channel with specified data type.
@@ -179,6 +206,21 @@ void nmxp_chan_sortByName(NMXP_CHAN_LIST *channelList);
  *
  */
 void nmxp_chan_print_channelList(NMXP_CHAN_LIST *channelList);
+
+
+void nmxp_meta_chan_free(NMXP_META_CHAN_LIST **chan_list);
+
+NMXP_META_CHAN_LIST *nmxp_meta_chan_add(NMXP_META_CHAN_LIST **chan_list, int32_t key, char *name, int32_t start_time, int32_t end_time, char *network);
+
+NMXP_META_CHAN_LIST *nmxp_meta_chan_search_key(NMXP_META_CHAN_LIST *chan_list, int32_t key);
+
+NMXP_META_CHAN_LIST *nmxp_meta_chan_set_name(NMXP_META_CHAN_LIST *chan_list, int32_t key, char *name);
+
+NMXP_META_CHAN_LIST *nmxp_meta_chan_set_times(NMXP_META_CHAN_LIST *chan_list, int32_t key, int32_t start_time, int32_t end_time);
+
+NMXP_META_CHAN_LIST *nmxp_meta_chan_set_network(NMXP_META_CHAN_LIST *chan_list, int32_t key, char *network);
+
+void nmxp_meta_chan_print(NMXP_META_CHAN_LIST *chan_list);
 
 #endif
 

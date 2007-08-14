@@ -148,7 +148,7 @@ int nmxp_chan_lookupKey(char* name, NMXP_CHAN_LIST *channelList)
 }
 
 
-int nmxp_chan_lookupKeyIndex(uint32_t key, NMXP_CHAN_LIST *channelList)
+int nmxp_chan_lookupKeyIndex(int32_t key, NMXP_CHAN_LIST *channelList)
 {
     int i_chan = 0;
     int ret = -1;
@@ -166,7 +166,7 @@ int nmxp_chan_lookupKeyIndex(uint32_t key, NMXP_CHAN_LIST *channelList)
 }
 
 
-char *nmxp_chan_lookupName(uint32_t key, NMXP_CHAN_LIST *channelList)
+char *nmxp_chan_lookupName(int32_t key, NMXP_CHAN_LIST *channelList)
 {
     int i_chan = 0;
     static char ret[12];
@@ -293,4 +293,143 @@ void nmxp_chan_print_channelList(NMXP_CHAN_LIST *channelList) {
     }
 
 }
+
+
+void nmxp_meta_chan_free(NMXP_META_CHAN_LIST **chan_list) {
+    NMXP_META_CHAN_LIST *iter = *chan_list;
+    NMXP_META_CHAN_LIST *iter_next = NULL;
+
+    nmxp_log(0, 1, "nmxp_meta_chan_free()\n");
+
+    if(iter) {
+	iter_next = iter->next;
+	while(iter) {
+	    free(iter);
+	    iter = iter_next;
+	    iter_next = iter->next;
+	}
+	*chan_list = NULL;
+    }
+
+}
+
+NMXP_META_CHAN_LIST *nmxp_meta_chan_add(NMXP_META_CHAN_LIST **chan_list, int32_t key, char *name, int32_t start_time, int32_t end_time, char *network) {
+    NMXP_META_CHAN_LIST *iter = NULL;
+    NMXP_META_CHAN_LIST *new_item = NULL;
+
+    nmxp_log(0, 1, "nmxp_meta_chan_add(%d, %d, %s, %d, %d, %s)\n", *chan_list, key, name, start_time, end_time, network);
+
+    new_item = (NMXP_META_CHAN_LIST *) malloc(sizeof(NMXP_META_CHAN_LIST));
+    new_item->key = 0;
+    new_item->name[0] = 0;
+    new_item->start_time = 0;
+    new_item->end_time = 0;
+    new_item->network[0] = 0;
+    new_item->next = NULL;
+    new_item->key = key;
+    if(name) {
+	strncpy(new_item->name, name, 12);
+    }
+    new_item->start_time = start_time;
+    new_item->end_time = end_time;
+    if(network) {
+	strncpy(new_item->network, network, 12);
+    }
+
+
+    if(*chan_list == NULL) {
+	*chan_list = new_item;
+    } else {
+	if(new_item->key < (*chan_list)->key) {
+	    new_item->next = *chan_list;
+	    *chan_list = new_item;
+	} else {
+	    for(iter = *chan_list; iter->next != NULL  && new_item->key > iter->next->key; iter = iter->next) {
+	    }
+	    new_item->next = iter->next;
+	    iter->next = new_item;
+	}
+    }
+
+    return new_item;
+}
+
+NMXP_META_CHAN_LIST *nmxp_meta_chan_search_key(NMXP_META_CHAN_LIST *chan_list, int32_t key) {
+    NMXP_META_CHAN_LIST *iter = chan_list;
+    int found = 0;
+
+    nmxp_log(0, 1, "nmxp_meta_chan_search_key()\n");
+
+    while(iter != NULL  &&  !found) {
+	if(iter->key == key) {
+	    found = 1;
+	} else {
+	    iter = iter->next;
+	}
+    }
+
+    return iter;
+}
+
+NMXP_META_CHAN_LIST *nmxp_meta_chan_set_name(NMXP_META_CHAN_LIST *chan_list, int32_t key, char *name) {
+    NMXP_META_CHAN_LIST *ret = NULL;
+
+    nmxp_log(0, 1, "nmxp_meta_chan_set_name()\n");
+
+    if( (ret = nmxp_meta_chan_search_key(chan_list, key)) ) {
+	strncpy(ret->name, name, 12);
+    }
+
+    return ret;
+}
+
+NMXP_META_CHAN_LIST *nmxp_meta_chan_set_times(NMXP_META_CHAN_LIST *chan_list, int32_t key, int32_t start_time, int32_t end_time) {
+    NMXP_META_CHAN_LIST *ret = NULL;
+
+    nmxp_log(0, 1, "nmxp_meta_chan_set_times()\n");
+
+    if( (ret = nmxp_meta_chan_search_key(chan_list, key)) ) {
+	ret->start_time = start_time;
+	ret->end_time = end_time;
+    }
+
+    return ret;
+}
+
+NMXP_META_CHAN_LIST *nmxp_meta_chan_set_network(NMXP_META_CHAN_LIST *chan_list, int32_t key, char *network) {
+    NMXP_META_CHAN_LIST *ret = NULL;
+
+    nmxp_log(0, 1, "nmxp_meta_chan_set_network()\n");
+
+    if( (ret = nmxp_meta_chan_search_key(chan_list, key)) ) {
+	strncpy(ret->network, network, 12);
+    }
+
+    return ret;
+}
+
+void nmxp_meta_chan_print(NMXP_META_CHAN_LIST *chan_list) {
+    NMXP_META_CHAN_LIST *iter = chan_list;
+    char str_start_time[200], str_end_time[200];
+    str_start_time[0] = 0;
+    str_end_time[0] = 0;
+
+    nmxp_log(0, 1, "nmxp_meta_chan_print()\n");
+
+    while(iter != NULL) {
+	nmxp_data_to_str(str_start_time, iter->start_time);
+	nmxp_data_to_str(str_end_time,   iter->end_time);
+
+	nmxp_log(0, 0, "%10d %11s.%-8s  (%s  -  %s)\n",
+		iter->key,
+		iter->name,
+		iter->network,
+		str_start_time,
+		str_end_time
+		);
+	iter = iter->next;
+    }
+}
+
+
 
