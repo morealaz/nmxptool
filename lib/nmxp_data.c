@@ -546,6 +546,7 @@ int nmxp_data_msr_pack(NMXP_DATA_PROCESS *pd, NMXP_DATA_SEED *data_seed, void *p
     int *pDataDest = NULL;
 
     if(pd) {
+    if(pd->nSamp > 0) {
 
 	/* Populate MSRecord values */
 
@@ -581,6 +582,7 @@ int nmxp_data_msr_pack(NMXP_DATA_PROCESS *pd, NMXP_DATA_SEED *data_seed, void *p
 	    /* ms_log (1, "Packed %d samples into %d records\n", psamples, precords); */
 	}
 
+    }
     }
 
     return ret;
