@@ -125,8 +125,10 @@ int main (int argc, char **argv) {
     /* List available channels on server */
     if(params.flag_listchannels) {
 
-	channelList = nmxp_getAvailableChannelList(params.hostname, params.portnumberpds, NMXP_DATA_TIMESERIES);
-	nmxp_chan_print_channelList(channelList);
+	// TOREMOVE
+	// channelList = nmxp_getAvailableChannelList(params.hostname, params.portnumberpds, NMXP_DATA_TIMESERIES);
+	// TOREMOVE
+	// nmxp_chan_print_channelList(channelList);
 
 	nmxp_getPrecisChannelList(params.hostname, params.portnumberdap, NMXP_DATA_TIMESERIES);
 
