@@ -311,10 +311,13 @@ NMXP_CHAN_LIST *nmxp_getAvailableChannelList(char * hostname, int portnum, NMXP_
 }
 
 
-NMXP_CHAN_PRECISLIST *nmxp_getPrecisChannelList(char * hostname, int portnum, NMXP_DATATYPE datatype) {
+NMXP_META_CHAN_LIST *nmxp_getMetaChannelList(char * hostname, int portnum, NMXP_DATATYPE datatype) {
     int naqssock;
     NMXP_CHAN_PRECISLIST *precisChannelList = NULL;
-    int i;
+    NMXP_CHAN_LIST *channelList = NULL;
+    NMXP_META_CHAN_LIST *chan_list = NULL;
+    NMXP_META_CHAN_LIST *iter = NULL;
+    int i = 0;
     uint32_t connection_time;
     char *datas_username = NULL, *datas_password = NULL;
     int ret_sock;
@@ -323,6 +326,8 @@ NMXP_CHAN_PRECISLIST *nmxp_getPrecisChannelList(char * hostname, int portnum, NM
     void *buffer = NULL;
     uint32_t length;
     NMXP_MSGBODY_PRECISLISTREQUEST precisListRequestBody;
+    NMXP_MSGBODY_CHANNELINFOREQUEST channelInfoRequestBody;
+    NMXP_MSGBODY_CHANNELINFORESPONSE *channelInfo;
 
     char str_start[200], str_end[200];
     str_start[0] = 0;
@@ -353,20 +358,41 @@ NMXP_CHAN_PRECISLIST *nmxp_getPrecisChannelList(char * hostname, int portnum, NM
 	return NULL;
     }
 
+
+
+
+    /* DAP Step 5: Send Data Request */
+    nmxp_sendHeader(naqssock, NMXP_MSG_CHANNELLISTREQUEST, 0);
+    /* DAP Step 6: Receive Data until receiving a Ready message */
+    ret_sock = nmxp_receiveMessage(naqssock, &type, &buffer, &length);
+    nmxp_log(0, 1, "ret_sock = %d, type = %d, length = %d\n", ret_sock, type, length);
+
+    while(ret_sock == NMXP_SOCKET_OK   &&    type != NMXP_MSG_READY) {
+	channelList = buffer;
+
+	channelList->number = ntohl(channelList->number);
+
+	for(i = 0; i < channelList->number; i++) {
+	    channelList->channel[i].key = ntohl(channelList->channel[i].key);
+	    nmxp_meta_chan_add(&chan_list, channelList->channel[i].key, channelList->channel[i].name, 0, 0, NULL);
+	}
+
+	/* Receive Message */
+	ret_sock = nmxp_receiveMessage(naqssock, &type, &buffer, &length);
+	nmxp_log(0, 1, "ret_sock = %d, type = %d, length = %d\n", ret_sock, type, length);
+    }
+
+
     /* DAP Step 5: Send Data Request */
     precisListRequestBody.instr_id = htonl(-1);
     precisListRequestBody.datatype = htonl(NMXP_DATA_TIMESERIES);
     precisListRequestBody.type_of_channel = htonl(-1);
-
     nmxp_sendMessage(naqssock, NMXP_MSG_PRECISLISTREQUEST, &precisListRequestBody, sizeof(NMXP_MSGBODY_PRECISLISTREQUEST));
-    /*
-    NMXP_MSG_CHANNELLISTREQUEST
-    NMXP_MSG_CHANNELINFOREQUEST
-    */
+
 
     /* DAP Step 6: Receive Data until receiving a Ready message */
     ret_sock = nmxp_receiveMessage(naqssock, &type, &buffer, &length);
-    nmxp_log(0, 0, "ret_sock = %d, type = %d, length = %d\n", ret_sock, type, length);
+    nmxp_log(0, 1, "ret_sock = %d, type = %d, length = %d\n", ret_sock, type, length);
 
     while(ret_sock == NMXP_SOCKET_OK   &&    type != NMXP_MSG_READY) {
 	precisChannelList = buffer;
@@ -380,17 +406,48 @@ NMXP_CHAN_PRECISLIST *nmxp_getPrecisChannelList(char * hostname, int portnum, NM
 	    nmxp_data_to_str(str_start, precisChannelList->channel[i].start_time);
 	    nmxp_data_to_str(str_end, precisChannelList->channel[i].end_time);
 
+	    if(!nmxp_meta_chan_set_times(chan_list, precisChannelList->channel[i].key, precisChannelList->channel[i].start_time, precisChannelList->channel[i].end_time)) {
+		nmxp_log(1, 0, "Key %d not found for %s!\n", precisChannelList->channel[i].key, precisChannelList->channel[i].name);
+	    }
+
+	    /*
 	    nmxp_log(0, 0, "%12d %12s %10d %10d %20s %20s\n",
 		    precisChannelList->channel[i].key, precisChannelList->channel[i].name,
 		    precisChannelList->channel[i].start_time, precisChannelList->channel[i].end_time,
 		    str_start, str_end);
+		    */
 	}
-
-	nmxp_log(0, 0, "Precis Channel List %d\n", precisChannelList->number);
 
 	/* Receive Message */
 	ret_sock = nmxp_receiveMessage(naqssock, &type, &buffer, &length);
-	nmxp_log(0, 0, "ret_sock = %d, type = %d, length = %d\n", ret_sock, type, length);
+	nmxp_log(0, 1, "ret_sock = %d, type = %d, length = %d\n", ret_sock, type, length);
+    }
+
+
+    for(iter = chan_list; iter != NULL; iter = iter->next) {
+
+	if(getDataTypeFromKey(iter->key) == NMXP_DATA_TIMESERIES  &&  getChannelNumberFromKey(iter->key) == 0) {
+	    /* DAP Step 5: Send Data Request */
+	    channelInfoRequestBody.key = htonl(iter->key);
+	    channelInfoRequestBody.ignored = htonl(0);
+	    nmxp_sendMessage(naqssock, NMXP_MSG_CHANNELINFOREQUEST, &channelInfoRequestBody, sizeof(NMXP_MSGBODY_CHANNELINFOREQUEST));
+
+	    /* DAP Step 6: Receive Data until receiving a Ready message */
+	    ret_sock = nmxp_receiveMessage(naqssock, &type, &buffer, &length);
+	    nmxp_log(0, 1, "ret_sock = %d, type = %d, length = %d\n", ret_sock, type, length);
+
+	    while(ret_sock == NMXP_SOCKET_OK   &&    type != NMXP_MSG_READY) {
+		channelInfo = buffer;
+		channelInfo->key = ntohl(channelInfo->key);
+
+		if(!nmxp_meta_chan_set_network(chan_list, channelInfo->key, channelInfo->network)) {
+		    nmxp_log(1, 0, "Key %d (%d) not found for %s!\n", iter->key, channelInfo->key, iter->name);
+		}
+		/* Receive Message */
+		ret_sock = nmxp_receiveMessage(naqssock, &type, &buffer, &length);
+		nmxp_log(0, 1, "ret_sock = %d, type = %d, length = %d\n", ret_sock, type, length);
+	    }
+	}
     }
 
 
@@ -403,6 +460,8 @@ NMXP_CHAN_PRECISLIST *nmxp_getPrecisChannelList(char * hostname, int portnum, NM
     /* DAP Step 9: Close the socket */
     nmxp_closeSocket(naqssock);
 
-    return precisChannelList;
+    nmxp_meta_chan_print(chan_list);
+
+    return chan_list;
 }
 

@@ -130,7 +130,7 @@ int main (int argc, char **argv) {
 	// TOREMOVE
 	// nmxp_chan_print_channelList(channelList);
 
-	nmxp_getPrecisChannelList(params.hostname, params.portnumberdap, NMXP_DATA_TIMESERIES);
+	nmxp_getMetaChannelList(params.hostname, params.portnumberdap, NMXP_DATA_TIMESERIES);
 
 	return 1;
     }

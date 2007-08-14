@@ -270,7 +270,7 @@ NMXP_CHAN_LIST *nmxp_getAvailableChannelList(char * hostname, int portnum, NMXP_
  * \warning Returned value will need to be freed.
  * 
  */
-NMXP_CHAN_PRECISLIST *nmxp_getPrecisChannelList(char * hostname, int portnum, NMXP_DATATYPE datatype);
+NMXP_META_CHAN_LIST *nmxp_getMetaChannelList(char * hostname, int portnum, NMXP_DATATYPE datatype);
 
 #endif
 
