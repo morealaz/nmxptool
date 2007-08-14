@@ -204,12 +204,6 @@ int main (int argc, char **argv) {
 	    params.end_time = params.start_time + span_interval;
 	}
 
-	exitdapcondition = 1;
-
-	while(exitdapcondition) {
-
-	nmxp_log(0, 1, "start_time = %d - end_time = %d\n", params.start_time, params.end_time);
-
 
 	/* ************************************************************** */
 	/* Start subscription protocol "DATA ACCESS PROTOCOL" version 1.0 */
@@ -238,6 +232,12 @@ int main (int argc, char **argv) {
 	    nmxp_log(1, 0, "Error waiting Ready message!\n");
 	    return 1;
 	}
+
+	exitdapcondition = 1;
+
+	while(exitdapcondition) {
+
+	nmxp_log(0, 1, "start_time = %d - end_time = %d\n", params.start_time, params.end_time);
 
 	/* Start loop for sending requests */
 	i_chan=0;
@@ -320,7 +320,7 @@ int main (int argc, char **argv) {
 			    nmxptool_check_and_log_gap(pd->time, channelListSeq[cur_chan].last_time, GAP_TOLLERANCE, pd->station, pd->channel);
 			}
 		    }
-		    if(channelListSeq[cur_chan].significant) {
+		    if(channelListSeq[cur_chan].significant && pd->nSamp > 0) {
 			channelListSeq[cur_chan].last_time = pd->time + ((double) pd->nSamp / (double) pd->sampRate);
 		    }
 
@@ -389,17 +389,6 @@ int main (int argc, char **argv) {
 	}
 	/* DAP Step 7: Repeat steps 5 and 6 for each data request */
 
-	/* DAP Step 8: Send a Terminate message (optional) */
-	nmxp_sendTerminateSubscription(naqssock, NMXP_SHUTDOWN_NORMAL, "Bye!");
-
-	/* DAP Step 9: Close the socket */
-	nmxp_closeSocket(naqssock);
-
-	/* ************************************************************ */
-	/* End subscription protocol "DATA ACCESS PROTOCOL" version 1.0 */
-	/* ************************************************************ */
-
-
 	if(params.delay > 0) {
 	    time_to_sleep = (params.end_time - params.start_time) - (time(NULL) - (params.start_time + params.delay + span_interval));
 	    if(time_to_sleep >= 0) {
@@ -416,6 +405,17 @@ int main (int argc, char **argv) {
 
 
     } /* END while(exitdapcondition) */
+
+	/* DAP Step 8: Send a Terminate message (optional) */
+	nmxp_sendTerminateSubscription(naqssock, NMXP_SHUTDOWN_NORMAL, "Bye!");
+
+	/* DAP Step 9: Close the socket */
+	nmxp_closeSocket(naqssock);
+
+	/* ************************************************************ */
+	/* End subscription protocol "DATA ACCESS PROTOCOL" version 1.0 */
+	/* ************************************************************ */
+
 
     } else {
 
@@ -495,7 +495,7 @@ int main (int argc, char **argv) {
 		    nmxptool_check_and_log_gap(pd->time, channelListSeq[cur_chan].last_time, GAP_TOLLERANCE, pd->station, pd->channel);
 		}
 	    }
-	    if(channelListSeq[cur_chan].significant) {
+	    if(channelListSeq[cur_chan].significant && pd->nSamp > 0) {
 		channelListSeq[cur_chan].last_time = pd->time + ((double) pd->nSamp / (double) pd->sampRate);
 	    }
 
