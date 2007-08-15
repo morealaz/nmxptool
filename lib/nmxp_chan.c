@@ -313,6 +313,16 @@ void nmxp_meta_chan_free(NMXP_META_CHAN_LIST **chan_list) {
 
 }
 
+int nmxp_meta_chan_compare(NMXP_META_CHAN_LIST *item1, NMXP_META_CHAN_LIST *item2) {
+    int ret = 0;
+    if(item1->key > item2->key) {
+	ret = 1;
+    } else if(item1->key < item2->key) {
+	ret = -1;
+    }
+    return ret;
+}
+
 NMXP_META_CHAN_LIST *nmxp_meta_chan_add(NMXP_META_CHAN_LIST **chan_list, int32_t key, char *name, int32_t start_time, int32_t end_time, char *network) {
     NMXP_META_CHAN_LIST *iter = NULL;
     NMXP_META_CHAN_LIST *new_item = NULL;
@@ -340,11 +350,11 @@ NMXP_META_CHAN_LIST *nmxp_meta_chan_add(NMXP_META_CHAN_LIST **chan_list, int32_t
     if(*chan_list == NULL) {
 	*chan_list = new_item;
     } else {
-	if(new_item->key < (*chan_list)->key) {
+	if(nmxp_meta_chan_compare(new_item, *chan_list) < 0) {
 	    new_item->next = *chan_list;
 	    *chan_list = new_item;
 	} else {
-	    for(iter = *chan_list; iter->next != NULL  && new_item->key > iter->next->key; iter = iter->next) {
+	    for(iter = *chan_list; iter->next != NULL  && nmxp_meta_chan_compare(new_item, iter->next) > 0; iter = iter->next) {
 	    }
 	    new_item->next = iter->next;
 	    iter->next = new_item;
