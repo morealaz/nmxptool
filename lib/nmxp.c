@@ -376,7 +376,7 @@ NMXP_META_CHAN_LIST *nmxp_getMetaChannelList(char * hostname, int portnum, NMXP_
 	for(i = 0; i < channelList->number; i++) {
 	    channelList->channel[i].key = ntohl(channelList->channel[i].key);
 	    if(getDataTypeFromKey(channelList->channel[i].key) == datatype) {
-		nmxp_meta_chan_add(&chan_list, channelList->channel[i].key, channelList->channel[i].name, 0, 0, NULL);
+		nmxp_meta_chan_add(&chan_list, channelList->channel[i].key, channelList->channel[i].name, 0, 0, NULL, NMXP_META_SORT_START_TIME);
 	    }
 	}
 

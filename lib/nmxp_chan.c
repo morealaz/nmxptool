@@ -313,21 +313,50 @@ void nmxp_meta_chan_free(NMXP_META_CHAN_LIST **chan_list) {
 
 }
 
-int nmxp_meta_chan_compare(NMXP_META_CHAN_LIST *item1, NMXP_META_CHAN_LIST *item2) {
+int nmxp_meta_chan_compare(NMXP_META_CHAN_LIST *item1, NMXP_META_CHAN_LIST *item2, NMXP_META_CHAN_LIST_SORT_TYPE sorttype) {
     int ret = 0;
-    if(item1->key > item2->key) {
-	ret = 1;
-    } else if(item1->key < item2->key) {
-	ret = -1;
+    switch(sorttype) {
+	case NMXP_META_SORT_KEY:
+	    if(item1->key > item2->key) {
+		ret = 1;
+	    } else if(item1->key < item2->key) {
+		ret = -1;
+	    }
+	    break;
+	case NMXP_META_SORT_NAME:
+	    ret = strcmp(item1->name, item2->name);
+	    break;
+	case NMXP_META_SORT_START_TIME:
+	    if(item1->start_time > item2->start_time) {
+		ret = 1;
+	    } else if(item1->start_time < item2->start_time) {
+		ret = -1;
+	    }
+	    break;
+	case NMXP_META_SORT_END_TIME:
+	    if(item1->end_time > item2->end_time) {
+		ret = 1;
+	    } else if(item1->end_time < item2->end_time) {
+		ret = -1;
+	    }
+	    break;
+	default:
+	    nmxp_log(1, 0, "Sort type %d not defined!\n", sorttype);
+	    break;
     }
     return ret;
 }
 
-NMXP_META_CHAN_LIST *nmxp_meta_chan_add(NMXP_META_CHAN_LIST **chan_list, int32_t key, char *name, int32_t start_time, int32_t end_time, char *network) {
+NMXP_META_CHAN_LIST *nmxp_meta_chan_add(NMXP_META_CHAN_LIST **chan_list, int32_t key, char *name, int32_t start_time, int32_t end_time, char *network, NMXP_META_CHAN_LIST_SORT_TYPE sorttype) {
     NMXP_META_CHAN_LIST *iter = NULL;
     NMXP_META_CHAN_LIST *new_item = NULL;
 
-    nmxp_log(0, 1, "nmxp_meta_chan_add(%d, %d, %s, %d, %d, %s)\n", *chan_list, key, name, start_time, end_time, network);
+    nmxp_log(0, 1, "nmxp_meta_chan_add(%d, %d, %s, %d, %d, %s, %d)\n", *chan_list, key, name, start_time, end_time, network, sorttype);
+
+    if(sorttype != NMXP_META_SORT_KEY  &&  sorttype != NMXP_META_SORT_NAME) {
+	nmxp_log(1, 0, "nmxp_meta_chan_add() can only accept NMXP_META_SORT_KEY or NMXP_META_SORT_NAME. Fixed NMXP_META_SORT_KEY!\n");
+	sorttype = NMXP_META_SORT_KEY;
+    }
 
     new_item = (NMXP_META_CHAN_LIST *) malloc(sizeof(NMXP_META_CHAN_LIST));
     new_item->key = 0;
@@ -350,11 +379,11 @@ NMXP_META_CHAN_LIST *nmxp_meta_chan_add(NMXP_META_CHAN_LIST **chan_list, int32_t
     if(*chan_list == NULL) {
 	*chan_list = new_item;
     } else {
-	if(nmxp_meta_chan_compare(new_item, *chan_list) < 0) {
+	if(nmxp_meta_chan_compare(new_item, *chan_list, sorttype) < 0) {
 	    new_item->next = *chan_list;
 	    *chan_list = new_item;
 	} else {
-	    for(iter = *chan_list; iter->next != NULL  && nmxp_meta_chan_compare(new_item, iter->next) > 0; iter = iter->next) {
+	    for(iter = *chan_list; iter->next != NULL  && nmxp_meta_chan_compare(new_item, iter->next, sorttype) > 0; iter = iter->next) {
 	    }
 	    new_item->next = iter->next;
 	    iter->next = new_item;

@@ -24,6 +24,13 @@ typedef struct NMXP_META_CHAN_LIST {
     struct NMXP_META_CHAN_LIST *next;
 } NMXP_META_CHAN_LIST;
 
+typedef enum {
+    NMXP_META_SORT_KEY = 1,
+    NMXP_META_SORT_NAME,
+    NMXP_META_SORT_START_TIME,
+    NMXP_META_SORT_END_TIME
+} NMXP_META_CHAN_LIST_SORT_TYPE;
+
 
 /*! \brief The key/name info for one channel */
 typedef struct {
@@ -210,7 +217,7 @@ void nmxp_chan_print_channelList(NMXP_CHAN_LIST *channelList);
 
 void nmxp_meta_chan_free(NMXP_META_CHAN_LIST **chan_list);
 
-NMXP_META_CHAN_LIST *nmxp_meta_chan_add(NMXP_META_CHAN_LIST **chan_list, int32_t key, char *name, int32_t start_time, int32_t end_time, char *network);
+NMXP_META_CHAN_LIST *nmxp_meta_chan_add(NMXP_META_CHAN_LIST **chan_list, int32_t key, char *name, int32_t start_time, int32_t end_time, char *network, NMXP_META_CHAN_LIST_SORT_TYPE sorttype);
 
 NMXP_META_CHAN_LIST *nmxp_meta_chan_search_key(NMXP_META_CHAN_LIST *chan_list, int32_t key);
 
