@@ -311,7 +311,7 @@ NMXP_CHAN_LIST *nmxp_getAvailableChannelList(char * hostname, int portnum, NMXP_
 }
 
 
-NMXP_META_CHAN_LIST *nmxp_getMetaChannelList(char * hostname, int portnum, NMXP_DATATYPE datatype) {
+NMXP_META_CHAN_LIST *nmxp_getMetaChannelList(char * hostname, int portnum, NMXP_DATATYPE datatype, int flag_request_channelinfo) {
     int naqssock;
     NMXP_CHAN_PRECISLIST *precisChannelList = NULL;
     NMXP_CHAN_LIST *channelList = NULL;
@@ -322,6 +322,7 @@ NMXP_META_CHAN_LIST *nmxp_getMetaChannelList(char * hostname, int portnum, NMXP_
     char *datas_username = NULL, *datas_password = NULL;
     int ret_sock;
 
+    
     NMXP_MSG_SERVER type;
     void *buffer = NULL;
     uint32_t length;
@@ -374,7 +375,9 @@ NMXP_META_CHAN_LIST *nmxp_getMetaChannelList(char * hostname, int portnum, NMXP_
 
 	for(i = 0; i < channelList->number; i++) {
 	    channelList->channel[i].key = ntohl(channelList->channel[i].key);
-	    nmxp_meta_chan_add(&chan_list, channelList->channel[i].key, channelList->channel[i].name, 0, 0, NULL);
+	    if(getDataTypeFromKey(channelList->channel[i].key) == datatype) {
+		nmxp_meta_chan_add(&chan_list, channelList->channel[i].key, channelList->channel[i].name, 0, 0, NULL);
+	    }
 	}
 
 	/* Receive Message */
@@ -424,28 +427,30 @@ NMXP_META_CHAN_LIST *nmxp_getMetaChannelList(char * hostname, int portnum, NMXP_
     }
 
 
-    for(iter = chan_list; iter != NULL; iter = iter->next) {
+    if(flag_request_channelinfo) {
+	for(iter = chan_list; iter != NULL; iter = iter->next) {
 
-	if(getDataTypeFromKey(iter->key) == NMXP_DATA_TIMESERIES  &&  getChannelNumberFromKey(iter->key) == 0) {
-	    /* DAP Step 5: Send Data Request */
-	    channelInfoRequestBody.key = htonl(iter->key);
-	    channelInfoRequestBody.ignored = htonl(0);
-	    nmxp_sendMessage(naqssock, NMXP_MSG_CHANNELINFOREQUEST, &channelInfoRequestBody, sizeof(NMXP_MSGBODY_CHANNELINFOREQUEST));
+	    if(getChannelNumberFromKey(iter->key) == 0) {
+		/* DAP Step 5: Send Data Request */
+		channelInfoRequestBody.key = htonl(iter->key);
+		channelInfoRequestBody.ignored = htonl(0);
+		nmxp_sendMessage(naqssock, NMXP_MSG_CHANNELINFOREQUEST, &channelInfoRequestBody, sizeof(NMXP_MSGBODY_CHANNELINFOREQUEST));
 
-	    /* DAP Step 6: Receive Data until receiving a Ready message */
-	    ret_sock = nmxp_receiveMessage(naqssock, &type, &buffer, &length);
-	    nmxp_log(0, 1, "ret_sock = %d, type = %d, length = %d\n", ret_sock, type, length);
-
-	    while(ret_sock == NMXP_SOCKET_OK   &&    type != NMXP_MSG_READY) {
-		channelInfo = buffer;
-		channelInfo->key = ntohl(channelInfo->key);
-
-		if(!nmxp_meta_chan_set_network(chan_list, channelInfo->key, channelInfo->network)) {
-		    nmxp_log(1, 0, "Key %d (%d) not found for %s!\n", iter->key, channelInfo->key, iter->name);
-		}
-		/* Receive Message */
+		/* DAP Step 6: Receive Data until receiving a Ready message */
 		ret_sock = nmxp_receiveMessage(naqssock, &type, &buffer, &length);
 		nmxp_log(0, 1, "ret_sock = %d, type = %d, length = %d\n", ret_sock, type, length);
+
+		while(ret_sock == NMXP_SOCKET_OK   &&    type != NMXP_MSG_READY) {
+		    channelInfo = buffer;
+		    channelInfo->key = ntohl(channelInfo->key);
+
+		    if(!nmxp_meta_chan_set_network(chan_list, channelInfo->key, channelInfo->network)) {
+			nmxp_log(1, 0, "Key %d (%d) not found for %s!\n", iter->key, channelInfo->key, iter->name);
+		    }
+		    /* Receive Message */
+		    ret_sock = nmxp_receiveMessage(naqssock, &type, &buffer, &length);
+		    nmxp_log(0, 1, "ret_sock = %d, type = %d, length = %d\n", ret_sock, type, length);
+		}
 	    }
 	}
     }

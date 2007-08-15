@@ -30,6 +30,7 @@ const NMXPTOOL_PARAMS NMXPTOOL_PARAMS_DEFAULT =
     0,
     0,
     0,
+    0,
     0
 };
 
@@ -67,6 +68,7 @@ Other arguments:\n\
   -v, --verbose           Be verbose.\n\
   -g, --logdata           Print info about data.\n\
   -l, --listchannels      Output list of channel available on NaqsServer.\n\
+  -i, --channelinfo      Output list of channel available on NaqsServer and channelinfo.\n\
 ",
 	    DEFAULT_PORT_PDS,
 	    DEFAULT_PORT_DAP,
@@ -165,6 +167,7 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 	{"logdata",      no_argument,       0, 'g'},
 	{"buffered",     no_argument,       0, 'b'},
 	{"listchannels", no_argument,       0, 'l'},
+	{"channelinfo",  no_argument,       0, 'i'},
 #ifdef HAVE_LIBMSEED
 	{"writeseed",    no_argument,       0, 'm'},
 #endif
@@ -197,7 +200,7 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
     /* init params */
     memcpy(params, &NMXPTOOL_PARAMS_DEFAULT, sizeof(NMXPTOOL_PARAMS_DEFAULT));
 
-    char optstr[100] = "H:P:D:C:N:L:S:R:s:e:d:u:p:vgblwh";
+    char optstr[100] = "H:P:D:C:N:L:S:R:s:e:d:u:p:vgbliwh";
 
 #ifdef HAVE_LIBMSEED
     strcat(optstr, "m");
@@ -310,6 +313,10 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 
 		case 'l':
 		    params->flag_listchannels = 1;
+		    break;
+
+		case 'i':
+		    params->flag_request_channelinfo = 1;
 		    break;
 
 #ifdef HAVE_LIBMSEED

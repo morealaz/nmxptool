@@ -31,6 +31,7 @@ typedef struct {
     int flag_writeseed;
     int flag_verbose;
     int flag_listchannels;
+    int flag_request_channelinfo;
     int flag_writefile;
     int flag_slink;
     int flag_buffered;
