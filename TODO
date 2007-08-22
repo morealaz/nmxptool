@@ -10,8 +10,6 @@ TODO LIST:
 	* after t time amount of data, for example 10 seconds of data
 	* after n packets, for example like "ping"
 
-- Improve "delay" way avoiding to open and close the socket
-
 - Add option for output directory
 
 - params.start_time and params.start_time has to become double
