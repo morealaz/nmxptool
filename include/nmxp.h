@@ -264,6 +264,7 @@ NMXP_CHAN_LIST *nmxp_getAvailableChannelList(char * hostname, int portnum, NMXP_
  * \param hostname host name
  * \param portnum port number
  * \param datatype Type of data contained in the channel.
+ * \param flag_request_channelinfo Request information about Network.
  *
  * \return Channel list. It will need to be freed.
  *
