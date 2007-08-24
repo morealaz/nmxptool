@@ -114,16 +114,16 @@ typedef enum {
 /*! \brief Body of ConnectRequest message*/
 typedef struct {
     char username[12];
-    uint32_t version;
-    uint32_t connection_time;
-    uint32_t crc32;
+    int32_t version;
+    int32_t connection_time;
+    int32_t crc32;
 } NMXP_CONNECT_REQUEST; 
 
 /*! \brief Body of DataRequest message*/
 typedef struct {
-    uint32_t chan_key;
-    uint32_t start_time;
-    uint32_t end_time;
+    int32_t chan_key;
+    int32_t start_time;
+    int32_t end_time;
 } NMXP_DATA_REQUEST;
 
 
@@ -178,7 +178,7 @@ int nmxp_receiveChannelList(int isock, NMXP_CHAN_LIST **pchannelList);
  * \retval SOCKET_ERROR on error
  * 
  */
-int nmxp_sendAddTimeSeriesChannel(int isock, NMXP_CHAN_LIST *channelList, int32_t shortTermCompletion, uint32_t out_format, NMXP_BUFFER_FLAG buffer_flag);
+int nmxp_sendAddTimeSeriesChannel(int isock, NMXP_CHAN_LIST *channelList, int32_t shortTermCompletion, int32_t out_format, NMXP_BUFFER_FLAG buffer_flag);
 
 
 /*! \brief Receive Compressed or Decompressed Data message from a socket and launch func_processData() on the extracted data
@@ -205,7 +205,7 @@ NMXP_DATA_PROCESS *nmxp_receiveData(int isock, NMXP_CHAN_LIST *channelList, cons
  * \retval SOCKET_ERROR on error
  * 
  */
-int nmxp_sendConnectRequest(int isock, char *naqs_username, char *naqs_password, uint32_t connection_time);
+int nmxp_sendConnectRequest(int isock, char *naqs_username, char *naqs_password, int32_t connection_time);
 
 
 /*! \brief Read connection time from a socket
@@ -217,7 +217,7 @@ int nmxp_sendConnectRequest(int isock, char *naqs_username, char *naqs_password,
  * \retval SOCKET_ERROR on error
  * 
  */
-int nmxp_readConnectionTime(int isock, uint32_t *connection_time);
+int nmxp_readConnectionTime(int isock, int32_t *connection_time);
 
 
 /*! \brief Wait the message "Ready" from a socket
@@ -242,7 +242,7 @@ int nmxp_waitReady(int isock);
  * \retval SOCKET_ERROR on error
  * 
  */
-int nmxp_sendDataRequest(int isock, uint32_t key, uint32_t start_time, uint32_t end_time);
+int nmxp_sendDataRequest(int isock, int32_t key, int32_t start_time, int32_t end_time);
 
 
 /*! \brief Get the list of available channels from a server 

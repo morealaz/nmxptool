@@ -45,14 +45,14 @@ int nmxp_data_init(NMXP_DATA_PROCESS *pd) {
 }
 
 
-int nmxp_data_unpack_bundle (int *outdata, unsigned char *indata, int *prev)
+int nmxp_data_unpack_bundle (int32_t *outdata, unsigned char *indata, int32_t *prev)
 {         
-	int nsamples = 0;
-	int d4[4];
-	short int d2[2];
-	int cb[4];  
+	int32_t nsamples = 0;
+	int32_t d4[4];
+	int16_t d2[2];
+	int32_t cb[4];  
 	//mtheo int i, j, k;
-	int i, j, k=0;
+	int32_t i, j, k=0;
 	unsigned char cbits;
 	/* TOREMOVE int my_order = get_my_wordorder(); */
 	int my_host_is_bigendian = nmxp_data_bigendianhost();
@@ -147,8 +147,8 @@ int nmxp_data_trim(NMXP_DATA_PROCESS *pd, double trim_start_time, double trim_en
     double first_time, last_time;
     int first_nsamples_to_remove = 0;
     int last_nsamples_to_remove = 0;
-    int new_nSamp = 0;
-    int i;
+    int32_t new_nSamp = 0;
+    int32_t i;
 
 
     if(pd) {

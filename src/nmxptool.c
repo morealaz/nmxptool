@@ -60,7 +60,7 @@ MSRecord *msr_list_chan[MAX_N_CHAN];
 
 
 int main (int argc, char **argv) {
-    uint32_t connection_time;
+    int32_t connection_time;
     int request_SOCKET_OK;
     int i_chan, cur_chan;
     int exitpdscondition;
@@ -72,7 +72,7 @@ int main (int argc, char **argv) {
 
     NMXP_MSG_SERVER type;
     void *buffer;
-    uint32_t length;
+    int32_t length;
     int ret;
 
     char filename[500];
@@ -357,7 +357,7 @@ int main (int argc, char **argv) {
 		    if(params.flag_writefile  &&  outfile) {
 			/* Write buffer to the output file */
 			if(outfile && buffer && length > 0) {
-			    int length_int = length;
+			    int32_t length_int = length;
 			    nmxp_data_swap_4b((int32_t *) &length_int);
 			    fwrite(&length_int, sizeof(length_int), 1, outfile);
 			    fwrite(buffer, length, 1, outfile);

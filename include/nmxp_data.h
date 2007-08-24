@@ -82,9 +82,9 @@ typedef enum {
 
 /*! \brief Header for all messages. */
 typedef struct {
-    uint32_t signature;
-    uint32_t type;
-    uint32_t length;
+    int32_t signature;
+    int32_t type;
+    int32_t length;
 } NMXP_MESSAGE_HEADER;
 
 
@@ -99,22 +99,22 @@ typedef struct {
 
 /*! \brief Parameter structure for functions that process data */
 typedef struct {
-    int key;				/*!< \brief Channel Key */
+    int32_t key;			/*!< \brief Channel Key */
     char network[NETWORK_LENGTH];	/*!< \brief Network code */
     char station[STATION_LENGTH];	/*!< \brief Station code */
     char channel[CHANNEL_LENGTH];	/*!< \brief Channel code */
-    int packet_type;			/*!< \brief Packet type */
-    int x0;				/*!< \brief First sample. It is significant only if x0n_significant != 0 */
-    int xn;				/*!< \brief Last sample. It is significant only if x0n_significant != 0 */
-    int x0n_significant;			/*!< \brief Declare if xn significant */
-    int oldest_seq_no;			/*!< \brief Oldest Sequence number */
-    int seq_no;				/*!< \brief Sequence number */
+    int32_t packet_type;			/*!< \brief Packet type */
+    int32_t x0;				/*!< \brief First sample. It is significant only if x0n_significant != 0 */
+    int32_t xn;				/*!< \brief Last sample. It is significant only if x0n_significant != 0 */
+    int32_t x0n_significant;			/*!< \brief Declare if xn significant */
+    int32_t oldest_seq_no;			/*!< \brief Oldest Sequence number */
+    int32_t seq_no;				/*!< \brief Sequence number */
     double time;			/*!< \brief Time first sample. Epochs. */
     void *buffer;			/*!< \brief Nanometrics packet data  */
-    int length;				/*!< \brief Packet length */
+    int32_t length;				/*!< \brief Packet length */
     int *pDataPtr;			/*!< \brief Array of samples */
-    int nSamp;				/*!< \brief Number or samples */
-    int sampRate;			/*!< \brief Sample rate */
+    int32_t nSamp;				/*!< \brief Number or samples */
+    int32_t sampRate;			/*!< \brief Sample rate */
 } NMXP_DATA_PROCESS;
 
 
@@ -146,7 +146,7 @@ int nmxp_data_init(NMXP_DATA_PROCESS *pd);
  *          doug@seismo.berkeley.edu
  *
  */
-int nmxp_data_unpack_bundle (int *outdata, unsigned char *indata, int *prev);
+int nmxp_data_unpack_bundle (int32_t *outdata, unsigned char *indata, int32_t *prev);
 
 
 /* \brief Value for parameter exclude_bitmap in the function nmxp_data_trim() */

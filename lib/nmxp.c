@@ -31,7 +31,7 @@ int nmxp_receiveChannelList(int isock, NMXP_CHAN_LIST **pchannelList) {
 
     NMXP_MSG_SERVER type;
     void *buffer;
-    uint32_t length;
+    int32_t length;
 
     *pchannelList = NULL;
 
@@ -59,11 +59,11 @@ int nmxp_receiveChannelList(int isock, NMXP_CHAN_LIST **pchannelList) {
 }
 
 
-int nmxp_sendAddTimeSeriesChannel(int isock, NMXP_CHAN_LIST *channelList, int32_t shortTermCompletion, uint32_t out_format, NMXP_BUFFER_FLAG buffer_flag) {
+int nmxp_sendAddTimeSeriesChannel(int isock, NMXP_CHAN_LIST *channelList, int32_t shortTermCompletion, int32_t out_format, NMXP_BUFFER_FLAG buffer_flag) {
     int ret;
-    uint32_t buffer_length = 16 + (4 * channelList->number); 
+    int32_t buffer_length = 16 + (4 * channelList->number); 
     char *buffer = malloc(buffer_length);
-    uint32_t app, i, disp;
+    int32_t app, i, disp;
 
     disp=0;
 
@@ -101,7 +101,7 @@ int nmxp_sendAddTimeSeriesChannel(int isock, NMXP_CHAN_LIST *channelList, int32_
 NMXP_DATA_PROCESS *nmxp_receiveData(int isock, NMXP_CHAN_LIST *channelList, const char *network_code) {
     NMXP_MSG_SERVER type;
     void *buffer = NULL;
-    uint32_t length;
+    int32_t length;
     NMXP_DATA_PROCESS *pd = NULL;
 
     if(nmxp_receiveMessage(isock, &type, &buffer, &length) == NMXP_SOCKET_OK) {
@@ -120,7 +120,7 @@ NMXP_DATA_PROCESS *nmxp_receiveData(int isock, NMXP_CHAN_LIST *channelList, cons
 }
 
 
-int nmxp_sendConnectRequest(int isock, char *naqs_username, char *naqs_password, uint32_t connection_time) {
+int nmxp_sendConnectRequest(int isock, char *naqs_username, char *naqs_password, int32_t connection_time) {
     int ret;
     char crc32buf[100];
     NMXP_CONNECT_REQUEST connectRequest;
@@ -161,7 +161,7 @@ int nmxp_sendConnectRequest(int isock, char *naqs_username, char *naqs_password,
 }
 
 
-int nmxp_readConnectionTime(int isock, uint32_t *connection_time) {
+int nmxp_readConnectionTime(int isock, int32_t *connection_time) {
     int ret;
     ret = nmxp_recv_ctrl(isock, connection_time, sizeof(connection_time));
     *connection_time = ntohl(*connection_time);
@@ -239,7 +239,7 @@ int nmxp_waitReady(int isock) {
 }
 
 
-int nmxp_sendDataRequest(int isock, uint32_t key, uint32_t start_time, uint32_t end_time) {
+int nmxp_sendDataRequest(int isock, int32_t key, int32_t start_time, int32_t end_time) {
     int ret;
     NMXP_DATA_REQUEST dataRequest;
 
@@ -318,14 +318,14 @@ NMXP_META_CHAN_LIST *nmxp_getMetaChannelList(char * hostname, int portnum, NMXP_
     NMXP_META_CHAN_LIST *chan_list = NULL;
     NMXP_META_CHAN_LIST *iter = NULL;
     int i = 0;
-    uint32_t connection_time;
+    int32_t connection_time;
     char *datas_username = NULL, *datas_password = NULL;
     int ret_sock;
 
     
     NMXP_MSG_SERVER type;
     void *buffer = NULL;
-    uint32_t length;
+    int32_t length;
     NMXP_MSGBODY_PRECISLISTREQUEST precisListRequestBody;
     NMXP_MSGBODY_CHANNELINFOREQUEST channelInfoRequestBody;
     NMXP_MSGBODY_CHANNELINFORESPONSE *channelInfo;

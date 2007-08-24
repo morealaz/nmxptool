@@ -147,7 +147,7 @@ int nmxp_recv_ctrl(int isock, void* buffer, int length)
 }
 
 
-int nmxp_sendHeader(int isock, NMXP_MSG_CLIENT type, uint32_t length)
+int nmxp_sendHeader(int isock, NMXP_MSG_CLIENT type, int32_t length)
 {  
     NMXP_MESSAGE_HEADER msg;
 
@@ -159,7 +159,7 @@ int nmxp_sendHeader(int isock, NMXP_MSG_CLIENT type, uint32_t length)
 }
 
 
-int nmxp_receiveHeader(int isock, NMXP_MSG_SERVER *type, uint32_t *length)
+int nmxp_receiveHeader(int isock, NMXP_MSG_SERVER *type, int32_t *length)
 {  
     int ret ;
     NMXP_MESSAGE_HEADER msg;
@@ -192,7 +192,7 @@ int nmxp_receiveHeader(int isock, NMXP_MSG_SERVER *type, uint32_t *length)
 }
 
 
-int nmxp_sendMessage(int isock, NMXP_MSG_CLIENT type, void *buffer, uint32_t length) {
+int nmxp_sendMessage(int isock, NMXP_MSG_CLIENT type, void *buffer, int32_t length) {
     int ret;
     ret = nmxp_sendHeader(isock, type, length);
     if( ret == NMXP_SOCKET_OK) {
@@ -204,7 +204,7 @@ int nmxp_sendMessage(int isock, NMXP_MSG_CLIENT type, void *buffer, uint32_t len
 }
 
 
-int nmxp_receiveMessage(int isock, NMXP_MSG_SERVER *type, void **buffer, uint32_t *length) {
+int nmxp_receiveMessage(int isock, NMXP_MSG_SERVER *type, void **buffer, int32_t *length) {
     int ret;
     *buffer = NULL;
     *length = 0;
@@ -316,28 +316,28 @@ NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data
 
     static NMXP_DATA_PROCESS pd;
 
-    const int nmx_rate_code_to_sample_rate[32] = {
+    int32_t nmx_rate_code_to_sample_rate[32] = {
 	0,1,2,5,10,20,40,50,
 	80,100,125,200,250,500,1000,25,
 	120,0,0,0,0,0,0,0,
 	0,0,0,0,0,0,0,0};
 
-	int nmx_oldest_sequence_number;
+	int32_t nmx_oldest_sequence_number;
 	char nmx_hdr[25];
 	unsigned char nmx_ptype;
-	unsigned int nmx_seconds;
+	int32_t nmx_seconds;
 	double nmx_seconds_double;
-	short int nmx_ticks, nmx_instr_id;
-	int nmx_seqno;
+	int16_t nmx_ticks, nmx_instr_id;
+	int32_t nmx_seqno;
 	unsigned char nmx_sample_rate;
-	int nmx_x0;
-	int rate_code, chan_code, this_sample_rate;
+	int32_t nmx_x0;
+	int32_t rate_code, chan_code, this_sample_rate;
 
-	int comp_bytecount;
+	int32_t comp_bytecount;
 	unsigned char *indata;
 	int32_t outdata[MAX_OUTDATA];
-	int nout, i, k;
-	int prev_xn;
+	int32_t nout, i, k;
+	int32_t prev_xn;
 
 	// TOREMOVE int my_order = get_my_wordorder();
 	int my_host_is_bigendian = nmxp_data_bigendianhost();
@@ -364,8 +364,8 @@ NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data
 	memcpy (&nmx_sample_rate, nmx_hdr+13, 1);
 	memcpy (&nmx_x0, nmx_hdr+14, 3);
 
-	const unsigned int high_scale = 4096 * 2048;
-	const unsigned int high_scale_p = 4096 * 4096;
+	const uint32_t high_scale = 4096 * 2048;
+	const uint32_t high_scale_p = 4096 * 4096;
 	/* check if nmx_x0 is negative like as signed 3-byte int */
 	if( (nmx_x0 & high_scale) ==  high_scale) {
 	    // nmxp_log(0, 1, "WARNING: changed nmx_x0, old value = %d\n",  nmx_x0);
@@ -373,7 +373,7 @@ NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data
 	}
 	/* TOREMOVE if (my_order != SEED_LITTLE_ENDIAN) { */
 	if (my_host_is_bigendian) {
-	    nmxp_data_swap_4b ((int *)&nmx_seconds);
+	    nmxp_data_swap_4b ((int32_t *)&nmx_seconds);
 	    nmxp_data_swap_2b (&nmx_ticks);
 	    nmxp_data_swap_2b (&nmx_instr_id);
 	    nmxp_data_swap_4b (&nmx_seqno);

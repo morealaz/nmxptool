@@ -43,7 +43,7 @@ typedef struct {
 
 /*! \brief Channel list */
 typedef struct {
-    uint32_t number;
+    int32_t number;
     NMXP_CHAN_KEY channel[MAX_N_CHAN];
 } NMXP_CHAN_LIST;
 
@@ -51,13 +51,13 @@ typedef struct {
 typedef struct {
     int32_t key;
     char name[12];
-    uint32_t start_time;
-    uint32_t end_time;
+    int32_t start_time;
+    int32_t end_time;
 } NMXP_CHAN_PRECISITEM;
 
 /*! \brief Precis Channel list */
 typedef struct {
-    uint32_t number;
+    int32_t number;
     NMXP_CHAN_PRECISITEM channel[MAX_N_CHAN];
 } NMXP_CHAN_PRECISLIST;
 

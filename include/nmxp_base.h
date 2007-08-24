@@ -87,7 +87,7 @@ int nmxp_recv_ctrl(int isock, void *buffer, int length);
  * \retval NMXP_SOCKET_ERROR on error
  *
  */
-int nmxp_sendHeader(int isock, NMXP_MSG_CLIENT type, uint32_t length);
+int nmxp_sendHeader(int isock, NMXP_MSG_CLIENT type, int32_t length);
 
 
 /*! \brief Receives header of a message.
@@ -100,7 +100,7 @@ int nmxp_sendHeader(int isock, NMXP_MSG_CLIENT type, uint32_t length);
  * \retval NMXP_SOCKET_ERROR on error
  *
  */
-int nmxp_receiveHeader(int isock, NMXP_MSG_SERVER *type, uint32_t *length);
+int nmxp_receiveHeader(int isock, NMXP_MSG_SERVER *type, int32_t *length);
 
 
 /*! \brief Sends header and body of a message.
@@ -114,7 +114,7 @@ int nmxp_receiveHeader(int isock, NMXP_MSG_SERVER *type, uint32_t *length);
  * \retval NMXP_SOCKET_ERROR on error
  *
  */
-int nmxp_sendMessage(int isock, NMXP_MSG_CLIENT type, void *buffer, uint32_t length);
+int nmxp_sendMessage(int isock, NMXP_MSG_CLIENT type, void *buffer, int32_t length);
 
 
 /*! \brief Receives header and body of a message.
@@ -130,7 +130,7 @@ int nmxp_sendMessage(int isock, NMXP_MSG_CLIENT type, void *buffer, uint32_t len
  * \retval NMXP_SOCKET_ERROR on error
  *
  */
-int nmxp_receiveMessage(int isock, NMXP_MSG_SERVER *type, void **buffer, uint32_t *length);
+int nmxp_receiveMessage(int isock, NMXP_MSG_SERVER *type, void **buffer, int32_t *length);
 
 
 /*! \brief Process Compressed Data message by function func_processData().
