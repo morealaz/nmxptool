@@ -317,7 +317,7 @@ int nmxp_data_parse_date(const char *pstr_date, struct tm *ret_tm) {
     char err_message[MAX_LENGTH_ERR_MESSAGE] = "NO MESSAGE";
 
     char *pEnd = NULL;
-    long int app;
+    int32_t app;
     int state;
     int flag_finished = 0;
 

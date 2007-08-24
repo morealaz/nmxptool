@@ -63,9 +63,11 @@
 #ifndef NMXP_CRC32_H
 #define NMXP_CRC32_H 1
 
+#include <stdint.h>
+
 /*! \brief Computes a 32 bit crc of the data in the buffer,
  * and returns the crc.  the polynomial used is 0xedb88320. */
-unsigned long crc32(const unsigned char *buf, unsigned int len);
+uint32_t crc32(const unsigned char *buf, unsigned int len);
 
 #endif /* CRC32_H */
 
