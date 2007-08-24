@@ -176,9 +176,9 @@ int nmxp_readConnectionTime(int isock, int32_t *connection_time) {
 int nmxp_waitReady(int isock) {
     int times = 0;
     int rc = NMXP_SOCKET_OK;
-    uint32_t signature;
-    uint32_t type = 0;
-    uint32_t length;
+    int32_t signature;
+    int32_t type = 0;
+    int32_t length;
 
     while(rc == NMXP_SOCKET_OK  &&  type != NMXP_MSG_READY) {
 	rc = nmxp_recv_ctrl(isock, &signature, sizeof(signature));
