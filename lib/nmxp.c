@@ -152,7 +152,7 @@ int nmxp_sendConnectRequest(int isock, char *naqs_username, char *naqs_password,
     ret = nmxp_sendMessage(isock, NMXP_MSG_CONNECTREQUEST, &connectRequest, sizeof(NMXP_CONNECT_REQUEST));
 
     if(ret == NMXP_SOCKET_OK) {
-	nmxp_log(0, 1, "Send a ConnectRequest crc32buf = (%s), crc32 = %d\n", crc32buf, crc32);
+	nmxp_log(0, 1, "Send a ConnectRequest crc32buf = (%s), crc32 = %d\n", crc32buf, connectRequest.crc32);
     } else {
 	nmxp_log(1, 0, "Send a ConnectRequest.\n");
     }
