@@ -30,6 +30,9 @@ AC_PROG_CC
 
 # Checks for libraries.
 # AC_CHECK_LIB([mseed], [msr_init], [], [AC_MSG_ERROR([library mseed is not installed!])])
+AC_CHECK_LIB(nsl,gethostent)
+AC_SEARCH_LIBS(socket, socket, ,
+	           [AC_CHECK_LIB(nsl, socket, LIBS="$LIBS -lsocket -lnsl", , -lsocket)])
 AC_CHECK_LIB([mseed], [msr_init], [], [AC_MSG_WARN([
                     Library libmseed not found!
                     Capability about management of mini-SEED will not available!
