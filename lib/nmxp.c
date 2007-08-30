@@ -163,7 +163,7 @@ int nmxp_sendConnectRequest(int isock, char *naqs_username, char *naqs_password,
 
 int nmxp_readConnectionTime(int isock, int32_t *connection_time) {
     int ret;
-    ret = nmxp_recv_ctrl(isock, connection_time, sizeof(connection_time));
+    ret = nmxp_recv_ctrl(isock, connection_time, sizeof(int32_t));
     *connection_time = ntohl(*connection_time);
     nmxp_log(0, 1, "Read connection time from socket %d.\n", *connection_time);
     if(ret != NMXP_SOCKET_OK) {
