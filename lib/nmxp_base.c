@@ -380,6 +380,8 @@ NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data
 	    nmx_x0 = nmx_x0 >> 8;
 	    nmxp_data_swap_4b (&nmx_x0);
 	    nmx_x0 = nmx_x0 >> 8;
+	    // TODO
+	    nmx_x0++;
 	}
 	nmx_seconds_double = (double) nmx_seconds + ( (double) nmx_ticks / 10000.0 );
 	rate_code = nmx_sample_rate>>3;
