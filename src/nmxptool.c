@@ -31,13 +31,17 @@ typedef struct {
 
 #define GAP_TOLLERANCE 0.001
 
-void nmxptool_check_and_log_gap(double time1, double time2, const double gap_tollerance, const char *station, const char *channel) {
+int nmxptool_check_and_log_gap(double time1, double time2, const double gap_tollerance, const char *station, const char *channel) {
+    int ret = 0;
     double gap = time1 - time2 ;
     if(gap > gap_tollerance) {
 	nmxp_log(1, 0, "Gap %.2f sec. for %s.%s from %.2f to %.2f!\n", gap, station, channel, time1, time2);
+	ret = 1;
     } else if (gap < -gap_tollerance) {
 	nmxp_log(1, 0, "Overlap %.2f sec. for %s.%s from %.2f to %.2f!\n", gap, station, channel, time2, time1);
+	ret = 1;
     }
+    return ret;
 }
 
 static void clientShutdown(int sig);
@@ -319,7 +323,10 @@ int main (int argc, char **argv) {
 			channelListSeq[cur_chan].significant = 1;
 		    } else {
 			if(channelListSeq[cur_chan].significant) {
-			    nmxptool_check_and_log_gap(pd->time, channelListSeq[cur_chan].last_time, GAP_TOLLERANCE, pd->station, pd->channel);
+			    if(nmxptool_check_and_log_gap(pd->time, channelListSeq[cur_chan].last_time, GAP_TOLLERANCE, pd->station, pd->channel)) {
+				channelListSeq[cur_chan].x_1 = 0;
+				nmxp_log(0, 0, "Warning: x0 set to zero!\n");
+			    }
 			}
 		    }
 		    if(channelListSeq[cur_chan].significant && pd->nSamp > 0) {
@@ -496,7 +503,10 @@ int main (int argc, char **argv) {
 		channelListSeq[cur_chan].significant = 1;
 	    } else {
 		if(channelListSeq[cur_chan].significant) {
-		    nmxptool_check_and_log_gap(pd->time, channelListSeq[cur_chan].last_time, GAP_TOLLERANCE, pd->station, pd->channel);
+		    if(nmxptool_check_and_log_gap(pd->time, channelListSeq[cur_chan].last_time, GAP_TOLLERANCE, pd->station, pd->channel)) {
+			channelListSeq[cur_chan].x_1 = 0;
+			nmxp_log(0, 0, "Warning: x0 set to zero!\n");
+		    }
 		}
 	    }
 	    if(channelListSeq[cur_chan].significant && pd->nSamp > 0) {
