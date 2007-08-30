@@ -191,6 +191,20 @@ int nmxp_waitReady(int isock) {
 	}
 	if(signature != NMX_SIGNATURE) {
 	    nmxp_log(1, 0, "signature is not valid. signature = %d\n", signature);
+	    if(signature == 200) {
+		    int32_t err_length;
+		    int32_t err_reason;
+		    char err_buff[200];
+		    rc = nmxp_recv_ctrl(isock, &err_length, sizeof(err_length));
+		    err_length = ntohl(err_length);
+		    rc = nmxp_recv_ctrl(isock, &err_reason, sizeof(err_reason));
+		    err_reason = ntohl(err_reason);
+		    if(err_length > 4) {
+			    rc = nmxp_recv_ctrl(isock, err_buff, err_length-4);
+			    err_buff[err_length] = 0;
+		    }
+		    nmxp_log(1, 0, "TerminateMessage from Server: %s (%d).\n", err_buff, err_reason);
+	    }
 	    return NMXP_SOCKET_ERROR;
 	}
 
