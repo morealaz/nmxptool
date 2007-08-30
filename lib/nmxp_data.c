@@ -24,6 +24,31 @@
 #endif
 
 
+#ifndef HAVE_TIMEGM
+/*
+For a portable version of timegm(), set the TZ environment variable  to
+UTC, call mktime() and restore the value of TZ.  Something like
+*/
+
+time_t my_timegm (struct tm *tm) {
+    time_t ret;
+    char *tz;
+
+    tz = getenv("TZ");
+    setenv("TZ", "", 1);
+    tzset();
+    ret = mktime(tm);
+    if (tz)
+	setenv("TZ", tz, 1);
+    else
+	unsetenv("TZ");
+    tzset();
+    return ret;
+}
+
+#endif
+
+
 int nmxp_data_init(NMXP_DATA_PROCESS *pd) {
     pd->key = -1;
     pd->network[0] = 0;
@@ -354,7 +379,9 @@ int nmxp_data_parse_date(const char *pstr_date, struct tm *ret_tm) {
     ret_tm->tm_wday = tm_now->tm_wday;
     ret_tm->tm_yday = tm_now->tm_yday;
     ret_tm->tm_isdst = tm_now->tm_isdst;
+#ifdef HAVE_STRUCT_TM_TM_GMTOFF
     ret_tm->tm_gmtoff = tm_now->tm_gmtoff;
+#endif
 
     
     /* loop for parsing by a finite state machine */
@@ -509,7 +536,11 @@ int nmxp_data_parse_date(const char *pstr_date, struct tm *ret_tm) {
 time_t nmxp_data_tm_to_time(struct tm *tm) {
     time_t ret_t = 0;
     
+#ifdef HAVE_TIMEGM
     ret_t = timegm(tm);
+#else
+    ret_t = my_timegm(tm);
+#endif
 
     return ret_t;
 }
