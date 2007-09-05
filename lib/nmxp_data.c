@@ -276,7 +276,7 @@ int nmxp_data_log(NMXP_DATA_PROCESS *pd) {
 
 	// nmxp_log(0, 0, "%12d %5s.%3s rate=%03d (%s - %s) [%d, %d] pts=%04d (%d, %d, %d, %d) lat=%.1f len=%d\n",
 	// printf("%10d %5s.%3s 03dHz (%s - %s) lat=%.1fs [%d, %d] pts=%04d (%d, %d, %d, %d) len=%d\n",
-	printf("%s.%s.%3s %3dHz (%s - %s) lat %.1fs [%d, %d] (%d) %4dpts (%d, %d, %d, %d, %d) %d\n",
+	nmxp_log(LOG_NORM_NO, 0, "%s.%s.%3s %3dHz (%s - %s) lat %.1fs [%d, %d] (%d) %4dpts (%d, %d, %d, %d, %d) %d\n",
 		/* pd->key, */
 		pd->network,
 		(strlen(pd->station) == 0)? "XXXX" : pd->station,
@@ -309,7 +309,7 @@ int nmxp_data_log(NMXP_DATA_PROCESS *pd) {
 	}
 	*/
     } else {
-	printf("Pointer to NMXP_DATA_PROCESS is NULL!\n");
+	nmxp_log(1, 0, "Pointer to NMXP_DATA_PROCESS is NULL!\n");
     }
 
     return 0;

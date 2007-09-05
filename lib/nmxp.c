@@ -307,10 +307,10 @@ NMXP_CHAN_LIST *nmxp_getAvailableChannelList(char * hostname, int portnum, NMXP_
 		 nmxp_sendTerminateSubscription(naqssock, NMXP_SHUTDOWN_NORMAL, "Good Bye!");
 
 	     } else {
-		 printf("Error on receiveChannelList()\n");
+		 nmxp_log(1, 0, "Error on receiveChannelList()\n");
 	     }
 	} else {
-	    printf("Error on sendConnect()\n");
+	    nmxp_log(1, 0, "Error on sendConnect()\n");
 	}
 
 	// 8. Close the socket

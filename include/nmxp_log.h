@@ -13,6 +13,22 @@
 #define NMXP_LOG_H 1
 
 
+/*! normal output with time and package name */
+#define LOG_NORM     0
+
+/*! error output with time and package name */
+#define LOG_ERR      1
+
+/*! warning output with time and package name */
+#define LOG_WARN     2
+
+/*! normal output without time and package name */
+#define LOG_NORM_NO  3
+
+/*! normal output with only package name */
+#define LOG_NORM_PKG 4
+
+
 /*! \brief A generic logging/printing routine
  * 
  *   This function works in two modes:
@@ -25,7 +41,13 @@
  *       format, and printf arguments.  If the verbosity level is less
  *       than or equal to the set verbosity (see mode 1), the printf
  *       format and arguments will be printed at the appropriate log
- *       level. I.e. 'sl_log(0, 0, "error: %s", result);'
+ *       level, where level represents:
+ *       -# 0, normal output with time and package name
+ *       -# 1, error output with time and package name
+ *       -# 2, warning output with time and package name
+ *       -# 3, normal output without time and package name
+ *       -# 4, normal output with only package name
+ *
  *
  *   \retval new_verbosity if using mode 1.
  *   \retval n the number of characters formatted on success, and a
