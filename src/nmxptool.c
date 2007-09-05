@@ -57,11 +57,18 @@ int seq_no_compare(const void *a, const void *b)
     return ret;
 }
 
-int nmxptool_add_and_do_ordered(NMXPTOOL_PD_RAW_STREAM *p, NMXP_DATA_PROCESS *pd, int func_pd(NMXP_DATA_PROCESS *)) {
+int nmxptool_add_and_do_ordered(NMXPTOOL_PD_RAW_STREAM *p, NMXP_DATA_PROCESS *a_pd, int func_pd(NMXP_DATA_PROCESS *)) {
     int ret = 0;
     int send_again = 1;
     int seq_no_diff;
     int j=0, k=0;
+    NMXP_DATA_PROCESS *pd = NULL;
+
+    pd = (NMXP_DATA_PROCESS *) malloc (sizeof(NMXP_DATA_PROCESS));
+    memcpy(pd, a_pd, sizeof(NMXP_DATA_PROCESS));
+    pd->buffer = NULL;
+    pd->pDataPtr = (int *) malloc(sizeof(int));
+    memcpy(pd->pDataPtr, a_pd->pDataPtr, a_pd->nSamp * sizeof(int));
 
     // First time
     if(p->last_seq_no_sent == -1) {
@@ -116,9 +123,13 @@ int nmxptool_add_and_do_ordered(NMXPTOOL_PD_RAW_STREAM *p, NMXP_DATA_PROCESS *pd
     if(j > 0) {
 	for(k=0; k < p->n_pdlist; k++) {
 	    if(k + j < p->n_pdlist) {
-		if(p->pdlist[k]->buffer) {
-		    free(p->pdlist[k]->buffer);
-		    p->pdlist[k]->buffer = NULL;
+		if(p->pdlist[k]->pDataPtr) {
+		    free(p->pdlist[k]->pDataPtr);
+		    p->pdlist[k]->pDataPtr = NULL;
+		}
+		if(p->pdlist[k]) {
+		    free(p->pdlist[k]);
+		    p->pdlist[k] = NULL;
 		}
 		p->pdlist[k] = p->pdlist[k+j];
 	    } else {
