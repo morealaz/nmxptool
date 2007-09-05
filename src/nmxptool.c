@@ -64,6 +64,7 @@ int nmxptool_add_and_do_ordered(NMXPTOOL_PD_RAW_STREAM *p, NMXP_DATA_PROCESS *a_
     int j=0, k=0;
     NMXP_DATA_PROCESS *pd = NULL;
 
+    /* Allocate memory for pd and copy a_pd */
     pd = (NMXP_DATA_PROCESS *) malloc (sizeof(NMXP_DATA_PROCESS));
     memcpy(pd, a_pd, sizeof(NMXP_DATA_PROCESS));
     pd->buffer = NULL;
@@ -74,12 +75,13 @@ int nmxptool_add_and_do_ordered(NMXPTOOL_PD_RAW_STREAM *p, NMXP_DATA_PROCESS *a_
 	pd->pDataPtr = NULL;
     }
 
-    // First time
+    /* First time */
     if(p->last_seq_no_sent == -1) {
 	p->last_seq_no_sent = pd->seq_no - 1;
 	nmxp_log(0, 0, "First time.\n");
     }
 
+    /* Add pd and sort array */
     if(p->n_pdlist + 1 >= NMXPTOOL_MAX_PDLIST_ITEMS) {
 	/* Supposing p->pdlist is ordered,
 	 * handle the first item and over write it.
@@ -93,6 +95,7 @@ int nmxptool_add_and_do_ordered(NMXPTOOL_PD_RAW_STREAM *p, NMXP_DATA_PROCESS *a_
     }
     qsort(p->pdlist, p->n_pdlist, sizeof(NMXP_DATA_PROCESS *), seq_no_compare);
 
+    /* Print array, only for debugging */
     if(p->n_pdlist > 1) {
 	int y = 0;
 	for(y=0; y < p->n_pdlist; y++) {
@@ -100,6 +103,7 @@ int nmxptool_add_and_do_ordered(NMXPTOOL_PD_RAW_STREAM *p, NMXP_DATA_PROCESS *a_
 	}
     }
 
+    /* Manage array and execute func_pd() */
     j=0;
     send_again = 1;
     while(send_again  &&  j < p->n_pdlist) {
@@ -124,6 +128,7 @@ int nmxptool_add_and_do_ordered(NMXPTOOL_PD_RAW_STREAM *p, NMXP_DATA_PROCESS *a_
 	}
     }
 
+    /* Shift and free handled elements */
     if(j > 0) {
 	for(k=0; k < p->n_pdlist; k++) {
 	    if(k + j < p->n_pdlist) {
