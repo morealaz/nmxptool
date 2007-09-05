@@ -67,8 +67,12 @@ int nmxptool_add_and_do_ordered(NMXPTOOL_PD_RAW_STREAM *p, NMXP_DATA_PROCESS *a_
     pd = (NMXP_DATA_PROCESS *) malloc (sizeof(NMXP_DATA_PROCESS));
     memcpy(pd, a_pd, sizeof(NMXP_DATA_PROCESS));
     pd->buffer = NULL;
-    pd->pDataPtr = (int *) malloc(sizeof(int));
-    memcpy(pd->pDataPtr, a_pd->pDataPtr, a_pd->nSamp * sizeof(int));
+    if(a_pd->nSamp *  sizeof(int) > 0) {
+	pd->pDataPtr = (int *) malloc(a_pd->nSamp * sizeof(int));
+	memcpy(pd->pDataPtr, a_pd->pDataPtr, a_pd->nSamp * sizeof(int));
+    } else {
+	pd->pDataPtr = NULL;
+    }
 
     // First time
     if(p->last_seq_no_sent == -1) {
