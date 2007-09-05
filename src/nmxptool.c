@@ -82,20 +82,27 @@ int nmxptool_add_and_do_ordered(NMXPTOOL_PD_RAW_STREAM *p, NMXP_DATA_PROCESS *pd
     }
     qsort(p->pdlist, p->n_pdlist, sizeof(NMXP_DATA_PROCESS *), seq_no_compare);
 
+    if(p->n_pdlist > 1) {
+	int y = 0;
+	for(y=0; y < p->n_pdlist; y++) {
+	    nmxp_log(0, 0, "%02d pkt %d\n", y, p->pdlist[y]->seq_no);
+	}
+    }
+
     j=0;
     send_again = 1;
     while(send_again  &&  j < p->n_pdlist) {
 	send_again = 0;
 	seq_no_diff = p->pdlist[j]->seq_no - p->last_seq_no_sent;
-	nmxp_log(0, 0, "seq_no_diff %d\n", seq_no_diff);
+	nmxp_log(0, 0, "seq_no_diff=%d  j=%d  p->n_pdlist=%d (%d-%d)\n", seq_no_diff, j, p->n_pdlist, p->pdlist[j]->seq_no, p->last_seq_no_sent);
 	if(seq_no_diff <= 0) {
 	    // Duplicated packets: Discarded
+	    nmxp_log(0, 0, "Packets %d discarded\n", p->pdlist[j]->seq_no);
 	    send_again = 1;
 	    j++;
-	    nmxp_log(0, 0, "Packets %d discarded\n", p->pdlist[j]->seq_no);
 	} else if(seq_no_diff == 1) {
 	    func_pd(p->pdlist[j]);
-	    p->last_seq_no_sent = (p->pdlist[j]->seq_no);
+	    p->last_seq_no_sent = p->pdlist[j]->seq_no;
 	    send_again = 1;
 	    j++;
 	} else if(seq_no_diff >= NMXPTOOL_MAX_DIFF_SEQ_NO) {
@@ -106,20 +113,22 @@ int nmxptool_add_and_do_ordered(NMXPTOOL_PD_RAW_STREAM *p, NMXP_DATA_PROCESS *pd
 	}
     }
 
-    for(k=0; k < p->n_pdlist; k++) {
-	if(k + j < p->n_pdlist) {
-	    if(p->pdlist[k]->buffer) {
-		free(p->pdlist[k]->buffer);
-		p->pdlist[k]->buffer = NULL;
+    if(j > 0) {
+	for(k=0; k < p->n_pdlist; k++) {
+	    if(k + j < p->n_pdlist) {
+		if(p->pdlist[k]->buffer) {
+		    free(p->pdlist[k]->buffer);
+		    p->pdlist[k]->buffer = NULL;
+		}
+		p->pdlist[k] = p->pdlist[k+j];
+	    } else {
+		p->pdlist[k] = NULL;
 	    }
-	    p->pdlist[k] = p->pdlist[k+j];
-	} else {
-	    p->pdlist[k] = NULL;
 	}
+	p->n_pdlist = p->n_pdlist - j;
     }
-    p->n_pdlist = p->n_pdlist - j;
 
-    nmxp_log(0, 0, "p->n_pdlist %d FINAL\n", p->n_pdlist);
+    nmxp_log(0, 0, "j=%d  p->n_pdlist=%d FINAL\n", j, p->n_pdlist);
 
     return ret;
 }
