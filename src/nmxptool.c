@@ -19,9 +19,8 @@
 #include "seedlink_plugin.h"
 #endif
 
-
-#define CURRENT_NETWORK (params.network)? params.network : DEFAULT_NETWORK
-
+static void clientShutdown(int sig);
+static void clientDummyHandler(int sig);
 
 /* Max number of packet I can tollerate to wait.
  * It should be better to express it by time, for example 30 sec., 1 min., ecc....
@@ -35,6 +34,32 @@ typedef struct {
     int32_t n_pdlist;
     NMXP_DATA_PROCESS *pdlist[NMXPTOOL_MAX_PDLIST_ITEMS];
 } NMXPTOOL_PD_RAW_STREAM;
+
+typedef struct {
+    int significant;
+    double last_time;
+    int32_t x_1;
+    NMXPTOOL_PD_RAW_STREAM raw_stream_buffer;
+} NMXPTOOL_CHAN_SEQ;
+
+/* Global variable for main program and handling terminitation program */
+NMXPTOOL_PARAMS params;
+int naqssock = 0;
+FILE *outfile = NULL;
+NMXP_CHAN_LIST *channelList = NULL;
+NMXP_CHAN_LIST *channelList_subset = NULL;
+NMXPTOOL_CHAN_SEQ *channelListSeq = NULL;
+
+#ifdef HAVE_LIBMSEED
+/* Mini-SEED variables */
+NMXP_DATA_SEED data_seed;
+MSRecord *msr_list_chan[MAX_N_CHAN];
+#endif
+
+
+#define CURRENT_NETWORK (params.network)? params.network : DEFAULT_NETWORK
+
+
 
 int seq_no_compare(const void *a, const void *b)
 {       
@@ -57,6 +82,29 @@ int seq_no_compare(const void *a, const void *b)
     return ret;
 }
 
+int nmxptool_write_miniseed(NMXP_DATA_PROCESS *pd) {
+    int cur_chan;
+    int ret = 0;
+    if( (cur_chan = nmxp_chan_lookupKeyIndex(pd->key, channelList_subset)) != -1) {
+
+	ret = nmxp_data_msr_pack(pd, &data_seed, msr_list_chan[cur_chan], channelListSeq[cur_chan].x_1);
+
+    } else {
+	nmxp_log(1, 0, "Key %d not found in channelList_subset!\n", pd->key);
+    }
+    return ret;
+}
+
+int nmxptool_send_raw_depoch(NMXP_DATA_PROCESS *pd) {
+    /* TODO Set values */
+    const int usec_correction = 0;
+    const int timing_quality = 100;
+
+    return send_raw_depoch(pd->station, pd->channel, pd->time, usec_correction, timing_quality,
+	    pd->pDataPtr, pd->nSamp);
+}
+
+// TODO func_pd has to become an array of functions
 int nmxptool_add_and_do_ordered(NMXPTOOL_PD_RAW_STREAM *p, NMXP_DATA_PROCESS *a_pd, int func_pd(NMXP_DATA_PROCESS *)) {
     int ret = 0;
     int send_again = 1;
@@ -67,7 +115,12 @@ int nmxptool_add_and_do_ordered(NMXPTOOL_PD_RAW_STREAM *p, NMXP_DATA_PROCESS *a_
     /* Allocate memory for pd and copy a_pd */
     pd = (NMXP_DATA_PROCESS *) malloc (sizeof(NMXP_DATA_PROCESS));
     memcpy(pd, a_pd, sizeof(NMXP_DATA_PROCESS));
-    pd->buffer = NULL;
+    if(a_pd->length > 0) {
+	pd->buffer = malloc(pd->length);
+	memcpy(pd->buffer, a_pd->buffer, a_pd->length);
+    } else {
+	pd->buffer = NULL;
+    }
     if(a_pd->nSamp *  sizeof(int) > 0) {
 	pd->pDataPtr = (int *) malloc(a_pd->nSamp * sizeof(int));
 	memcpy(pd->pDataPtr, a_pd->pDataPtr, a_pd->nSamp * sizeof(int));
@@ -132,6 +185,10 @@ int nmxptool_add_and_do_ordered(NMXPTOOL_PD_RAW_STREAM *p, NMXP_DATA_PROCESS *a_
     if(j > 0) {
 	for(k=0; k < p->n_pdlist; k++) {
 	    if(k + j < p->n_pdlist) {
+		if(p->pdlist[k]->buffer) {
+		    free(p->pdlist[k]->buffer);
+		    p->pdlist[k]->buffer = NULL;
+		}
 		if(p->pdlist[k]->pDataPtr) {
 		    free(p->pdlist[k]->pDataPtr);
 		    p->pdlist[k]->pDataPtr = NULL;
@@ -153,12 +210,6 @@ int nmxptool_add_and_do_ordered(NMXPTOOL_PD_RAW_STREAM *p, NMXP_DATA_PROCESS *a_
     return ret;
 }
 
-typedef struct {
-    int significant;
-    double last_time;
-    int32_t x_1;
-    NMXPTOOL_PD_RAW_STREAM raw_stream_buffer;
-} NMXPTOOL_CHAN_SEQ;
 
 
 #define GAP_TOLLERANCE 0.001
@@ -175,24 +226,6 @@ int nmxptool_check_and_log_gap(double time1, double time2, const double gap_toll
     }
     return ret;
 }
-
-static void clientShutdown(int sig);
-static void clientDummyHandler(int sig);
-
-
-/* Global variable for main program and handling terminitation program */
-NMXPTOOL_PARAMS params;
-int naqssock = 0;
-FILE *outfile = NULL;
-NMXP_CHAN_LIST *channelList = NULL;
-NMXP_CHAN_LIST *channelList_subset = NULL;
-NMXPTOOL_CHAN_SEQ *channelListSeq = NULL;
-
-#ifdef HAVE_LIBMSEED
-/* Mini-SEED variables */
-NMXP_DATA_SEED data_seed;
-MSRecord *msr_list_chan[MAX_N_CHAN];
-#endif
 
 
 int main (int argc, char **argv) {
@@ -455,8 +488,10 @@ int main (int argc, char **argv) {
 			nmxp_data_log(pd);
 		    }
 
-		    /* Management of gaps */
+		    /* Set cur_chan */
 		    cur_chan = nmxp_chan_lookupKeyIndex(pd->key, channelList_subset);
+
+		    /* Management of gaps */
 		    if(!channelListSeq[cur_chan].significant && pd->nSamp > 0) {
 			channelListSeq[cur_chan].significant = 1;
 		    } else {
@@ -474,15 +509,10 @@ int main (int argc, char **argv) {
 #ifdef HAVE_LIBMSEED
 		    /* Write Mini-SEED record */
 		    if(params.flag_writeseed) {
-			if( (cur_chan = nmxp_chan_lookupKeyIndex(pd->key, channelList_subset)) != -1) {
-
-			    nmxp_data_msr_pack(pd, &data_seed, msr_list_chan[cur_chan], channelListSeq[cur_chan].x_1);
-
-			} else {
-			    nmxp_log(1, 0, "Key %d not found in channelList_subset!\n", pd->key);
-			}
+			nmxptool_write_miniseed(pd);
 		    }
 #endif
+
 		    if(pd->nSamp > 0) {
 			channelListSeq[cur_chan].x_1 = pd->pDataPtr[pd->nSamp-1];
 		    }
@@ -490,12 +520,7 @@ int main (int argc, char **argv) {
 #ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
 		    /* Send data to SeedLink Server */
 		    if(params.flag_slink) {
-			/* TODO Set values */
-			const int usec_correction = 0;
-			const int timing_quality = 100;
-
-			send_raw_depoch(pd->station, pd->channel, pd->time, usec_correction, timing_quality,
-				pd->pDataPtr, pd->nSamp);
+			nmxptool_send_raw_depoch(pd);
 		    }
 #endif
 
@@ -635,8 +660,10 @@ int main (int argc, char **argv) {
 		nmxp_data_log(pd);
 	    }
 
-	    /* Management of gaps */
+	    /* Set cur_chan */
 	    cur_chan = nmxp_chan_lookupKeyIndex(pd->key, channelList_subset);
+
+	    /* Management of gaps */
 	    if(!channelListSeq[cur_chan].significant && pd->nSamp > 0) {
 		channelListSeq[cur_chan].significant = 1;
 	    } else {
@@ -656,13 +683,7 @@ int main (int argc, char **argv) {
 #ifdef HAVE_LIBMSEED
 	    /* Write Mini-SEED record */
 	    if(params.flag_writeseed) {
-		if( (cur_chan = nmxp_chan_lookupKeyIndex(pd->key, channelList_subset)) != -1) {
-
-		    nmxp_data_msr_pack(pd, &data_seed, msr_list_chan[cur_chan], channelListSeq[cur_chan].x_1);
-
-		} else {
-		    nmxp_log(1, 0, "Key %d not found in channelList_subset!\n", pd->key);
-		}
+		nmxptool_write_miniseed(pd);
 	    }
 #endif
 	    if(pd->nSamp > 0) {
@@ -670,15 +691,10 @@ int main (int argc, char **argv) {
 	    }
 
 #ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
-		    /* Send data to SeedLink Server */
-		    if(params.flag_slink) {
-			/* TODO Set values */
-			const int usec_correction = 0;
-			const int timing_quality = 100;
-
-			send_raw_depoch(pd->station, pd->channel, pd->time, usec_correction, timing_quality,
-				pd->pDataPtr, pd->nSamp);
-		    }
+	    /* Send data to SeedLink Server */
+	    if(params.flag_slink) {
+		nmxptool_send_raw_depoch(pd);
+	    }
 #endif
 
 	    if(pd->buffer) {
