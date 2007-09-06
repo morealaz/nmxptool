@@ -48,6 +48,7 @@ static void clientDummyHandler(int sig);
 
 int nmxptool_write_miniseed(NMXP_DATA_PROCESS *pd);
 int nmxptool_send_raw_depoch(NMXP_DATA_PROCESS *pd);
+int nmxptool_print_seq_no(NMXP_DATA_PROCESS *pd);
 
 int seq_no_compare(const void *a, const void *b);
 int nmxptool_manage_raw_stream(NMXPTOOL_PD_RAW_STREAM *p, NMXP_DATA_PROCESS *a_pd, int (*p_func_pd[NMXPTOOL_MAX_FUNC_PD]) (NMXP_DATA_PROCESS *), int n_func_pd);
@@ -442,6 +443,10 @@ int main (int argc, char **argv) {
 
 	if(params.stc == -1) {
 
+	    if(params.flag_logdata) {
+		p_func_pd[n_func_pd++] = nmxptool_print_seq_no;
+	    }
+
 #ifdef HAVE_LIBMSEED
 	    /* Write Mini-SEED record */
 	    if(params.flag_writeseed) {
@@ -713,6 +718,18 @@ int nmxptool_write_miniseed(NMXP_DATA_PROCESS *pd) {
     } else {
 	nmxp_log(1, 0, "Key %d not found in channelList_subset!\n", pd->key);
     }
+    return ret;
+}
+
+int nmxptool_print_seq_no(NMXP_DATA_PROCESS *pd) {
+    int ret = 0;
+
+    nmxp_log(NMXP_LOG_NORM_NO, 0, "%2d %d %d\n",
+	    pd->packet_type,
+	    pd->seq_no,
+	    pd->oldest_seq_no
+	    );
+
     return ret;
 }
 
