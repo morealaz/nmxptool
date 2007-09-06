@@ -379,6 +379,25 @@ int nmxptool_check_params(NMXPTOOL_PARAMS *params) {
 	    && params->start_time >= params->end_time) {
 	ret = -1;
 	nmxp_log(NMXP_LOG_NORM_NO, 0, "<start_time> is less than <end_time>!\n");
+    } else if(params->stc < -1   ||   params->stc > 300) {
+	ret = -1;
+	nmxp_log(NMXP_LOG_NORM_NO, 0, "<stc> has to be in the interval -1..300 secs.\n");
+    } else if(params->stc == -1   &&   params->rate != DEFAULT_RATE) {
+	ret = -1;
+	nmxp_log(NMXP_LOG_NORM_NO, 0, "<rate> can not be declared when <stc> is equal to -1 (Raw Stream).\n");
+    } else if(params->delay > 0 && params->start_time != 0   &&   params->end_time != 0) {
+	ret = -1;
+	nmxp_log(NMXP_LOG_NORM_NO, 0, "<delay> can not be used with options <start_time> and <end_time>.\n");
+    } else if(params->rate != -1 && params->start_time != 0   &&   params->end_time != 0) {
+	ret = -1;
+	nmxp_log(NMXP_LOG_NORM_NO, 0, "<rate> can not be used with options <start_time> and <end_time>.\n");
+    } else if(params->flag_buffered != -1 && params->start_time != 0   &&   params->end_time != 0) {
+	ret = -1;
+	nmxp_log(NMXP_LOG_NORM_NO, 0, "<buffered> can not be used with options <start_time> and <end_time>.\n");
+    } else if(params->delay < 0) {
+	ret = -1;
+	nmxp_log(NMXP_LOG_NORM_NO, 0, "<delay> has to be greater than zero.\n");
     }
+
     return ret;
 }
