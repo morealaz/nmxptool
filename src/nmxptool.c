@@ -513,10 +513,6 @@ int main (int argc, char **argv) {
 		    }
 #endif
 
-		    if(pd->nSamp > 0) {
-			channelListSeq[cur_chan].x_1 = pd->pDataPtr[pd->nSamp-1];
-		    }
-
 #ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
 		    /* Send data to SeedLink Server */
 		    if(params.flag_slink) {
@@ -534,6 +530,11 @@ int main (int argc, char **argv) {
 			}
 		    }
 
+		    /* Store x_1 */
+		    if(pd->nSamp > 0) {
+			channelListSeq[cur_chan].x_1 = pd->pDataPtr[pd->nSamp-1];
+		    }
+		    /* Free pd->buffer */
 		    if(pd->buffer) {
 			free(pd->buffer);
 			pd->buffer = NULL;
@@ -591,9 +592,8 @@ int main (int argc, char **argv) {
 	/* ************************************************************ */
 
 
+
     } else {
-
-
 
 
 
@@ -686,9 +686,6 @@ int main (int argc, char **argv) {
 		nmxptool_write_miniseed(pd);
 	    }
 #endif
-	    if(pd->nSamp > 0) {
-		channelListSeq[cur_chan].x_1 = pd->pDataPtr[pd->nSamp-1];
-	    }
 
 #ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
 	    /* Send data to SeedLink Server */
@@ -697,6 +694,11 @@ int main (int argc, char **argv) {
 	    }
 #endif
 
+	    /* Store x_1 */
+	    if(pd->nSamp > 0) {
+		channelListSeq[cur_chan].x_1 = pd->pDataPtr[pd->nSamp-1];
+	    }
+	    /* Free pd->buffer */
 	    if(pd->buffer) {
 		free(pd->buffer);
 		pd->buffer = NULL;
