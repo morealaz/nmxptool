@@ -20,7 +20,7 @@
 
 #include "config.h"
 
-#define MAX_LOG_MESSAGE_LENGTH 200
+#define MAX_LOG_MESSAGE_LENGTH 8000
 
 
 int nmxp_log(int level, int verb, ... )
