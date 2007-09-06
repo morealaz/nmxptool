@@ -36,7 +36,7 @@ const NMXPTOOL_PARAMS NMXPTOOL_PARAMS_DEFAULT =
 
 void nmxptool_usage(struct option long_options[])
 {
-    printf("\
+    nmxp_log(NMXP_LOG_NORM_NO, 0, "\
 %s %s, Nanometrics tool (Data Access Protocol 1.0, Private Data Stream 1.4)\n\
 \n\
 Usage: %s -H hostname --listchannels [...]\n\
@@ -59,7 +59,7 @@ Arguments:\n\
 	    PACKAGE_NAME
 	  );
 
-    printf("\
+    nmxp_log(NMXP_LOG_NORM_NO, 0, "\
 Other arguments:\n\
   -P, --portpds=PORT      NaqsServer port number (default %d).\n\
   -D, --portdap=PORT      DataServer port number (default %d).\n\
@@ -68,7 +68,7 @@ Other arguments:\n\
   -v, --verbose           Be verbose.\n\
   -g, --logdata           Print info about data.\n\
   -l, --listchannels      Output list of channel available on NaqsServer.\n\
-  -i, --channelinfo      Output list of channel available on NaqsServer and channelinfo.\n\
+  -i, --channelinfo       Output list of channel available on NaqsServer and channelinfo.\n\
 ",
 	    DEFAULT_PORT_PDS,
 	    DEFAULT_PORT_DAP,
@@ -76,24 +76,24 @@ Other arguments:\n\
 		);
 
 #ifdef HAVE_LIBMSEED
-    printf("\
+    nmxp_log(NMXP_LOG_NORM_NO, 0, "\
   -m, --writeseed         Pack received data in Mini-SEED records and write to a file.\n");
 #endif
 
-    printf("\
+    nmxp_log(NMXP_LOG_NORM_NO, 0, "\
   -w, --writefile         Write received data to a file.\n");
 
 #ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
-    printf("\
+    nmxp_log(NMXP_LOG_NORM_NO, 0, "\
   -k, --slink=plug_name   Send received data to SeedLink like as plug-in.\n\
                           plug_name is set by SeisComP daemon.\n\
                           THIS OPTION MUST BE THE LAST WITHOUT plug_name IN seedlink.ini!\n");
 #endif
-    printf("\
+    nmxp_log(NMXP_LOG_NORM_NO, 0, "\
   -h, --help              Print this help.\n\
 \n");
 
-    printf("\
+    nmxp_log(NMXP_LOG_NORM_NO, 0, "\
 DAP Arguments:\n\
   -s, --start_time=DATE   Start time in date format.\n\
   -e, --end_time=DATE     End time in date format.\n\
@@ -108,7 +108,7 @@ DAP Arguments:\n\
 \n\
 ");
 
-    printf("\
+    nmxp_log(NMXP_LOG_NORM_NO, 0, "\
 PDS arguments:\n\
   -S, --stc=SECs          Short-term-completion  (default %d secs).\n\
   -R, --rate=HZ           Receive decompressed data with specified sample rate.\n\
@@ -121,7 +121,7 @@ PDS arguments:\n\
 	    DEFAULT_STC
 	  );
 
-    printf("\
+    nmxp_log(NMXP_LOG_NORM_NO, 0, "\
 Matteo Quintiliani - Istituto Nazionale di Geofisica e Vulcanologia - Italy\n\
 Mail bug reports and suggestions to <%s>.\n",
 	    PACKAGE_BUGREPORT
@@ -131,7 +131,7 @@ Mail bug reports and suggestions to <%s>.\n",
     if(long_options) {
 	int i=0;
 	while(long_options[i].name) {
-	    printf("%s %d %d %d %c\n", long_options[i].name, long_options[i].has_arg, (long_options[i].flag)? *(long_options[i].flag) : 0, long_options[i].val, long_options[i].val);
+	    nmxp_log(NMXP_LOG_NORM_NO, 0, "%s %d %d %d %c\n", long_options[i].name, long_options[i].has_arg, (long_options[i].flag)? *(long_options[i].flag) : 0, long_options[i].val, long_options[i].val);
 	    i++;
 	}
     }
@@ -217,7 +217,7 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 
 	if(one_time_option[c] > 1) {
 	    ret_errors++;
-	    printf ("Replicated option -%c (value %d)\n", c, atoi(optarg));
+	    nmxp_log(NMXP_LOG_NORM_NO, 0, "Replicated option -%c (value %s)\n", c, optarg);
 	} else {
 	    switch (c)
 	    {
@@ -225,10 +225,10 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 		    /* If this option set a flag, do nothing else now. */
 		    if (long_options[option_index].flag != 0)
 			break;
-		    printf ("option %s", long_options[option_index].name);
+		    nmxp_log(NMXP_LOG_NORM_NO, 0, "option %s", long_options[option_index].name);
 		    if (optarg)
-			printf (" with arg %s", optarg);
-		    printf ("\n");
+			nmxp_log(NMXP_LOG_NORM_NO, 0, " with arg %s", optarg);
+		    nmxp_log(NMXP_LOG_NORM_NO, 0, "\n");
 		    break;
 
 		case 'H':
@@ -351,9 +351,9 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
     {
 	ret_errors += optind;
 
-	printf ("non-option ARGV-elements: ");
+	nmxp_log(NMXP_LOG_NORM_NO, 0, "non-option ARGV-elements: ");
 	while (optind < argc)
-	    printf ("%s ", argv[optind++]);
+	    nmxp_log(NMXP_LOG_NORM_NO, 0, "%s ", argv[optind++]);
 	putchar ('\n');
     }
 
@@ -366,19 +366,19 @@ int nmxptool_check_params(NMXPTOOL_PARAMS *params) {
 
     if(params->hostname == NULL) {
 	ret = -1;
-	printf("<hostname> is required!\n");
+	nmxp_log(NMXP_LOG_NORM_NO, 0, "<hostname> is required!\n");
     } else if(params->flag_listchannels) {
 	/* Do nothing */
     } else if(params->hostname == NULL) {
 	ret = -1;
-	printf("<hostname> is required!\n");
+	nmxp_log(NMXP_LOG_NORM_NO, 0, "<hostname> is required!\n");
     } else if(params->channels == NULL) {
 	ret = -1;
-	printf("<STA.CHAN> is required!\n");
+	nmxp_log(NMXP_LOG_NORM_NO, 0, "<STA.CHAN> is required!\n");
     } else if(params->start_time != 0   &&   params->end_time != 0
 	    && params->start_time >= params->end_time) {
 	ret = -1;
-	printf("<start_time> is less than <end_time>!\n");
+	nmxp_log(NMXP_LOG_NORM_NO, 0, "<start_time> is less than <end_time>!\n");
     }
     return ret;
 }
