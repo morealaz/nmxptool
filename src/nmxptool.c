@@ -23,12 +23,7 @@
 #define GAP_TOLLERANCE 0.001
 #define NMXPTOOL_MAX_FUNC_PD 10
 
-/* Max number of packet I can tollerate to wait.
- * It should be better to express it by time, for example 30 sec., 1 min., ecc....
- */
-#define NMXPTOOL_MAX_DIFF_SEQ_NO 40
-/* I can suppose in the worst case I can have the double number of packets I can tollerate to wait */
-#define NMXPTOOL_MAX_PDLIST_ITEMS NMXPTOOL_MAX_DIFF_SEQ_NO*2
+#define NMXPTOOL_MAX_PDLIST_ITEMS 40
 
 typedef struct {
     int32_t last_seq_no_sent;
@@ -778,16 +773,39 @@ int nmxptool_manage_raw_stream(NMXPTOOL_PD_RAW_STREAM *p, NMXP_DATA_PROCESS *a_p
 	/* Supposing p->pdlist is ordered,
 	 * handle the first item and over write it.
 	 */
-	nmxp_log(NMXP_LOG_WARN, 0, "Force handling packet %d!\n", p->pdlist[0]->seq_no);
-	for(i_func_pd=0; i_func_pd<n_func_pd; i_func_pd++) {
-	    (*p_func_pd[i_func_pd])(p->pdlist[0]);
+	seq_no_diff = p->pdlist[0]->seq_no - p->last_seq_no_sent;
+	if( seq_no_diff > 0) {
+	    nmxp_log(NMXP_LOG_WARN, 0, "Force handling packet %d!\n", p->pdlist[0]->seq_no);
+	    for(i_func_pd=0; i_func_pd<n_func_pd; i_func_pd++) {
+		(*p_func_pd[i_func_pd])(p->pdlist[0]);
+	    }
+	    p->last_seq_no_sent = (p->pdlist[0]->seq_no);
+	} else {
+	    /* It should not occur */
+	    nmxp_log(NMXP_LOG_WARN, 0, "NOT OCCUR! Packets %d discarded, seq_no_diff=%d.\n", p->pdlist[0]->seq_no, seq_no_diff);
 	}
-	p->last_seq_no_sent = (p->pdlist[0]->seq_no);
+
+	/* Free handled packet */
+	if(p->pdlist[0]->buffer) {
+	    free(p->pdlist[0]->buffer);
+	    p->pdlist[0]->buffer = NULL;
+	}
+	if(p->pdlist[0]->pDataPtr) {
+	    free(p->pdlist[0]->pDataPtr);
+	    p->pdlist[0]->pDataPtr = NULL;
+	}
+	if(p->pdlist[0]) {
+	    free(p->pdlist[0]);
+	    p->pdlist[0] = NULL;
+	}
+
 	p->pdlist[0] = pd;
     } else {
 	p->pdlist[p->n_pdlist++] = pd;
     }
     qsort(p->pdlist, p->n_pdlist, sizeof(NMXP_DATA_PROCESS *), seq_no_compare);
+
+    // TODO Check for packet duplication in pd->pdlist
 
     /* Print array, only for debugging */
     if(p->n_pdlist > 1) {
@@ -806,7 +824,7 @@ int nmxptool_manage_raw_stream(NMXPTOOL_PD_RAW_STREAM *p, NMXP_DATA_PROCESS *a_p
 	nmxp_log(0, 1, "seq_no_diff=%d  j=%d  p->n_pdlist=%d (%d-%d)\n", seq_no_diff, j, p->n_pdlist, p->pdlist[j]->seq_no, p->last_seq_no_sent);
 	if(seq_no_diff <= 0) {
 	    // Duplicated packets: Discarded
-	    nmxp_log(NMXP_LOG_WARN, 0, "Packets %d discarded\n", p->pdlist[j]->seq_no);
+	    nmxp_log(NMXP_LOG_WARN, 0, "Packets %d discarded, seq_no_diff=%d.\n", p->pdlist[j]->seq_no, seq_no_diff);
 	    send_again = 1;
 	    j++;
 	} else if(seq_no_diff == 1) {
@@ -816,18 +834,16 @@ int nmxptool_manage_raw_stream(NMXPTOOL_PD_RAW_STREAM *p, NMXP_DATA_PROCESS *a_p
 	    p->last_seq_no_sent = p->pdlist[j]->seq_no;
 	    send_again = 1;
 	    j++;
-	} else if(seq_no_diff >= NMXPTOOL_MAX_DIFF_SEQ_NO) {
-	    // I have to drop packet with sequence number p->last_seq_no_sent+1
-	    nmxp_log(NMXP_LOG_WARN, 0, "Give up to wait packet %d!\n", p->last_seq_no_sent+1);
-	    p->last_seq_no_sent++;
-	    send_again = 1;
+	} else {
+	    nmxp_log(NMXP_LOG_NORM_NO, 0, "Warning: seq_no_diff=%d  j=%d  p->n_pdlist=%d (%d-%d)\n",
+		    seq_no_diff, j, p->n_pdlist, p->pdlist[j]->seq_no, p->last_seq_no_sent);
 	}
     }
 
-    /* Shift and free handled elements */
+    /* Shift and free j handled elements */
     if(j > 0) {
 	for(k=0; k < p->n_pdlist; k++) {
-	    if(k + j < p->n_pdlist) {
+	    if(k < j) {
 		if(p->pdlist[k]->buffer) {
 		    free(p->pdlist[k]->buffer);
 		    p->pdlist[k]->buffer = NULL;
@@ -840,6 +856,8 @@ int nmxptool_manage_raw_stream(NMXPTOOL_PD_RAW_STREAM *p, NMXP_DATA_PROCESS *a_p
 		    free(p->pdlist[k]);
 		    p->pdlist[k] = NULL;
 		}
+	    }
+	    if(k + j < p->n_pdlist) {
 		p->pdlist[k] = p->pdlist[k+j];
 	    } else {
 		p->pdlist[k] = NULL;
