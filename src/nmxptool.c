@@ -761,7 +761,7 @@ int nmxptool_manage_raw_stream(NMXPTOOL_PD_RAW_STREAM *p, NMXP_DATA_PROCESS *a_p
 	/* Supposing p->pdlist is ordered,
 	 * handle the first item and over write it.
 	 */
-	nmxp_log(LOG_WARN, 0, "Force handling packet %d!\n", p->pdlist[0]->seq_no);
+	nmxp_log(NMXP_LOG_WARN, 0, "Force handling packet %d!\n", p->pdlist[0]->seq_no);
 	for(i_func_pd=0; i_func_pd<n_func_pd; i_func_pd++) {
 	    (*p_func_pd[i_func_pd])(p->pdlist[0]);
 	}
@@ -789,7 +789,7 @@ int nmxptool_manage_raw_stream(NMXPTOOL_PD_RAW_STREAM *p, NMXP_DATA_PROCESS *a_p
 	nmxp_log(0, 1, "seq_no_diff=%d  j=%d  p->n_pdlist=%d (%d-%d)\n", seq_no_diff, j, p->n_pdlist, p->pdlist[j]->seq_no, p->last_seq_no_sent);
 	if(seq_no_diff <= 0) {
 	    // Duplicated packets: Discarded
-	    nmxp_log(LOG_WARN, 0, "Packets %d discarded\n", p->pdlist[j]->seq_no);
+	    nmxp_log(NMXP_LOG_WARN, 0, "Packets %d discarded\n", p->pdlist[j]->seq_no);
 	    send_again = 1;
 	    j++;
 	} else if(seq_no_diff == 1) {
@@ -801,7 +801,7 @@ int nmxptool_manage_raw_stream(NMXPTOOL_PD_RAW_STREAM *p, NMXP_DATA_PROCESS *a_p
 	    j++;
 	} else if(seq_no_diff >= NMXPTOOL_MAX_DIFF_SEQ_NO) {
 	    // I have to drop packet with sequence number p->last_seq_no_sent+1
-	    nmxp_log(LOG_WARN, 0, "Give up to wait packet %d!\n", p->last_seq_no_sent+1);
+	    nmxp_log(NMXP_LOG_WARN, 0, "Give up to wait packet %d!\n", p->last_seq_no_sent+1);
 	    p->last_seq_no_sent++;
 	    send_again = 1;
 	}
