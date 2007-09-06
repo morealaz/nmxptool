@@ -51,16 +51,16 @@ int nmxp_log(int level, int verb, ... )
     retvalue = vsnprintf(message, MAX_LOG_MESSAGE_LENGTH, format, listptr);
 
     switch(level) {
-	case LOG_ERR:
+	case NMXP_LOG_ERR:
 	    printf("%s - %s: error: %s", timestr, PACKAGE_NAME, message);
 	    break;
-	case LOG_WARN:
+	case NMXP_LOG_WARN:
 	    printf("%s - %s: warning: %s", timestr, PACKAGE_NAME, message);
 	    break;
-	case LOG_NORM_NO:
+	case NMXP_LOG_NORM_NO:
 	    printf("%s", message);
 	    break;
-	case LOG_NORM_PKG:
+	case NMXP_LOG_NORM_PKG:
 	    printf("%s: %s", PACKAGE_NAME, message);
 	    break;
 	default:

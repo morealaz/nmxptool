@@ -14,19 +14,19 @@
 
 
 /*! normal output with time and package name */
-#define LOG_NORM     0
+#define NMXP_LOG_NORM     0
 
 /*! error output with time and package name */
-#define LOG_ERR      1
+#define NMXP_LOG_ERR      1
 
 /*! warning output with time and package name */
-#define LOG_WARN     2
+#define NMXP_LOG_WARN     2
 
 /*! normal output without time and package name */
-#define LOG_NORM_NO  3
+#define NMXP_LOG_NORM_NO  3
 
 /*! normal output with only package name */
-#define LOG_NORM_PKG 4
+#define NMXP_LOG_NORM_PKG 4
 
 
 /*! \brief A generic logging/printing routine

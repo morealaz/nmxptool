@@ -276,7 +276,7 @@ int nmxp_data_log(NMXP_DATA_PROCESS *pd) {
 
 	// nmxp_log(0, 0, "%12d %5s.%3s rate=%03d (%s - %s) [%d, %d] pts=%04d (%d, %d, %d, %d) lat=%.1f len=%d\n",
 	// printf("%10d %5s.%3s 03dHz (%s - %s) lat=%.1fs [%d, %d] pts=%04d (%d, %d, %d, %d) len=%d\n",
-	nmxp_log(LOG_NORM_NO, 0, "%s.%s.%3s %3dHz (%s - %s) lat %.1fs [%d, %d] (%d) %4dpts (%d, %d, %d, %d, %d) %d\n",
+	nmxp_log(NMXP_LOG_NORM_NO, 0, "%s.%s.%3s %3dHz (%s - %s) lat %.1fs [%d, %d] (%d) %4dpts (%d, %d, %d, %d, %d) %d\n",
 		/* pd->key, */
 		pd->network,
 		(strlen(pd->station) == 0)? "XXXX" : pd->station,
