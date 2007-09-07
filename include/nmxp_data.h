@@ -7,6 +7,8 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
+ * $Id: nmxp_data.h,v 1.22 2007-09-07 07:08:30 mtheo Exp $
+ *
  */
 
 #ifndef NMXP_DATA_H

@@ -2,6 +2,8 @@
  *
  * \brief Computing a 32 bit CRC.
  *
+ * $Id: nmxp_crc32.h,v 1.4 2007-09-07 07:08:30 mtheo Exp $
+ *
  * author: tatu ylonen <ylo@cs.hut.fi>
  *
  * copyright (c) 1992 tatu ylonen, espoo, finland

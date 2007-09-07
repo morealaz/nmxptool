@@ -1,11 +1,13 @@
 /*! \file
  *
- * \brief LOG for Nanometrics Protocol Library
+ * \brief Log for Nanometrics Protocol Library
  *
  * Author:
  * 	Matteo Quintiliani
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
+ *
+ * $Id: nmxp_log.h,v 1.5 2007-09-07 07:08:30 mtheo Exp $
  *
  */
 

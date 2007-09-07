@@ -1,3 +1,16 @@
+/*! \file
+ *
+ * \brief Nanometrics Protocol Library
+ *
+ * Author:
+ * 	Matteo Quintiliani
+ * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
+ *	quintiliani@ingv.it
+ *
+ * $Id: nmxp.h,v 1.31 2007-09-07 07:08:30 mtheo Exp $
+ *
+ */
+
 /*! \mainpage 
  *
  * \section intro_sec Introduction
@@ -84,17 +97,6 @@
  */
 
 
-
-/*! \file
- *
- * \brief Nanometrics Protocol Library
- *
- * Author:
- * 	Matteo Quintiliani
- * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
- *	quintiliani@ingv.it
- *
- */
 
 #ifndef NMXP_H
 #define NMXP_H 1

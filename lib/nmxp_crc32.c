@@ -1,3 +1,22 @@
+/*! \file
+ *
+ * \brief Computing a 32 bit CRC.
+ *
+ * $Id: nmxp_crc32.c,v 1.3 2007-09-07 07:08:30 mtheo Exp $
+ *
+ * author: tatu ylonen <ylo@cs.hut.fi>
+ *
+ * copyright (c) 1992 tatu ylonen, espoo, finland
+ *                    all rights reserved
+ *
+ *                    created: tue feb 11 14:37:27 1992 ylo
+ *
+ *                    functions for computing 32-bit crc.
+ *
+ * The implementation here was originally done by Gary S. Brown.  I have
+ *    borrowed the tables directly, and made some minor changes to the
+ *       crc32-function (including changing the interface). //ylo
+ */
 
 #include "nmxp_crc32.h"
 

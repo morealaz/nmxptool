@@ -1,3 +1,16 @@
+/*! \file
+ *
+ * \brief Nanometrics Protocol Tool
+ *
+ * Author:
+ * 	Matteo Quintiliani
+ * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
+ *	quintiliani@ingv.it
+ *
+ * $Id: nmxptool_getoptlong.h,v 1.9 2007-09-07 07:04:21 mtheo Exp $
+ *
+ */
+
 #ifndef NMXPTOOL_GETLONG_H
 #define NMXPTOOL_GETLONG_H 1
 
