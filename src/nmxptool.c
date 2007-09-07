@@ -1,3 +1,16 @@
+/*! \file
+ *
+ * \brief Nanometrics Protocol Tool
+ *
+ * Author:
+ * 	Matteo Quintiliani
+ * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
+ *	quintiliani@ingv.it
+ *
+ * Revision: $Id: nmxptool.c,v 1.42 2007-09-07 06:55:45 mtheo Exp $
+ * 
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -744,6 +757,7 @@ int nmxptool_manage_raw_stream(NMXPTOOL_PD_RAW_STREAM *p, NMXP_DATA_PROCESS *a_p
     int seq_no_diff;
     int j=0, k=0;
     int i_func_pd;
+    char str_time[200];
     NMXP_DATA_PROCESS *pd = NULL;
 
     /* Allocate memory for pd and copy a_pd */
@@ -768,21 +782,25 @@ int nmxptool_manage_raw_stream(NMXPTOOL_PD_RAW_STREAM *p, NMXP_DATA_PROCESS *a_p
 	nmxp_log(0, 1, "First time nmxptool_manage_raw_stream().\n");
     }
 
+    // TODO Condition for max tollerable latency
+
     /* Add pd and sort array */
-    if(p->n_pdlist + 1 >= NMXPTOOL_MAX_PDLIST_ITEMS) {
+    if(p->n_pdlist >= NMXPTOOL_MAX_PDLIST_ITEMS) {
 	/* Supposing p->pdlist is ordered,
 	 * handle the first item and over write it.
 	 */
 	seq_no_diff = p->pdlist[0]->seq_no - p->last_seq_no_sent;
 	if( seq_no_diff > 0) {
-	    nmxp_log(NMXP_LOG_WARN, 0, "Force handling packet %d!\n", p->pdlist[0]->seq_no);
+	    nmxp_data_to_str(str_time, p->pdlist[0]->time);
+	    nmxp_log(NMXP_LOG_WARN, 0, "Force handling packet %d (%s)!\n", p->pdlist[0]->seq_no, str_time);
 	    for(i_func_pd=0; i_func_pd<n_func_pd; i_func_pd++) {
 		(*p_func_pd[i_func_pd])(p->pdlist[0]);
 	    }
 	    p->last_seq_no_sent = (p->pdlist[0]->seq_no);
 	} else {
 	    /* It should not occur */
-	    nmxp_log(NMXP_LOG_WARN, 0, "NOT OCCUR! Packets %d discarded, seq_no_diff=%d.\n", p->pdlist[0]->seq_no, seq_no_diff);
+	    nmxp_data_to_str(str_time, p->pdlist[0]->time);
+	    nmxp_log(NMXP_LOG_WARN, 0, "NOT OCCUR! Packets %d (%s) discarded, seq_no_diff=%d.\n", p->pdlist[0]->seq_no, str_time, seq_no_diff);
 	}
 
 	/* Free handled packet */
@@ -821,10 +839,10 @@ int nmxptool_manage_raw_stream(NMXPTOOL_PD_RAW_STREAM *p, NMXP_DATA_PROCESS *a_p
     while(send_again  &&  j < p->n_pdlist) {
 	send_again = 0;
 	seq_no_diff = p->pdlist[j]->seq_no - p->last_seq_no_sent;
-	nmxp_log(0, 1, "seq_no_diff=%d  j=%d  p->n_pdlist=%d (%d-%d)\n", seq_no_diff, j, p->n_pdlist, p->pdlist[j]->seq_no, p->last_seq_no_sent);
 	if(seq_no_diff <= 0) {
 	    // Duplicated packets: Discarded
-	    nmxp_log(NMXP_LOG_WARN, 0, "Packets %d discarded, seq_no_diff=%d.\n", p->pdlist[j]->seq_no, seq_no_diff);
+	    nmxp_data_to_str(str_time, p->pdlist[j]->time);
+	    nmxp_log(NMXP_LOG_WARN, 0, "Packets %d (%s) discarded, seq_no_diff=%d.\n", p->pdlist[j]->seq_no, str_time, seq_no_diff);
 	    send_again = 1;
 	    j++;
 	} else if(seq_no_diff == 1) {
@@ -835,8 +853,9 @@ int nmxptool_manage_raw_stream(NMXPTOOL_PD_RAW_STREAM *p, NMXP_DATA_PROCESS *a_p
 	    send_again = 1;
 	    j++;
 	} else {
-	    nmxp_log(NMXP_LOG_WARN, 0, "seq_no_diff=%d  j=%d  p->n_pdlist=%d (%d-%d)\n",
-		    seq_no_diff, j, p->n_pdlist, p->pdlist[j]->seq_no, p->last_seq_no_sent);
+	    nmxp_data_to_str(str_time, p->pdlist[j]->time);
+	    nmxp_log(NMXP_LOG_WARN, 0, "seq_no_diff=%d (%d-%d)  j=%2d  p->n_pdlist=%2d (%s)\n",
+		    seq_no_diff, p->n_pdlist, p->pdlist[j]->seq_no, j, p->last_seq_no_sent, str_time);
 	}
     }
 
