@@ -336,7 +336,7 @@ int main (int argc, char **argv) {
 			if(channelListSeq[cur_chan].significant) {
 			    if(nmxptool_check_and_log_gap(pd->time, channelListSeq[cur_chan].last_time, GAP_TOLLERANCE, pd->station, pd->channel)) {
 				channelListSeq[cur_chan].x_1 = 0;
-				nmxp_log(0, 0, "Warning: x0 set to zero!\n");
+				nmxp_log(NMXP_LOG_WARN, 0, "x0 set to zero!\n");
 			    }
 			}
 		    }
@@ -535,7 +535,7 @@ int main (int argc, char **argv) {
 		    if(channelListSeq[cur_chan].significant) {
 			if(nmxptool_check_and_log_gap(pd->time, channelListSeq[cur_chan].last_time, GAP_TOLLERANCE, pd->station, pd->channel)) {
 			    channelListSeq[cur_chan].x_1 = 0;
-			    nmxp_log(0, 0, "Warning: x0 set to zero!\n");
+			    nmxp_log(NMXP_LOG_WARN, 0, "x0 set to zero!\n");
 			}
 		    }
 		}
@@ -835,7 +835,7 @@ int nmxptool_manage_raw_stream(NMXPTOOL_PD_RAW_STREAM *p, NMXP_DATA_PROCESS *a_p
 	    send_again = 1;
 	    j++;
 	} else {
-	    nmxp_log(NMXP_LOG_NORM_NO, 0, "Warning: seq_no_diff=%d  j=%d  p->n_pdlist=%d (%d-%d)\n",
+	    nmxp_log(NMXP_LOG_WARN, 0, "seq_no_diff=%d  j=%d  p->n_pdlist=%d (%d-%d)\n",
 		    seq_no_diff, j, p->n_pdlist, p->pdlist[j]->seq_no, p->last_seq_no_sent);
 	}
     }
