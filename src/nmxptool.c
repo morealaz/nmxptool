@@ -7,9 +7,10 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * Revision: $Id: nmxptool.c,v 1.43 2007-09-07 06:56:40 mtheo Exp $
- * Revision: $Revision: 1.43 $
- * Date:     $Date: 2007-09-07 06:56:40 $
+ * Revision: $Id: nmxptool.c,v 1.44 2007-09-07 06:57:08 mtheo Exp $
+ * Revision: $Revision: 1.44 $
+ * Date:     $Date: 2007-09-07 06:57:08 $
+ * $Log: not supported by cvs2svn $
  * 
  */
 
