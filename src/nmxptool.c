@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.51 2007-09-10 12:50:25 mtheo Exp $
+ * $Id: nmxptool.c,v 1.52 2007-09-10 13:01:17 mtheo Exp $
  *
  */
 
@@ -757,12 +757,13 @@ int nmxptool_write_miniseed(NMXP_DATA_PROCESS *pd) {
 int nmxptool_print_seq_no(NMXP_DATA_PROCESS *pd) {
     int ret = 0;
 
-    nmxp_log(NMXP_LOG_NORM_NO, 0, "%s.%s %2d %d %d\n",
+    nmxp_log(NMXP_LOG_NORM_NO, 0, "%s.%s %2d %d %d  lat. %.1fs\n",
 	    pd->station,
 	    pd->channel,
 	    pd->packet_type,
 	    pd->seq_no,
-	    pd->oldest_seq_no
+	    pd->oldest_seq_no,
+	    nmxp_data_latency(pd)
 	    );
 
     return ret;
@@ -820,7 +821,7 @@ int nmxptool_manage_raw_stream(NMXPTOOL_PD_RAW_STREAM *p, NMXP_DATA_PROCESS *a_p
 	time_diff = p->pdlist[0]->time - p->last_sample_time;
 	if( seq_no_diff > 0) {
 	    nmxp_data_to_str(str_time, p->pdlist[0]->time);
-	    nmxp_log(NMXP_LOG_WARN, 0, "Force handling packet %s.%s.%d.%d (%s - %.2f sec.)  time_diff %.2f sec.!\n",
+	    nmxp_log(NMXP_LOG_WARN, 0, "Force handling packet %s.%s.%d.%d (%s - %.2f sec.)  time_diff %.2fs!\n",
 		    p->pdlist[0]->station, p->pdlist[0]->channel, p->pdlist[0]->seq_no, p->pdlist[0]->packet_type, str_time,
 		    (double) p->pdlist[0]->nSamp / (double) p->pdlist[0]->sampRate, time_diff);
 	    for(i_func_pd=0; i_func_pd<n_func_pd; i_func_pd++) {
@@ -831,7 +832,7 @@ int nmxptool_manage_raw_stream(NMXPTOOL_PD_RAW_STREAM *p, NMXP_DATA_PROCESS *a_p
 	} else {
 	    /* It should not occur */
 	    nmxp_data_to_str(str_time, p->pdlist[0]->time);
-	    nmxp_log(NMXP_LOG_WARN, 0, "NOT OCCUR! Packets %s.%s.%d.%d (%s - %.2f sec.) discarded, seq_no_diff=%d time_diff %.2f sec.\n",
+	    nmxp_log(NMXP_LOG_WARN, 0, "NOT OCCUR! Packets %s.%s.%d.%d (%s - %.2f sec.) discarded, seq_no_diff=%d time_diff %.2fs\n",
 		    p->pdlist[0]->station, p->pdlist[0]->channel, p->pdlist[0]->seq_no, p->pdlist[0]->packet_type, str_time,
 		    (double) p->pdlist[0]->nSamp / (double) p->pdlist[0]->sampRate, seq_no_diff, time_diff);
 	}
@@ -878,7 +879,7 @@ int nmxptool_manage_raw_stream(NMXPTOOL_PD_RAW_STREAM *p, NMXP_DATA_PROCESS *a_p
 	if(seq_no_diff <= 0) {
 	    // Duplicated packets: Discarded
 	    nmxp_data_to_str(str_time, p->pdlist[j]->time);
-	    nmxp_log(NMXP_LOG_WARN, 0, "Packets %s.%s.%d.%d (%s - %f sec.) discarded, seq_no_diff=%d  time_diff=%.2f sec.\n",
+	    nmxp_log(NMXP_LOG_WARN, 0, "Packets %s.%s.%d.%d (%s - %f sec.) discarded, seq_no_diff=%d  time_diff=%.2fs\n",
 		    p->pdlist[j]->station, p->pdlist[j]->channel, p->pdlist[j]->seq_no, p->pdlist[j]->packet_type, str_time,
 		    (double) p->pdlist[j]->nSamp /  (double) p->pdlist[j]->sampRate, seq_no_diff, time_diff);
 	    send_again = 1;
@@ -893,7 +894,7 @@ int nmxptool_manage_raw_stream(NMXPTOOL_PD_RAW_STREAM *p, NMXP_DATA_PROCESS *a_p
 	    j++;
 	} else {
 	    nmxp_data_to_str(str_time, p->pdlist[j]->time);
-	    nmxp_log(NMXP_LOG_WARN, 0, "%s.%s seq_no_diff=%d ([%d] %d-%d)  j=%2d  p->n_pdlist=%2d (%s - %.2f sec.) time_diff=%.2f sec.\n",
+	    nmxp_log(NMXP_LOG_WARN, 0, "%s.%s seq_no_diff=%d ([%d] %d-%d)  j=%2d  p->n_pdlist=%2d (%s - %.2f sec.) time_diff=%.2fs\n",
 		    p->pdlist[j]->station, p->pdlist[j]->channel, 
 		    seq_no_diff, p->pdlist[j]->packet_type, p->pdlist[j]->seq_no, p->last_seq_no_sent, j, p->n_pdlist,
 		    str_time, (double) p->pdlist[j]->nSamp /  (double) p->pdlist[j]->sampRate, time_diff);
