@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_data.c,v 1.36 2007-09-07 07:08:30 mtheo Exp $
+ * $Id: nmxp_data.c,v 1.37 2007-09-10 12:56:54 mtheo Exp $
  *
  */
 
@@ -256,9 +256,7 @@ int nmxp_data_trim(NMXP_DATA_PROCESS *pd, double trim_start_time, double trim_en
 }
 
 
-int nmxp_data_log(NMXP_DATA_PROCESS *pd) {
-
-    char str_start[200], str_end[200];
+double nmxp_data_latency(NMXP_DATA_PROCESS *pd) {
     double latency = 0.0;
 
     time_t time_now;
@@ -266,6 +264,18 @@ int nmxp_data_log(NMXP_DATA_PROCESS *pd) {
     time(&time_now);
     tm_now = gmtime(&time_now);
     time_now = nmxp_data_tm_to_time(tm_now);
+    
+    if(pd) {
+	latency = ((double) time_now) - (pd->time + ((double) pd->nSamp / (double) pd->sampRate));
+    }
+
+    return latency;
+}
+
+
+int nmxp_data_log(NMXP_DATA_PROCESS *pd) {
+
+    char str_start[200], str_end[200];
 
     str_start[0] = 0;
     str_end[0] = 0;
@@ -273,8 +283,6 @@ int nmxp_data_log(NMXP_DATA_PROCESS *pd) {
     if(pd) {
 	nmxp_data_to_str(str_start, pd->time);
 	nmxp_data_to_str(str_end, pd->time + ((double) pd->nSamp / (double) pd->sampRate));
-
-	latency = ((double) time_now) - (pd->time + ((double) pd->nSamp / (double) pd->sampRate));
 
 	// nmxp_log(0, 0, "%12d %5s.%3s rate=%03d (%s - %s) [%d, %d] pts=%04d (%d, %d, %d, %d) lat=%.1f len=%d\n",
 	// printf("%10d %5s.%3s 03dHz (%s - %s) lat=%.1fs [%d, %d] pts=%04d (%d, %d, %d, %d) len=%d\n",
@@ -286,7 +294,7 @@ int nmxp_data_log(NMXP_DATA_PROCESS *pd) {
 		pd->sampRate,
 		str_start,
 		str_end,
-		latency,
+		nmxp_data_latency(pd),
 		pd->packet_type,
 		pd->seq_no,
 		pd->oldest_seq_no,

@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_data.h,v 1.22 2007-09-07 07:08:30 mtheo Exp $
+ * $Id: nmxp_data.h,v 1.23 2007-09-10 12:56:54 mtheo Exp $
  *
  */
 
@@ -175,6 +175,14 @@ int nmxp_data_to_str(char *out_str, double time_d);
  *
  */
 int nmxp_data_trim(NMXP_DATA_PROCESS *pd, double trim_start_time, double trim_end_time, unsigned char exclude_bitmap);
+
+
+/*! \brief Compute latency from current time and struct NMXP_DATA_PROCESS
+ *
+ * \param pd Pointer to struct NMXP_DATA_PROCESS
+ *
+ */
+double nmxp_data_latency(NMXP_DATA_PROCESS *pd);
 
 
 /*! \brief Print info about struct NMXP_DATA_PROCESS
