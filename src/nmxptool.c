@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.52 2007-09-10 13:01:17 mtheo Exp $
+ * $Id: nmxptool.c,v 1.53 2007-09-10 13:06:19 mtheo Exp $
  *
  */
 
@@ -821,9 +821,9 @@ int nmxptool_manage_raw_stream(NMXPTOOL_PD_RAW_STREAM *p, NMXP_DATA_PROCESS *a_p
 	time_diff = p->pdlist[0]->time - p->last_sample_time;
 	if( seq_no_diff > 0) {
 	    nmxp_data_to_str(str_time, p->pdlist[0]->time);
-	    nmxp_log(NMXP_LOG_WARN, 0, "Force handling packet %s.%s.%d.%d (%s - %.2f sec.)  time_diff %.2fs!\n",
+	    nmxp_log(NMXP_LOG_WARN, 0, "Force handling packet %s.%s.%d.%d (%s - %.2f sec.)  time_diff %.2fs  lat. %.1fs!\n",
 		    p->pdlist[0]->station, p->pdlist[0]->channel, p->pdlist[0]->seq_no, p->pdlist[0]->packet_type, str_time,
-		    (double) p->pdlist[0]->nSamp / (double) p->pdlist[0]->sampRate, time_diff);
+		    (double) p->pdlist[0]->nSamp / (double) p->pdlist[0]->sampRate, time_diff, nmxp_data_latency(p->pdlist[0]));
 	    for(i_func_pd=0; i_func_pd<n_func_pd; i_func_pd++) {
 		(*p_func_pd[i_func_pd])(p->pdlist[0]);
 	    }
@@ -879,9 +879,9 @@ int nmxptool_manage_raw_stream(NMXPTOOL_PD_RAW_STREAM *p, NMXP_DATA_PROCESS *a_p
 	if(seq_no_diff <= 0) {
 	    // Duplicated packets: Discarded
 	    nmxp_data_to_str(str_time, p->pdlist[j]->time);
-	    nmxp_log(NMXP_LOG_WARN, 0, "Packets %s.%s.%d.%d (%s - %f sec.) discarded, seq_no_diff=%d  time_diff=%.2fs\n",
+	    nmxp_log(NMXP_LOG_WARN, 0, "Packets %s.%s.%d.%d (%s - %f sec.) discarded, seq_no_diff=%d  time_diff=%.2fs  lat %.1fs\n",
 		    p->pdlist[j]->station, p->pdlist[j]->channel, p->pdlist[j]->seq_no, p->pdlist[j]->packet_type, str_time,
-		    (double) p->pdlist[j]->nSamp /  (double) p->pdlist[j]->sampRate, seq_no_diff, time_diff);
+		    (double) p->pdlist[j]->nSamp /  (double) p->pdlist[j]->sampRate, seq_no_diff, time_diff, nmxp_data_latency(p->pdlist[j]));
 	    send_again = 1;
 	    j++;
 	} else if(seq_no_diff == 1) {
