@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.14 2007-09-07 07:04:21 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.15 2007-09-10 12:49:44 mtheo Exp $
  *
  */
 
@@ -37,6 +37,7 @@ const NMXPTOOL_PARAMS NMXPTOOL_PARAMS_DEFAULT =
     DEFAULT_RATE,
     NULL,
     DEFAULT_DELAY,
+    DEFAULT_MAX_PDLIST_ITEMS,
     0,
     0,
     0,
@@ -123,15 +124,18 @@ DAP Arguments:\n\
 
     nmxp_log(NMXP_LOG_NORM_NO, 0, "\
 PDS arguments:\n\
-  -S, --stc=SECs          Short-term-completion  (default %d secs).\n\
+  -S, --stc=SECs          Short-term-completion (default %d) -1 is for Raw Stream.\n\
   -R, --rate=HZ           Receive decompressed data with specified sample rate.\n\
                           -1 is for original sample rate and compressed data.\n\
                            0 is for original sample rate and decompressed data.\n\
                           >0 is for specified sample rate and decompressed data.\n\
   -b, --buffered          Request also recent packets into the past.\n\
+  -n, --npackets=NUM      Number of packets contained into the buffer (default %d).\n\
+                          Usable only with --stc=-1\n\
 \n\
 ",
-	    DEFAULT_STC
+	    DEFAULT_STC,
+	    DEFAULT_MAX_PDLIST_ITEMS
 	  );
 
     nmxp_log(NMXP_LOG_NORM_NO, 0, "\
@@ -175,6 +179,7 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 	{"delay",        required_argument, 0, 'd'},
 	{"username",     required_argument, 0, 'u'},
 	{"password",     required_argument, 0, 'p'},
+	{"npackets",     required_argument, 0, 'n'},
 	/* Following are flags */
 	{"verbose",      no_argument,       0, 'v'},
 	{"logdata",      no_argument,       0, 'g'},
@@ -213,7 +218,7 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
     /* init params */
     memcpy(params, &NMXPTOOL_PARAMS_DEFAULT, sizeof(NMXPTOOL_PARAMS_DEFAULT));
 
-    char optstr[100] = "H:P:D:C:N:L:S:R:s:e:d:u:p:vgbliwh";
+    char optstr[100] = "H:P:D:C:N:L:S:R:s:e:d:u:p:n:vgbliwh";
 
 #ifdef HAVE_LIBMSEED
     strcat(optstr, "m");
@@ -270,7 +275,7 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 
 		case 'S':
 		    params->stc = atoi(optarg);
-		    nmxp_log(0, 0, "Short-Term-Completion %d\n", params->stc);
+		    nmxp_log(0, 0, "Short-Term-Completion %d.\n", params->stc);
 		    break;
 
 		case 'R':
@@ -303,6 +308,11 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 
 		case 'p':
 		    params->datas_password = optarg;
+		    break;
+
+		case 'n':
+		    params->max_pdlist_items = atoi(optarg);
+		    nmxp_log(0, 0, "Max_number_of_packets %d.\n", params->max_pdlist_items);
 		    break;
 
 #ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
@@ -410,6 +420,11 @@ int nmxptool_check_params(NMXPTOOL_PARAMS *params) {
     } else if(params->delay < 0) {
 	ret = -1;
 	nmxp_log(NMXP_LOG_NORM_NO, 0, "<delay> has to be greater than zero.\n");
+    } else if( params->stc == -1 && (params->max_pdlist_items < 10  ||  params->max_pdlist_items > 100)) {
+	ret = -1;
+	nmxp_log(NMXP_LOG_NORM_NO, 0, "<npackets> has to be within [10..100].\n");
+    } else if( params->stc != -1 && params->max_pdlist_items > 0) {
+	nmxp_log(NMXP_LOG_WARN, 0, "<npackets> ignored since not defined --stc=-1.\n");
     }
 
     return ret;

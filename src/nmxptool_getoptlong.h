@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.h,v 1.9 2007-09-07 07:04:21 mtheo Exp $
+ * $Id: nmxptool_getoptlong.h,v 1.10 2007-09-10 12:49:44 mtheo Exp $
  *
  */
 
@@ -20,9 +20,10 @@
 #define DEFAULT_NETWORK  "XX"
 #define DEFAULT_PORT_DAP 28002
 #define DEFAULT_PORT_PDS 28000
-#define DEFAULT_STC      30
+#define DEFAULT_STC      -1
 #define DEFAULT_RATE     -1
 #define DEFAULT_DELAY    0
+#define DEFAULT_MAX_PDLIST_ITEMS 50
 
 
 /*! \brief Struct that stores information about parameter of the program */
@@ -41,6 +42,7 @@ typedef struct {
     int32_t rate;
     char *plugin_slink;
     int32_t delay;
+    int32_t max_pdlist_items;
     int flag_writeseed;
     int flag_verbose;
     int flag_listchannels;
