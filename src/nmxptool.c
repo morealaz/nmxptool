@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.54 2007-09-10 13:13:34 mtheo Exp $
+ * $Id: nmxptool.c,v 1.55 2007-09-11 11:53:46 mtheo Exp $
  *
  */
 
@@ -35,6 +35,7 @@
 #define CURRENT_NETWORK (params.network)? params.network : DEFAULT_NETWORK
 #define GAP_TOLLERANCE 0.001
 #define NMXPTOOL_MAX_FUNC_PD 10
+#define TIME_TOLLERANCE 0.001
 
 typedef struct {
     int32_t last_seq_no_sent;
@@ -890,6 +891,12 @@ int nmxptool_manage_raw_stream(NMXPTOOL_PD_RAW_STREAM *p, NMXP_DATA_PROCESS *a_p
 	} else if(seq_no_diff == 1) {
 	    for(i_func_pd=0; i_func_pd<n_func_pd; i_func_pd++) {
 		(*p_func_pd[i_func_pd])(p->pdlist[j]);
+	    }
+	    if(time_diff > TIME_TOLLERANCE || time_diff < -TIME_TOLLERANCE) {
+		nmxp_log(NMXP_LOG_WARN, 0, "time is not correct %s.%s seq_no_diff=%d time_diff=%.2fs  ([%d] %d-%d)  (%s - %.2f sec.) lat. %.1fs\n",
+		    p->pdlist[j]->station, p->pdlist[j]->channel, 
+		    seq_no_diff, time_diff, p->pdlist[j]->packet_type, p->pdlist[j]->seq_no, p->last_seq_no_sent,
+		    str_time, (double) p->pdlist[j]->nSamp /  (double) p->pdlist[j]->sampRate, latency);
 	    }
 	    p->last_seq_no_sent = p->pdlist[j]->seq_no;
 	    p->last_sample_time = (p->pdlist[j]->time + ((double) p->pdlist[j]->nSamp / (double) p->pdlist[j]->sampRate ));
