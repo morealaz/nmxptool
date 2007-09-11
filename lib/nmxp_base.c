@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_base.c,v 1.29 2007-09-07 07:08:30 mtheo Exp $
+ * $Id: nmxp_base.c,v 1.30 2007-09-11 14:05:29 mtheo Exp $
  *
  */
 
@@ -87,7 +87,8 @@ int nmxp_openSocket(char *hostname, int portNum)
     }
     else
     {
-      nmxp_log(0, 1, "Trying again later...Sleeping\n");
+      nmxp_log(1, 0, "Connecting to %s port %d. Trying again after %d seconds...\n",
+	      inet_ntoa(hostaddr), portNum, sleepTime);
       close (isock);
       sleep (sleepTime);
       sleepTime *= 2;

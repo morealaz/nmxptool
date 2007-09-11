@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_base.h,v 1.20 2007-09-07 07:08:30 mtheo Exp $
+ * $Id: nmxp_base.h,v 1.21 2007-09-11 14:05:29 mtheo Exp $
  *
  */
 
@@ -19,7 +19,7 @@
 #include "nmxp_log.h"
 
 /*! Maximum time between connection attempts (seconds). */
-#define NMXP_SLEEPMAX 10
+#define NMXP_SLEEPMAX 30
 
 /*! Return message for succes on socket. */
 #define NMXP_SOCKET_OK          0
