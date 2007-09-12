@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp.h,v 1.31 2007-09-07 07:08:30 mtheo Exp $
+ * $Id: nmxp.h,v 1.32 2007-09-12 12:37:05 mtheo Exp $
  *
  */
 
@@ -127,6 +127,17 @@ typedef struct {
     int32_t start_time;
     int32_t end_time;
 } NMXP_DATA_REQUEST;
+
+#define NMXPTOOL_MAX_FUNC_PD 10
+#define TIME_TOLLERANCE 0.001
+
+typedef struct {
+    int32_t last_seq_no_sent;
+    double last_sample_time;
+    int32_t max_pdlist_items;
+    int32_t n_pdlist;
+    NMXP_DATA_PROCESS **pdlist; /* Array for pd queue */
+} NMXP_RAW_STREAM_DATA;
 
 
 /*! \brief Sends the message "Connect" on a socket
@@ -274,6 +285,11 @@ NMXP_CHAN_LIST *nmxp_getAvailableChannelList(char * hostname, int portnum, NMXP_
  * 
  */
 NMXP_META_CHAN_LIST *nmxp_getMetaChannelList(char * hostname, int portnum, NMXP_DATATYPE datatype, int flag_request_channelinfo);
+
+int nmxp_raw_stream_seq_no_compare(const void *a, const void *b);
+void nmxp_raw_stream_init(NMXP_RAW_STREAM_DATA *raw_stream_buffer, int32_t max_pdlist_items);
+void nmxp_raw_stream_free(NMXP_RAW_STREAM_DATA *raw_stream_buffer);
+int nmxp_raw_stream_manage(NMXP_RAW_STREAM_DATA *p, NMXP_DATA_PROCESS *a_pd, int (*p_func_pd[NMXPTOOL_MAX_FUNC_PD]) (NMXP_DATA_PROCESS *), int n_func_pd);
 
 #endif
 
