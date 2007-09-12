@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp.h,v 1.32 2007-09-12 12:37:05 mtheo Exp $
+ * $Id: nmxp.h,v 1.33 2007-09-12 13:03:57 mtheo Exp $
  *
  */
 
@@ -286,9 +286,40 @@ NMXP_CHAN_LIST *nmxp_getAvailableChannelList(char * hostname, int portnum, NMXP_
  */
 NMXP_META_CHAN_LIST *nmxp_getMetaChannelList(char * hostname, int portnum, NMXP_DATATYPE datatype, int flag_request_channelinfo);
 
+
+/*! \brief Base function for qsort() in order to sort an array of pointers to pointers to NMXP_DATA_PROCESS
+ *
+ * \param a pointer to a pointer to NMXP_DATA_PROCESS
+ * \param b pointer to a pointer to NMXP_DATA_PROCESS
+ */
 int nmxp_raw_stream_seq_no_compare(const void *a, const void *b);
+
+
+/*! \brief Allocate and initialize fields inside a NMXP_RAW_STREAM_DATA structure
+ *
+ * param raw_stream_buffer pointer to NMXP_RAW_STREAM_DATA struct to initialize
+ * param max_pdlist_items value of max number of items in array
+ *
+ */
 void nmxp_raw_stream_init(NMXP_RAW_STREAM_DATA *raw_stream_buffer, int32_t max_pdlist_items);
+
+
+/*! \brief Free fields inside a NMXP_RAW_STREAM_DATA structure
+ *
+ * param raw_stream_buffer pointer to NMXP_RAW_STREAM_DATA struct to initialize
+ *
+ */
 void nmxp_raw_stream_free(NMXP_RAW_STREAM_DATA *raw_stream_buffer);
+
+
+/*! \brief Execute a list of functions on an chronological ordered array of NMXP_DATA_PROCESS structures
+ *
+ * param p pointer to NMXP_RAW_STREAM_DATA
+ * param a_pd pointer to NMXP_DATA_PROCESS struct to insert into the array
+ * param p_func_pd array of functions to execute on a single item NMXP_DATA_PROCESS
+ * param n_func_pd number of functions into the array p_func_pd 
+ *
+ */
 int nmxp_raw_stream_manage(NMXP_RAW_STREAM_DATA *p, NMXP_DATA_PROCESS *a_pd, int (*p_func_pd[NMXPTOOL_MAX_FUNC_PD]) (NMXP_DATA_PROCESS *), int n_func_pd);
 
 #endif
