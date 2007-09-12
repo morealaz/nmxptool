@@ -216,7 +216,7 @@ Client}</string>
 			<array>
 				<dict>
 					<key>Bounds</key>
-					<string>{{575.597, 436.463}, {213, 23}}</string>
+					<string>{{634.754, 320.988}, {213, 23}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>FitText</key>
@@ -267,7 +267,7 @@ Client}</string>
 				</dict>
 				<dict>
 					<key>Bounds</key>
-					<string>{{626.597, 385.463}, {91, 35}}</string>
+					<string>{{685.754, 269.988}, {91, 35}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
@@ -321,7 +321,7 @@ Client}</string>
 				</dict>
 				<dict>
 					<key>Bounds</key>
-					<string>{{652.597, 475.462}, {59, 59.0042}}</string>
+					<string>{{711.754, 359.987}, {59, 59.0042}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
@@ -375,7 +375,7 @@ Client}</string>
 				</dict>
 				<dict>
 					<key>Bounds</key>
-					<string>{{524.348, 372.963}, {315.5, 173.75}}</string>
+					<string>{{583.505, 257.488}, {315.5, 173.75}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>ID</key>
@@ -491,7 +491,7 @@ Client}</string>
 			<key>Points</key>
 			<array>
 				<string>{395.036, 126.581}</string>
-				<string>{431.08, 126.581}</string>
+				<string>{429.58, 126.581}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -550,7 +550,7 @@ Client}</string>
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{79.788, 345.045}, {134, 23}}</string>
+			<string>{{39.4536, 184.331}, {134, 23}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FitText</key>
@@ -684,8 +684,8 @@ DataServer}</string>
 			<integer>173</integer>
 			<key>Points</key>
 			<array>
-				<string>{508.243, 546.713}</string>
-				<string>{508.243, 612.959}</string>
+				<string>{508.242, 548.213}</string>
+				<string>{508.242, 612.959}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -723,7 +723,7 @@ DataServer}</string>
 			<integer>172</integer>
 			<key>Points</key>
 			<array>
-				<string>{508.243, 720.959}</string>
+				<string>{508.242, 718.959}</string>
 				<string>{508.243, 909.481}</string>
 			</array>
 			<key>Style</key>
@@ -765,7 +765,7 @@ DataServer}</string>
 			<key>Points</key>
 			<array>
 				<string>{241.518, 715.074}</string>
-				<string>{241.518, 909.481}</string>
+				<string>{241.517, 909.481}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -1349,7 +1349,7 @@ Server}</string>
 			<integer>2</integer>
 			<key>Points</key>
 			<array>
-				<string>{241.518, 546.713}</string>
+				<string>{241.517, 546.713}</string>
 				<string>{241.518, 612.959}</string>
 			</array>
 			<key>Style</key>
@@ -1395,7 +1395,7 @@ Server}</string>
 			<integer>2</integer>
 			<key>Points</key>
 			<array>
-				<string>{242.949, 976.179}</string>
+				<string>{241.517, 975.731}</string>
 				<string>{353.58, 1010.82}</string>
 				<string>{472.165, 975.145}</string>
 			</array>
@@ -2714,7 +2714,7 @@ gap}</string>
 		</dict>
 	</array>
 	<key>ModificationDate</key>
-	<string>2007-09-12 11:19:29 +0200</string>
+	<string>2007-09-12 14:34:21 +0200</string>
 	<key>Modifier</key>
 	<string>mtheo</string>
 	<key>NotesVisible</key>
@@ -2786,13 +2786,13 @@ gap}</string>
 		<key>FitInWindow</key>
 		<false/>
 		<key>Frame</key>
-		<string>{{3, 34}, {695, 712}}</string>
+		<string>{{3, 35}, {695, 711}}</string>
 		<key>ShowRuler</key>
 		<false/>
 		<key>ShowStatusBar</key>
 		<true/>
 		<key>VisibleRegion</key>
-		<string>{{0, 0}, {914.247, 804}}</string>
+		<string>{{0, 342.843}, {914.247, 802.656}}</string>
 		<key>Zoom</key>
 		<string>0.7437811</string>
 	</dict>
