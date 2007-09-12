@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp.h,v 1.34 2007-09-12 14:07:24 mtheo Exp $
+ * $Id: nmxp.h,v 1.35 2007-09-12 14:11:02 mtheo Exp $
  *
  */
 
@@ -128,7 +128,7 @@ typedef struct {
     int32_t end_time;
 } NMXP_DATA_REQUEST;
 
-#define NMXPTOOL_MAX_FUNC_PD 10
+#define NMXP_MAX_FUNC_PD 10
 #define TIME_TOLLERANCE 0.001
 
 typedef struct {
@@ -320,7 +320,7 @@ void nmxp_raw_stream_free(NMXP_RAW_STREAM_DATA *raw_stream_buffer);
  * \param n_func_pd number of functions into the array p_func_pd 
  *
  */
-int nmxp_raw_stream_manage(NMXP_RAW_STREAM_DATA *p, NMXP_DATA_PROCESS *a_pd, int (*p_func_pd[NMXPTOOL_MAX_FUNC_PD]) (NMXP_DATA_PROCESS *), int n_func_pd);
+int nmxp_raw_stream_manage(NMXP_RAW_STREAM_DATA *p, NMXP_DATA_PROCESS *a_pd, int (*p_func_pd[NMXP_MAX_FUNC_PD]) (NMXP_DATA_PROCESS *), int n_func_pd);
 
 #endif
 
