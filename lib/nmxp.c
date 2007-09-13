@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp.c,v 1.42 2007-09-12 14:11:02 mtheo Exp $
+ * $Id: nmxp.c,v 1.43 2007-09-13 10:04:45 mtheo Exp $
  *
  */
 
@@ -648,7 +648,7 @@ int nmxp_raw_stream_manage(NMXP_RAW_STREAM_DATA *p, NMXP_DATA_PROCESS *a_pd, int
 		(*p_func_pd[i_func_pd])(p->pdlist[j]);
 	    }
 	    if(time_diff > TIME_TOLLERANCE || time_diff < -TIME_TOLLERANCE) {
-		nmxp_log(NMXP_LOG_WARN, 0, "time is not correct %s.%s seq_no_diff=%d time_diff=%.2fs  ([%d] %d-%d)  (%s - %.2f sec.) lat. %.1fs\n",
+		nmxp_log(NMXP_LOG_WARN, 0, "%s.%s time is not correct seq_no_diff=%d time_diff=%.2fs  ([%d] %d-%d)  (%s - %.2f sec.) lat. %.1fs\n",
 		    p->pdlist[j]->station, p->pdlist[j]->channel, 
 		    seq_no_diff, time_diff, p->pdlist[j]->packet_type, p->pdlist[j]->seq_no, p->last_seq_no_sent,
 		    str_time, (double) p->pdlist[j]->nSamp /  (double) p->pdlist[j]->sampRate, latency);
