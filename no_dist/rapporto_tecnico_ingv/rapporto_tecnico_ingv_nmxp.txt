@@ -10,30 +10,30 @@ e-mail: quintiliani@ingv.it
 
   TOC \o "1-3" \h \z \u  
 
-Introduzione	  PAGEREF _Toc51131116 \h  5 
+Introduzione	  PAGEREF _Toc51492600 \h  5 
 
-1. Protocolli Nanometrics	  PAGEREF _Toc51131117 \h  6 
+1. Protocolli Nanometrics	  PAGEREF _Toc51492601 \h  6 
 
-1.1 Private Data Stream	  PAGEREF _Toc51131118 \h  6 
+1.1 Private Data Stream	  PAGEREF _Toc51492602 \h  6 
 
-1.2 Data Access Protocol	  PAGEREF _Toc51131119 \h  7 
+1.2 Data Access Protocol	  PAGEREF _Toc51492603 \h  7 
 
-2. Application Program Interfaces	  PAGEREF _Toc51131120 \h  7 
+2. Application Program Interfaces	  PAGEREF _Toc51492604 \h  7 
 
-2.1 Documentazione	  PAGEREF _Toc51131121 \h  8 
+2.1 Documentazione	  PAGEREF _Toc51492605 \h  8 
 
-2.2 Installazione	  PAGEREF _Toc51131122 \h  10 
+2.2 Installazione	  PAGEREF _Toc51492606 \h  11 
 
-2.3 Uso di nmxptool	  PAGEREF _Toc51131123 \h  11 
+2.3 Uso di nmxptool	  PAGEREF _Toc51492607 \h  12 
 
 2.4 Uso delle APIs per sviluppare una nuova applicazione	  PAGEREF
-_Toc51131124 \h  14 
+_Toc51492608 \h  16 
 
-3. Conclusioni	  PAGEREF _Toc51131125 \h  16 
+3. Conclusioni	  PAGEREF _Toc51492609 \h  18 
 
-4. Ringraziamenti	  PAGEREF _Toc51131126 \h  16 
+4. Ringraziamenti	  PAGEREF _Toc51492610 \h  20 
 
-5. Bibliografia e citazioni	  PAGEREF _Toc51131127 \h  16 
+5. Bibliografia e citazioni	  PAGEREF _Toc51492611 \h  20 
 
  
 
@@ -168,7 +168,7 @@ Chiudere il socket.
 Data Access Protocol
 
 Il DataServer fornisce accesso locale e remoto via TCP/IP a dati di tipo
-time-series, serial data, triggers, e state-of-health. Il DataServer
+time-series, serial data, triggers e state-of-health. Il DataServer
 fornisce inoltre informazioni sulla disponibilita dei dati di ogni
 canale per mezzo di due tipi di liste:
 
@@ -225,7 +225,7 @@ Le APIs che compongono la libreria offrono principalmente funzionalita a
 livello applicativo per lo sviluppo di software che implementi i
 protocolli Private Data Stream 1.4 e Data Access Protocol 1.0.
 
-Esse sono quindi concepite nell'ottica della realizzazione di programmi
+Esse sono state concepite nell'ottica della realizzazione di programmi
 in grado di:
 
 manipolare i dati di tipo Nanometrics;
@@ -240,6 +240,10 @@ esempio mini-SEED records);
 
 redirezionare i dati in servers di altro tipo, (ad esempio SeedLink
 server).
+
+Al momento la libreria i in grado di trattare i dati di tipo time-series
+e non quelli di tipo serial data, triggers e state-of-healt. Per
+quest'ultimi si i rimandato lo sviluppo in un futuro prossimo.
 
 Documentazione
 
@@ -1121,8 +1125,8 @@ Al fine di garantire completezza dei dati archiviati i stata sviluppata
 una procedura dal nome ``Nanometrics Data Completness'' che basando
 sulla versatilita di nmxptool recupera i dati mancanti con differita di
 qualche ora o giorno. In questo caso i ``buchi'' risultanti non potranno
-pisch essere colmati proprio perchy definitivamente presenti dal lato
-server Nanometrics.
+pisch essere colmati poichy i dati richiesti non risultano pisch
+definitivamente essere presenti dal lato server Nanometrics.
 
 
 
@@ -1487,20 +1491,311 @@ nmxp__base_8h.html#20009090764c1a6c6d3416275d0dcc89" nmxp_closeSocket
 Conclusioni
 
 Lo sviluppo ed i test eseguiti in questi ultimi due mesi hanno permesso
-di realizzare una libreria nel suo complesso stabile, efficiente e
-ampiamente completa in termini di funzionalita implementate, di cui la
-pisch importante fra tutte i la gestione delle connessioni di tipo Raw
-Stream che riesce a garantire una bassa latenza e al contempo un numero
-minino di ``buchi'' (gaps).
+di realizzare una libreria nel suo complesso stabile ed efficiente.
+Considerando congiuntamente libnmxp e nmxptool, anche il numero di
+funzionalita implementate risulta essere molto soddisfacente, la pisch
+importante fra tutte: la gestione delle connessioni di tipo Raw Stream
+la quale riesce a garantire una bassa latenza e al contempo un numero
+minino di ``buchi'' (gaps). Grazie a questa caratteristica nmxptool
+apporta un fondamentale contributo alla comunita degli utilizzatori del
+sistema SeisComp, infatti il plug-in precedentemente sviluppato per
+l'acquisizione da servers Nanometrics, naqs_plugin, non essendo in grado
+di gestire ne' connessioni Short-term-complete ne' i pacchetti di tipo
+compresso non era in grado di garantire continuita del dato al
+verificarsi di una ritrasmissione dal lato Nanometrics Server - Stazione
+Sismica. La tab. 2 mostra un report sintetico dei dati archiviati per i
+canali sismici in test.
 
-Grazie a questa caratteristica nmxptool apporta un fondamentale
-contributo alla comunita degli utilizzatori del sistema SeisComp. Fra
-... .. .. i quali ora potranno beneficiare di un plug-in SeedLink capace
-di .... Esempi fra questi sono: il National Data Center Israele (Guy
-Tikochinsky) e l'Institute of Geodynamics, National Observatory of
-Athens Grecia (Nicos Melis).
+Canale	Latenza Massima (sec.)	Gaps
 
-Inoltre
+AMUR.HHE
+
+AMUR.HHN
+
+AMUR.HHZ
+
+BOB.HHE
+
+BOB.HHN
+
+BOB.HHZ
+
+CARO.HHE
+
+CARO.HHN
+
+CARO.HHZ
+
+DOI.HHE
+
+DOI.HHN
+
+DOI.HHZ
+
+MABI.HHE
+
+MABI.HHN
+
+MABI.HHZ
+
+MDI.HHE
+
+MDI.HHN
+
+MDI.HHZ
+
+MRGE.HHE
+
+MRGE.HHN
+
+MRGE.HHZ
+
+MSAG.HHE
+
+MSAG.HHN
+
+MSAG.HHZ
+
+NOCI.HHE
+
+NOCI.HHN
+
+NOCI.HHZ
+
+SALO.HHE
+
+SALO.HHN
+
+SALO.HHZ
+
+SCTE.HHE
+
+SCTE.HHN
+
+SCTE.HHZ
+
+SGRT.HHE
+
+SGRT.HHN
+
+SGRT.HHZ
+
+SSY.BHE
+
+SSY.BHN
+
+SSY.BHZ
+
+TIR.HHE
+
+TIR.HHN
+
+TIR.HHZ
+
+USI.HHE
+
+USI.HHN
+
+USI.HHZ	33.6
+
+32.8
+
+33.5
+
+328.8
+
+329.6
+
+330.0
+
+47.8
+
+47.4
+
+319.7
+
+36.2
+
+320.3
+
+38.1
+
+26.6
+
+26.0
+
+25.6
+
+46.7
+
+320.3
+
+46.7
+
+57.7
+
+58.4
+
+57.4
+
+56.5
+
+56.3
+
+56.4
+
+12.0
+
+19.6
+
+19.2
+
+46.2
+
+46.8
+
+45.2
+
+40.0
+
+40.1
+
+41.6
+
+65.8
+
+66.7
+
+66.1
+
+329.6
+
+322.9
+
+330.8
+
+59.1
+
+58.7
+
+57.5
+
+58.8
+
+58.4
+
+58.8	0
+
+0
+
+0
+
+1
+
+2
+
+1
+
+0
+
+0
+
+2
+
+0
+
+1
+
+0
+
+0
+
+0
+
+1
+
+0
+
+1
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+1
+
+2
+
+2
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+Tabella 2. Report sintetico dei dati archiviati, per i canali in test il
+12 settembre 2007, tramite nmxptool e seedllink. Per ogni canale i
+riportata la massima latenza registrata nel giorno e il numero di gaps
+temporali nel dato. Possiamo notare come il numero di gaps dipenda
+fortemente dall'attesa dei pacchetti non ricevuti prima e ritrasmessi
+poi. La latenza massima tollerabile i stata impostata ad un massimo di
+330 sec. circa. Il gap i causato da questo time-out.
+
+
+
+Al momento nmxptool viene utilizzato come plug-in seedlink anche nei
+seguenti istituti di ricerca i quali sono stati inoltre di enorme aiuto
+in fase di test e debugging del software:
+
+National Data Center, Israele. (Guy Tikochinsky)
+
+Institute of Geodynamics, National Observatory of Athens, Grecia. (Nicos
+Melis)
+
+Inoltre, la procedura sviluppata per garantire la completezza del dato,
+basata su nmxptool e qmerge, consente di  avere un controllo di qualita
+maggiore sui dati archiviati
 
 Archiviazione dei dati e supporto per la completezza
 
@@ -1527,9 +1822,13 @@ Doxygen
 
 GNU license
 
-SeisComp
+SeisComp, naqs_plugin
+
+Qlib2, emerge
+
+libmseed 
 
  PAGE   
 
- PAGE   18 
+ PAGE   20 
 
