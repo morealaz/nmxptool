@@ -493,20 +493,6 @@ NMXP_DATA_PROCESS
 b pointer to a pointer to  HYPERLINK "http://%5Cl%20%22AAAAAAAABB%22"
 NMXP_DATA_PROCESS  
 
-int nmxp_raw_stream_seq_no_compare (const void * a, const void * b)
-
-Base function for qsort() in order to sort an array of pointers to
-pointers to  HYPERLINK "http://%5Cl%20%22AAAAAAAABB%22"
-NMXP_DATA_PROCESS . 
-
-Parameters:
-
-a pointer to a pointer to  HYPERLINK "http://%5Cl%20%22AAAAAAAABB%22"
-NMXP_DATA_PROCESS  
-
-b pointer to a pointer to  HYPERLINK "http://%5Cl%20%22AAAAAAAABB%22"
-NMXP_DATA_PROCESS  
-
 void nmxp_raw_stream_init ( HYPERLINK "http://%5Cl%20%22AAAAAAAAAD%22"
 NMXP_RAW_STREAM_DATA  * raw_stream_buffer, int32_t max_pdlist_items)
 
@@ -557,6 +543,15 @@ n_func_pd number of functions into the array p_func_pd
 
 
 
+
+Degne di nota sono le funzioni che si occupano della gestione del
+buffering dei pacchetti nelle connessioni di tipo Raw Stream, cioi dei
+pacchetti compressi e con valore di Short-term-complete uguale a -1. La
+funzione nmxp_raw_stream_manage() si occupa di ordinare i pacchetti
+ricevuti, fino ad un massimo impostato tramite nmxp_raw_stream_init() al
+momento dell'inizializzazione del buffer, ed eseguire con minima latenza
+possibile le n_func_pd funzioni sulle strutture di tipo
+NMXP_DATA_PROCESS. 
 
 Installazione
 
@@ -1797,8 +1792,6 @@ Inoltre, la procedura sviluppata per garantire la completezza del dato,
 basata su nmxptool e qmerge, consente di  avere un controllo di qualita
 maggiore sui dati archiviati
 
-Archiviazione dei dati e supporto per la completezza
-
 Tool a supporto di procedure che necessita di dati a richiesta (ad
 esempio dopo un evento sismico)
 
@@ -1830,5 +1823,5 @@ libmseed
 
  PAGE   
 
- PAGE   20 
+ PAGE   11 
 
