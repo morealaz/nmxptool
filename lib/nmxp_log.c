@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_log.c,v 1.7 2007-09-07 07:08:30 mtheo Exp $
+ * $Id: nmxp_log.c,v 1.8 2007-09-16 21:38:20 mtheo Exp $
  *
  */
 
@@ -24,6 +24,12 @@
 
 #define MAX_LOG_MESSAGE_LENGTH 8000
 
+
+const char *nmxp_log_version() {
+    static char ret_str[MAX_LOG_MESSAGE_LENGTH] = "";
+    sprintf(ret_str, "%s-%s", PACKAGE_NAME, PACKAGE_VERSION);
+    return ret_str;
+}
 
 int nmxp_log(int level, int verb, ... )
 {
