@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.16 2007-09-16 21:38:51 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.17 2007-09-16 21:40:37 mtheo Exp $
  *
  */
 
@@ -125,6 +125,7 @@ Other arguments:\n\
                           THIS OPTION MUST BE THE LAST WITHOUT plug_name IN seedlink.ini!\n");
 #endif
     nmxp_log(NMXP_LOG_NORM_NO, 0, "\
+  -V, --version           Print tool version.\n\
   -h, --help              Print this help.\n\
 \n");
 
