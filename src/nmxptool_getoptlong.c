@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.15 2007-09-10 12:49:44 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.16 2007-09-16 21:38:51 mtheo Exp $
  *
  */
 
@@ -48,10 +48,32 @@ const NMXPTOOL_PARAMS NMXPTOOL_PARAMS_DEFAULT =
     0
 };
 
+
+void nmxptool_author_support() {
+    nmxp_log(NMXP_LOG_NORM_NO, 0, "\
+Matteo Quintiliani - Istituto Nazionale di Geofisica e Vulcanologia - Italy\n\
+Mail bug reports and suggestions to <%s>.\n",
+	    PACKAGE_BUGREPORT
+	    );
+}
+
+
+void nmxptool_version() {
+    nmxp_log(NMXP_LOG_NORM_NO, 0, "\
+%s %s, Nanometrics tool based on %s\n\
+        (Data Access Protocol 1.0, Private Data Stream 1.4)\n",
+	PACKAGE_NAME, PACKAGE_VERSION,
+	nmxp_log_version()
+	);
+    nmxptool_author_support();
+
+}
+
+
 void nmxptool_usage(struct option long_options[])
 {
+    nmxptool_version();
     nmxp_log(NMXP_LOG_NORM_NO, 0, "\
-%s %s, Nanometrics tool (Data Access Protocol 1.0, Private Data Stream 1.4)\n\
 \n\
 Usage: %s -H hostname --listchannels [...]\n\
              Receive list of available channels on the host\n\
@@ -67,7 +89,6 @@ Arguments:\n\
   -C, --channels=LIST     Channel list STA1.HH?,STA2.??Z,...\n\
 \n\
 ",
-	    PACKAGE_NAME, PACKAGE_VERSION,
 	    PACKAGE_NAME,
 	    PACKAGE_NAME,
 	    PACKAGE_NAME
@@ -138,11 +159,7 @@ PDS arguments:\n\
 	    DEFAULT_MAX_PDLIST_ITEMS
 	  );
 
-    nmxp_log(NMXP_LOG_NORM_NO, 0, "\
-Matteo Quintiliani - Istituto Nazionale di Geofisica e Vulcanologia - Italy\n\
-Mail bug reports and suggestions to <%s>.\n",
-	    PACKAGE_BUGREPORT
-	    );
+    nmxptool_author_support();
 
     /*
     if(long_options) {
@@ -194,6 +211,7 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 	{"slink",        required_argument, 0, 'k'},
 #endif
 	{"help",         no_argument,       0, 'h'},
+	{"version",      no_argument,       0, 'V'},
 	{0, 0, 0, 0}
     };
 
@@ -218,7 +236,7 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
     /* init params */
     memcpy(params, &NMXPTOOL_PARAMS_DEFAULT, sizeof(NMXPTOOL_PARAMS_DEFAULT));
 
-    char optstr[100] = "H:P:D:C:N:L:S:R:s:e:d:u:p:n:vgbliwh";
+    char optstr[100] = "H:P:D:C:N:L:S:R:s:e:d:u:p:n:vgbliwhV";
 
 #ifdef HAVE_LIBMSEED
     strcat(optstr, "m");
@@ -354,6 +372,11 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 
 		case 'h':
 		    nmxptool_usage(long_options);
+		    exit (1);
+		    break;
+
+		case 'V':
+		    nmxptool_version();
 		    exit (1);
 		    break;
 
