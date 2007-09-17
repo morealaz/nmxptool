@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp.c,v 1.44 2007-09-17 12:57:11 mtheo Exp $
+ * $Id: nmxp.c,v 1.45 2007-09-17 13:00:05 mtheo Exp $
  *
  */
 
@@ -547,8 +547,8 @@ int nmxp_raw_stream_manage(NMXP_RAW_STREAM_DATA *p, NMXP_DATA_PROCESS *a_pd, int
     char str_time[200];
     NMXP_DATA_PROCESS *pd = NULL;
 
-    if(pd->packet_type == 33) {
-	nmxp_data_log(pd);
+    if(a_pd->packet_type == 33) {
+	nmxp_data_log(a_pd);
     }
 
     /* Allocate memory for pd and copy a_pd */
