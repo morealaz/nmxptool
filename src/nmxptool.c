@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.58 2007-09-13 10:04:29 mtheo Exp $
+ * $Id: nmxptool.c,v 1.59 2007-09-17 05:21:53 mtheo Exp $
  *
  */
 
@@ -48,6 +48,7 @@ static void clientDummyHandler(int sig);
 int nmxptool_write_miniseed(NMXP_DATA_PROCESS *pd);
 int nmxptool_send_raw_depoch(NMXP_DATA_PROCESS *pd);
 int nmxptool_print_seq_no(NMXP_DATA_PROCESS *pd);
+int nmxptool_print_retransmitted_packet(NMXP_DATA_PROCESS *pd);
 
 int nmxptool_check_and_log_gap(double time1, double time2, const double gap_tollerance, const char *station, const char *channel);
 
@@ -434,8 +435,11 @@ int main (int argc, char **argv) {
 
 	if(params.stc == -1) {
 
+
 	    if(params.flag_logdata) {
 		p_func_pd[n_func_pd++] = nmxptool_print_seq_no;
+	    } else {
+		p_func_pd[n_func_pd++] = nmxptool_print_retransmitted_packet;
 	    }
 
 #ifdef HAVE_LIBMSEED
@@ -713,6 +717,13 @@ int nmxptool_print_seq_no(NMXP_DATA_PROCESS *pd) {
 	    );
 
     return ret;
+}
+
+int nmxptool_print_retransmitted_packet(NMXP_DATA_PROCESS *pd) {
+    if(pd->packet_type == 33) {
+	nmxp_data_log(pd);
+    }
+    return 0;
 }
 
 int nmxptool_send_raw_depoch(NMXP_DATA_PROCESS *pd) {
