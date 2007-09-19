@@ -3,37 +3,38 @@ NANOMETRICS
 
 Matteo Quintiliani
 
-Istituto Nazionale di Geofisica e Vulcanologia, Centro Nazionale
-Terremoti
+Istituto Nazionale di Geofisica e Vulcanologia
+
+Centro Nazionale Terremoti
 
 e-mail: quintiliani@ingv.it
 
   TOC \o "1-3" \h \z \u  
 
-Introduzione	  PAGEREF _Toc51820785 \h  5 
+Introduzione	  PAGEREF _Toc51835547 \h  5 
 
-1. Protocolli Nanometrics	  PAGEREF _Toc51820786 \h  6 
+1. Protocolli Nanometrics	  PAGEREF _Toc51835548 \h  6 
 
-1.1 Private Data Stream	  PAGEREF _Toc51820787 \h  6 
+1.1 Private Data Stream	  PAGEREF _Toc51835549 \h  6 
 
-1.2 Data Access Protocol	  PAGEREF _Toc51820788 \h  7 
+1.2 Data Access Protocol	  PAGEREF _Toc51835550 \h  7 
 
-2. Application Program Interfaces	  PAGEREF _Toc51820789 \h  7 
+2. Application Program Interfaces	  PAGEREF _Toc51835551 \h  7 
 
-2.1 Documentazione	  PAGEREF _Toc51820790 \h  8 
+2.1 Installazione	  PAGEREF _Toc51835552 \h  8 
 
-2.2 Installazione	  PAGEREF _Toc51820791 \h  11 
+2.2 Documentazione	  PAGEREF _Toc51835553 \h  9 
 
-2.3 Uso di nmxptool	  PAGEREF _Toc51820792 \h  13 
+2.3 Uso di nmxptool	  PAGEREF _Toc51835554 \h  12 
 
 2.4 Uso delle APIs per sviluppare una nuova applicazione	  PAGEREF
-_Toc51820793 \h  16 
+_Toc51835555 \h  16 
 
-3. Conclusioni	  PAGEREF _Toc51820794 \h  19 
+3. Conclusioni	  PAGEREF _Toc51835556 \h  18 
 
-4. Ringraziamenti	  PAGEREF _Toc51820795 \h  20 
+4. Ringraziamenti	  PAGEREF _Toc51835557 \h  20 
 
-5. Bibliografia e citazioni	  PAGEREF _Toc51820796 \h  20 
+5. Bibliografia e citazioni	  PAGEREF _Toc51835558 \h  20 
 
  
 
@@ -205,7 +206,7 @@ Chiudere il socket.
 
 Application Program Interfaces
 
-Dopo aver descritto sinteticamente i protocolli di comunicazione
+Dopo aver descritto in generale i protocolli di comunicazione
 Nanometrics passiamo ora ad illustrare come la libreria i organizzata e
 quali sono le strutture dati e le funzioni che espone per il loro
 utilizzo in uno sviluppo di un programma che debba interagire con un
@@ -245,6 +246,133 @@ Al momento la libreria i in grado di trattare i dati di tipo time-series
 e non quelli di tipo serial data, triggers e state-of-healt. Per
 quest'ultimi si i rimandato lo sviluppo in un futuro prossimo.
 
+Installazione
+
+La libreria libnmxp e il tool nmxptool sono stati sviluppati utilizzando
+i GNU Build Tools (automake e autoconf) tenendo conto degli aspetti di
+compilazione trasverale (cross-compilation) per tutte le possibili
+piattaforme di tipo POSIX/UNIX. Di seguito la tab. 1 mostra su quali
+sistemi operativi e architetture si i eseguito con successo
+effettivamente il test di funzionamento.
+
+	Little Endian	Big Endian
+
+	Intel 32-bit	Intel 64-bit	SPARC 64bit	PowerPC
+
+Linux	X	X
+
+
+
+Solaris	X
+
+X
+
+	Mac OS X	X
+
+	X
+
+FreeBSD	X
+
+
+
+	Tabella 1. Sistemi operativi e architetture sui quali libnmxp e
+nmxptool sono
+
+                stati installati ed eseguiti con successo.
+
+ 
+
+I sorgenti, la documentazione e gli scripts di installazione della
+libreria ed il tool vengono rilasciati in distribuzioni compresse, con
+nome del tipo libnmxp-0.18.0.tar.gz. I requisiti per l'installazione
+sono:
+
+Piattaforma POSIX
+
+Compilatore C GNU
+
+Programma make GNU
+
+Il modo pisch semplice per compilare i sorgenti i:
+
+`cd` nella directory che contiene lo script configure
+
+Lanciare il comando ./configure
+
+Se tutto ok lanciare il comando make per la compilazione
+
+Lanciare il comando make install per l'installazione
+
+Quindi, a titolo di esempio, ecco la sequenza dei comandi da eseguire in
+una shell per compilare libnmxp e nmxptool contenuti nella distribuzione
+libnmxp-0.18.0.tar.gz:
+
+kyuzo:~ mtheo$ tar xvfz libnmxp-0.18.0.tar.gz
+
+kyuzo:~ mtheo$ cd libnmxp-0.18.0
+
+kyuzo:~/libnmxp-0.18.0 mtheo$ ./configure
+
+...
+
+config.status: creating Makefile
+
+config.status: creating src/Makefile
+
+config.status: creating config.h
+
+config.status: executing depfiles commands
+
+configure:
+
+      After running make and make install you will be able
+
+      to compile nmpxtool into the subdirectory tools/nmxptool.
+
+      nmxptool is a tool that implements the following protocols:
+
+                - Nanometrics Data Access Protocol 1.0
+
+                - Nanometrics Private Data Stream  1.4
+
+kyuzo:~/libnmxp-0.18.0 mtheo$ make
+
+kyuzo:~/libnmxp-0.18.0 mtheo$ su root
+
+kyuzo:~/libnmxp-0.18.0 root# make install
+
+kyuzo:~/libnmxp-0.18.0 root# exit
+
+kyuzo:~/libnmxp-0.18.0 mtheo$ cd tools/nmxptool
+
+kyuzo:~/libnmxp-0.18.0/tools/nmxptool mtheo$ ./configure
+
+kyuzo:~/libnmxp-0.18.0/tools/nmxptool mtheo$ make
+
+kyuzo:~/libnmxp-0.18.0/tools/nmxptool mtheo$ su root
+
+kyuzo:~/libnmxp-0.18.0/tools/nmxptool root# make install
+
+kyuzo:~/libnmxp-0.18.0/tools/nmxptool root# exit
+
+
+
+Per poter configurare nmxptool come plug-in all'interno di SeisComP sara
+sufficiente copiare la directory 135_nmxptool all'interno dei templates
+di SeisComP. Supponendo la SeisComP Root uguale a /home/sysop/seiscomp,
+ecco un essempio del comando da lanciare:
+
+kyuzo:~/libnmxp-0.18.0/tools/nmxptool mtheo$ cp -r \
+
+seiscomp_templates/135_nmxptool \
+
+/home/sysop/seiscomp/acquisition/templates/source/
+
+Successivamente sara possibile configurare il plug-in per mezzo della
+configurazione standard di SeisComP, ovvero per mezzo del comando:
+
+kyuzo:~ mtheo$ seiscomp config
+
 Documentazione
 
 La documentazione della libreria i stata redatta in lingua inglese
@@ -255,7 +383,7 @@ descrizioni delle sole funzioni, quelle di pisch alto livello, contenute
 in nmxp.h. Fare riferimento alla documentazione stessa per maggiori
 dettagli.
 
-Documentazione delle APIs a pisch alto livello contenute in nmxp.h
+Documentazione delle APIs di pisch alto livello contenute in nmxp.h
 
 int nmxp_sendConnect (int isock)
 
@@ -553,133 +681,6 @@ momento dell'inizializzazione del buffer, ed eseguire con minima latenza
 possibile le n_func_pd funzioni sulle strutture di tipo
 NMXP_DATA_PROCESS. 
 
-Installazione
-
-La libreria libnmxp e il tool nmxptool sono stati sviluppati utilizzando
-i GNU Build Tools (automake e autoconf) tenendo conto degli aspetti di
-compilazione trasverale (cross-compilation) per tutte le possibili
-piattaforme di tipo POSIX/UNIX. Di seguito la tab. 1 mostra su quali
-sistemi operativi e architetture si i eseguito con successo
-effettivamente il test di funzionamento.
-
-	Little Endian	Big Endian
-
-	Intel 32-bit	Intel 64-bit	SPARC 64bit	PowerPC
-
-Linux	X	X
-
-
-
-Solaris	X
-
-X
-
-	Mac OS X	X
-
-	X
-
-FreeBSD	X
-
-
-
-	Tabella 1. Sistemi operativi e architetture sui quali libnmxp e
-nmxptool sono
-
-                stati installati ed eseguiti con successo.
-
- 
-
-I sorgenti, la documentazione e gli scripts di installazione della
-libreria ed il tool vengono rilasciati in distribuzioni compresse, con
-nome del tipo libnmxp-0.18.0.tar.gz. I requisiti per l'installazione
-sono:
-
-Piattaforma POSIX
-
-Compilatore C
-
-Programma make
-
-Il modo pisch semplice per compilare i sorgenti i:
-
-`cd` nella directory che contiene lo script configure
-
-Lanciare il comando ./configure
-
-Se tutto ok lanciare il comando make per la compilazione
-
-Lanciare il comando make install per l'installazione
-
-Quindi, a titolo di esempio, ecco la sequenza dei comandi da eseguire in
-una shell per compilare libnmxp e nmxptool contenuti nella distribuzione
-libnmxp-0.18.0.tar.gz:
-
-kyuzo:~ mtheo$ tar xvfz libnmxp-0.18.0.tar.gz
-
-kyuzo:~ mtheo$ cd libnmxp-0.18.0
-
-kyuzo:~/libnmxp-0.18.0 mtheo$ ./configure
-
-...
-
-config.status: creating Makefile
-
-config.status: creating src/Makefile
-
-config.status: creating config.h
-
-config.status: executing depfiles commands
-
-configure:
-
-      After running make and make install you will be able
-
-      to compile nmpxtool into the subdirectory tools/nmxptool.
-
-      nmxptool is a tool that implements the following protocols:
-
-                - Nanometrics Data Access Protocol 1.0
-
-                - Nanometrics Private Data Stream  1.4
-
-kyuzo:~/libnmxp-0.18.0 mtheo$ make
-
-kyuzo:~/libnmxp-0.18.0 mtheo$ su root
-
-kyuzo:~/libnmxp-0.18.0 root# make install
-
-kyuzo:~/libnmxp-0.18.0 root# exit
-
-kyuzo:~/libnmxp-0.18.0 mtheo$ cd tools/nmxptool
-
-kyuzo:~/libnmxp-0.18.0/tools/nmxptool mtheo$ ./configure
-
-kyuzo:~/libnmxp-0.18.0/tools/nmxptool mtheo$ make
-
-kyuzo:~/libnmxp-0.18.0/tools/nmxptool mtheo$ su root
-
-kyuzo:~/libnmxp-0.18.0/tools/nmxptool root# make install
-
-kyuzo:~/libnmxp-0.18.0/tools/nmxptool root# exit
-
-
-
-Per poter configurare nmxptool come plug-in all'interno di SeisComP sara
-sufficiente copiare la directory 135_nmxptool all'interno dei templates
-di SeisComP. Supponendo la SeisComP Root uguale a /home/sysop/seiscomp,
-ecco un essempio del comando da lanciare:
-
-kyuzo:~/libnmxp-0.18.0/tools/nmxptool mtheo$ cp -r \
-
-seiscomp_templates/135_nmxptool \
-
-/home/sysop/seiscomp/acquisition/templates/source/
-
-Successivamente sara possibile configurare il plug-in per mezzo della
-configurazione standard di SeisComP, ovvero per mezzo del comando:
-
-kyuzo:~ mtheo$ seiscomp config
-
 Uso di nmxptool
 
 Per cominciare a capire cosa fa e come funziona nmxptool lanciamo il
@@ -694,11 +695,11 @@ Usage: nmxptool -H hostname --listchannels [...]
 
              Receive list of available channels on the host
 
-nmxptool -H hostname -C channellist -s DATE -e DATE [...]
+       nmxptool -H hostname -C channellist -s DATE -e DATE [...]
 
              Receive data from hostname by DAP
 
-nmxptool -H hostname -C channellist [...]
+       nmxptool -H hostname -C channellist [...]
 
              Receive data from hostname by PDS
 
@@ -1938,11 +1939,11 @@ GNU license
 
 SeisComp, naqs_plugin
 
-Qlib2, emerge
+Qlib2, qmerge
 
 libmseed 
 
  PAGE   
 
- PAGE   19 
+ PAGE   20 
 
