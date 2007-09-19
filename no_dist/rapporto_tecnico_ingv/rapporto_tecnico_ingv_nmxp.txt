@@ -1557,283 +1557,253 @@ canali sismici in test al 18 settembre 2007.
 
 Canale	Pacchetti Ritrasmessi	Latenza Massima (sec.)	Gaps
 
-BOB.HHZ
+CARO.HHN
 
-BOB.HHN
-
-BOB.HHE
-
-DOI.HHZ
-
-DOI.HHN
-
-DOI.HHE
-
-SALO.HHZ
+MRGE.HHN
 
 SALO.HHN
 
 SALO.HHE
 
+SCTE.HHE
+
+DOI.HHN
+
 MRGE.HHZ
-
-MRGE.HHN
-
-MRGE.HHE
-
-NOCI.HHZ
-
-NOCI.HHN
-
-NOCI.HHE
-
-AMUR.HHZ
 
 AMUR.HHN
 
-AMUR.HHE
+AMUR.HHZ
 
-CARO.HHZ
+SCTE.HHZ
 
-CARO.HHN
-
-CARO.HHE
-
-SSY.HHZ
-
-SSY.HHN
-
-SSY.HHE
-
-USI.HHZ
-
-USI.HHN
-
-USI.HHE
-
-MABI.HHZ
-
-MABI.HHN
+MRGE.HHE
 
 MABI.HHE
 
-MDI.HHZ
+USI.HHN
 
-MDI.HHN
+BOB.HHN
 
-MDI.HHE
+BOB.HHE
+
+BOB.HHZ
+
+USI.HHE
 
 TIR.HHZ
 
+TIR.HHE
+
 TIR.HHN
 
-TIR.HHE
+SCTE.HHN
+
+AMUR.HHE
+
+MABI.HHZ
+
+MDI.HHE
+
+MDI.HHZ
+
+SALO.HHZ
+
+DOI.HHZ
+
+DOI.HHE
+
+CARO.HHE
+
+USI.HHZ
+
+MABI.HHN
+
+MDI.HHN
+
+CARO.HHZ
+
+MSAG.HHE
 
 MSAG.HHZ
 
 MSAG.HHN
 
-MSAG.HHE
-
-SCTE.HHZ
-
-SCTE.HHN
-
-SCTE.HHE
-
 SGRT.HHZ
+
+SGRT.HHE
 
 SGRT.HHN
 
-SGRT.HHE	22
+NOCI.HHE
+
+NOCI.HHN
+
+NOCI.HHZ	2
+
+9
+
+18
+
+17
+
+10
+
+8
+
+7
+
+8
+
+7
+
+10
+
+9
+
+14
+
+16
 
 21
 
 24
 
-16
-
-8
-
-8
-
-13
-
-18
-
-17
-
-7
-
-9
-
-9
-
-2096
-
-2117
-
-2038
-
-7
-
-8
-
-9
-
-7
-
-2
-
-10
-
-0
-
-0
-
-0
-
-20
-
-16
+22
 
 14
 
+17
+
 18
+
+28
+
+9
+
+9
+
+18
+
+5
+
+10
+
+13
+
+16
+
+8
+
+10
+
+20
 
 21
 
 14
 
-10
+7
 
-14
-
-5
-
-17
-
-28
-
-18
+35
 
 30
 
 33
 
-35
-
-10
-
-9
-
-10
-
 78
+
+61
 
 77
 
-61	59.8
+2038
 
-58.8
+2117
 
-59.8
+2096	14.50
 
-227.1
+17.50
 
-46.3
+19.40
 
-228.3
+20.60
 
-225.3
+36.70
 
-19.4
+46.30
 
-20.6
+46.60
 
-46.6
+47.10
 
-17.5
+47.80
 
-48.9
+48.40
 
-378.7
+48.90
 
-387.9
+57.00
 
-410.1
+58.70
 
-47.8
+58.80
 
-47.1
+59.80
 
-47.3
+59.80
 
-232.5
+68.00
 
-14.5
+78.00
 
-232.2
+78.30
 
-1.0
+78.70
 
-1.0
+46.60
 
-0.0
+47.30
 
-116.3
+177.20
 
-58.7
+199.80
 
-68.0
+220.10
 
-177.2
+225.30
 
-129.0
+227.10
 
-57.0
+228.30
 
-220.1
+232.20
 
-219.3
+116.30
 
-199.8
+129.00
 
-78.0
+219.30
 
-78.7
+232.50
 
-78.3
+173.30
 
-232.1
+232.10
 
-201.4
+201.40
 
-173.3
+253.40
 
-48.4
+237.50
 
-46.6
+224.90
 
-36.7
+410.10
 
-253.4
+387.90
 
-224.9
-
-237.5	0
-
-0
-
-0
-
-1
-
-0
-
-1
-
-1
+378.70	0
 
 0
 
@@ -1845,23 +1815,11 @@ SGRT.HHE	22
 
 0
 
-235
-
-228
-
-222
-
 0
 
 0
 
-1
-
-2
-
 0
-
-1
 
 0
 
@@ -1869,7 +1827,17 @@ SGRT.HHE	22
 
 0
 
-2
+0
+
+0
+
+0
+
+0
+
+0
+
+0
 
 0
 
@@ -1877,50 +1845,58 @@ SGRT.HHE	22
 
 1
 
-2
+1
 
-0
+1
+
+1
+
+1
+
+1
+
+1
+
+1
 
 1
 
 2
 
-1
+2
 
-0
+2
 
-0
+2
 
-0
+4
 
 8
 
 10
 
-4
-
-0
-
-1
-
-0
-
 17
+
+19
 
 25
 
-19
+222
+
+228
+
+235
 
 Tabella 2. Report sintetico dei dati archiviati, per i canali in test il
 18 settembre 2007, tramite nmxptool e seedllink. Per ogni canale sono
 riportati il numero totale di pacchetti ritrasmessi, la massima latenza
 registrata e il numero di gaps temporali nel dato. Possiamo notare come
-il numero di gaps dipenda fortemente dall'attesa dei pacchetti non
-ricevuti prima e ritrasmessi poi. La latenza massima tollerabile i
-indotta dalla grandezza del buffer la quale i stata impostata a 100
-pacchetti. Nel momento in cui il buffer i completamente saturo e ancora
-non si sono ricevuti i pacchetti che precedono il primo si genera un gap
-della durata dei pacchetti mancanti.
+il numero di gaps dipenda fortemente dall'attesa dei pacchetti
+ritrasmessi. La latenza massima tollerabile i indotta dalla grandezza
+del buffer la quale i stata impostata a 100 pacchetti. Nel momento in
+cui il buffer i completamente saturo e ancora non si sono ricevuti i
+pacchetti che precedono il primo si genera un gap della durata dei
+pacchetti mancanti.
 
 
 
@@ -1968,5 +1944,5 @@ libmseed
 
  PAGE   
 
- PAGE   20 
+ PAGE   19 
 
