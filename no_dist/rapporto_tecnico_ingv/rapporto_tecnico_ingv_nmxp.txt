@@ -10,30 +10,30 @@ e-mail: quintiliani@ingv.it
 
   TOC \o "1-3" \h \z \u  
 
-Introduzione	  PAGEREF _Toc51492600 \h  5 
+Introduzione	  PAGEREF _Toc51820785 \h  5 
 
-1. Protocolli Nanometrics	  PAGEREF _Toc51492601 \h  6 
+1. Protocolli Nanometrics	  PAGEREF _Toc51820786 \h  6 
 
-1.1 Private Data Stream	  PAGEREF _Toc51492602 \h  6 
+1.1 Private Data Stream	  PAGEREF _Toc51820787 \h  6 
 
-1.2 Data Access Protocol	  PAGEREF _Toc51492603 \h  7 
+1.2 Data Access Protocol	  PAGEREF _Toc51820788 \h  7 
 
-2. Application Program Interfaces	  PAGEREF _Toc51492604 \h  7 
+2. Application Program Interfaces	  PAGEREF _Toc51820789 \h  7 
 
-2.1 Documentazione	  PAGEREF _Toc51492605 \h  8 
+2.1 Documentazione	  PAGEREF _Toc51820790 \h  8 
 
-2.2 Installazione	  PAGEREF _Toc51492606 \h  11 
+2.2 Installazione	  PAGEREF _Toc51820791 \h  11 
 
-2.3 Uso di nmxptool	  PAGEREF _Toc51492607 \h  12 
+2.3 Uso di nmxptool	  PAGEREF _Toc51820792 \h  13 
 
 2.4 Uso delle APIs per sviluppare una nuova applicazione	  PAGEREF
-_Toc51492608 \h  16 
+_Toc51820793 \h  16 
 
-3. Conclusioni	  PAGEREF _Toc51492609 \h  18 
+3. Conclusioni	  PAGEREF _Toc51820794 \h  19 
 
-4. Ringraziamenti	  PAGEREF _Toc51492610 \h  20 
+4. Ringraziamenti	  PAGEREF _Toc51820795 \h  20 
 
-5. Bibliografia e citazioni	  PAGEREF _Toc51492611 \h  20 
+5. Bibliografia e citazioni	  PAGEREF _Toc51820796 \h  20 
 
  
 
@@ -618,7 +618,7 @@ kyuzo:~ mtheo$ tar xvfz libnmxp-0.18.0.tar.gz
 
 kyuzo:~ mtheo$ cd libnmxp-0.18.0
 
-kyuzo:~ libnmxp-0.18.0 mtheo$ ./configure
+kyuzo:~/libnmxp-0.18.0 mtheo$ ./configure
 
 ...
 
@@ -642,27 +642,43 @@ configure:
 
                 - Nanometrics Private Data Stream  1.4
 
-kyuzo:~ libnmxp-0.18.0 mtheo$ make
+kyuzo:~/libnmxp-0.18.0 mtheo$ make
 
-kyuzo:~ libnmxp-0.18.0 mtheo$ su root
+kyuzo:~/libnmxp-0.18.0 mtheo$ su root
 
-kyuzo:~ libnmxp-0.18.0 root# make install
+kyuzo:~/libnmxp-0.18.0 root# make install
 
-kyuzo:~ libnmxp-0.18.0 root# exit
+kyuzo:~/libnmxp-0.18.0 root# exit
 
-kyuzo:~ libnmxp-0.18.0 mtheo$ cd tools/nmxptool
+kyuzo:~/libnmxp-0.18.0 mtheo$ cd tools/nmxptool
 
-kyuzo:~ libnmxp-0.18.0/ tools/nmxptool mtheo$ ./configure
+kyuzo:~/libnmxp-0.18.0/tools/nmxptool mtheo$ ./configure
 
-kyuzo:~ libnmxp-0.18.0/ tools/nmxptool mtheo$ make
+kyuzo:~/libnmxp-0.18.0/tools/nmxptool mtheo$ make
 
-kyuzo:~ libnmxp-0.18.0/ tools/nmxptool mtheo$ su root
+kyuzo:~/libnmxp-0.18.0/tools/nmxptool mtheo$ su root
 
-kyuzo:~ libnmxp-0.18.0/ tools/nmxptool root# make install
+kyuzo:~/libnmxp-0.18.0/tools/nmxptool root# make install
 
-kyuzo:~ libnmxp-0.18.0/ tools/nmxptool root# exit
+kyuzo:~/libnmxp-0.18.0/tools/nmxptool root# exit
 
 
+
+Per poter configurare nmxptool come plug-in all'interno di SeisComP sara
+sufficiente copiare la directory 135_nmxptool all'interno dei templates
+di SeisComP. Supponendo la SeisComP Root uguale a /home/sysop/seiscomp,
+ecco un essempio del comando da lanciare:
+
+kyuzo:~/libnmxp-0.18.0/tools/nmxptool mtheo$ cp -r \
+
+seiscomp_templates/135_nmxptool \
+
+/home/sysop/seiscomp/acquisition/templates/source/
+
+Successivamente sara possibile configurare il plug-in per mezzo della
+configurazione standard di SeisComP, ovvero per mezzo del comando:
+
+kyuzo:~ mtheo$ seiscomp config
 
 Uso di nmxptool
 
@@ -1119,11 +1135,12 @@ pacchetti mancanti. Tale attesa termina nel momento in cui il buffer
 risulti completamente pieno comportando quindi una perdita di dati.
 
 Al fine di garantire completezza dei dati archiviati i stata sviluppata
-una procedura dal nome ``Nanometrics Data Completness'' che basando
-sulla versatilita di nmxptool recupera i dati mancanti con differita di
-qualche ora o giorno. In questo caso i ``buchi'' risultanti non potranno
-pisch essere colmati poichy i dati richiesti non risultano pisch
-definitivamente essere presenti dal lato server Nanometrics.
+una procedura dal nome ``Nanometrics Data Completness'' che basandosi
+sulla versatilita di nmxptool recupera i dati mancanti con differita
+impostata a qualche ora o giorno successivo. In questo caso i ``buchi''
+risultanti non potranno pisch essere colmati poichy i dati richiesti non
+risultano definitivamente pisch essere presenti sul lato dei servers
+Nanometrics.
 
 
 
@@ -1340,6 +1357,41 @@ nmxp__base_8h.html#20009090764c1a6c6d3416275d0dcc89" nmxp_closeSocket
 Sorgente 2. Struttura base in C che implementa PDS versione 1.4
 utilizzando le APIs di libnmxp.
 
+int n_func_pd = 0;
+
+int (*p_func_pd[ HYPERLINK
+"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
+nmxp_8h.html#d01d7b80bf5ea8cf7cf6cb6d42d4a19f" NMXP_MAX_FUNC_PD ]) (
+HYPERLINK
+"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
+struct_n_m_x_p___d_a_t_a___p_r_o_c_e_s_s.html" NMXP_DATA_PROCESS  *);
+
+if(params.stc == -1) {
+
+  if(params.flag_logdata) {
+
+    p_func_pd[n_func_pd++] = nmxptool_print_seq_no;
+
+  }
+
+  /* Write Mini-SEED record */
+
+  if(params.flag_writeseed) {
+
+    p_func_pd[n_func_pd++] = nmxptool_write_miniseed;
+
+  }
+
+  /* Send data to SeedLink Server */
+
+  if(params.flag_slink) {
+
+    p_func_pd[n_func_pd++] = nmxptool_send_raw_depoch;
+
+  }
+
+}
+
 /* ************************************************************* */
 
 /* Start subscription protocol "PRIVATE DATA STREAM" version 1.4 */
@@ -1501,189 +1553,331 @@ di gestire ne' connessioni Short-term-complete ne' i pacchetti di tipo
 compresso non era in grado di garantire continuita del dato al
 verificarsi di una ritrasmissione dal lato Nanometrics Server - Stazione
 Sismica. La tab. 2 mostra un report sintetico dei dati archiviati per i
-canali sismici in test.
+canali sismici in test al 18 settembre 2007.
 
-Canale	Latenza Massima (sec.)	Gaps
-
-AMUR.HHE
-
-AMUR.HHN
-
-AMUR.HHZ
-
-BOB.HHE
-
-BOB.HHN
+Canale	Pacchetti Ritrasmessi	Latenza Massima (sec.)	Gaps
 
 BOB.HHZ
 
-CARO.HHE
+BOB.HHN
 
-CARO.HHN
-
-CARO.HHZ
-
-DOI.HHE
-
-DOI.HHN
+BOB.HHE
 
 DOI.HHZ
 
-MABI.HHE
+DOI.HHN
 
-MABI.HHN
-
-MABI.HHZ
-
-MDI.HHE
-
-MDI.HHN
-
-MDI.HHZ
-
-MRGE.HHE
-
-MRGE.HHN
-
-MRGE.HHZ
-
-MSAG.HHE
-
-MSAG.HHN
-
-MSAG.HHZ
-
-NOCI.HHE
-
-NOCI.HHN
-
-NOCI.HHZ
-
-SALO.HHE
-
-SALO.HHN
+DOI.HHE
 
 SALO.HHZ
 
-SCTE.HHE
+SALO.HHN
 
-SCTE.HHN
+SALO.HHE
 
-SCTE.HHZ
+MRGE.HHZ
 
-SGRT.HHE
+MRGE.HHN
 
-SGRT.HHN
+MRGE.HHE
 
-SGRT.HHZ
+NOCI.HHZ
 
-SSY.BHE
+NOCI.HHN
 
-SSY.BHN
+NOCI.HHE
 
-SSY.BHZ
+AMUR.HHZ
 
-TIR.HHE
+AMUR.HHN
 
-TIR.HHN
+AMUR.HHE
 
-TIR.HHZ
+CARO.HHZ
 
-USI.HHE
+CARO.HHN
+
+CARO.HHE
+
+SSY.HHZ
+
+SSY.HHN
+
+SSY.HHE
+
+USI.HHZ
 
 USI.HHN
 
-USI.HHZ	33.6
+USI.HHE
 
-32.8
+MABI.HHZ
 
-33.5
+MABI.HHN
 
-328.8
+MABI.HHE
 
-329.6
+MDI.HHZ
 
-330.0
+MDI.HHN
 
-47.8
+MDI.HHE
 
-47.4
+TIR.HHZ
 
-319.7
+TIR.HHN
 
-36.2
+TIR.HHE
 
-320.3
+MSAG.HHZ
 
-38.1
+MSAG.HHN
 
-26.6
+MSAG.HHE
 
-26.0
+SCTE.HHZ
 
-25.6
+SCTE.HHN
 
-46.7
+SCTE.HHE
 
-320.3
+SGRT.HHZ
 
-46.7
+SGRT.HHN
 
-57.7
+SGRT.HHE	22
 
-58.4
+21
 
-57.4
+24
 
-56.5
+16
 
-56.3
+8
 
-56.4
+8
 
-12.0
+13
 
-19.6
+18
 
-19.2
+17
 
-46.2
+7
 
-46.8
+9
 
-45.2
+9
 
-40.0
+2096
 
-40.1
+2117
 
-41.6
+2038
 
-65.8
+7
 
-66.7
+8
 
-66.1
+9
 
-329.6
+7
 
-322.9
+2
 
-330.8
+10
 
-59.1
+0
 
-58.7
+0
 
-57.5
+0
+
+20
+
+16
+
+14
+
+18
+
+21
+
+14
+
+10
+
+14
+
+5
+
+17
+
+28
+
+18
+
+30
+
+33
+
+35
+
+10
+
+9
+
+10
+
+78
+
+77
+
+61	59.8
 
 58.8
 
-58.4
+59.8
 
-58.8	0
+227.1
+
+46.3
+
+228.3
+
+225.3
+
+19.4
+
+20.6
+
+46.6
+
+17.5
+
+48.9
+
+378.7
+
+387.9
+
+410.1
+
+47.8
+
+47.1
+
+47.3
+
+232.5
+
+14.5
+
+232.2
+
+1.0
+
+1.0
+
+0.0
+
+116.3
+
+58.7
+
+68.0
+
+177.2
+
+129.0
+
+57.0
+
+220.1
+
+219.3
+
+199.8
+
+78.0
+
+78.7
+
+78.3
+
+232.1
+
+201.4
+
+173.3
+
+48.4
+
+46.6
+
+36.7
+
+253.4
+
+224.9
+
+237.5	0
 
 0
+
+0
+
+1
+
+0
+
+1
+
+1
+
+0
+
+0
+
+0
+
+0
+
+0
+
+235
+
+228
+
+222
+
+0
+
+0
+
+1
+
+2
+
+0
+
+1
+
+0
+
+0
+
+0
+
+2
+
+0
+
+0
+
+1
+
+2
 
 0
 
@@ -1697,7 +1891,13 @@ USI.HHZ	33.6
 
 0
 
-2
+0
+
+8
+
+10
+
+4
 
 0
 
@@ -1705,79 +1905,22 @@ USI.HHZ	33.6
 
 0
 
-0
+17
 
-0
+25
 
-1
-
-0
-
-1
-
-0
-
-0
-
-0
-
-0
-
-0
-
-0
-
-0
-
-0
-
-0
-
-0
-
-0
-
-0
-
-0
-
-0
-
-0
-
-0
-
-0
-
-0
-
-0
-
-1
-
-2
-
-2
-
-0
-
-0
-
-0
-
-0
-
-0
-
-0
+19
 
 Tabella 2. Report sintetico dei dati archiviati, per i canali in test il
-12 settembre 2007, tramite nmxptool e seedllink. Per ogni canale i
-riportata la massima latenza registrata nel giorno e il numero di gaps
-temporali nel dato. Possiamo notare come il numero di gaps dipenda
-fortemente dall'attesa dei pacchetti non ricevuti prima e ritrasmessi
-poi. La latenza massima tollerabile i stata impostata ad un massimo di
-330 sec. circa. Il gap i causato da questo time-out.
+18 settembre 2007, tramite nmxptool e seedllink. Per ogni canale sono
+riportati il numero totale di pacchetti ritrasmessi, la massima latenza
+registrata e il numero di gaps temporali nel dato. Possiamo notare come
+il numero di gaps dipenda fortemente dall'attesa dei pacchetti non
+ricevuti prima e ritrasmessi poi. La latenza massima tollerabile i
+indotta dalla grandezza del buffer la quale i stata impostata a 100
+pacchetti. Nel momento in cui il buffer i completamente saturo e ancora
+non si sono ricevuti i pacchetti che precedono il primo si genera un gap
+della durata dei pacchetti mancanti.
 
 
 
@@ -1825,5 +1968,5 @@ libmseed
 
  PAGE   
 
- PAGE   13 
+ PAGE   20 
 
