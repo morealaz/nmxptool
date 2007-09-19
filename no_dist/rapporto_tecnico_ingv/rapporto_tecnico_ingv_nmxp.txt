@@ -11,30 +11,30 @@ e-mail: quintiliani@ingv.it
 
   TOC \o "1-3" \h \z \u  
 
-Introduzione	  PAGEREF _Toc51835547 \h  5 
+Introduzione	  PAGEREF _Toc51836479 \h  5 
 
-1. Protocolli Nanometrics	  PAGEREF _Toc51835548 \h  6 
+1. Protocolli Nanometrics	  PAGEREF _Toc51836480 \h  6 
 
-1.1 Private Data Stream	  PAGEREF _Toc51835549 \h  6 
+1.1 Private Data Stream	  PAGEREF _Toc51836481 \h  6 
 
-1.2 Data Access Protocol	  PAGEREF _Toc51835550 \h  7 
+1.2 Data Access Protocol	  PAGEREF _Toc51836482 \h  7 
 
-2. Application Program Interfaces	  PAGEREF _Toc51835551 \h  7 
+2. La libreria libnmxp	  PAGEREF _Toc51836483 \h  7 
 
-2.1 Installazione	  PAGEREF _Toc51835552 \h  8 
+2.1 Installazione	  PAGEREF _Toc51836484 \h  8 
 
-2.2 Documentazione	  PAGEREF _Toc51835553 \h  9 
+2.2 Documentazione	  PAGEREF _Toc51836485 \h  9 
 
-2.3 Uso di nmxptool	  PAGEREF _Toc51835554 \h  12 
+2.3 Uso delle APIs per sviluppare una nuova applicazione	  PAGEREF
+_Toc51836486 \h  12 
 
-2.4 Uso delle APIs per sviluppare una nuova applicazione	  PAGEREF
-_Toc51835555 \h  16 
+3. Il programma nmxptool	  PAGEREF _Toc51836487 \h  15 
 
-3. Conclusioni	  PAGEREF _Toc51835556 \h  18 
+4. Conclusioni	  PAGEREF _Toc51836488 \h  18 
 
-4. Ringraziamenti	  PAGEREF _Toc51835557 \h  20 
+5. Ringraziamenti	  PAGEREF _Toc51836489 \h  20 
 
-5. Bibliografia e citazioni	  PAGEREF _Toc51835558 \h  20 
+6. Bibliografia e citazioni	  PAGEREF _Toc51836490 \h  20 
 
  
 
@@ -204,7 +204,7 @@ Ripetere i passi 5 e 6 per ogni richiesta.
 
 Chiudere il socket.
 
-Application Program Interfaces
+La libreria libnmxp
 
 Dopo aver descritto in generale i protocolli di comunicazione
 Nanometrics passiamo ora ad illustrare come la libreria i organizzata e
@@ -681,7 +681,395 @@ momento dell'inizializzazione del buffer, ed eseguire con minima latenza
 possibile le n_func_pd funzioni sulle strutture di tipo
 NMXP_DATA_PROCESS. 
 
-Uso di nmxptool
+Uso delle APIs per sviluppare una nuova applicazione
+
+Per sviluppare una propria applicazione in C che faccia uso della
+libreria libnmxp vengono di seguito illustrati i sorgenti da utilizzare
+come base per l'implementazione dei protocolli Data Access Protocol 1.0
+e Private Data Stream 1.4. Su tali strutture i basato anche nmxptool
+descritto successivamente.
+
+Sorgente 1. Struttura base in C che implementa DAP versione 1.0
+utilizzando le APIs di libnmxp.
+
+/* ************************************************************** */
+
+/* Start subscription protocol "DATA ACCESS PROTOCOL" version 1.0 */
+
+/* ************************************************************** */
+
+/* DAP Step 1: Open a socket */
+
+if( (naqssock =  HYPERLINK
+"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
+nmxp__base_8h.html#44f981ae9125ff482b93e74a9df45c0c" nmxp_openSocket
+(params.hostname, params.portnumberdap)) ==  HYPERLINK
+"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
+nmxp__base_8h.html#4e3388111ddab1454d6bd987f1f17435" NMXP_SOCKET_ERROR )
+{
+
+   HYPERLINK
+"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
+nmxp__log_8h.html#8622591085f346ff9826b84a11ee2413" nmxp_log (1, 0,
+"Error opening socket!\n");
+
+  return 1;
+
+}
+
+/* DAP Step 2: Read connection time */
+
+if( HYPERLINK
+"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
+nmxp_8h.html#5242ad29c198813884300244dd10179e" nmxp_readConnectionTime
+(naqssock, &connection_time) !=  HYPERLINK
+"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
+nmxp__base_8h.html#d0fb7eddd779d8a0e761bf877d866b56" NMXP_SOCKET_OK ) {
+
+   HYPERLINK
+"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
+nmxp__log_8h.html#8622591085f346ff9826b84a11ee2413" nmxp_log (1, 0,
+"Error reading connection time from server!\n");
+
+  return 1;
+
+}
+
+/* DAP Step 3: Send a ConnectRequest */
+
+if( HYPERLINK
+"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
+nmxp_8h.html#b9ca7e70152dcbddd0f90fafcf764c98" nmxp_sendConnectRequest
+(naqssock, params.datas_username, params.datas_password,
+connection_time) !=  HYPERLINK
+"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
+nmxp__base_8h.html#d0fb7eddd779d8a0e761bf877d866b56" NMXP_SOCKET_OK ) {
+
+   HYPERLINK
+"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
+nmxp__log_8h.html#8622591085f346ff9826b84a11ee2413" nmxp_log (1, 0,
+"Error sending connect request!\n");
+
+  return 1;
+
+}
+
+/* DAP Step 4: Wait for a Ready message */
+
+if( HYPERLINK
+"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
+nmxp_8h.html#e05f693ef0012617e25735f412c1f590" nmxp_waitReady (naqssock)
+!=  HYPERLINK
+"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
+nmxp__base_8h.html#d0fb7eddd779d8a0e761bf877d866b56" NMXP_SOCKET_OK ) {
+
+   HYPERLINK
+"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
+nmxp__log_8h.html#8622591085f346ff9826b84a11ee2413" nmxp_log (1, 0,
+"Error waiting Ready message!\n");
+
+  return 1;
+
+}
+
+while(exitdapcondition) {
+
+  /* Start loop for sending requests */
+
+  while(request_SOCKET_OK ==  HYPERLINK
+"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
+nmxp__base_8h.html#d0fb7eddd779d8a0e761bf877d866b56" NMXP_SOCKET_OK   &&
+ i_chan < channelList_subset->number) {
+
+    /* DAP Step 5: Send Data Request */
+
+    request_SOCKET_OK =  HYPERLINK
+"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
+nmxp_8h.html#6bf4cb425c1ae31248e19d2e053fbe90" nmxp_sendDataRequest
+(naqssock, channelList_subset->channel[i_chan].key,
+
+        (double) params.start_time, (double) params.end_time);
+
+    if(request_SOCKET_OK ==  HYPERLINK
+"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
+nmxp__base_8h.html#d0fb7eddd779d8a0e761bf877d866b56" NMXP_SOCKET_OK ) {
+
+      /* DAP Step 6: Receive Data until receiving a Ready message */
+
+      ret =  HYPERLINK
+"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
+nmxp__base_8h.html#c4f875c1f2e85f62e4c2521adc897479" nmxp_receiveMessage
+(naqssock, &type, &buffer, &length);
+
+       HYPERLINK
+"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
+nmxp__log_8h.html#8622591085f346ff9826b84a11ee2413" nmxp_log (0, 1, "ret
+= %d, type = %d\n", ret, type);
+
+      while(ret ==  HYPERLINK
+"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
+nmxp__base_8h.html#d0fb7eddd779d8a0e761bf877d866b56" NMXP_SOCKET_OK   
+&&    type !=  HYPERLINK
+"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
+nmxp__data_8h.html#ac688b3df69e8cf6f2ac256ee5da658bdf9196bb257dcc4c91847
+7edc05bd6cb" NMXP_MSG_READY ) {
+
+        /* Process a packet and return value in NMXP_DATA_PROCESS
+structure */
+
+        pd =  HYPERLINK
+"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
+nmxp__base_8h.html#8893b6eee3b7c72e999477d8c84da476"
+nmxp_processCompressedData (buffer, length, channelList_subset,
+CURRENT_NETWORK);
+
+         HYPERLINK
+"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
+nmxp__data_8h.html#1a461f85840339c840b377a7f55991a0" nmxp_data_trim (pd,
+params.start_time, params.end_time, 0);
+
+        /* Log contents of last packet */
+
+         HYPERLINK
+"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
+nmxp__data_8h.html#700d4b5ad54544d0546ffbc0d2aede35" nmxp_data_log (pd);
+
+        if(pd->buffer) {
+
+          free(pd->buffer);
+
+          pd->buffer = NULL;
+
+        }
+
+        /* Receive Data */
+
+        ret =  HYPERLINK
+"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
+nmxp__base_8h.html#c4f875c1f2e85f62e4c2521adc897479" nmxp_receiveMessage
+(naqssock, &type, &buffer, &length);
+
+      }
+
+    }
+
+    i_chan++;
+
+  }
+
+  /* DAP Step 7: Repeat steps 5 and 6 for each data request */
+
+} /* END while(exitdapcondition) */
+
+/* DAP Step 8: Send a Terminate message (optional) */
+
+ HYPERLINK
+"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
+nmxp_8h.html#13d94c3a1d78e315c72d3739331551f9"
+nmxp_sendTerminateSubscription (naqssock,  HYPERLINK
+"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
+nmxp__data_8h.html#2982ac3a4037ee612e56720295987f6df8cb753861ebf3a83e491
+cd3d7cd5d69" NMXP_SHUTDOWN_NORMAL , "Bye!");
+
+/* DAP Step 9: Close the socket */
+
+ HYPERLINK
+"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
+nmxp__base_8h.html#20009090764c1a6c6d3416275d0dcc89" nmxp_closeSocket
+(naqssock);
+
+/* ************************************************************ */
+
+/* End subscription protocol "DATA ACCESS PROTOCOL" version 1.0 */
+
+/* ************************************************************ */
+
+
+
+Sorgente 2. Struttura base in C che implementa PDS versione 1.4
+utilizzando le APIs di libnmxp.
+
+int n_func_pd = 0;
+
+int (*p_func_pd[ HYPERLINK
+"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
+nmxp_8h.html#d01d7b80bf5ea8cf7cf6cb6d42d4a19f" NMXP_MAX_FUNC_PD ]) (
+HYPERLINK
+"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
+struct_n_m_x_p___d_a_t_a___p_r_o_c_e_s_s.html" NMXP_DATA_PROCESS  *);
+
+if(params.stc == -1) {
+
+  if(params.flag_logdata) {
+
+    p_func_pd[n_func_pd++] = nmxptool_print_seq_no;
+
+  }
+
+  /* Write Mini-SEED record */
+
+  if(params.flag_writeseed) {
+
+    p_func_pd[n_func_pd++] = nmxptool_write_miniseed;
+
+  }
+
+  /* Send data to SeedLink Server */
+
+  if(params.flag_slink) {
+
+    p_func_pd[n_func_pd++] = nmxptool_send_raw_depoch;
+
+  }
+
+}
+
+/* ************************************************************* */
+
+/* Start subscription protocol "PRIVATE DATA STREAM" version 1.4 */
+
+/* ************************************************************* */
+
+/* PDS Step 1: Open a socket */
+
+naqssock =  HYPERLINK
+"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
+nmxp__base_8h.html#44f981ae9125ff482b93e74a9df45c0c" nmxp_openSocket
+(params.hostname, params.portnumberpds);
+
+if(naqssock ==  HYPERLINK
+"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
+nmxp__base_8h.html#4e3388111ddab1454d6bd987f1f17435" NMXP_SOCKET_ERROR )
+{
+
+  return 1;
+
+}
+
+/* PDS Step 2: Send a Connect */
+
+if( HYPERLINK
+"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
+nmxp_8h.html#8e89c3bd6d36475147d8d14212fdde3f" nmxp_sendConnect
+(naqssock) !=  HYPERLINK
+"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
+nmxp__base_8h.html#d0fb7eddd779d8a0e761bf877d866b56" NMXP_SOCKET_OK ) {
+
+  printf("Error on sendConnect()\n");
+
+  return 1;
+
+}
+
+/* PDS Step 3: Receive ChannelList */
+
+if( HYPERLINK
+"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
+nmxp_8h.html#404bcdf536d593b187010ae8626234eb" nmxp_receiveChannelList
+(naqssock, &channelList) !=  HYPERLINK
+"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
+nmxp__base_8h.html#d0fb7eddd779d8a0e761bf877d866b56" NMXP_SOCKET_OK ) {
+
+  printf("Error on receiveChannelList()\n");
+
+  return 1;
+
+}
+
+/* Get a subset of channel from arguments */
+
+channelList_subset =  HYPERLINK
+"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
+nmxp__chan_8h.html#cd8162e1d1e3a2d07c303567054d5d3d" nmxp_chan_subset
+(channelList,  HYPERLINK
+"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
+nmxp__chan_8h.html#336bfce71e4b108b0cd469e0e2ddfcf7675e6d98f34fb0ed6a79a
+34e49e3d2a2" NMXP_DATA_TIMESERIES , params.channels);
+
+/* PDS Step 4: Send a Request Pending (optional) */
+
+/* PDS Step 5: Send AddChannels */
+
+/* Request Data */
+
+ HYPERLINK
+"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
+nmxp_8h.html#d56c1e95b99326395adc087ff6437ea0"
+nmxp_sendAddTimeSeriesChannel (naqssock, channelList_subset, params.stc,
+params.rate,
+
+    (params.flag_buffered)?  HYPERLINK
+"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
+nmxp_8h.html#a01c4a7e4cf68fb71d3c840db57388be8ac1f26351ac3fbe45666febe0c
+325d5" NMXP_BUFFER_YES  :  HYPERLINK
+"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
+nmxp_8h.html#a01c4a7e4cf68fb71d3c840db57388be6d79bfe520bb2e4f0278faead3b
+97cb5" NMXP_BUFFER_NO );
+
+/* PDS Step 6: Repeat until finished: receive and handle packets */
+
+while(exitpdscondition) {
+
+  /* Process Compressed or Decompressed Data */
+
+  pd =  HYPERLINK
+"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
+nmxp_8h.html#c364754b99340141d9dca8eb70352d98" nmxp_receiveData
+(naqssock, channelList_subset, CURRENT_NETWORK);
+
+  /* Log contents of last packet */
+
+   HYPERLINK
+"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
+nmxp__data_8h.html#700d4b5ad54544d0546ffbc0d2aede35" nmxp_data_log (pd);
+
+  /* Manage Raw Stream */
+
+  if(params.stc == -1) {
+
+      HYPERLINK "dddd"  nmxp_raw_stream_manage (&(raw_stream_buffer),
+pd, p_func_pd, n_func_pd);
+
+  }
+
+  if(pd->buffer) {
+
+    free(pd->buffer);
+
+    pd->buffer = NULL;
+
+  }
+
+  exitpdscondition = 1;
+
+}
+
+/* PDS Step 7: Send Terminate Subscription */
+
+ HYPERLINK
+"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
+nmxp_8h.html#13d94c3a1d78e315c72d3739331551f9"
+nmxp_sendTerminateSubscription (naqssock,  HYPERLINK
+"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
+nmxp__data_8h.html#2982ac3a4037ee612e56720295987f6df8cb753861ebf3a83e491
+cd3d7cd5d69" NMXP_SHUTDOWN_NORMAL , "Good Bye!");
+
+/* PDS Step 8: Close the socket */
+
+ HYPERLINK
+"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
+nmxp__base_8h.html#20009090764c1a6c6d3416275d0dcc89" nmxp_closeSocket
+(naqssock);
+
+/* *********************************************************** */
+
+/* End subscription protocol "PRIVATE DATA STREAM" version 1.4 */
+
+/* *********************************************************** */
+
+
+
+Il programma nmxptool
 
 Per cominciare a capire cosa fa e come funziona nmxptool lanciamo il
 comando che restituisce a video l'elenco delle opzioni del comando:
@@ -1150,395 +1538,7 @@ differita. Le due attivita si basano con modalita diverse su nmxptool.
 
 
 
-Uso delle APIs per sviluppare una nuova applicazione
-
-Per sviluppare una propria applicazione in C che faccia uso della
-libreria libnmxp vengono di seguito illustrati i sorgenti da utilizzare
-come base per l'implementazione dei protocolli Data Access Protocol 1.0
-e Private Data Stream 1.4. Su tali strutture i basato anche nmxptool
-descritto precedentemente.
-
-Sorgente 1. Struttura base in C che implementa DAP versione 1.0
-utilizzando le APIs di libnmxp.
-
-/* ************************************************************** */
-
-/* Start subscription protocol "DATA ACCESS PROTOCOL" version 1.0 */
-
-/* ************************************************************** */
-
-/* DAP Step 1: Open a socket */
-
-if( (naqssock =  HYPERLINK
-"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
-nmxp__base_8h.html#44f981ae9125ff482b93e74a9df45c0c" nmxp_openSocket
-(params.hostname, params.portnumberdap)) ==  HYPERLINK
-"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
-nmxp__base_8h.html#4e3388111ddab1454d6bd987f1f17435" NMXP_SOCKET_ERROR )
-{
-
-   HYPERLINK
-"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
-nmxp__log_8h.html#8622591085f346ff9826b84a11ee2413" nmxp_log (1, 0,
-"Error opening socket!\n");
-
-  return 1;
-
-}
-
-/* DAP Step 2: Read connection time */
-
-if( HYPERLINK
-"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
-nmxp_8h.html#5242ad29c198813884300244dd10179e" nmxp_readConnectionTime
-(naqssock, &connection_time) !=  HYPERLINK
-"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
-nmxp__base_8h.html#d0fb7eddd779d8a0e761bf877d866b56" NMXP_SOCKET_OK ) {
-
-   HYPERLINK
-"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
-nmxp__log_8h.html#8622591085f346ff9826b84a11ee2413" nmxp_log (1, 0,
-"Error reading connection time from server!\n");
-
-  return 1;
-
-}
-
-/* DAP Step 3: Send a ConnectRequest */
-
-if( HYPERLINK
-"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
-nmxp_8h.html#b9ca7e70152dcbddd0f90fafcf764c98" nmxp_sendConnectRequest
-(naqssock, params.datas_username, params.datas_password,
-connection_time) !=  HYPERLINK
-"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
-nmxp__base_8h.html#d0fb7eddd779d8a0e761bf877d866b56" NMXP_SOCKET_OK ) {
-
-   HYPERLINK
-"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
-nmxp__log_8h.html#8622591085f346ff9826b84a11ee2413" nmxp_log (1, 0,
-"Error sending connect request!\n");
-
-  return 1;
-
-}
-
-/* DAP Step 4: Wait for a Ready message */
-
-if( HYPERLINK
-"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
-nmxp_8h.html#e05f693ef0012617e25735f412c1f590" nmxp_waitReady (naqssock)
-!=  HYPERLINK
-"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
-nmxp__base_8h.html#d0fb7eddd779d8a0e761bf877d866b56" NMXP_SOCKET_OK ) {
-
-   HYPERLINK
-"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
-nmxp__log_8h.html#8622591085f346ff9826b84a11ee2413" nmxp_log (1, 0,
-"Error waiting Ready message!\n");
-
-  return 1;
-
-}
-
-while(exitdapcondition) {
-
-  /* Start loop for sending requests */
-
-  while(request_SOCKET_OK ==  HYPERLINK
-"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
-nmxp__base_8h.html#d0fb7eddd779d8a0e761bf877d866b56" NMXP_SOCKET_OK   &&
- i_chan < channelList_subset->number) {
-
-    /* DAP Step 5: Send Data Request */
-
-    request_SOCKET_OK =  HYPERLINK
-"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
-nmxp_8h.html#6bf4cb425c1ae31248e19d2e053fbe90" nmxp_sendDataRequest
-(naqssock, channelList_subset->channel[i_chan].key,
-
-        (double) params.start_time, (double) params.end_time);
-
-    if(request_SOCKET_OK ==  HYPERLINK
-"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
-nmxp__base_8h.html#d0fb7eddd779d8a0e761bf877d866b56" NMXP_SOCKET_OK ) {
-
-      /* DAP Step 6: Receive Data until receiving a Ready message */
-
-      ret =  HYPERLINK
-"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
-nmxp__base_8h.html#c4f875c1f2e85f62e4c2521adc897479" nmxp_receiveMessage
-(naqssock, &type, &buffer, &length);
-
-       HYPERLINK
-"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
-nmxp__log_8h.html#8622591085f346ff9826b84a11ee2413" nmxp_log (0, 1, "ret
-= %d, type = %d\n", ret, type);
-
-      while(ret ==  HYPERLINK
-"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
-nmxp__base_8h.html#d0fb7eddd779d8a0e761bf877d866b56" NMXP_SOCKET_OK   
-&&    type !=  HYPERLINK
-"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
-nmxp__data_8h.html#ac688b3df69e8cf6f2ac256ee5da658bdf9196bb257dcc4c91847
-7edc05bd6cb" NMXP_MSG_READY ) {
-
-        /* Process a packet and return value in NMXP_DATA_PROCESS
-structure */
-
-        pd =  HYPERLINK
-"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
-nmxp__base_8h.html#8893b6eee3b7c72e999477d8c84da476"
-nmxp_processCompressedData (buffer, length, channelList_subset,
-CURRENT_NETWORK);
-
-         HYPERLINK
-"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
-nmxp__data_8h.html#1a461f85840339c840b377a7f55991a0" nmxp_data_trim (pd,
-params.start_time, params.end_time, 0);
-
-        /* Log contents of last packet */
-
-         HYPERLINK
-"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
-nmxp__data_8h.html#700d4b5ad54544d0546ffbc0d2aede35" nmxp_data_log (pd);
-
-        if(pd->buffer) {
-
-          free(pd->buffer);
-
-          pd->buffer = NULL;
-
-        }
-
-        /* Receive Data */
-
-        ret =  HYPERLINK
-"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
-nmxp__base_8h.html#c4f875c1f2e85f62e4c2521adc897479" nmxp_receiveMessage
-(naqssock, &type, &buffer, &length);
-
-      }
-
-    }
-
-    i_chan++;
-
-  }
-
-  /* DAP Step 7: Repeat steps 5 and 6 for each data request */
-
-} /* END while(exitdapcondition) */
-
-/* DAP Step 8: Send a Terminate message (optional) */
-
- HYPERLINK
-"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
-nmxp_8h.html#13d94c3a1d78e315c72d3739331551f9"
-nmxp_sendTerminateSubscription (naqssock,  HYPERLINK
-"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
-nmxp__data_8h.html#2982ac3a4037ee612e56720295987f6df8cb753861ebf3a83e491
-cd3d7cd5d69" NMXP_SHUTDOWN_NORMAL , "Bye!");
-
-/* DAP Step 9: Close the socket */
-
- HYPERLINK
-"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
-nmxp__base_8h.html#20009090764c1a6c6d3416275d0dcc89" nmxp_closeSocket
-(naqssock);
-
-/* ************************************************************ */
-
-/* End subscription protocol "DATA ACCESS PROTOCOL" version 1.0 */
-
-/* ************************************************************ */
-
-
-
-Sorgente 2. Struttura base in C che implementa PDS versione 1.4
-utilizzando le APIs di libnmxp.
-
-int n_func_pd = 0;
-
-int (*p_func_pd[ HYPERLINK
-"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
-nmxp_8h.html#d01d7b80bf5ea8cf7cf6cb6d42d4a19f" NMXP_MAX_FUNC_PD ]) (
-HYPERLINK
-"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
-struct_n_m_x_p___d_a_t_a___p_r_o_c_e_s_s.html" NMXP_DATA_PROCESS  *);
-
-if(params.stc == -1) {
-
-  if(params.flag_logdata) {
-
-    p_func_pd[n_func_pd++] = nmxptool_print_seq_no;
-
-  }
-
-  /* Write Mini-SEED record */
-
-  if(params.flag_writeseed) {
-
-    p_func_pd[n_func_pd++] = nmxptool_write_miniseed;
-
-  }
-
-  /* Send data to SeedLink Server */
-
-  if(params.flag_slink) {
-
-    p_func_pd[n_func_pd++] = nmxptool_send_raw_depoch;
-
-  }
-
-}
-
-/* ************************************************************* */
-
-/* Start subscription protocol "PRIVATE DATA STREAM" version 1.4 */
-
-/* ************************************************************* */
-
-/* PDS Step 1: Open a socket */
-
-naqssock =  HYPERLINK
-"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
-nmxp__base_8h.html#44f981ae9125ff482b93e74a9df45c0c" nmxp_openSocket
-(params.hostname, params.portnumberpds);
-
-if(naqssock ==  HYPERLINK
-"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
-nmxp__base_8h.html#4e3388111ddab1454d6bd987f1f17435" NMXP_SOCKET_ERROR )
-{
-
-  return 1;
-
-}
-
-/* PDS Step 2: Send a Connect */
-
-if( HYPERLINK
-"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
-nmxp_8h.html#8e89c3bd6d36475147d8d14212fdde3f" nmxp_sendConnect
-(naqssock) !=  HYPERLINK
-"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
-nmxp__base_8h.html#d0fb7eddd779d8a0e761bf877d866b56" NMXP_SOCKET_OK ) {
-
-  printf("Error on sendConnect()\n");
-
-  return 1;
-
-}
-
-/* PDS Step 3: Receive ChannelList */
-
-if( HYPERLINK
-"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
-nmxp_8h.html#404bcdf536d593b187010ae8626234eb" nmxp_receiveChannelList
-(naqssock, &channelList) !=  HYPERLINK
-"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
-nmxp__base_8h.html#d0fb7eddd779d8a0e761bf877d866b56" NMXP_SOCKET_OK ) {
-
-  printf("Error on receiveChannelList()\n");
-
-  return 1;
-
-}
-
-/* Get a subset of channel from arguments */
-
-channelList_subset =  HYPERLINK
-"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
-nmxp__chan_8h.html#cd8162e1d1e3a2d07c303567054d5d3d" nmxp_chan_subset
-(channelList,  HYPERLINK
-"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
-nmxp__chan_8h.html#336bfce71e4b108b0cd469e0e2ddfcf7675e6d98f34fb0ed6a79a
-34e49e3d2a2" NMXP_DATA_TIMESERIES , params.channels);
-
-/* PDS Step 4: Send a Request Pending (optional) */
-
-/* PDS Step 5: Send AddChannels */
-
-/* Request Data */
-
- HYPERLINK
-"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
-nmxp_8h.html#d56c1e95b99326395adc087ff6437ea0"
-nmxp_sendAddTimeSeriesChannel (naqssock, channelList_subset, params.stc,
-params.rate,
-
-    (params.flag_buffered)?  HYPERLINK
-"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
-nmxp_8h.html#a01c4a7e4cf68fb71d3c840db57388be8ac1f26351ac3fbe45666febe0c
-325d5" NMXP_BUFFER_YES  :  HYPERLINK
-"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
-nmxp_8h.html#a01c4a7e4cf68fb71d3c840db57388be6d79bfe520bb2e4f0278faead3b
-97cb5" NMXP_BUFFER_NO );
-
-/* PDS Step 6: Repeat until finished: receive and handle packets */
-
-while(exitpdscondition) {
-
-  /* Process Compressed or Decompressed Data */
-
-  pd =  HYPERLINK
-"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
-nmxp_8h.html#c364754b99340141d9dca8eb70352d98" nmxp_receiveData
-(naqssock, channelList_subset, CURRENT_NETWORK);
-
-  /* Log contents of last packet */
-
-   HYPERLINK
-"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
-nmxp__data_8h.html#700d4b5ad54544d0546ffbc0d2aede35" nmxp_data_log (pd);
-
-  /* Manage Raw Stream */
-
-  if(params.stc == -1) {
-
-      HYPERLINK "dddd"  nmxp_raw_stream_manage (&(raw_stream_buffer),
-pd, p_func_pd, n_func_pd);
-
-  }
-
-  if(pd->buffer) {
-
-    free(pd->buffer);
-
-    pd->buffer = NULL;
-
-  }
-
-  exitpdscondition = 1;
-
-}
-
-/* PDS Step 7: Send Terminate Subscription */
-
- HYPERLINK
-"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
-nmxp_8h.html#13d94c3a1d78e315c72d3739331551f9"
-nmxp_sendTerminateSubscription (naqssock,  HYPERLINK
-"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
-nmxp__data_8h.html#2982ac3a4037ee612e56720295987f6df8cb753861ebf3a83e491
-cd3d7cd5d69" NMXP_SHUTDOWN_NORMAL , "Good Bye!");
-
-/* PDS Step 8: Close the socket */
-
- HYPERLINK
-"file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
-nmxp__base_8h.html#20009090764c1a6c6d3416275d0dcc89" nmxp_closeSocket
-(naqssock);
-
-/* *********************************************************** */
-
-/* End subscription protocol "PRIVATE DATA STREAM" version 1.4 */
-
-/* *********************************************************** */
-
-
-
-Conclusioni
+Conclusioni
 
 Lo sviluppo ed i test eseguiti in questi ultimi due mesi hanno permesso
 di realizzare una libreria nel suo complesso stabile ed efficiente.
@@ -1945,5 +1945,5 @@ libmseed
 
  PAGE   
 
- PAGE   20 
+ PAGE   21 
 
