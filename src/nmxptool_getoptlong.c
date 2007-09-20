@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.20 2007-09-20 16:32:44 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.21 2007-09-20 16:40:11 mtheo Exp $
  *
  */
 
@@ -456,6 +456,9 @@ int nmxptool_check_params(NMXPTOOL_PARAMS *params) {
 	nmxp_log(NMXP_LOG_WARN, 0, "<maxlatency> ignored since not defined --stc=-1.\n");
     }
 
+    if( params->stc == -1 ) {
+	nmxp_log(NMXP_LOG_WARN, 0, "<maxlatency> is equal to %d sec.\n", params->max_tollerable_latency);
+    }
 
     return ret;
 }
