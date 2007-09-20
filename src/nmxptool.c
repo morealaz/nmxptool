@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.60 2007-09-17 12:57:11 mtheo Exp $
+ * $Id: nmxptool.c,v 1.61 2007-09-20 09:48:15 mtheo Exp $
  *
  */
 
@@ -729,13 +729,17 @@ int nmxptool_send_raw_depoch(NMXP_DATA_PROCESS *pd) {
 
 
 int nmxptool_check_and_log_gap(double time1, double time2, const double gap_tollerance, const char *station, const char *channel) {
+    char str_time1[200];
+    char str_time2[200];
     int ret = 0;
     double gap = time1 - time2 ;
+    nmxp_data_to_str(str_time1, time1);
+    nmxp_data_to_str(str_time2, time2);
     if(gap > gap_tollerance) {
-	nmxp_log(1, 0, "Gap %.2f sec. for %s.%s from %.2f to %.2f!\n", gap, station, channel, time1, time2);
+	nmxp_log(1, 0, "Gap %.2f sec. for %s.%s from %s to %s!\n", gap, station, channel, str_time1, str_time2);
 	ret = 1;
     } else if (gap < -gap_tollerance) {
-	nmxp_log(1, 0, "Overlap %.2f sec. for %s.%s from %.2f to %.2f!\n", gap, station, channel, time2, time1);
+	nmxp_log(1, 0, "Overlap %.2f sec. for %s.%s from %s to %s!\n", gap, station, channel, str_time2, str_time1);
 	ret = 1;
     }
     return ret;
