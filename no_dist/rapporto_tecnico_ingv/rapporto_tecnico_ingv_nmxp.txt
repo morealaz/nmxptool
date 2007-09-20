@@ -1561,6 +1561,26 @@ otttenuti in tempo reale dipenda fortemente dal numero di pacchetti
 ritrasmessi. La latenza massima tollerabile i indotta dalla grandezza
 del buffer la quale i stata impostata per il test a 100 pacchetti.
 
+Al momento nmxptool viene utilizzato come plug-in seedlink anche nei
+seguenti istituti di ricerca i quali sono stati inoltre di enorme aiuto
+in fase di test e debugging del software:
+
+National Data Center, Israele. (Guy Tikochinsky)
+
+Institute of Geodynamics, National Observatory of Athens, Grecia. (Nicos
+Melis)
+
+Inoltre, la procedura sviluppata per garantire la completezza del dato,
+basata su nmxptool e qmerge, consente di  avere un controllo di qualita
+maggiore sui dati archiviati
+
+Tool a supporto di procedure che necessita di dati a richiesta (ad
+esempio dopo un evento sismico)
+
+TODO. Buchi determinati da erronei valori temporali contenuti nei
+pacchetti. Priorita del numero di sequenza e del controllo su x0
+rispetto al tempo del pacchetto.
+
 
 
 Canale	Pacchetti Ritrasmessi	Latenza Massima (sec.)	Gaps
@@ -2575,29 +2595,7 @@ archiviati il 19 settembre 2007 tramite nmxptool e seedllink.
 
 
 
-
-
-Al momento nmxptool viene utilizzato come plug-in seedlink anche nei
-seguenti istituti di ricerca i quali sono stati inoltre di enorme aiuto
-in fase di test e debugging del software:
-
-National Data Center, Israele. (Guy Tikochinsky)
-
-Institute of Geodynamics, National Observatory of Athens, Grecia. (Nicos
-Melis)
-
-Inoltre, la procedura sviluppata per garantire la completezza del dato,
-basata su nmxptool e qmerge, consente di  avere un controllo di qualita
-maggiore sui dati archiviati
-
-Tool a supporto di procedure che necessita di dati a richiesta (ad
-esempio dopo un evento sismico)
-
-TODO. Buchi determinati da erronei valori temporali contenuti nei
-pacchetti. Priorita del numero di sequenza e del controllo su x0
-rispetto al tempo del pacchetto.
-
-Ringraziamenti
+Ringraziamenti
 
 Un particolare ringraziamento va a Salvatore Mazza per la fiducia che
 sempre mi riserva. Sono inoltre riconoscente a Marco Olivieri per il suo
@@ -2631,5 +2629,5 @@ GNU General Public License
 
  PAGE   
 
- PAGE   22 
+ PAGE   19 
 
