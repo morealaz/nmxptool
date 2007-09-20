@@ -19,7 +19,7 @@ Introduzione	  PAGEREF _Toc51836479 \h  5
 
 1.2 Data Access Protocol	  PAGEREF _Toc51836482 \h  7 
 
-2. La libreria libnmxp	  PAGEREF _Toc51836483 \h  7 
+2. La libreria libnmxp	  PAGEREF _Toc51836483 \h  8 
 
 2.1 Installazione	  PAGEREF _Toc51836484 \h  8 
 
@@ -30,11 +30,11 @@ _Toc51836486 \h  12
 
 3. Il programma nmxptool	  PAGEREF _Toc51836487 \h  15 
 
-4. Conclusioni	  PAGEREF _Toc51836488 \h  18 
+4. Conclusioni	  PAGEREF _Toc51836488 \h  19 
 
-5. Ringraziamenti	  PAGEREF _Toc51836489 \h  20 
+5. Ringraziamenti	  PAGEREF _Toc51836489 \h  22 
 
-6. Bibliografia e citazioni	  PAGEREF _Toc51836490 \h  20 
+6. Bibliografia e citazioni	  PAGEREF _Toc51836490 \h  22 
 
  
 
@@ -79,17 +79,17 @@ ulteriori informazioni possono essere trovate su http://www.gnu.org/.
 Prendendo ad esempio una configurazione tipica del flusso trasmissivo
 dei dati da una stazione sismica, passando per i servers Nanometrics,
 fino a raggiungere i processi di acquisizione e localizzazione situati
-nella Sala di Monitoraggio dell'INGV, possiamo suddividere tale flusso
-in due parti come mostrato in fig. 1:
+nella Sala di Monitoraggio dell'INGV, come mostrato in figura 1 possiamo
+suddividere tale flusso in due parti:
 
 Stazione Sismica - Nanometrics Servers: i dati ricevuti dalla porta
 seriale di uno strumento vengono  convertiti nel formato NMXP e poi
 spediti in pacchetti UDP ai servers di acquisizione.
 
-Nanometrics Servers - Nanometrics Clients: applicazioni software si
-connettono ai servers Nanometrics per recuperare dati in tempo reale o
-in differita, ricevere informazioni sullo ``stato di salute''
-(state-of-health) degli strumenti, triggers o eventi sismici.
+Nanometrics Servers - Clients: applicazioni software si connettono ai
+servers Nanometrics per recuperare dati in tempo reale o in differita,
+ricevere informazioni sullo ``stato di salute'' (state-of-health) degli
+strumenti, triggers o eventi sismici.
 
 
 
@@ -100,8 +100,8 @@ nella Sala di Monitoraggio dell'INGV.
 
 
 Cit di cui terremo conto in questo documento fara riferimento
-principalmente al lato trasmissivo Nanometrics Servers - Nanometrics
-Clients ed in particolare alle specifiche dei protocolli:
+principalmente al lato trasmissivo Nanometrics Servers - Clients ed in
+particolare alle specifiche dei protocolli:
 
 Private Data Stream versione 1.4, il quale definisce il protocollo di
 comunicazione di un client con un NaqsServer.
@@ -127,7 +127,7 @@ time-series, serial data, triggers, e state-of-health.  Il sottosistema
 del NaqsServer chiamato Stream Manager si comporta come un DataServer:
 accetta connessioni e richieste di dati da programmi client e redirige i
 dati richiesti ad ogni programma client in tempo quasi reale. I dati
-possono essere richiesti in due modi:
+compressi possono essere richiesti in due modi:
 
 Raw stream: tutti i pacchetti (sia quelli originali quelli ritrasmessi)
 sono rediretti nello stesso ordine nel quale sono ricevuti. I pacchetti
@@ -222,9 +222,10 @@ Figura 2. Organizzazione dei sorgenti della libreria libnmxp.
 
 
 
-Le APIs che compongono la libreria offrono principalmente funzionalita a
-livello applicativo per lo sviluppo di software che implementi i
-protocolli Private Data Stream 1.4 e Data Access Protocol 1.0.
+Le APIs (Application Program Interface) che compongono la libreria
+offrono principalmente funzionalita a livello applicativo per lo
+sviluppo di software che implementi i protocolli Private Data Stream 1.4
+e Data Access Protocol 1.0.
 
 Esse sono state concepite nell'ottica della realizzazione di programmi
 in grado di:
@@ -283,8 +284,8 @@ nmxptool sono
  
 
 I sorgenti, la documentazione e gli scripts di installazione della
-libreria ed il tool vengono rilasciati in distribuzioni compresse, con
-nome del tipo libnmxp-0.18.0.tar.gz. I requisiti per l'installazione
+libreria e del programma vengono rilasciati in distribuzioni compresse,
+con nome del tipo libnmxp-0.18.0.tar.gz. I requisiti per l'installazione
 sono:
 
 Piattaforma POSIX
@@ -355,12 +356,10 @@ kyuzo:~/libnmxp-0.18.0/tools/nmxptool root# make install
 
 kyuzo:~/libnmxp-0.18.0/tools/nmxptool root# exit
 
-
-
 Per poter configurare nmxptool come plug-in all'interno di SeisComP sara
 sufficiente copiare la directory 135_nmxptool all'interno dei templates
 di SeisComP. Supponendo la SeisComP Root uguale a /home/sysop/seiscomp,
-ecco un essempio del comando da lanciare:
+ecco un esempio del comando da lanciare:
 
 kyuzo:~/libnmxp-0.18.0/tools/nmxptool mtheo$ cp -r \
 
@@ -369,7 +368,7 @@ seiscomp_templates/135_nmxptool \
 /home/sysop/seiscomp/acquisition/templates/source/
 
 Successivamente sara possibile configurare il plug-in per mezzo della
-configurazione standard di SeisComP, ovvero per mezzo del comando:
+configurazione standard di SeisComP, ovvero lanciando il comando:
 
 kyuzo:~ mtheo$ seiscomp config
 
@@ -383,7 +382,7 @@ descrizioni delle sole funzioni, quelle di pisch alto livello, contenute
 in nmxp.h. Fare riferimento alla documentazione stessa per maggiori
 dettagli.
 
-Documentazione delle APIs di pisch alto livello contenute in nmxp.h
+Documentazione delle APIs di pisch alto livello contenute in nmxp.h
 
 int nmxp_sendConnect (int isock)
 
@@ -670,26 +669,24 @@ n_func_pd number of functions into the array p_func_pd
 
 
 
-
-
-Degne di nota sono le funzioni che si occupano della gestione del
-buffering dei pacchetti nelle connessioni di tipo Raw Stream, cioi dei
-pacchetti compressi e con valore di Short-term-complete uguale a -1. La
-funzione nmxp_raw_stream_manage() si occupa di ordinare i pacchetti
-ricevuti, fino ad un massimo impostato tramite nmxp_raw_stream_init() al
-momento dell'inizializzazione del buffer, ed eseguire con minima latenza
-possibile le n_func_pd funzioni sulle strutture di tipo
-NMXP_DATA_PROCESS. 
+Degne di particolare attenzione sono le funzioni che si occupano della
+gestione del buffering dei pacchetti nelle connessioni di tipo Raw
+Stream, cioi dei pacchetti compressi e con valore di Short-term-complete
+uguale a -1. La funzione nmxp_raw_stream_manage() si occupa di ordinare
+i pacchetti ricevuti, fino ad un massimo impostato tramite
+nmxp_raw_stream_init() al momento dell'inizializzazione del buffer, ed
+eseguire con minima latenza possibile le n_func_pd funzioni sulle
+strutture di tipo NMXP_DATA_PROCESS. 
 
 Uso delle APIs per sviluppare una nuova applicazione
 
 Per sviluppare una propria applicazione in C che faccia uso della
-libreria libnmxp vengono di seguito illustrati i sorgenti da utilizzare
-come base per l'implementazione dei protocolli Data Access Protocol 1.0
-e Private Data Stream 1.4. Su tali strutture i basato anche nmxptool
-descritto successivamente.
+libreria libnmxp vengono di seguito illustrati i sorgenti 1 e 2 che
+possono essere utilizzati come base per l'implementazione dei protocolli
+Data Access Protocol 1.0 e Private Data Stream 1.4. Su tali strutture i
+basato anche nmxptool descritto successivamente.
 
-Sorgente 1. Struttura base in C che implementa DAP versione 1.0
+Sorgente 1. Struttura base in C che implementa D.A.P. versione 1.0
 utilizzando le APIs di libnmxp.
 
 /* ************************************************************** */
@@ -886,7 +883,7 @@ nmxp__base_8h.html#20009090764c1a6c6d3416275d0dcc89" nmxp_closeSocket
 
 
 
-Sorgente 2. Struttura base in C che implementa PDS versione 1.4
+Sorgente 2. Struttura base in C che implementa P.D.S. versione 1.4
 utilizzando le APIs di libnmxp.
 
 int n_func_pd = 0;
@@ -932,12 +929,10 @@ if(params.stc == -1) {
 
 /* PDS Step 1: Open a socket */
 
-naqssock =  HYPERLINK
+if((naqssock =  HYPERLINK
 "file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
 nmxp__base_8h.html#44f981ae9125ff482b93e74a9df45c0c" nmxp_openSocket
-(params.hostname, params.portnumberpds);
-
-if(naqssock ==  HYPERLINK
+(params.hostname, params.portnumberpds)) ==  HYPERLINK
 "file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
 nmxp__base_8h.html#4e3388111ddab1454d6bd987f1f17435" NMXP_SOCKET_ERROR )
 {
@@ -955,9 +950,7 @@ nmxp_8h.html#8e89c3bd6d36475147d8d14212fdde3f" nmxp_sendConnect
 "file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
 nmxp__base_8h.html#d0fb7eddd779d8a0e761bf877d866b56" NMXP_SOCKET_OK ) {
 
-  printf("Error on sendConnect()\n");
-
-  return 1;
+  printf("Error on sendConnect()\n");  return 1;
 
 }
 
@@ -970,9 +963,7 @@ nmxp_8h.html#404bcdf536d593b187010ae8626234eb" nmxp_receiveChannelList
 "file:///Users/mtheo/Desktop/cvswork/mednet/mtheo/soft/libnmxp/doc/html/
 nmxp__base_8h.html#d0fb7eddd779d8a0e761bf877d866b56" NMXP_SOCKET_OK ) {
 
-  printf("Error on receiveChannelList()\n");
-
-  return 1;
+  printf("Error on receiveChannelList()\n");  return 1;
 
 }
 
@@ -1034,13 +1025,9 @@ pd, p_func_pd, n_func_pd);
 
   if(pd->buffer) {
 
-    free(pd->buffer);
-
-    pd->buffer = NULL;
+    free(pd->buffer);  pd->buffer = NULL;
 
   }
-
-  exitpdscondition = 1;
 
 }
 
@@ -1071,8 +1058,9 @@ nmxp__base_8h.html#20009090764c1a6c6d3416275d0dcc89" nmxp_closeSocket
 
 Il programma nmxptool
 
-Per cominciare a capire cosa fa e come funziona nmxptool lanciamo il
-comando che restituisce a video l'elenco delle opzioni del comando:
+Al fine di capire cosa nxmptool permette di fare, lanciamo inizialmente
+il comando che stampa a video terminale l'help delle opzioni del
+comando:
 
 kyuzo:~ mtheo$ nmxptool -h
 
@@ -1512,21 +1500,22 @@ del comando ``seiscomp config''. E' comunque in corso la richiesta per
 inserire nmxptool fra i plug-ins delle distribuzioni ufficiali di
 SeisComP.
 
-La fig. 3 illustra come nmxptool viene utilizzato all'interno dell'INGV
-per archiviare i dati sismici delle stazioni che trasmettono tramite i
-protocolli Nanometrics. Le forme d'onda vengono ricevute in tempo reale
-in modalita Raw Stream al fine di minimizzare la latenza e il numero di
-``buchi'' (gaps). nmxptool viene configurato e lanciato all'interno del
+La figura 3 illustra come nmxptool viene utilizzato all'interno
+dell'INGV per archiviare i dati sismici delle stazioni che trasmettono
+tramite i protocolli Nanometrics. Le forme d'onda vengono ricevute in
+tempo reale in modalita Raw Stream al fine di minimizzare la latenza e
+il numero di gaps. nmxptool viene configurato e lanciato all'interno del
 sistema SeisComp come plug-in per SeedLink. La latenza indotta dal
-programma, non quella causata dal mezzo trasmissivo ad esempio, si
-verifica solo nel caso in cui si rimanga in attesa di uno o pisch
+programma, non quella causata dal mezzo trasmissivo ad esempio, i
+determinata solo nel caso in cui si rimanga in attesa di uno o pisch
 pacchetti mancanti. Tale attesa termina nel momento in cui il buffer
-risulti completamente pieno comportando quindi una perdita di dati.
+risulti completamente pieno comportando quindi una perdita di dati
+(gap).
 
 Al fine di garantire completezza dei dati archiviati i stata sviluppata
 una procedura dal nome ``Nanometrics Data Completness'' che basandosi
 sulla versatilita di nmxptool recupera i dati mancanti con differita
-impostata a qualche ora o giorno successivo. In questo caso i ``buchi''
+impostata a qualche ora o giorno successivo. In questo caso i gaps
 risultanti non potranno pisch essere colmati poichy i dati richiesti non
 risultano definitivamente pisch essere presenti sul lato dei servers
 Nanometrics.
@@ -1535,6 +1524,10 @@ Nanometrics.
 
 Figura 3. Archiviazione dati sismici in tempo reale e completamento in
 differita. Le due attivita si basano con modalita diverse su nmxptool.
+Nel primo caso, nmxptool viene utilizzato come plug-in seedLink in
+modalita Raw Stream, nel secondo i dati mancanti vengono richiesti da
+nmxptool al DataServer e per mezzo dell'applicazione qmerge ricongiunti
+alla struttura di archiviazione SDS di SeisComP.
 
 
 
@@ -1545,22 +1538,34 @@ di realizzare una libreria nel suo complesso stabile ed efficiente.
 Considerando congiuntamente libnmxp e nmxptool, anche il numero di
 funzionalita implementate risulta essere molto soddisfacente, la pisch
 importante fra tutte: la gestione delle connessioni di tipo Raw Stream
-la quale riesce a garantire una bassa latenza e al contempo un numero
-minino di ``buchi'' (gaps). Grazie a questa caratteristica nmxptool
-apporta un fondamentale contributo alla comunita degli utilizzatori del
-sistema SeisComp, infatti il plug-in precedentemente sviluppato per
-l'acquisizione da servers Nanometrics, naqs_plugin, non essendo in grado
-di gestire ne' connessioni Short-term-complete ne' i pacchetti di tipo
-compresso non era in grado di garantire continuita del dato al
+la quale riesce a garantire una bassa latenza e nel contempo un numero
+minino di gaps. Grazie a questa caratteristica nmxptool apporta
+finalmente un fondamentale contributo alla comunita degli utilizzatori
+del sistema SeisComp, infatti naqs_plugin, il plug-in precedentemente
+sviluppato per l'acquisizione da servers Nanometrics, non essendo in
+grado di gestire ne' connessioni Short-term-complete ne' i pacchetti
+compressi, non poteva garantire minimamente la continuita del dato al
 verificarsi di una ritrasmissione dal lato Nanometrics Server - Stazione
-Sismica. La tab. 2 mostra un report sintetico dei dati archiviati per i
-canali sismici in test al 18 settembre 2007.
+Sismica (fig. 1).
+
+Le tabelle 2 e 3 mostrano i reports sintetici dei dati archiviati per i
+canali sismici in test il 18 e il 19 settembre 2007. Giornalmente, per
+ogni canale viene visualizzato il totale di pacchetti ritrasmessi, la
+massima latenza registrata, il numero di gaps temporali ottenuti tramite
+l'acquisizione in tempo reale, il numero di gaps definitivi ottenuti
+recuperando i dati il giorno dopo e la differenza fra questi due valori
+dei gaps. Quest'ultimo valore, rapportato alla latenza massima
+risultante, put essere espressione della bonta della gestione del buffer
+e della sua dimensione. Possiamo notare inoltre come il numero di gaps
+otttenuti in tempo reale dipenda fortemente dal numero di pacchetti
+ritrasmessi. La latenza massima tollerabile i indotta dalla grandezza
+del buffer la quale i stata impostata per il test a 100 pacchetti.
 
 
 
 Canale	Pacchetti Ritrasmessi	Latenza Massima (sec.)	Gaps
 
-Real-Time	Gaps
+Tempo reale	Gaps
 
 definitivi	Differenza Gaps
 
@@ -1728,89 +1733,89 @@ NOCI.HHZ	2
 
 2117
 
-2096	14.50
+2096	14.5
 
-17.50
+17.5
 
-19.40
+19.4
 
-20.60
+20.6
 
-36.70
+36.7
 
-46.30
+46.3
 
-46.60
+46.6
 
-47.10
+47.1
 
-47.80
+47.8
 
-48.40
+48.4
 
-48.90
+48.9
 
-57.00
+57.0
 
-58.70
+58.7
 
-58.80
+58.8
 
-59.80
+59.8
 
-59.80
+59.8
 
-68.00
+68.0
 
-78.00
+78.0
 
-78.30
+78.3
 
-78.70
+78.7
 
-46.60
+46.6
 
-47.30
+47.3
 
-177.20
+177.2
 
-199.80
+199.8
 
-220.10
+220.1
 
-225.30
+225.3
 
-227.10
+227.1
 
-228.30
+228.3
 
-232.20
+232.2
 
-116.30
+116.3
 
-129.00
+129.0
 
-219.30
+219.3
 
-232.50
+232.5
 
-173.30
+173.3
 
-232.10
+232.1
 
-201.40
+201.4
 
-253.40
+253.4
 
-237.50
+237.5
 
-224.90
+224.9
 
-410.10
+410.1
 
-387.90
+387.9
 
-378.70	0
+378.7	0
 
 0
 
@@ -2058,17 +2063,8 @@ NOCI.HHZ	2
 
 235
 
-Tabella 2. Report sintetico dei dati archiviati, per i canali in test il
-18 settembre 2007, tramite nmxptool e seedllink. Per ogni canale sono
-riportati il numero totale di pacchetti ritrasmessi, la massima latenza
-registrata il numero di gaps temporali ottenuti tramite acquisizione in
-tempo reale e il numero di gaps definitivi ottenuti recuperando i dati
-il giorno dopo. Possiamo notare come il numero di gaps dipenda
-fortemente dall'attesa dei pacchetti ritrasmessi. La latenza massima
-tollerabile i indotta dalla grandezza del buffer la quale i stata
-impostata a 100 pacchetti. Nel momento in cui il buffer i completamente
-saturo e ancora non si sono ricevuti i pacchetti che precedono il primo
-si genera un gap della durata dei pacchetti mancanti.
+Tabella 2. Report sintetico relativo ai canali in test dei dati
+archiviati il 18 settembre 2007 tramite nmxptool e seedllink.
 
 
 
@@ -2076,7 +2072,7 @@ si genera un gap della durata dei pacchetti mancanti.
 
 Canale	Pacchetti Ritrasmessi	Latenza Massima (sec.)	Gaps
 
-Real-Time	Gaps
+Tempo reale	Gaps
 
 definitivi	Differenza Gaps
 
@@ -2244,89 +2240,89 @@ MSAG.HHE	7
 
 284
 
-313	27.20
+313	27.2
 
-27.30
+27.3
 
-27.50
+27.5
 
-37.50
+37.5
 
-38.00
+38.0
 
-39.50
+39.5
 
-39.60
+39.6
 
-40.80
+40.8
 
-46.10
+46.1
 
-46.40
+46.4
 
-46.50
+46.5
 
-46.80
+46.8
 
-46.90
+46.9
 
-47.00
+47.0
 
-47.00
+47.0
 
-47.50
+47.5
 
-47.50
+47.5
 
-47.50
+47.5
 
-48.90
+48.9
 
-49.30
+49.3
 
-57.60
+57.6
 
-57.70
+57.7
 
-58.20
+58.2
 
-58.90
+58.9
 
-59.00
+59.0
 
-61.90
+61.9
 
-62.60
+62.6
 
-67.80
+67.8
 
-68.90
+68.9
 
-69.00
+69.0
 
-192.80
+192.8
 
-212.50
+212.5
 
-252.30
+252.3
 
-262.20
+262.2
 
-121.00
+121.0
 
-262.80
+262.8
 
-233.20
+233.2
 
-1093.30
+1093.3
 
-1042.80
+1042.8
 
-496.40
+496.4
 
-475.40
+475.4
 
-463.90	0
+463.9	0
 
 0
 
@@ -2574,8 +2570,8 @@ MSAG.HHE	7
 
 37
 
-Tabella 3. Report sintetico dei dati archiviati, per i canali in test il
-19 settembre 2007, tramite nmxptool e seedllink.
+Tabella 3. Report sintetico relativo ai canali in test dei dati
+archiviati il 19 settembre 2007 tramite nmxptool e seedllink.
 
 
 
@@ -2608,20 +2604,30 @@ sempre mi riserva. Sono inoltre riconoscente a Marco Olivieri per il suo
 supporto nel controllo di qualita dei dati prodotti dalle mie
 applicazioni.
 
-Bibliografia e citazioni
+Bibliografia e riferimenti web
 
 Nanometrics, Inc., (1989-2002), Libra Satellite Seismograph System -
 Training Course Notes.
 
-Doxygen
+SeisComP, The Seismological Communication Processor
 
-GNU license
+http://www.gfz-potsdam.de/geofon/seiscomp/
 
-SeisComp, naqs_plugin
+Qlib2, qmerge, Quanterra User Group
 
-Qlib2, qmerge
+http://www.ncedc.org/qug/software/ucb/
 
-libmseed 
+libmseed, 2.1.4, The Mini-SEED library
+
+http://www.iris.edu/manuals/
+
+Doxygen, Source code documentation generator tool
+
+			http://www.stack.nl/~dimitri/doxygen/
+
+GNU General Public License
+
+			http://www.gnu.org/copyleft/gpl.html
 
  PAGE   
 
