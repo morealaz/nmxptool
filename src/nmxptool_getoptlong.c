@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.18 2007-09-16 21:44:56 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.19 2007-09-20 09:40:56 mtheo Exp $
  *
  */
 
@@ -437,7 +437,7 @@ int nmxptool_check_params(NMXPTOOL_PARAMS *params) {
     } else if(params->rate != -1 && params->start_time != 0   &&   params->end_time != 0) {
 	ret = -1;
 	nmxp_log(NMXP_LOG_NORM_NO, 0, "<rate> can not be used with options <start_time> and <end_time>.\n");
-    } else if(params->flag_buffered != -1 && params->start_time != 0   &&   params->end_time != 0) {
+    } else if(params->flag_buffered != 0 && params->start_time != 0   &&   params->end_time != 0) {
 	ret = -1;
 	nmxp_log(NMXP_LOG_NORM_NO, 0, "<buffered> can not be used with options <start_time> and <end_time>.\n");
     } else if(params->delay < 0) {
