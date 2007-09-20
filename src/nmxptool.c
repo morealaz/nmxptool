@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.62 2007-09-20 10:05:54 mtheo Exp $
+ * $Id: nmxptool.c,v 1.63 2007-09-20 13:47:22 mtheo Exp $
  *
  */
 
@@ -50,7 +50,7 @@ int nmxptool_send_raw_depoch(NMXP_DATA_PROCESS *pd);
 int nmxptool_print_seq_no(NMXP_DATA_PROCESS *pd);
 
 int nmxptool_check_and_log_gap(double time1, double time2, const double gap_tollerance, const char *station, const char *channel);
-int nmxptool_str_time_to_filename(char *str_time);
+void nmxptool_str_time_to_filename(char *str_time);
 
 
 /* Global variable for main program and handling terminitation program */
@@ -752,7 +752,7 @@ int nmxptool_check_and_log_gap(double time1, double time2, const double gap_toll
     return ret;
 }
 
-int nmxptool_str_time_to_filename(char *str_time) {
+void nmxptool_str_time_to_filename(char *str_time) {
     int i;
     for(i=0; i<strlen(str_time); i++) {
 	if(   (str_time[i] >= 'A'  &&  str_time[i] <= 'Z')
