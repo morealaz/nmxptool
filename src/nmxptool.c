@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.61 2007-09-20 09:48:15 mtheo Exp $
+ * $Id: nmxptool.c,v 1.62 2007-09-20 10:05:54 mtheo Exp $
  *
  */
 
@@ -50,6 +50,7 @@ int nmxptool_send_raw_depoch(NMXP_DATA_PROCESS *pd);
 int nmxptool_print_seq_no(NMXP_DATA_PROCESS *pd);
 
 int nmxptool_check_and_log_gap(double time1, double time2, const double gap_tollerance, const char *station, const char *channel);
+int nmxptool_str_time_to_filename(char *str_time);
 
 
 /* Global variable for main program and handling terminitation program */
@@ -77,6 +78,8 @@ int main (int argc, char **argv) {
     int span_interval = 10;
     int time_to_sleep = 0;
 
+    char str_start_time[200];
+    char str_end_time[200];
 
     NMXP_MSG_SERVER type;
     void *buffer;
@@ -261,13 +264,18 @@ int main (int argc, char **argv) {
 
 	    if(request_SOCKET_OK == NMXP_SOCKET_OK) {
 
+		nmxp_data_to_str(str_start_time, params.start_time);
+		nmxp_data_to_str(str_end_time, params.end_time);
+		nmxptool_str_time_to_filename(str_start_time);
+		nmxptool_str_time_to_filename(str_end_time);
+
 		if(params.flag_writefile) {
 		    /* Open output file */
-		    sprintf(filename, "%s.%s.%d.%d.%d.nmx",
+		    sprintf(filename, "%s.%s_%s_%s.nmx",
 			    CURRENT_NETWORK,
 			    channelList_subset->channel[i_chan].name,
-			    channelList_subset->channel[i_chan].key,
-			    params.start_time, params.end_time);
+			    str_start_time,
+			    str_end_time);
 
 		    outfile = fopen(filename, "w");
 		    if(!outfile) {
@@ -278,12 +286,11 @@ int main (int argc, char **argv) {
 #ifdef HAVE_LIBMSEED
 		if(params.flag_writeseed) {
 		    /* Open output Mini-SEED file */
-		    sprintf(data_seed.filename_mseed, "%s.%s.%d.%d.%d.miniseed",
+		    sprintf(data_seed.filename_mseed, "%s.%s_%s_%s.miniseed",
 			    CURRENT_NETWORK,
 			    channelList_subset->channel[i_chan].name,
-			    channelList_subset->channel[i_chan].key,
-			    params.start_time,
-			    params.end_time);
+			    str_start_time,
+			    str_end_time);
 
 		    data_seed.outfile_mseed = fopen(data_seed.filename_mseed, "w");
 		    if(!data_seed.outfile_mseed) {
@@ -743,4 +750,19 @@ int nmxptool_check_and_log_gap(double time1, double time2, const double gap_toll
 	ret = 1;
     }
     return ret;
+}
+
+int nmxptool_str_time_to_filename(char *str_time) {
+    int i;
+    for(i=0; i<strlen(str_time); i++) {
+	if(   (str_time[i] >= 'A'  &&  str_time[i] <= 'Z')
+		|| (str_time[i] >= 'a'  &&  str_time[i] <= 'z')
+		|| (str_time[i] >= '0'  &&  str_time[i] <= '9')
+		|| (str_time[i] == '_')
+	  ) {
+	    /* Do nothing */
+	} else {
+	    str_time[i] = '.';
+	}
+    }
 }
