@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp.h,v 1.35 2007-09-12 14:11:02 mtheo Exp $
+ * $Id: nmxp.h,v 1.36 2007-09-20 16:32:44 mtheo Exp $
  *
  */
 
@@ -135,6 +135,7 @@ typedef struct {
     int32_t last_seq_no_sent;
     double last_sample_time;
     int32_t max_pdlist_items;
+    double max_tollerable_latency;
     int32_t n_pdlist;
     NMXP_DATA_PROCESS **pdlist; /* Array for pd queue */
 } NMXP_RAW_STREAM_DATA;
@@ -301,7 +302,7 @@ int nmxp_raw_stream_seq_no_compare(const void *a, const void *b);
  * \param max_pdlist_items value of max number of items in array
  *
  */
-void nmxp_raw_stream_init(NMXP_RAW_STREAM_DATA *raw_stream_buffer, int32_t max_pdlist_items);
+void nmxp_raw_stream_init(NMXP_RAW_STREAM_DATA *raw_stream_buffer, int32_t max_tollerable_latency);
 
 
 /*! \brief Free fields inside a NMXP_RAW_STREAM_DATA structure

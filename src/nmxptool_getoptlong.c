@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.19 2007-09-20 09:40:56 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.20 2007-09-20 16:32:44 mtheo Exp $
  *
  */
 
@@ -37,7 +37,7 @@ const NMXPTOOL_PARAMS NMXPTOOL_PARAMS_DEFAULT =
     DEFAULT_RATE,
     NULL,
     DEFAULT_DELAY,
-    DEFAULT_MAX_PDLIST_ITEMS,
+    DEFAULT_MAX_TOLLERABLE_LATENCY,
     0,
     0,
     0,
@@ -150,12 +150,14 @@ PDS arguments:\n\
                            0 is for original sample rate and decompressed data.\n\
                           >0 is for specified sample rate and decompressed data.\n\
   -b, --buffered          Request also recent packets into the past.\n\
-  -n, --npackets=NUM      Number of packets contained into the buffer (default %d).\n\
-                          Usable only with --stc=-1\n\
+  -M, --maxlatency=SECs   Max tollerable latency (default %d) [%d..%d].\n\
+                          Last option is usable only with --stc=-1\n\
 \n\
 ",
 	    DEFAULT_STC,
-	    DEFAULT_MAX_PDLIST_ITEMS
+	    DEFAULT_MAX_TOLLERABLE_LATENCY,
+	    DEFAULT_MAX_TOLLERABLE_LATENCY_MINIMUM,
+	    DEFAULT_MAX_TOLLERABLE_LATENCY_MAXIMUM
 	  );
 
     nmxptool_author_support();
@@ -195,7 +197,7 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 	{"delay",        required_argument, 0, 'd'},
 	{"username",     required_argument, 0, 'u'},
 	{"password",     required_argument, 0, 'p'},
-	{"npackets",     required_argument, 0, 'n'},
+	{"maxlatency",   required_argument, 0, 'M'},
 	/* Following are flags */
 	{"verbose",      no_argument,       0, 'v'},
 	{"logdata",      no_argument,       0, 'g'},
@@ -235,7 +237,7 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
     /* init params */
     memcpy(params, &NMXPTOOL_PARAMS_DEFAULT, sizeof(NMXPTOOL_PARAMS_DEFAULT));
 
-    char optstr[100] = "H:P:D:C:N:L:S:R:s:e:d:u:p:n:vgbliwhV";
+    char optstr[100] = "H:P:D:C:N:L:S:R:s:e:d:u:p:M:vgbliwhV";
 
 #ifdef HAVE_LIBMSEED
     strcat(optstr, "m");
@@ -327,9 +329,9 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 		    params->datas_password = optarg;
 		    break;
 
-		case 'n':
-		    params->max_pdlist_items = atoi(optarg);
-		    nmxp_log(0, 0, "Max_number_of_packets %d.\n", params->max_pdlist_items);
+		case 'M':
+		    params->max_tollerable_latency = atoi(optarg);
+		    nmxp_log(0, 0, "Max_tollerable_latency %d\n", params->max_tollerable_latency);
 		    break;
 
 #ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
@@ -443,12 +445,17 @@ int nmxptool_check_params(NMXPTOOL_PARAMS *params) {
     } else if(params->delay < 0) {
 	ret = -1;
 	nmxp_log(NMXP_LOG_NORM_NO, 0, "<delay> has to be greater than zero.\n");
-    } else if( params->stc == -1 && (params->max_pdlist_items < 10  ||  params->max_pdlist_items > 100)) {
+    } else if( params->stc == -1
+	    && (params->max_tollerable_latency < DEFAULT_MAX_TOLLERABLE_LATENCY_MINIMUM  ||
+		params->max_tollerable_latency > DEFAULT_MAX_TOLLERABLE_LATENCY_MAXIMUM)) {
 	ret = -1;
-	nmxp_log(NMXP_LOG_NORM_NO, 0, "<npackets> has to be within [10..100].\n");
-    } else if( params->stc != -1 && params->max_pdlist_items > 0) {
-	nmxp_log(NMXP_LOG_WARN, 0, "<npackets> ignored since not defined --stc=-1.\n");
+	nmxp_log(NMXP_LOG_NORM_NO, 0, "<maxlatency> has to be within [%d..%d].\n",
+		DEFAULT_MAX_TOLLERABLE_LATENCY_MINIMUM,
+		DEFAULT_MAX_TOLLERABLE_LATENCY_MAXIMUM);
+    } else if( params->stc != -1 && params->max_tollerable_latency > 0) {
+	nmxp_log(NMXP_LOG_WARN, 0, "<maxlatency> ignored since not defined --stc=-1.\n");
     }
+
 
     return ret;
 }

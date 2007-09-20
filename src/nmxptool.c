@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.63 2007-09-20 13:47:22 mtheo Exp $
+ * $Id: nmxptool.c,v 1.64 2007-09-20 16:32:44 mtheo Exp $
  *
  */
 
@@ -165,7 +165,7 @@ int main (int argc, char **argv) {
 	    channelListSeq[i_chan].significant = 0;
 	    channelListSeq[i_chan].last_time = 0.0;
 	    channelListSeq[i_chan].x_1 = 0;
-	    nmxp_raw_stream_init(&(channelListSeq[i_chan].raw_stream_buffer), params.max_pdlist_items);
+	    nmxp_raw_stream_init(&(channelListSeq[i_chan].raw_stream_buffer), params.max_tollerable_latency);
 	}
 
 #ifdef HAVE_LIBMSEED

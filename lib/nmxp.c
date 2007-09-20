@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp.c,v 1.45 2007-09-17 13:00:05 mtheo Exp $
+ * $Id: nmxp.c,v 1.46 2007-09-20 16:32:44 mtheo Exp $
  *
  */
 
@@ -508,12 +508,15 @@ int nmxp_raw_stream_seq_no_compare(const void *a, const void *b)
     return ret;
 }
 
-void nmxp_raw_stream_init(NMXP_RAW_STREAM_DATA *raw_stream_buffer, int32_t max_pdlist_items) {
+void nmxp_raw_stream_init(NMXP_RAW_STREAM_DATA *raw_stream_buffer, int32_t max_tollerable_latency) {
     int j;
 
     raw_stream_buffer->last_seq_no_sent = -1;
     raw_stream_buffer->last_sample_time = -1.0;
-    raw_stream_buffer->max_pdlist_items = max_pdlist_items;
+    /* TODO 
+     * Suppose a packet can contain 1/4 secs of data */
+    raw_stream_buffer->max_tollerable_latency = max_tollerable_latency;
+    raw_stream_buffer->max_pdlist_items = max_tollerable_latency * 4;
     raw_stream_buffer->n_pdlist = 0;
     raw_stream_buffer->pdlist = (NMXP_DATA_PROCESS **) malloc (raw_stream_buffer->max_pdlist_items * sizeof(NMXP_DATA_PROCESS *));
     for(j=0; j<raw_stream_buffer->max_pdlist_items; j++) {
@@ -573,9 +576,12 @@ int nmxp_raw_stream_manage(NMXP_RAW_STREAM_DATA *p, NMXP_DATA_PROCESS *a_pd, int
 	p->last_sample_time = pd->time;
 	nmxp_log(0, 1, "First time nmxp_raw_stream_manage().\n");
     }
+    
+    latency = nmxp_data_latency(p->pdlist[0]);
 
     /* Add pd and sort array */
-    if(p->n_pdlist >= p->max_pdlist_items) {
+    if(p->n_pdlist >= p->max_pdlist_items
+	    || latency >= p->max_tollerable_latency) {
 	/* Supposing p->pdlist is ordered,
 	 * handle the first item and over write it.
 	 */
@@ -584,9 +590,9 @@ int nmxp_raw_stream_manage(NMXP_RAW_STREAM_DATA *p, NMXP_DATA_PROCESS *a_pd, int
 	latency = nmxp_data_latency(p->pdlist[0]);
 	nmxp_data_to_str(str_time, p->pdlist[0]->time);
 	if( seq_no_diff > 0) {
-	    nmxp_log(NMXP_LOG_WARN, 0, "Force handling packet %s.%s.%d.%d (%s - %.2f sec.)  time_diff %.2fs  lat. %.1fs!\n",
+	    nmxp_log(NMXP_LOG_WARN, 0, "Force handling packet %s.%s.%d.%d (%s - %.2f sec.)  time_diff %.2fs  n_pdlist %d  lat. %.1fs!\n",
 		    p->pdlist[0]->station, p->pdlist[0]->channel, p->pdlist[0]->seq_no, p->pdlist[0]->packet_type, str_time,
-		    (double) p->pdlist[0]->nSamp / (double) p->pdlist[0]->sampRate, time_diff, latency);
+		    (double) p->pdlist[0]->nSamp / (double) p->pdlist[0]->sampRate, time_diff, p->n_pdlist, latency);
 	    for(i_func_pd=0; i_func_pd<n_func_pd; i_func_pd++) {
 		(*p_func_pd[i_func_pd])(p->pdlist[0]);
 	    }
