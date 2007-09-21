@@ -26,15 +26,15 @@ Introduzione	  PAGEREF _Toc51836479 \h  5
 2.2 Documentazione	  PAGEREF _Toc51836485 \h  9 
 
 2.3 Uso delle APIs per sviluppare una nuova applicazione	  PAGEREF
-_Toc51836486 \h  12 
+_Toc51836486 \h  14 
 
-3. Il programma nmxptool	  PAGEREF _Toc51836487 \h  15 
+3. Il programma nmxptool	  PAGEREF _Toc51836487 \h  17 
 
-4. Conclusioni	  PAGEREF _Toc51836488 \h  19 
+4. Conclusioni	  PAGEREF _Toc51836488 \h  21 
 
-5. Ringraziamenti	  PAGEREF _Toc51836489 \h  22 
+5. Ringraziamenti	  PAGEREF _Toc51836489 \h  24 
 
-6. Bibliografia e riferimenti web	  PAGEREF _Toc51836490 \h  22 
+6. Bibliografia e riferimenti web	  PAGEREF _Toc51836490 \h  24 
 
  
 
@@ -382,6 +382,84 @@ descrizioni delle sole funzioni, quelle di pisch alto livello, contenute
 in nmxp.h. Fare riferimento alla documentazione stessa per maggiori
 dettagli.
 
+Documentazione della struttura dati NMXP_DATA_PROCESS per lo sviluppo
+con libnmxp.
+
+NMXP_DATA_PROCESS Struct Reference
+
+ TC  \l 2 "NMXP_DATA_PROCESS"  XE "NMXP_DATA_PROCESS" Parameter
+structure for functions that process data. 
+
+ #include <nmxp_data.h>
+
+Public Attributes
+
+int32_t   HYPERLINK  \l "AAAAAAAAHF"  key 
+
+Channel Key. 
+
+char   HYPERLINK  \l "AAAAAAAAHG"  network  [NETWORK_LENGTH]
+
+Network code. 
+
+char   HYPERLINK  \l "AAAAAAAAHH"  station  [STATION_LENGTH]
+
+Station code. 
+
+char   HYPERLINK  \l "AAAAAAAAHI"  channel  [CHANNEL_LENGTH]
+
+Channel code. 
+
+int32_t   HYPERLINK  \l "AAAAAAAAHJ"  packet_type 
+
+Packet type. 
+
+int32_t   HYPERLINK  \l "AAAAAAAAHK"  x0 
+
+First sample. It is significant only if x0n_significant != 0. 
+
+int32_t   HYPERLINK  \l "AAAAAAAAHL"  xn 
+
+Last sample. It is significant only if x0n_significant != 0. 
+
+int32_t   HYPERLINK  \l "AAAAAAAAHM"  x0n_significant 
+
+Declare if xn significant. 
+
+int32_t   HYPERLINK  \l "AAAAAAAAHN"  oldest_seq_no 
+
+Oldest Sequence number. 
+
+int32_t   HYPERLINK  \l "AAAAAAAAHO"  seq_no 
+
+Sequence number. 
+
+double   HYPERLINK  \l "AAAAAAAAHP"  time 
+
+Time first sample. Epochs. 
+
+void *   HYPERLINK  \l "AAAAAAAAHQ"  buffer 
+
+Nanometrics packet data. 
+
+int32_t   HYPERLINK  \l "AAAAAAAAHR"  length 
+
+Packet length. 
+
+int *   HYPERLINK  \l "AAAAAAAAHS"  pDataPtr 
+
+Array of samples. 
+
+int32_t   HYPERLINK  \l "AAAAAAAAHT"  nSamp 
+
+Number or samples. 
+
+int32_t   HYPERLINK  \l "AAAAAAAAHU"  sampRate 
+
+Sample rate.
+
+
+
 Documentazione delle APIs di pisch alto livello contenute in nmxp.h
 
 int nmxp_sendConnect (int isock)
@@ -621,7 +699,8 @@ b pointer to a pointer to  HYPERLINK "http://%5Cl%20%22AAAAAAAABB%22"
 NMXP_DATA_PROCESS  
 
 void nmxp_raw_stream_init ( HYPERLINK "http://%5Cl%20%22AAAAAAAAAD%22"
-NMXP_RAW_STREAM_DATA  * raw_stream_buffer, int32_t max_pdlist_items)
+NMXP_RAW_STREAM_DATA  * raw_stream_buffer, int32_t
+max_tollerable_latency)
 
 Allocate and initialize fields inside a  HYPERLINK
 "http://%5Cl%20%22AAAAAAAABD%22" NMXP_RAW_STREAM_DATA  structure. 
@@ -631,7 +710,7 @@ Parameters:
 raw_stream_buffer pointer to  HYPERLINK "http://%5Cl%20%22AAAAAAAABD%22"
 NMXP_RAW_STREAM_DATA  struct to initialize 
 
-max_pdlist_items value of max number of items in array 
+max_tollerable_latency max tollerable latency in seconds. 
 
 void nmxp_raw_stream_free ( HYPERLINK "http://%5Cl%20%22AAAAAAAAAD%22"
 NMXP_RAW_STREAM_DATA  * raw_stream_buffer)
@@ -646,9 +725,8 @@ NMXP_RAW_STREAM_DATA  struct to initialize
 
 int nmxp_raw_stream_manage ( HYPERLINK "http://%5Cl%20%22AAAAAAAAAD%22"
 NMXP_RAW_STREAM_DATA  * p,  HYPERLINK "http://%5Cl%20%22AAAAAAAAAQ%22"
-NMXP_DATA_PROCESS  * a_pd, int(*[])( HYPERLINK
-"http://%5Cl%20%22AAAAAAAAAQ%22" NMXP_DATA_PROCESS  *) NMXP_MAX_FUNC_PD,
-int n_func_pd)
+NMXP_DATA_PROCESS  * a_pd, int(*p_func_pd[NMXP_MAX_FUNC_PD])( HYPERLINK
+"http://%5Cl%20%22AAAAAAAAAQ%22" NMXP_DATA_PROCESS  *), int n_func_pd)
 
 Execute a list of functions on an chronological ordered array of 
 HYPERLINK "http://%5Cl%20%22AAAAAAAABB%22" NMXP_DATA_PROCESS 
@@ -667,16 +745,38 @@ p_func_pd array of functions to execute on a single item  HYPERLINK
 
 n_func_pd number of functions into the array p_func_pd 
 
+int nmxp_raw_stream_manage_flush( HYPERLINK
+"http://%5Cl%20%22AAAAAAAAAD%22" NMXP_RAW_STREAM_DATA  * p,
+int(*p_func_pd[NMXP_MAX_FUNC_PD])( HYPERLINK
+"http://%5Cl%20%22AAAAAAAAAQ%22" NMXP_DATA_PROCESS  *), int n_func_pd)
+
+Execute a list of functions on remaining  HYPERLINK
+"http://%5Cl%20%22AAAAAAAABB%22" NMXP_DATA_PROCESS  structures. 
+
+Parameters:
+
+p pointer to  HYPERLINK "http://%5Cl%20%22AAAAAAAABD%22"
+NMXP_RAW_STREAM_DATA  
+
+p_func_pd array of functions to execute on a single item  HYPERLINK
+"http://%5Cl%20%22AAAAAAAABB%22" NMXP_DATA_PROCESS  
+
+n_func_pd number of functions into the array p_func_pd 
+
+
+
 
 
 Degne di particolare attenzione sono le funzioni che si occupano della
-gestione del buffering dei pacchetti nelle connessioni di tipo Raw
-Stream, cioi dei pacchetti compressi e con valore di Short-term-complete
-uguale a -1. La funzione nmxp_raw_stream_manage() si occupa di ordinare
-i pacchetti ricevuti, fino ad un massimo impostato tramite
-nmxp_raw_stream_init() al momento dell'inizializzazione del buffer, ed
-eseguire con minima latenza possibile le n_func_pd funzioni sulle
-strutture di tipo NMXP_DATA_PROCESS. 
+gestione del buffer dei pacchetti nelle connessioni di tipo Raw Stream,
+cioi dei pacchetti compressi e con valore di Short-term-complete uguale
+a -1. Ogni qualvolta che viene chiamata la funzione
+nmxp_raw_stream_manage() con un nuovo pacchetto NMXP_DATA_PROCESS, la
+funzione esegue un ordinamento cronologico sugli eventuali pacchetti in
+coda e garantendo continuita del dato fino ad un tempo massimo di attesa
+dei pacchetti mancanti impostato dalla funzione nmxp_raw_stream_init()
+al momento dell'inizializzazione del buffer, esegue le n_func_pd
+funzioni dell'array p_func_pd.
 
 Uso delle APIs per sviluppare una nuova applicazione
 
@@ -685,6 +785,29 @@ libreria libnmxp vengono di seguito illustrati i sorgenti 1 e 2 che
 possono essere utilizzati come base per l'implementazione dei protocolli
 Data Access Protocol 1.0 e Private Data Stream 1.4. Su tali strutture i
 basato anche nmxptool descritto successivamente.
+
+Possiamo notare come risulti relativamente semplice sviluppare una
+propria applicazione anche nel caso in cui si vogliano stabilire
+connessioni di tipo Raw Stream. Infatti lo sviluppatore non dovra far
+altro che utilizzare la struttura base del sorgente 2, eseguire le
+opportune personalizzazioni, e dichiarare una funzione con prototipo
+
+int ( *process_data_function ) ( NMXP_DATA_PROCESS *)
+
+il quale  puntatore dovra poi essere aggiunto nell'array da passare come
+parametro alla funzione nmxp_raw_stream_manage().
+
+Prima di poter richiamare la funzione nmxp_raw_stream_manage() bisogna
+inizializzare per ogni canale, tramite la funzione
+nmxp_raw_stream_init(), una struttura dati di tipo NMXP_RAW_STREAM_DATA
+e il valore della massima latenza tollerabile.
+
+Al termine del programma, o comunque al termine della connessione, sara
+necessario liberare la memoria allocata dalla struttura
+NMXP_RAW_STREAM_DATA per mezzo della funzione nmxp_raw_stream_free().
+Opzionalmente, prima di questa funzione put essere richiamata
+nmxp_raw_manage_stream_flush() che esegui le funzioni sui pacchetti
+rimanenti indipendentemente dalla continuita del dato.
 
 Sorgente 1. Struttura base in C che implementa D.A.P. versione 1.0
 utilizzando le APIs di libnmxp.
@@ -1540,8 +1663,8 @@ Figura 3. Archiviazione dati sismici in tempo reale e completamento in
 differita. Le due attivita si basano con modalita diverse su nmxptool.
 Nel primo caso, nmxptool viene utilizzato come plug-in seedLink in
 modalita Raw Stream, nel secondo i dati mancanti vengono richiesti da
-nmxptool al DataServer e per mezzo dell'applicazione qmerge ricongiunti
-alla struttura di archiviazione SDS di SeisComP.
+nmxptool al DataServer e ricongiunti alla struttura di archiviazione SDS
+di SeisComP.
 
 
 
@@ -1557,39 +1680,61 @@ minino di gaps. Grazie a questa caratteristica nmxptool apporta
 finalmente un fondamentale contributo alla comunita degli utilizzatori
 del sistema SeisComp, infatti naqs_plugin, il plug-in precedentemente
 sviluppato per l'acquisizione da servers Nanometrics, non essendo in
-grado di gestire ne' connessioni Short-term-complete ne' i pacchetti
-compressi, non poteva garantire minimamente la continuita del dato al
-verificarsi di una ritrasmissione dal lato Nanometrics Server - Stazione
-Sismica (fig. 1).
+grado di gestire ne' i pacchetti compressi, ne' tantomeno connessioni di
+tipo Raw Stream, non poteva garantire minimamente la continuita del dato
+al verificarsi di una ritrasmissione dal lato Nanometrics Server -
+Stazione Sismica (fig. 1).
 
 Le tabelle 2 e 3 mostrano i reports sintetici dei dati archiviati per i
-canali sismici in test il 18 e il 19 settembre 2007. Giornalmente, per
-ogni canale viene visualizzato il totale di pacchetti ritrasmessi, la
-massima latenza registrata, il numero di gaps temporali ottenuti tramite
-l'acquisizione in tempo reale, il numero di gaps definitivi ottenuti
-recuperando i dati il giorno dopo e la differenza fra questi due valori
-dei gaps. Quest'ultimo valore, rapportato alla latenza massima
-risultante, put essere espressione della bonta della gestione del buffer
-e della sua dimensione. Possiamo notare inoltre come il numero di gaps
-otttenuti in tempo reale dipenda fortemente dal numero di pacchetti
-ritrasmessi. La latenza massima tollerabile i indotta dalla grandezza
-del buffer la quale i stata impostata per il test a 100 pacchetti.
+canali in test il 18 e il 19 settembre 2007. Giornalmente, per ogni
+canale viene visualizzato:
 
-Al momento nmxptool viene utilizzato come plug-in seedlink anche nei
-seguenti istituti di ricerca i quali sono stati inoltre di enorme aiuto
-in fase di test e debugging del software:
+Totale di pacchetti ritrasmessi: per una trasmissione di tipo
+short-term-complete  i dati contenuti in questi pacchetti sarebbero
+stati persi e avrebbero causato dei gaps.
+
+Massima latenza registrata: la massima latenza registrata durata il
+giorno e causata dall'attesa dei pacchetti mancanti.
+
+Numero di gaps ottenuti in tempo reale tramite l'acquisizione dei dati
+per mezzo di nmxptool usato come plug-in SeedLink. 
+
+Numero di gaps definitivi ottenuti recuperando i dati il giorno dopo dal
+DataServer per mezzo 
+
+Differenza fra i due valori dei gaps: questo valore put essere
+espressione della bonta della scelta del valore di massima latenza
+tollerabile per quel dato canale.
+
+Possiamo notare inoltre come il numero di gaps otttenuti in tempo reale
+dipenda fortemente dal numero di pacchetti ritrasmessi. La latenza
+massima i indotta dall'attesa dei pacchetti mancanti, per tale test la
+latenza massima tollerabile i stata impostata a 600 secondi.
+
+Al momento nmxptool viene utilizzato come plug-in SeedLink anche nei
+seguenti istituti di ricerca ai quali va anche un riconoscimento per la
+loro collaborazione in fase di test e debugging del software:
 
 National Data Center, Israele. (Guy Tikochinsky)
 
 Institute of Geodynamics, National Observatory of Athens, Grecia. (Nicos
 Melis)
 
-Inoltre, la procedura sviluppata per garantire la completezza del dato,
-basata su nmxptool e qmerge, consente di  avere un controllo di qualita
-maggiore sui dati archiviati
+Possiamo quindi sintetizzare i risultati ottenuti dicendo che l'utilizzo
+di nmxptool con connessioni in tempo reale al NaqsServer (online) di
+tipo Raw Stream riesce a garantire un ottimo compromesso fra continuita
+del dato e latenza indotta, e il suo utilizzo con connessioni in
+differita al DataServer (offline) garantisce pienamente la completezza
+del dato.
 
-Tool a supporto di procedure che necessita di dati a richiesta (ad
-esempio dopo un evento sismico)
+E' evidente che data la versalita di nmxptool e il numero di
+funzionalita offerte, esso risulta essere un valido supporto a procedure
+che necessitano di dati a richiesta, ad esempio dopo un evento sismico
+per il calcolo della magnitudo o del momento tensore.
+
+Per il futuro l'autore intende ampliare le funzionalita della libreria
+anche alla gestione dei dati di tipo serial data, triggers e
+state-of-health.
 
 TODO. Buchi determinati da erronei valori temporali contenuti nei
 pacchetti. Priorita del numero di sequenza e del controllo su x0
@@ -2097,8 +2242,8 @@ NOCI.HHZ	2
 
 235
 
-Tabella 2. Report sintetico relativo ai canali in test dei dati
-archiviati il 18 settembre 2007 tramite nmxptool e seedllink.
+Tabella 2. Report sintetico relativo ai dati archiviati dei canali in
+test il 18 settembre 2007 tramite nmxptool e seedllink.
 
 
 
@@ -2604,8 +2749,8 @@ MSAG.HHE	7
 
 37
 
-Tabella 3. Report sintetico relativo ai canali in test dei dati
-archiviati il 19 settembre 2007 tramite nmxptool e seedllink.
+Tabella 3. Report sintetico relativo ai dati archiviati dei canali in
+test il 19 settembre 2007 tramite nmxptool e seedllink.
 
 
 
@@ -2625,10 +2770,6 @@ SeisComP, The Seismological Communication Processor
 
 http://www.gfz-potsdam.de/geofon/seiscomp/
 
-Qlib2, qmerge, Quanterra User Group
-
-http://www.ncedc.org/qug/software/ucb/
-
 libmseed, 2.1.4, The Mini-SEED library
 
 http://www.iris.edu/manuals/
@@ -2643,5 +2784,5 @@ GNU General Public License
 
  PAGE   
 
- PAGE   15 
+ PAGE   21 
 
