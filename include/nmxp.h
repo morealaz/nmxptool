@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp.h,v 1.36 2007-09-20 16:32:44 mtheo Exp $
+ * $Id: nmxp.h,v 1.37 2007-09-21 07:02:30 mtheo Exp $
  *
  */
 
@@ -322,6 +322,15 @@ void nmxp_raw_stream_free(NMXP_RAW_STREAM_DATA *raw_stream_buffer);
  *
  */
 int nmxp_raw_stream_manage(NMXP_RAW_STREAM_DATA *p, NMXP_DATA_PROCESS *a_pd, int (*p_func_pd[NMXP_MAX_FUNC_PD]) (NMXP_DATA_PROCESS *), int n_func_pd);
+
+/*! \brief Execute a list of functions on remaining NMXP_DATA_PROCESS structures
+ *
+ * \param p pointer to NMXP_RAW_STREAM_DATA
+ * \param p_func_pd array of functions to execute on a single item NMXP_DATA_PROCESS
+ * \param n_func_pd number of functions into the array p_func_pd 
+ *
+ */
+int nmxp_raw_stream_manage_flush(NMXP_RAW_STREAM_DATA *p, int (*p_func_pd[NMXP_MAX_FUNC_PD]) (NMXP_DATA_PROCESS *), int n_func_pd);
 
 #endif
 

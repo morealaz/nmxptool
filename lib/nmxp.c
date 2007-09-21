@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp.c,v 1.46 2007-09-20 16:32:44 mtheo Exp $
+ * $Id: nmxp.c,v 1.47 2007-09-21 07:02:30 mtheo Exp $
  *
  */
 
@@ -706,3 +706,10 @@ int nmxp_raw_stream_manage(NMXP_RAW_STREAM_DATA *p, NMXP_DATA_PROCESS *a_pd, int
     return ret;
 }
 
+
+/* TODO */
+int nmxp_raw_stream_manage_flush(NMXP_RAW_STREAM_DATA *p, int (*p_func_pd[NMXP_MAX_FUNC_PD]) (NMXP_DATA_PROCESS *), int n_func_pd) {
+    int ret = 0;
+
+    return ret;
+}
