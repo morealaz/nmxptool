@@ -1064,8 +1064,9 @@ comando:
 
 kyuzo:~ mtheo$ nmxptool -h
 
-nmxptool 0.18.0, Nanometrics tool (Data Access Protocol 1.0, Private
-Data Stream 1.4)
+nmxptool 0.22.0, Nanometrics tool based on libnmxp-0.22.0
+
+        (Data Access Protocol 1.0, Private Data Stream 1.4)
 
 Usage: nmxptool -H hostname --listchannels [...]
 
@@ -1092,7 +1093,7 @@ Other arguments:
   -D, --portdap=PORT      DataServer port number (default 28002).
 
   -N, --network=NET       Declare Network code for all stations (default
-XX).
+'XX').
 
   -L, --location=LOC      Location code for writing file.
 
@@ -1100,10 +1101,16 @@ XX).
 
   -g, --logdata           Print info about data.
 
+  -l, --listchannels      Output list of channel available on
+NaqsServer.
+
+  -i, --channelinfo       Output list of channel available on NaqsServer
+and channelinfo.
+
   -m, --writeseed         Pack received data in Mini-SEED records and
 write to a file.
 
-  -w, --writefile         Write received data to a file.
+  -w, --writefile         Dump received data to a file.
 
   -k, --slink=plug_name   Send received data to SeedLink like as
 plug-in.
@@ -1133,24 +1140,30 @@ DAP Arguments:
 
                               <time> = hh:mm:ss | hh:mm
 
-  -d, --delay=secs        Receive continuosly data with delay.
+  -d, --delay=SECs        Receive continuosly data with delay
+[60..86400].
 
   -u, --username=USER     DataServer username.
 
   -p, --password=PASS     DataServer password.
 
-  -l, --listchannels      Output list of channel available.
-
-  -i, --channelinfo       Output list of channel available and
-channelinfo.
-
 PDS arguments:
 
-  -S, --stc=SECs          Short-term-completion  (default -1) -1 is for
-Raw Stream.
+  -S, --stc=SECs          Short-term-completion (default -1).
 
-  -R, --rate=HZ           Receive decompressed data with specified
-sample rate.
+                          -1 is for Raw Stream, no short-term
+completion.
+
+                           0 chronological order without waiting for
+missing data.
+
+                          [0..300] wait a period for the gap to be
+filled by retransmitted packets.
+
+                          Raw Stream is usable only with --rate=-1.
+
+  -R, --rate=Hz           Receive data with specified sample rate
+(default -1).
 
                           -1 is for original sample rate and compressed
 data.
@@ -1163,10 +1176,10 @@ decompressed data.
 
   -b, --buffered          Request also recent packets into the past.
 
-  -n, --npackets          Number of packets contained into the buffer
-(default 50).
+  -M, --maxlatency=SECs   Max tollerable latency (default 600)
+[60..600].
 
-                          Usable only with -stc=-1
+                          Usable only with Raw Stream --stc=-1.
 
 Matteo Quintiliani - Istituto Nazionale di Geofisica e Vulcanologia -
 Italy
@@ -1481,9 +1494,10 @@ nmxptool poichy consente di ricevere i pacchetti in modo continuo in
 tempo reale, in ordine cronologico, con minima latenza e minimo numero
 di gaps.  Il programma  i in grado di gestire il buffering dei pacchetti
 trasmessi e ritrasmessi, il loro riordinamento e l'esecuzione delle
-operazione selezionate. Un'opzione collegata a questa gestione i -n con
-la quale si specifica il numero di pacchetto massimo da contenere nel
-buffer.
+operazione selezionate tramite le opzioni. Un'opzione collegata a questa
+gestione i -M che serve a specificare la massima latenza tollerabile
+nell'attesa di un pacchetto mancante, da tale opzione dipende di
+conseguenza la grandezza del buffer.
 
 Quando si interagisce con il NaqsServer si put anche utilizzare
 l'opzione -b, la quale permette di ricevere anche alcuni dati, in
@@ -2629,5 +2643,5 @@ GNU General Public License
 
  PAGE   
 
- PAGE   19 
+ PAGE   15 
 
