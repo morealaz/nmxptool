@@ -767,7 +767,7 @@ n_func_pd number of functions into the array p_func_pd
 
 
 
-Degne di particolare attenzione sono le funzioni che si occupano della
+Degne di particolare attenzione sono le funzioni che si occupano della
 gestione del buffer dei pacchetti nelle connessioni di tipo Raw Stream,
 cioi dei pacchetti compressi e con valore di Short-term-complete uguale
 a -1. Ogni qualvolta che viene chiamata la funzione
@@ -2784,5 +2784,5 @@ GNU General Public License
 
  PAGE   
 
- PAGE   21 
+ PAGE   13 
 
