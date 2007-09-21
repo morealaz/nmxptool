@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.21 2007-09-20 16:40:11 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.22 2007-09-21 06:44:33 mtheo Exp $
  *
  */
 
@@ -76,11 +76,11 @@ void nmxptool_usage(struct option long_options[])
 Usage: %s -H hostname --listchannels [...]\n\
              Receive list of available channels on the host\n\
 \n\
-       %s -H hostname -C channellist [...]\n\
-             Receive data from hostname by PDS\n\
-\n\
        %s -H hostname -C channellist -s DATE -e DATE [...]\n\
              Receive data from hostname by DAP\n\
+\n\
+       %s -H hostname -C channellist [...]\n\
+             Receive data from hostname by PDS\n\
 \n\
 Arguments:\n\
   -H, --hostname=HOST     Nanometrics hostname.\n\
@@ -96,7 +96,7 @@ Arguments:\n\
 Other arguments:\n\
   -P, --portpds=PORT      NaqsServer port number (default %d).\n\
   -D, --portdap=PORT      DataServer port number (default %d).\n\
-  -N, --network=NET       Declare Network code for all stations (default %s).\n\
+  -N, --network=NET       Declare Network code for all stations (default '%s').\n\
   -L, --location=LOC      Location code for writing file.\n\
   -v, --verbose           Be verbose.\n\
   -g, --logdata           Print info about data.\n\
@@ -114,7 +114,7 @@ Other arguments:\n\
 #endif
 
     nmxp_log(NMXP_LOG_NORM_NO, 0, "\
-  -w, --writefile         Write received data to a file.\n");
+  -w, --writefile         Dump received data to a file.\n");
 
 #ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
     nmxp_log(NMXP_LOG_NORM_NO, 0, "\
@@ -136,25 +136,32 @@ DAP Arguments:\n\
                           where:\n\
                               <date> = yyyy/mm/dd | yyy.jjj\n\
                               <time> = hh:mm:ss | hh:mm\n\
-  -d, --delay=secs        Receive continuosly data with delay.\n\
+  -d, --delay=SECs        Receive continuosly data with delay [%d..%d].\n\
   -u, --username=USER     DataServer username.\n\
   -p, --password=PASS     DataServer password.\n\
 \n\
-");
+",
+DEFAULT_DELAY_MINIMUM,
+DEFAULT_DELAY_MAXIMUM);
 
     nmxp_log(NMXP_LOG_NORM_NO, 0, "\
 PDS arguments:\n\
-  -S, --stc=SECs          Short-term-completion (default %d) -1 is for Raw Stream.\n\
-  -R, --rate=HZ           Receive decompressed data with specified sample rate.\n\
+  -S, --stc=SECs          Short-term-completion (default %d).\n\
+                          -1 is for Raw Stream, no short-term completion.\n\
+                           0 chronological order without waiting for missing data.\n\
+                          [0..300] wait a period for the gap to be filled by retransmitted packets.\n\
+                          Raw Stream is usable only with --rate=-1.\n\
+  -R, --rate=Hz           Receive data with specified sample rate (default %d).\n\
                           -1 is for original sample rate and compressed data.\n\
                            0 is for original sample rate and decompressed data.\n\
                           >0 is for specified sample rate and decompressed data.\n\
   -b, --buffered          Request also recent packets into the past.\n\
   -M, --maxlatency=SECs   Max tollerable latency (default %d) [%d..%d].\n\
-                          Last option is usable only with --stc=-1\n\
+                          Usable only with Raw Stream --stc=-1.\n\
 \n\
 ",
 	    DEFAULT_STC,
+	    DEFAULT_RATE,
 	    DEFAULT_MAX_TOLLERABLE_LATENCY,
 	    DEFAULT_MAX_TOLLERABLE_LATENCY_MINIMUM,
 	    DEFAULT_MAX_TOLLERABLE_LATENCY_MAXIMUM
@@ -427,24 +434,30 @@ int nmxptool_check_params(NMXPTOOL_PARAMS *params) {
 	    && params->start_time >= params->end_time) {
 	ret = -1;
 	nmxp_log(NMXP_LOG_NORM_NO, 0, "<start_time> is less than <end_time>!\n");
-    } else if(params->stc < -1   ||   params->stc > 300) {
+    } else if(params->stc < DEFAULT_STC_MINIMUM   ||   params->stc > DEFAULT_STC_MAXIMUM) {
 	ret = -1;
-	nmxp_log(NMXP_LOG_NORM_NO, 0, "<stc> has to be in the interval -1..300 secs.\n");
+	nmxp_log(NMXP_LOG_NORM_NO, 0, "<stc> has to be in the interval [%d..%d] secs.\n",
+		DEFAULT_STC_MINIMUM, DEFAULT_STC_MAXIMUM);
     } else if(params->stc == -1   &&   params->rate != DEFAULT_RATE) {
 	ret = -1;
-	nmxp_log(NMXP_LOG_NORM_NO, 0, "<rate> can not be declared when <stc> is equal to -1 (Raw Stream).\n");
+	nmxp_log(NMXP_LOG_NORM_NO, 0, "<rate> has to be equal to -1 when <stc> is equal to -1 (Raw Stream).\n");
     } else if(params->delay > 0 && params->start_time != 0   &&   params->end_time != 0) {
 	ret = -1;
 	nmxp_log(NMXP_LOG_NORM_NO, 0, "<delay> can not be used with options <start_time> and <end_time>.\n");
+    } else if(params->rate < DEFAULT_RATE_MINIMUM  ||  params->rate > DEFAULT_RATE_MAXIMUM) {
+	ret = -1;
+	nmxp_log(NMXP_LOG_NORM_NO, 0, "<rate> has to be in the interval [%d..%d].\n",
+		DEFAULT_RATE_MINIMUM, DEFAULT_RATE_MAXIMUM);
     } else if(params->rate != -1 && params->start_time != 0   &&   params->end_time != 0) {
 	ret = -1;
 	nmxp_log(NMXP_LOG_NORM_NO, 0, "<rate> can not be used with options <start_time> and <end_time>.\n");
     } else if(params->flag_buffered != 0 && params->start_time != 0   &&   params->end_time != 0) {
 	ret = -1;
 	nmxp_log(NMXP_LOG_NORM_NO, 0, "<buffered> can not be used with options <start_time> and <end_time>.\n");
-    } else if(params->delay < 0) {
+    } else if(params->delay < DEFAULT_DELAY_MINIMUM  || params->delay > DEFAULT_DELAY_MAXIMUM) {
 	ret = -1;
-	nmxp_log(NMXP_LOG_NORM_NO, 0, "<delay> has to be greater than zero.\n");
+	nmxp_log(NMXP_LOG_NORM_NO, 0, "<delay> has to be in the interval [%d..%d] secs.\n",
+		DEFAULT_DELAY_MINIMUM, DEFAULT_DELAY_MAXIMUM);
     } else if( params->stc == -1
 	    && (params->max_tollerable_latency < DEFAULT_MAX_TOLLERABLE_LATENCY_MINIMUM  ||
 		params->max_tollerable_latency > DEFAULT_MAX_TOLLERABLE_LATENCY_MAXIMUM)) {
