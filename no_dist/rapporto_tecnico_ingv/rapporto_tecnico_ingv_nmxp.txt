@@ -1299,8 +1299,7 @@ decompressed data.
 
   -b, --buffered          Request also recent packets into the past.
 
-  -M, --maxlatency=SECs   Max tollerable latency (default 600)
-[60..600].
+  -M, --maxlatency=SECs   Max tolerable latency (default 600) [60..600].
 
                           Usable only with Raw Stream --stc=-1.
 
@@ -2780,5 +2779,5 @@ GNU General Public License
 
  PAGE   
 
- PAGE   21 
+ PAGE   17 
 

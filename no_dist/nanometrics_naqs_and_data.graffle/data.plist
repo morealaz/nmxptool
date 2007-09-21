@@ -518,7 +518,7 @@
 			<key>Points</key>
 			<array>
 				<string>{447.807, 180.035}</string>
-				<string>{482.351, 180.035}</string>
+				<string>{483.851, 180.035}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -711,7 +711,7 @@ DataServer}</string>
 			<integer>173</integer>
 			<key>Points</key>
 			<array>
-				<string>{561.013, 601.667}</string>
+				<string>{561.013, 600.167}</string>
 				<string>{561.013, 666.413}</string>
 			</array>
 			<key>Style</key>
@@ -750,8 +750,8 @@ DataServer}</string>
 			<integer>172</integer>
 			<key>Points</key>
 			<array>
-				<string>{561.013, 772.413}</string>
-				<string>{561.013, 962.935}</string>
+				<string>{561.013, 774.413}</string>
+				<string>{561.014, 962.935}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -791,8 +791,8 @@ DataServer}</string>
 			<integer>22</integer>
 			<key>Points</key>
 			<array>
-				<string>{294.288, 766.528}</string>
-				<string>{294.288, 962.935}</string>
+				<string>{294.289, 768.528}</string>
+				<string>{294.289, 962.935}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -935,7 +935,7 @@ DataServer}</string>
 
 \f0\i\fs36 \cf2 buffering and max\
 tolerable latency\
-default 120 sec.}</string>
+default 600 sec.}</string>
 			</dict>
 			<key>Wrap</key>
 			<string>NO</string>
@@ -1410,8 +1410,8 @@ Server}</string>
 			<integer>2</integer>
 			<key>Points</key>
 			<array>
-				<string>{294.288, 601.667}</string>
-				<string>{294.288, 666.413}</string>
+				<string>{294.289, 600.167}</string>
+				<string>{294.289, 666.413}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -1456,7 +1456,7 @@ Server}</string>
 			<integer>2</integer>
 			<key>Points</key>
 			<array>
-				<string>{294.288, 1029.19}</string>
+				<string>{294.289, 1029.19}</string>
 				<string>{406.351, 1064.27}</string>
 				<string>{524.936, 1028.6}</string>
 			</array>
@@ -2775,7 +2775,7 @@ gap}</string>
 		</dict>
 	</array>
 	<key>ModificationDate</key>
-	<string>2007-09-20 15:02:35 +0200</string>
+	<string>2007-09-21 15:58:17 +0200</string>
 	<key>Modifier</key>
 	<string>mtheo</string>
 	<key>NotesVisible</key>
@@ -2848,7 +2848,7 @@ gap}</string>
 		<key>ShowStatusBar</key>
 		<true/>
 		<key>VisibleRegion</key>
-		<string>{{0, 0}, {1142.81, 1003.32}}</string>
+		<string>{{0, 300.828}, {1142.81, 1003.32}}</string>
 		<key>Zoom</key>
 		<string>0.7437811</string>
 	</dict>
