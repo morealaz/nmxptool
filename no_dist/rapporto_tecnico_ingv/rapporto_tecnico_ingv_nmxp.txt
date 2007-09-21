@@ -1723,23 +1723,18 @@ Melis)
 
 Possiamo quindi sintetizzare i risultati ottenuti dicendo che l'utilizzo
 di nmxptool con connessioni in tempo reale al NaqsServer (online) di
-tipo Raw Stream riesce a garantire un ottimo compromesso fra continuita
-del dato e latenza indotta, e il suo utilizzo con connessioni in
-differita al DataServer (offline) garantisce pienamente la completezza
-del dato.
+tipo Raw Stream, garantisce un ottimo compromesso fra continuita del
+dato e latenza indotta, e il suo utilizzo con connessioni in differita
+al DataServer (offline) garantisce pienamente la completezza del dato.
 
-E' evidente che data la versalita di nmxptool e il numero di
-funzionalita offerte, esso risulta essere un valido supporto a procedure
-che necessitano di dati a richiesta, ad esempio dopo un evento sismico
-per il calcolo della magnitudo o del momento tensore.
+E' evidente inoltre che la versalita di nmxptool e il numero di
+funzionalita offerte, sono un valido supporto a procedure che
+necessitano di dati a richiesta, ad esempio dopo un evento sismico per
+il calcolo della magnitudo o del momento tensore.
 
-Per il futuro l'autore intende ampliare le funzionalita della libreria
-anche alla gestione dei dati di tipo serial data, triggers e
-state-of-health.
-
-TODO. Buchi determinati da erronei valori temporali contenuti nei
-pacchetti. Priorita del numero di sequenza e del controllo su x0
-rispetto al tempo del pacchetto.
+Per il futuro l'autore intende manutenere libnmxp e nmxptool ed ampliare
+le funzionalita della libreria anche per quanto riguarda la gestione dei
+dati di tipo serial data, triggers, events e state-of-health.
 
 
 
