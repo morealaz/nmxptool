@@ -1,4 +1,4 @@
-LIBNMXP: Libreria software Open-SOURCE  PER TRASMISSIONI DATI SISMICI
+LIBNMXP E NMXPTOOL: software Open-SOURCE  PER TRASMISSIONI DATI SISMICI
 NANOMETRICS
 
 Matteo Quintiliani
@@ -56,8 +56,8 @@ tempo reale;
 DataServer il quale implementa il protocollo per il recupero di dati
 archiviati.
 
-Insieme alla libreria viene inoltre distribuito un programma che si basa
-su essa, e di nome nmxptool, che permette di eseguire interrogazioni,
+Insieme alla libreria viene inoltre distribuito un programma chiamato
+nmxptool che basandosi su di essa permette di eseguire interrogazioni,
 ricevere dati in tempo reale e/o off-line, ed inoltre salvare questi in
 diversi formati, quali NMX e mini-SEED. Tale programma put inoltre
 essere utilizzato come plug-in per server SeedLink.
@@ -252,9 +252,9 @@ Installazione
 La libreria libnmxp e il tool nmxptool sono stati sviluppati utilizzando
 i GNU Build Tools (automake e autoconf) tenendo conto degli aspetti di
 compilazione trasverale (cross-compilation) per tutte le possibili
-piattaforme di tipo POSIX/UNIX. Di seguito la tab. 1 mostra su quali
-sistemi operativi e architetture si i eseguito con successo
-effettivamente il test di funzionamento.
+piattaforme di tipo POSIX/UNIX. Di seguito la tabella 1 mostra su quali
+sistemi operativi e architetture si i eseguito il test di funzionamento,
+la `X' determina che il test ha avuto esito positivo.
 
 	Little Endian	Big Endian
 
@@ -379,8 +379,8 @@ utilizzando dei meta-tags all'interno del codice e per mezzo del
 programma doxygen. Viene rilasciata all'interno del pacchetto di
 distribuzione nei formati html, rtf e man. Segue l'elenco e le relative
 descrizioni delle sole funzioni, quelle di pisch alto livello, contenute
-in nmxp.h. Fare riferimento alla documentazione stessa per maggiori
-dettagli.
+in nmxp.h. Per maggiori dettagli si faccia riferimento alla
+documentazione stessa.
 
 Documentazione della struttura dati NMXP_DATA_PROCESS per lo sviluppo
 con libnmxp.
@@ -770,13 +770,13 @@ n_func_pd number of functions into the array p_func_pd
 Degne di particolare attenzione sono le funzioni che si occupano della
 gestione del buffer dei pacchetti nelle connessioni di tipo Raw Stream,
 cioi dei pacchetti compressi e con valore di Short-term-complete uguale
-a -1. Ogni qualvolta che viene chiamata la funzione
-nmxp_raw_stream_manage() con un nuovo pacchetto NMXP_DATA_PROCESS, la
-funzione esegue un ordinamento cronologico sugli eventuali pacchetti in
-coda e garantendo continuita del dato fino ad un tempo massimo di attesa
-dei pacchetti mancanti impostato dalla funzione nmxp_raw_stream_init()
-al momento dell'inizializzazione del buffer, esegue le n_func_pd
-funzioni dell'array p_func_pd.
+a -1. Ogni qualvolta venga chiamata la funzione nmxp_raw_stream_manage()
+con un nuovo pacchetto NMXP_DATA_PROCESS, la funzione esegue un
+ordinamento cronologico sugli eventuali pacchetti in coda e garantendo
+continuita del dato fino ad un tempo massimo di attesa dei pacchetti
+mancanti impostato dalla funzione nmxp_raw_stream_init() al momento
+dell'inizializzazione del buffer, esegue le n_func_pd funzioni
+dell'array p_func_pd.
 
 Uso delle APIs per sviluppare una nuova applicazione
 
@@ -794,7 +794,7 @@ opportune personalizzazioni, e dichiarare una funzione con prototipo
 
 int ( *process_data_function ) ( NMXP_DATA_PROCESS *)
 
-il quale  puntatore dovra poi essere aggiunto nell'array da passare come
+il cui puntatore dovra poi essere aggiunto nell'array da passare come
 parametro alla funzione nmxp_raw_stream_manage().
 
 Prima di poter richiamare la funzione nmxp_raw_stream_manage() bisogna
@@ -1368,7 +1368,7 @@ kyuzo:~ mtheo$ nmxptool -H hostname -s 2007.242,00:00 -e
                                                       -C
 USI.???,VAGA.HHZ -g
 
-Osserviamo che la data put essere scritta seguendo le seguenti regole:
+Osserviamo che la data put essere scritta seguendo tali regole:
 
 DATA,ORA oppure solamente DATA
 
@@ -1500,7 +1500,7 @@ la lunghezza in bytes del pacchetto Nanometrics ricevuto
 Nell'esempio precedente, non essendo stata definita la rete (network),
 per default il programma l'ha impostata a `XX'. Nel caso avessimo voluto
 salvare i dati in formato mini-SEED sarebbe stato sufficiente aggiungere
-l'opzione -m, il programma avrebbe generato un file per ogni canale.
+l'opzione -m e il programma avrebbe generato un file per ogni canale.
 Inoltre, se il DataServer avesse richiesto l'autenticazione si sarebbero
 dovute utilizzare le opzioni per la definizione del nome utente e della
 password, ovvero -u e -p.
@@ -1514,7 +1514,7 @@ differita ecco un possibile comando:
 kyuzo:~ mtheo$ nmxptool -H hostname -d 600 -C USI.???,VAGA.HHZ -g
 
 Per ricevere dati in tempo reale, ovvero da un NaqsServer, i
-sufficiente, in generale, non definire l'intervallo temporale, quindi un
+sufficiente, in generale, non definire l'intervallo temporale. Quindi un
 comando del tipo:
 
 kyuzo:~ mtheo$ nmxptool -H hostname -C USI.??? -g -R 100
@@ -1605,9 +1605,9 @@ L'opzione -R i stata utilizzata per dichiarare che i pacchetti da
 ricevere sarebbe stati scompattati dal server con una frequenza di
 100Hz. Notiamo infatti che il pacchetto i di tipo 4, ovvero decompresso,
 con una capacita fissa di un secondo e che x0 e xn non sono
-significativi. Per i pacchetti compressi (packet type 1) invece avremmo
-pouto specificare inoltre, tramite l'opzione -S, un valore fra 1 e 300
-secondi dello Short-term-complete, oppure 0 per nessun
+significativi. Invece per i pacchetti compressi (pacchetto di tipo 1)
+avremmo anche pouto specificare, tramite l'opzione -S, un valore fra 1 e
+300 secondi dello Short-term-complete, oppure 0 per nessun
 Short-term-complete,  oppure uguale -1 per ricevere i pacchetti in
 modalita Raw Stream. 
 
@@ -1618,8 +1618,8 @@ di gaps.  Il programma  i in grado di gestire il buffering dei pacchetti
 trasmessi e ritrasmessi, il loro riordinamento e l'esecuzione delle
 operazione selezionate tramite le opzioni. Un'opzione collegata a questa
 gestione i -M che serve a specificare la massima latenza tollerabile
-nell'attesa di un pacchetto mancante, da tale opzione dipende di
-conseguenza la grandezza del buffer.
+nell'attesa di un pacchetto mancante. Di conseguenza da tale opzione
+dipende la grandezza del buffer.
 
 Quando si interagisce con il NaqsServer si put anche utilizzare
 l'opzione -b, la quale permette di ricevere anche alcuni dati, in
@@ -1642,7 +1642,7 @@ tramite i protocolli Nanometrics. Le forme d'onda vengono ricevute in
 tempo reale in modalita Raw Stream al fine di minimizzare la latenza e
 il numero di gaps. nmxptool viene configurato e lanciato all'interno del
 sistema SeisComp come plug-in per SeedLink. La latenza indotta dal
-programma, non quella causata dal mezzo trasmissivo ad esempio, i
+programma e non, ad esempio quella causata dal mezzo trasmissivo, i
 determinata solo nel caso in cui si rimanga in attesa di uno o pisch
 pacchetti mancanti. Tale attesa termina nel momento in cui il buffer
 risulti completamente pieno comportando quindi una perdita di dati
@@ -1651,7 +1651,7 @@ risulti completamente pieno comportando quindi una perdita di dati
 Al fine di garantire completezza dei dati archiviati i stata sviluppata
 una procedura dal nome ``Nanometrics Data Completness'' che basandosi
 sulla versatilita di nmxptool recupera i dati mancanti con differita
-impostata a qualche ora o giorno successivo. In questo caso i gaps
+impostata a qualche ora o il giorno successivo. In questo caso i gaps
 risultanti non potranno pisch essere colmati poichy i dati richiesti non
 risultano definitivamente pisch essere presenti sul lato dei servers
 Nanometrics.
@@ -1669,15 +1669,15 @@ di SeisComP.
 
 Conclusioni
 
-Lo sviluppo ed i test eseguiti in questi ultimi due mesi hanno permesso
+Lo sviluppo e i test eseguiti in questi ultimi due mesi, hanno permesso
 di realizzare una libreria nel suo complesso stabile ed efficiente.
 Considerando congiuntamente libnmxp e nmxptool, anche il numero di
-funzionalita implementate risulta essere molto soddisfacente, la pisch
-importante fra tutte: la gestione delle connessioni di tipo Raw Stream
-la quale riesce a garantire una bassa latenza e nel contempo un numero
-minino di gaps. Grazie a questa caratteristica nmxptool apporta
+funzionalita implementate risulta essere molto soddisfacente. La pisch
+importante fra tutte i sicuramente la gestione delle connessioni di tipo
+Raw Stream, che riesce a garantire una bassa latenza e nel contempo un
+numero minino di gaps. Grazie a questa caratteristica nmxptool apporta
 finalmente un fondamentale contributo alla comunita degli utilizzatori
-del sistema SeisComp per l'acquisizione da servers Nanometrics,  infatti
+del sistema SeisComp per l'acquisizione da servers Nanometrics. Infatti
 naqs_plugin, il plug-in precedentemente sviluppato a tale scopo, non
 essendo in grado di gestire ne' i pacchetti compressi, ne' tantomeno
 connessioni di tipo Raw Stream, non poteva garantire minimamente la
@@ -1720,20 +1720,25 @@ National Data Center, Israele. (Guy Tikochinsky)
 Institute of Geodynamics, National Observatory of Athens, Grecia. (Nicos
 Melis)
 
-Possiamo quindi sintetizzare i risultati ottenuti dicendo che l'utilizzo
-di nmxptool con connessioni in tempo reale al NaqsServer (online) di
-tipo Raw Stream, garantisce un ottimo compromesso fra continuita del
-dato e latenza indotta, e il suo utilizzo con connessioni in differita
-al DataServer (offline) garantisce pienamente la completezza del dato.
+Possiamo quindi sintetizzare i risultati ottenuti rilevando che
+l'utilizzo di nmxptool con connessioni in tempo reale al NaqsServer
+(online) di tipo Raw Stream, garantisce un ottimo compromesso fra
+continuita del dato e latenza indotta, mentre il suo utilizzo con
+connessioni in differita al DataServer (offline) garantisce pienamente
+la completezza del dato (fig. 3).
 
 E' evidente inoltre che la versalita di nmxptool e il numero di
 funzionalita offerte, sono un valido supporto a procedure che
-necessitano di dati a richiesta, ad esempio dopo un evento sismico per
-il calcolo della magnitudo o del momento tensore.
+necessitano di dati a richiesta, come ad esempio il calcolo della
+magnitudo o del momento tensore dopo un evento sismico.
 
-Per il futuro l'autore intende manutenere libnmxp e nmxptool ed ampliare
-le funzionalita della libreria anche per quanto riguarda la gestione dei
-dati di tipo serial data, triggers, events e state-of-health.
+Per il futuro, l'autore intende manutenere libnmxp e nmxptool ed
+ampliare le funzionalita della libreria anche per quanto riguarda la
+gestione dei dati di tipo serial data, triggers, events e
+state-of-health. Inoltre i in corso di sviluppo un'estensione delle
+capacita di nmxptool al fine di poter essere eseguito come modulo del
+sistema Earthworm, poichy anche l'attuale modulo naqs2ew presenta simili
+problematiche di naqs_plugin con SeisComP.
 
 
 
@@ -2779,5 +2784,5 @@ GNU General Public License
 
  PAGE   
 
- PAGE   17 
+ PAGE   21 
 
