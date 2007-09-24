@@ -1630,6 +1630,17 @@ l'opzione -b, la quale permette di ricevere anche alcuni dati, in
 quantita discrezionale del server, che precedono quelli dell'istante
 attuale di richiesta.
 
+
+
+Figura 3. Archiviazione dati sismici in tempo reale e completamento in
+differita. Le due attivita si basano con modalita diverse su nmxptool.
+Nel primo caso, nmxptool viene utilizzato come plug-in seedLink in
+modalita Raw Stream, nel secondo i dati mancanti vengono richiesti da
+nmxptool al DataServer e ricongiunti alla struttura di archiviazione SDS
+di SeisComP.
+
+
+
 Plug-in SeedLink
 
 Con qualsiasi configurazione di opzioni descritte precedentemente,
@@ -1654,15 +1665,6 @@ determinata solo nel caso in cui si rimanga in attesa di uno o pisch
 pacchetti mancanti. Tale attesa termina nel momento in cui il buffer
 risulti completamente pieno comportando quindi una perdita di dati
 (gap).
-
-
-
-Figura 3. Archiviazione dati sismici in tempo reale e completamento in
-differita. Le due attivita si basano con modalita diverse su nmxptool.
-Nel primo caso, nmxptool viene utilizzato come plug-in seedLink in
-modalita Raw Stream, nel secondo i dati mancanti vengono richiesti da
-nmxptool al DataServer e ricongiunti alla struttura di archiviazione SDS
-di SeisComP.
 
 Al fine di garantire completezza dei dati archiviati i stata sviluppata
 una procedura dal nome ``Nanometrics Data Completness'' che basandosi
@@ -2865,5 +2867,5 @@ GNU General Public License
 
  PAGE   
 
- PAGE   21 
+ PAGE   20 
 
