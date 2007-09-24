@@ -117,7 +117,7 @@ comunicazione con un DataServer.
 La differenza significativa fra i due protocolli i che ad un NaqsServer
 ci si connette per ricevere dati, informazioni sui canali, triggers e
 eventi in tempo reale (online) mentre ad un DataServer ci si connette
-per accedere ai dati alle informazioni del passato (offline).
+per accedere ai dati e alle informazioni del passato (offline).
 
 Di seguito, senza alcuna pretesa di completezza, vengono descritti i
 comportamenti generali di questi due tipi di servers e dei rispettivi
@@ -1722,6 +1722,14 @@ Pacchetti Ritrasmessi ] * 100. Questo valore put essere interpretato
 come espressione della bonta nella scelta del valore di massima latenza
 tollerabile per quel dato canale. Su questo valore e secondariamente
 sulla latenza massima sono state ordinate le due tabelle.
+
+Normalmente il dato definitivo dovrebbe essere continuo e completo
+quindi la presenza di gaps determina in generale un'anomalia o un
+problema nel sistema di acquisizione. E' questo infatti il caso
+verificatosi per la stazione di MONC durante il test. Esaminando i log
+di nmxptool si constata che tali gaps sono fittizi poichy dovuti a
+errati valori temporali all'interno dei pacchetti e quindi probabilmente
+determinati da un mal funzionamento del GPS.
 
 Al momento nmxptool viene utilizzato come plug-in SeedLink anche nei
 seguenti istituti di ricerca ai quali va anche un riconoscimento per la
