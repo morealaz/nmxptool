@@ -66,9 +66,10 @@ ricevere dati in tempo reale e/o off-line, ed inoltre salvare questi in
 diversi formati, quali NMX e mini-SEED. Tale programma put inoltre
 essere utilizzato come plug-in per server SeedLink.
 
-L'intero sviluppo si i basato su [Nanometrics, Inc., 1989-2002], in
-particolare su Nanometrics Data Formats, Reference Guide inclusa nella
-sezione Software Reference Manuals.
+L'intero sviluppo si i basato sul manuale del corso Nanometrics
+[Nanometrics, Inc., 1989-2002], in particolare su Nanometrics Data
+Formats, Reference Guide inclusa nella sezione Software Reference
+Manuals.
 
 La libreria libnmxp e il programma nmxptool sono scritti in linguaggio C
 e sviluppati usando i GNU Build Tools (automake, autoconf, e script
@@ -81,10 +82,10 @@ ulteriori informazioni possono essere trovate su http://www.gnu.org/.
 Protocolli Nanometrics
 
 Prendendo ad esempio una configurazione tipica del flusso trasmissivo
-dei dati da una stazione sismica, passando per i servers Nanometrics,
-fino a raggiungere i processi di acquisizione e localizzazione situati
-nella Sala di Monitoraggio dell'INGV, come mostrato in figura 1 possiamo
-suddividere tale flusso in due parti:
+dei dati da una stazione sismica, acquisita attraverso i servers
+Nanometrics, fino a raggiungere i processi di acquisizione e
+localizzazione situati nella Sala di Monitoraggio dell'INGV, come
+mostrato in figura 1 possiamo suddividere tale flusso in due parti:
 
 Stazione Sismica - Nanometrics Servers: i dati ricevuti dalla porta
 seriale di uno strumento vengono  convertiti nel formato NMXP e poi
@@ -113,14 +114,15 @@ comunicazione di un client con un NaqsServer.
 Data Access Protocol versione 1.0, il quale definisce il protocollo di
 comunicazione con un DataServer.
 
-La differenza significativa fra i due i che ad un NaqsServer ci si
-connette per ricevere dati, informazioni sui canali, triggers e eventi
-in tempo reale (online) mentre ad un DataServer per accedere ai dati
-alle informazioni del passato (offline).
+La differenza significativa fra i due protocolli i che ad un NaqsServer
+ci si connette per ricevere dati, informazioni sui canali, triggers e
+eventi in tempo reale (online) mentre ad un DataServer ci si connette
+per accedere ai dati alle informazioni del passato (offline).
 
-Di seguito vengono descritti i comportamenti generali di questi due tipi
-di servers e dei rispettivi protocolli di trasmissione; per maggiori
-dettagli fare riferimento a [Nanometrics, Inc., 1989-2002], in
+Di seguito, senza alcuna pretesa di completezza, vengono descritti i
+comportamenti generali di questi due tipi di servers e dei rispettivi
+protocolli di trasmissione. Per maggiori dettagli fare riferimento al
+manuale del corso Nanometrics [Nanometrics, Inc., 1989-2002], in
 particolare Nanometrics Data Formats, Reference Guide inclusa nella
 sezione Software Reference Manuals.
 
@@ -135,12 +137,14 @@ compressi possono essere richiesti in due modi:
 
 Raw stream: tutti i pacchetti (sia quelli originali quelli ritrasmessi)
 sono rediretti nello stesso ordine nel quale sono ricevuti. I pacchetti
-possono essere persi, duplicati, non ordinati, ma con minimo ritardo.
+possono essere persi, duplicati, ritrasmessi, non ordinati, ma con
+minimo ritardo.
 
-Buffered stream: anche chiamato Short-term-complete data stream. I
-pacchetti per ogni canale sono garantiti essere in ordine cronologico ma
-con piccoli ``buchi'' ogni qualvolta si verifichi una ritrasmissione dal
-lato trasmissivo Stazione Sismica - Nanometrics Server.
+Buffered stream: anche chiamato Short-term-complete data stream. Per
+ogni canale viene garantito l'ordine cronologico dei pacchetti ma
+possono riscontrarsi piccoli gaps temporali ogni qualvolta si verifichi
+una ritrasmissione di un pacchetto dal lato trasmissivo Stazione Sismica
+- Nanometrics Server.
 
 Ogni programma che abbia necessita di interagire con un NaqsServer deve
 implementare il protocollo di comunicazione Private Data Stream versione
@@ -160,10 +164,9 @@ messaggio di AddChannels.
 
 Inviare un messaggio di tipo AddChannels allo Stream Manager.
 
-Ripetere fino alla fine: ricevere i pacchetti dallo Stream Manager ed
-elaborarli. Opzionalmente inviare nuovi messaggi AddChannels (passo 5)
-oppure RemoveChannels. Il client deve saper gestire i messaggi di tipo
-Error.
+Ricevere fino alla fine i pacchetti dallo Stream Manager ed elaborarli.
+Opzionalmente inviare nuovi messaggi AddChannels (passo 5) oppure
+RemoveChannels. Il client deve saper gestire i messaggi di tipo Error.
 
 Inviare un messaggio di tipo TerminateSubscription allo Stream Manager.
 
@@ -240,15 +243,15 @@ richiedere, ricevere ed interpretare i dati online e offline;
 analizzare ed eseguire calcoli in tempo reale sul flusso continuo dei
 dati;
 
-recuperare e convertire ``al volo'' i dati in diversi formati, (ad
+recuperare e convertire on-the-fly  i dati in diversi formati, (ad
 esempio mini-SEED records);
 
-redirezionare i dati in servers di altro tipo, (ad esempio SeedLink
-server).
+redirezionare i dati in servers di altro tipo, (ad esempio SeedLink o
+Earthworm).
 
 Al momento la libreria i in grado di trattare i dati di tipo time-series
 e non quelli di tipo serial data, triggers e state-of-healt. Per
-quest'ultimi si i rimandato lo sviluppo in un futuro prossimo.
+quest'ultimi si i rimandato lo sviluppo ad un futuro prossimo.
 
 Installazione
 
@@ -303,7 +306,8 @@ Il modo pisch semplice per compilare i sorgenti i:
 
 Lanciare il comando ./configure
 
-Se tutto ok lanciare il comando make per la compilazione
+Se configure termina con esito positivo allora lanciare il comando make
+per la compilazione
 
 Lanciare il comando make install per l'installazione
 
@@ -770,21 +774,21 @@ n_func_pd number of functions into the array p_func_pd
 
 
 
-Degne di particolare attenzione sono le funzioni che si occupano della
-gestione del buffer dei pacchetti nelle connessioni di tipo Raw Stream,
-cioi dei pacchetti compressi e con valore di Short-term-complete uguale
-a -1. Per un canale sismico la funzione nmxp_raw_stream_manage() si
-occupa di riordinare cronologicamente le strutture NMXP_DATA_PROCESS che
-ad ogni chiamata le vengono passate, successivamente di eseguire sulle
-stesse le n_func_pd funzioni i cui puntatori sono contenuti nell'array
-p_func_pd. Nel caso in cui rilevi una discontinuita temporale del dato,
-la funzione accoda in un buffer la struttura corrente inducendo cosm una
-latenza sul flusso dei dati per quel canale. L'attesa dei pacchetti
-mancanti termina quando il tempo massimo di latenza tollerabile,
-impostato al momento dell'inizializzazione per mezzo della funzione
-nmxp_raw_stream_init(), viene superato. In quest'ultimo caso la funzione
-forzera l'esecuzione delle funzioni sulla prima struttura disponibile
-causando quindi un gap sul flusso dei dati.
+Le funzioni degne di maggiore attenzione sono quelle che si occupano
+della gestione del buffer dei pacchetti nelle connessioni di tipo Raw
+Stream, cioi dei pacchetti compressi e con valore di Short-term-complete
+uguale a -1. Per un canale sismico la funzione nmxp_raw_stream_manage()
+si occupa di riordinare cronologicamente le strutture NMXP_DATA_PROCESS
+che ad ogni chiamata le vengono passate, successivamente di eseguire
+sulle stesse le n_func_pd funzioni i cui puntatori sono contenuti
+nell'array p_func_pd. Nel caso in cui rilevi una discontinuita temporale
+del dato, la funzione accoda in un buffer la struttura corrente
+inducendo cosm una latenza sul flusso dei dati per quel canale. L'attesa
+dei pacchetti mancanti termina quando il tempo massimo di latenza
+tollerabile, impostato al momento dell'inizializzazione per mezzo della
+funzione nmxp_raw_stream_init(), viene superato. In quest'ultimo caso la
+funzione forzera l'esecuzione delle funzioni sulla prima struttura
+disponibile causando quindi un gap sul flusso dei dati.
 
 Uso delle APIs per sviluppare una nuova applicazione
 
@@ -794,7 +798,7 @@ possono essere utilizzati come base per l'implementazione dei protocolli
 Data Access Protocol 1.0 e Private Data Stream 1.4. Su tali strutture di
 codice C i basato anche nmxptool descritto successivamente.
 
-Possiamo notare come risulti relativamente semplice sviluppare una
+E' importante notare come risulti relativamente semplice sviluppare una
 propria applicazione anche nel caso in cui si vogliano stabilire
 connessioni di tipo Raw Stream. Infatti lo sviluppatore non dovra far
 altro che utilizzare la struttura base del sorgente 2, eseguire le
@@ -1513,7 +1517,7 @@ Per avere un flusso di dati continuo ma in differita con uno specifico
 tempo stabilito i possibile utilizzare l'opzione -d. In questo modo si
 ricevono quindi dati in flusso continuo dal DataServer tenendo fissa la
 latenza al valore impostato. Ad esempio, per 1 ora (3600 secondi) di
-differita ecco un possibile comando:
+differita, un possibile comando sara:
 
 kyuzo:~ mtheo$ nmxptool -H hostname -d 3600 -C USI.???,VAGA.HHZ -g
 
@@ -1667,12 +1671,12 @@ risulti completamente pieno comportando quindi una perdita di dati
 (gap).
 
 Al fine di garantire completezza dei dati archiviati i stata sviluppata
-una procedura dal nome ``Nanometrics Data Completness'' che basandosi
-sulla versatilita di nmxptool recupera i dati mancanti con differita
-impostata a qualche ora o il giorno successivo. In questo caso i gaps
-risultanti non potranno pisch essere colmati poichy i dati richiesti non
-risultano definitivamente pisch essere presenti sul lato dei servers
-Nanometrics.
+una procedura dal nome nmdc, ovvero ``Nanometrics Data Completeness'',
+che basandosi sulla versatilita di nmxptool recupera i dati mancanti con
+differita impostata a qualche ora o il giorno successivo. In questo caso
+i gaps risultanti non potranno pisch essere colmati poichy i dati
+richiesti non risultano definitivamente pisch essere presenti sul lato
+dei servers Nanometrics.
 
 Conclusioni
 
@@ -1709,7 +1713,8 @@ il numero di gaps ottenuti in tempo reale dipenda fortemente dall'attesa
 dei pacchetti ritrasmessi.
 
 Numero di gaps definitivi ottenuti recuperando i dati il giorno dopo dal
-DataServer per mezzo di nmxptool lanciato in linea comando.
+DataServer per mezzo di nmxptool usato all'interno della procedura nmdc,
+``Nanometrics Data Completeness''.
 
 Percentuale dei pacchetti persi in tempo reale: il valore i il risultato
 della seguente espressione: [ (Gaps Tempo Reale - Gaps Definitivi) /
@@ -1751,9 +1756,13 @@ problematiche di naqs_plugin con SeisComP.
 
 Canale	Pacchetti Ritrasmessi	Latenza Massima (sec.)	Gaps
 
-Tempo reale	Gaps
+Tempo reale
 
-definitivi	Percentuale Persi
+SL plug-in	Gaps
+
+Definitivi
+
+nmdc	Percentuale Persi in tempo reale
 
 NOCI.HHZ
 
@@ -2294,9 +2303,13 @@ test il 22 settembre 2007 tramite nmxptool e seedllink.
 
 Canale	Pacchetti Ritrasmessi	Latenza Massima (sec.)	Gaps
 
-Tempo reale	Gaps
+Tempo reale
 
-definitivi	Percentuale Persi
+SL plug-in	Gaps
+
+Definitivi
+
+nmdc	Percentuale Persi in tempo reale
 
 AMUR.HHN
 
@@ -2867,5 +2880,5 @@ GNU General Public License
 
  PAGE   
 
- PAGE   20 
+ PAGE   22 
 
