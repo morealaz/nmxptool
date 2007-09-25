@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.65 2007-09-25 09:54:56 mtheo Exp $
+ * $Id: nmxptool.c,v 1.66 2007-09-25 11:45:05 mtheo Exp $
  *
  */
 
@@ -80,6 +80,7 @@ int main (int argc, char **argv) {
 
     char str_start_time[200];
     char str_end_time[200];
+    char str_pd_time[200];
 
     NMXP_MSG_SERVER type;
     void *buffer;
@@ -339,7 +340,8 @@ int main (int argc, char **argv) {
 			if(channelListSeq[cur_chan].significant) {
 			    if(nmxptool_check_and_log_gap(pd->time, channelListSeq[cur_chan].last_time, GAP_TOLLERANCE, pd->station, pd->channel)) {
 				channelListSeq[cur_chan].x_1 = 0;
-				nmxp_log(NMXP_LOG_WARN, 0, "%s.%s x0 set to zero!\n", pd->station, pd->channel);
+				nmxp_data_to_str(str_pd_time, pd->time);
+				nmxp_log(NMXP_LOG_WARN, 0, "%s.%s x0 set to zero at %s!\n", pd->station, pd->channel, str_pd_time);
 			    }
 			}
 		    }
@@ -539,7 +541,8 @@ int main (int argc, char **argv) {
 		    if(channelListSeq[cur_chan].significant) {
 			if(nmxptool_check_and_log_gap(pd->time, channelListSeq[cur_chan].last_time, GAP_TOLLERANCE, pd->station, pd->channel)) {
 			    channelListSeq[cur_chan].x_1 = 0;
-			    nmxp_log(NMXP_LOG_WARN, 0, "%s.%s x0 set to zero!\n", pd->station, pd->channel);
+			    nmxp_data_to_str(str_pd_time, pd->time);
+			    nmxp_log(NMXP_LOG_WARN, 0, "%s.%s x0 set to zero at %s!\n", pd->station, pd->channel, str_pd_time);
 			}
 		    }
 		}
