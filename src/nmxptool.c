@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.66 2007-09-25 11:45:05 mtheo Exp $
+ * $Id: nmxptool.c,v 1.67 2007-09-25 16:39:17 mtheo Exp $
  *
  */
 
@@ -703,7 +703,7 @@ int nmxptool_write_miniseed(NMXP_DATA_PROCESS *pd) {
     int ret = 0;
     if( (cur_chan = nmxp_chan_lookupKeyIndex(pd->key, channelList_subset)) != -1) {
 
-	ret = nmxp_data_msr_pack(pd, &data_seed, msr_list_chan[cur_chan], channelListSeq[cur_chan].x_1);
+	ret = nmxp_data_msr_pack(pd, &data_seed, msr_list_chan[cur_chan]);
 
     } else {
 	nmxp_log(1, 0, "Key %d not found in channelList_subset!\n", pd->key);

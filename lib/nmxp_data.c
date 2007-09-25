@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_data.c,v 1.37 2007-09-10 12:56:54 mtheo Exp $
+ * $Id: nmxp_data.c,v 1.38 2007-09-25 16:39:17 mtheo Exp $
  *
  */
 
@@ -576,7 +576,7 @@ int nmxp_data_seed_init(NMXP_DATA_SEED *data_seed) {
     }
 
 
-int nmxp_data_msr_pack(NMXP_DATA_PROCESS *pd, NMXP_DATA_SEED *data_seed, void *pmsr, int32_t x_1) {
+int nmxp_data_msr_pack(NMXP_DATA_PROCESS *pd, NMXP_DATA_SEED *data_seed, void *pmsr) {
     int ret =0;
 
     MSRecord *msr = pmsr;
@@ -615,7 +615,7 @@ int nmxp_data_msr_pack(NMXP_DATA_PROCESS *pd, NMXP_DATA_SEED *data_seed, void *p
 	/* msr_print(msr, 2); */
 
 	/* Pack the record(s) */
-	precords = msr_pack (msr, &nmxp_data_msr_write_handler, data_seed->srcname, &psamples, 1, verbose, x_1);
+	precords = msr_pack (msr, &nmxp_data_msr_write_handler, data_seed->srcname, &psamples, 1, verbose);
 
 	if ( precords == -1 )
 	    ms_log (2, "Cannot pack records\n");

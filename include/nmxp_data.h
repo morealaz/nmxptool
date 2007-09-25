@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_data.h,v 1.23 2007-09-10 12:56:54 mtheo Exp $
+ * $Id: nmxp_data.h,v 1.24 2007-09-25 16:39:17 mtheo Exp $
  *
  */
 
@@ -220,14 +220,13 @@ int nmxp_data_seed_init(NMXP_DATA_SEED *data_seed);
  * \param pd Pointer to struct NMXP_DATA_PROCESS.
  * \param data_seed Pointer to struct NMXP_DATA_SEED.
  * \param pmsr Pointer to mini-SEED record.
- * \param x_1 Last sample value of the last received packet.
  *
  * \warning pmsr is used like (void *) but it has to be a pointer to MSRecord !!!
  *
  * \return Returns the number records created on success and -1 on error. Return value of msr_pack().
  *
  */
-int nmxp_data_msr_pack(NMXP_DATA_PROCESS *pd, NMXP_DATA_SEED *data_seed, void *pmsr, int32_t x_1);
+int nmxp_data_msr_pack(NMXP_DATA_PROCESS *pd, NMXP_DATA_SEED *data_seed, void *pmsr);
 
 
 /*! \brief Swap 2 bytes. 
