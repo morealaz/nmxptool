@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.22 2007-09-21 06:44:33 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.23 2007-09-25 07:59:39 mtheo Exp $
  *
  */
 
@@ -444,6 +444,11 @@ int nmxptool_check_params(NMXPTOOL_PARAMS *params) {
     } else if(params->delay > 0 && params->start_time != 0   &&   params->end_time != 0) {
 	ret = -1;
 	nmxp_log(NMXP_LOG_NORM_NO, 0, "<delay> can not be used with options <start_time> and <end_time>.\n");
+    } else if( params->delay != DEFAULT_DELAY &&
+	    (params->delay < DEFAULT_DELAY_MINIMUM  || params->delay > DEFAULT_DELAY_MAXIMUM) ) {
+	ret = -1;
+	nmxp_log(NMXP_LOG_NORM_NO, 0, "<delay> has to be in the interval [%d..%d] secs.\n",
+		DEFAULT_DELAY_MINIMUM, DEFAULT_DELAY_MAXIMUM);
     } else if(params->rate < DEFAULT_RATE_MINIMUM  ||  params->rate > DEFAULT_RATE_MAXIMUM) {
 	ret = -1;
 	nmxp_log(NMXP_LOG_NORM_NO, 0, "<rate> has to be in the interval [%d..%d].\n",
@@ -454,10 +459,6 @@ int nmxptool_check_params(NMXPTOOL_PARAMS *params) {
     } else if(params->flag_buffered != 0 && params->start_time != 0   &&   params->end_time != 0) {
 	ret = -1;
 	nmxp_log(NMXP_LOG_NORM_NO, 0, "<buffered> can not be used with options <start_time> and <end_time>.\n");
-    } else if(params->delay < DEFAULT_DELAY_MINIMUM  || params->delay > DEFAULT_DELAY_MAXIMUM) {
-	ret = -1;
-	nmxp_log(NMXP_LOG_NORM_NO, 0, "<delay> has to be in the interval [%d..%d] secs.\n",
-		DEFAULT_DELAY_MINIMUM, DEFAULT_DELAY_MAXIMUM);
     } else if( params->stc == -1
 	    && (params->max_tollerable_latency < DEFAULT_MAX_TOLLERABLE_LATENCY_MINIMUM  ||
 		params->max_tollerable_latency > DEFAULT_MAX_TOLLERABLE_LATENCY_MAXIMUM)) {
