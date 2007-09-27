@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.67 2007-09-25 16:39:17 mtheo Exp $
+ * $Id: nmxptool.c,v 1.68 2007-09-27 15:08:57 mtheo Exp $
  *
  */
 
@@ -45,7 +45,10 @@ typedef struct {
 static void clientShutdown(int sig);
 static void clientDummyHandler(int sig);
 
+#ifdef HAVE_LIBMSEED
 int nmxptool_write_miniseed(NMXP_DATA_PROCESS *pd);
+#endif
+
 int nmxptool_send_raw_depoch(NMXP_DATA_PROCESS *pd);
 int nmxptool_print_seq_no(NMXP_DATA_PROCESS *pd);
 
@@ -663,8 +666,9 @@ static void clientShutdown(int sig) {
 	free(channelList);
     }
 
+    int i_chan = 0;
+
 #ifdef HAVE_LIBMSEED
-    int i_chan;
     if(*msr_list_chan) {
 	for(i_chan = 0; i_chan < channelList_subset->number; i_chan++) {
 	    if(msr_list_chan[i_chan]) {
@@ -698,6 +702,7 @@ static void clientDummyHandler(int sig) {
 
 
 
+#ifdef HAVE_LIBMSEED
 int nmxptool_write_miniseed(NMXP_DATA_PROCESS *pd) {
     int cur_chan;
     int ret = 0;
@@ -710,6 +715,7 @@ int nmxptool_write_miniseed(NMXP_DATA_PROCESS *pd) {
     }
     return ret;
 }
+#endif
 
 int nmxptool_print_seq_no(NMXP_DATA_PROCESS *pd) {
     int ret = 0;
