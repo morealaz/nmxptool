@@ -29,25 +29,39 @@ AM_INIT_AUTOMAKE([full_package_name], [version])
 AC_PROG_CC
 
 # Checks for libraries.
-# AC_CHECK_LIB([mseed], [msr_init], [], [AC_MSG_ERROR([library mseed is not installed!])])
 AC_CHECK_LIB(nsl,gethostent)
 AC_SEARCH_LIBS(socket, socket, ,
 	           [AC_CHECK_LIB(nsl, socket, LIBS="$LIBS -lsocket -lnsl", , -lsocket)])
-AC_CHECK_LIB([mseed], [msr_init], [], [AC_MSG_WARN([
-                    Library libmseed not found!
-                    Capability about management of mini-SEED will not available!
-	])])
-AC_CHECK_LIB([nmxp], [nmxp_openSocket], [], [AC_MSG_ERROR([library nmxp is not installed!])])
+AC_ARG_WITH([libmseed],
+	    [AS_HELP_STRING([--without-libmseed], [disable support for libmseed])],
+	    [], 
+	    [with_libmseed=yes]
+	    ) 
+
+	    AS_IF([test "x$with_libmseed" != xno], 
+		  [AC_CHECK_LIB([mseed], [msr_init],
+				[LIBS="$LIBS -lmseed"
+				 AC_DEFINE([HAVE_LIBMSEED], [1], [Define if you have libreadline]) 
+				 AC_CHECK_LIB([nmxp], [nmxp_data_msr_pack],
+					      [],
+					      [AC_MSG_FAILURE([libmseed is installed but libnmxp does not support it. (Try --without-libmseed to disable)])])
+				 ], 
+				 [AC_MSG_WARN([
+				  libmseed is not available (--without-libmseed to disable)
+				 ])
+				 AC_CHECK_LIB([nmxp], [nmxp_openSocket], [], [AC_MSG_ERROR([libnmxp is not installed or it supports libmseed
+					       but libmseed is not available anymore! Try to recompile libnmxp!
+					       ])]) 
+					       ], 
+					       )
+		  ],
+		  [ AC_CHECK_LIB([nmxp], [nmxp_openSocket], [], [AC_MSG_ERROR([libnmxp is not installed or supports libmseed (--with-libmseed to enable)!])]) ]
+		  ) 
 
 
 # Checks for header files.
 AC_HEADER_STDC
 AC_CHECK_HEADERS([stdint.h stdlib.h string.h])
-AC_CHECK_HEADER(libmseed.h, [], [AC_MSG_WARN([
-                    Header file <libmseed.h> not found!
-                    Capability about management of mini-SEED will not available!
-	])])
-AC_CHECK_HEADER(nmxp.h, [], [AC_MSG_ERROR([header file <nmxp.h> is required])])
 
 
 # Checks for files.
