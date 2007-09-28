@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_base.c,v 1.30 2007-09-11 14:05:29 mtheo Exp $
+ * $Id: nmxp_base.c,v 1.31 2007-09-28 21:07:24 mtheo Exp $
  *
  */
 
@@ -27,11 +27,6 @@
 #include <unistd.h>
 
 #include "config.h"
-
-#ifdef HAVE_LIBMSEED
-#include <libmseed.h>
-#endif
-
 
 #define MAX_OUTDATA 4096
 
