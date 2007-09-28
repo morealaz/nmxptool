@@ -29,5 +29,9 @@ int nmx2ewring (NMXP_DATA_PROCESS *pd, SHM_INFO *pregionOut, MSG_LOGO *pwaveLogo
 
 int nmxptool_nxm2ew(NMXP_DATA_PROCESS *pd);
 
+void nmxptool_ew_configure (char ** argvec);
+
+int nmxptool_ew_proc_configfile (char * configfile);
+
 #endif
 
