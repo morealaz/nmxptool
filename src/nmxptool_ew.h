@@ -24,6 +24,8 @@
 
 extern SHM_INFO      regionOut;         /* Shared memory region                 */
 
+extern long  ringKey;                   /* Key to output shared memory region   */
+
 int nmxptool_nxm2ew(NMXP_DATA_PROCESS *pd);
 
 #endif

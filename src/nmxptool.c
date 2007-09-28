@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.72 2007-09-28 13:24:52 mtheo Exp $
+ * $Id: nmxptool.c,v 1.73 2007-09-28 13:30:37 mtheo Exp $
  *
  */
 
@@ -123,7 +123,6 @@ int main (int argc, char **argv) {
     sigaction(SIGPIPE, &sa, NULL); 
 #endif
 
-
     /* Default is normal output */
     nmxp_log(-1, 0);
 
@@ -133,6 +132,7 @@ int main (int argc, char **argv) {
     }
 
     if(params.ew_configuration_file) {
+	/* TODO set structure "params" from file */
 	nmxp_log(NMXP_LOG_NORM_NO, 0, "\n");
 	nmxp_log(NMXP_LOG_WARN, 0, "Earthworm support is still under development!\n");
 	nmxp_log(NMXP_LOG_NORM_NO, 0, "\n");
@@ -142,31 +142,32 @@ int main (int argc, char **argv) {
 	if(nmxptool_check_params(&params) != 0) {
 	    return 1;
 	}
+
+	if(params.flag_verbose) {
+	    nmxp_log(-1, 2);
+	}
+
+	/* List available channels on server */
+	if(params.flag_listchannels) {
+
+	    // TOREMOVE
+	    // channelList = nmxp_getAvailableChannelList(params.hostname, params.portnumberpds, NMXP_DATA_TIMESERIES);
+	    // TOREMOVE
+	    // nmxp_chan_print_channelList(channelList);
+
+	    nmxp_getMetaChannelList(params.hostname, params.portnumberdap, NMXP_DATA_TIMESERIES, params.flag_request_channelinfo);
+
+	    return 1;
+	}
     }
 
 #ifdef HAVE_EARTHWORMOBJS
-    /* Attach to Output transport ring */
-    tport_attach (&regionOut, ringKey);
-    logit ("t", "nmxp2ew version %s\n", VERSION);
+    if(params.ew_configuration_file) {
+	/* Attach to Output transport ring */
+	tport_attach (&regionOut, ringKey);
+	logit ("t", "nmxp2ew version %s\n", VERSION);
+    }
 #endif
-
-
-    if(params.flag_verbose) {
-	nmxp_log(-1, 2);
-    }
-
-    /* List available channels on server */
-    if(params.flag_listchannels) {
-
-	// TOREMOVE
-	// channelList = nmxp_getAvailableChannelList(params.hostname, params.portnumberpds, NMXP_DATA_TIMESERIES);
-	// TOREMOVE
-	// nmxp_chan_print_channelList(channelList);
-
-	nmxp_getMetaChannelList(params.hostname, params.portnumberdap, NMXP_DATA_TIMESERIES, params.flag_request_channelinfo);
-
-	return 1;
-    }
 
     /* Get list of available channels and get a subset list of params.channels */
     channelList = nmxp_getAvailableChannelList(params.hostname, params.portnumberpds, NMXP_DATA_TIMESERIES);
@@ -648,10 +649,11 @@ int main (int argc, char **argv) {
 	}
 
 #ifdef HAVE_EARTHWORMOBJS
-	tport_detach(&regionOut);
-	logit("t","%s terminated\n", argv[0]);
+	if(params.ew_configuration_file) {
+	    tport_detach(&regionOut);
+	    logit("t","%s terminated\n", argv[0]);
+	}
 #endif
-
 
     return 0;
 } /* End MAIN */
