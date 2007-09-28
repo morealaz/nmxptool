@@ -63,6 +63,26 @@ AC_ARG_WITH([libmseed],
 AC_HEADER_STDC
 AC_CHECK_HEADERS([stdint.h stdlib.h string.h])
 
+# Earthworm files
+AC_CHECK_HEADERS([earthworm.h kom.h transport.h trace_buf.h],
+		 [AC_DEFINE([HAVE_EARTHWORMFILES_H], [1], [Define if you have earthworm header file])],
+		 AC_MSG_WARN([earthworm header files not found!]))
+
+AC_CHECK_FILES([$EW_HOME/$EW_VERSION/lib/kom.o
+		$EW_HOME/$EW_VERSION/lib/getutil.o
+		$EW_HOME/$EW_VERSION/lib/logit_mt.o
+		$EW_HOME/$EW_VERSION/lib/socket_ew_common.o
+		$EW_HOME/$EW_VERSION/lib/transport.o
+		$EW_HOME/$EW_VERSION/lib/sleep_ew.o
+		$EW_HOME/$EW_VERSION/lib/socket_ew.o
+		$EW_HOME/$EW_VERSION/lib/time_ew.o
+		$EW_HOME/$EW_VERSION/lib/threads_ew.o
+		$EW_HOME/$EW_VERSION/lib/sema_ew.o
+		$EW_HOME/$EW_VERSION/lib/swap.o
+		$EW_HOME/$EW_VERSION/lib/mem_circ_queue.o],
+		[AC_DEFINE([HAVE_EARTHWORMOBJS], [1], [Define if you have earthworm object files])],
+		AC_MSG_WARN([earthworm object file not found!]))
+
 
 # Checks for files.
 # TODO optional
