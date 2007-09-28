@@ -22,9 +22,10 @@
 #include <transport.h>
 #include <trace_buf.h>
 
-extern SHM_INFO      regionOut;         /* Shared memory region                 */
+void nmxptool_ew_attach();
+void nmxptool_ew_detach();
 
-extern long  ringKey;                   /* Key to output shared memory region   */
+int nmx2ewring (NMXP_DATA_PROCESS *pd, SHM_INFO *pregionOut, MSG_LOGO *pwaveLogo);
 
 int nmxptool_nxm2ew(NMXP_DATA_PROCESS *pd);
 
