@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.74 2007-09-28 15:30:13 mtheo Exp $
+ * $Id: nmxptool.c,v 1.75 2007-09-28 21:04:27 mtheo Exp $
  *
  */
 
@@ -53,7 +53,10 @@ static void clientDummyHandler(int sig);
 int nmxptool_write_miniseed(NMXP_DATA_PROCESS *pd);
 #endif
 
+#ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
 int nmxptool_send_raw_depoch(NMXP_DATA_PROCESS *pd);
+#endif
+
 int nmxptool_print_seq_no(NMXP_DATA_PROCESS *pd);
 
 int nmxptool_check_and_log_gap(double time1, double time2, const double gap_tollerance, const char *station, const char *channel);
@@ -755,6 +758,7 @@ int nmxptool_print_seq_no(NMXP_DATA_PROCESS *pd) {
 }
 
 
+#ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
 int nmxptool_send_raw_depoch(NMXP_DATA_PROCESS *pd) {
     /* TODO Set values */
     const int usec_correction = 0;
@@ -763,6 +767,7 @@ int nmxptool_send_raw_depoch(NMXP_DATA_PROCESS *pd) {
     return send_raw_depoch(pd->station, pd->channel, pd->time, usec_correction, timing_quality,
 	    pd->pDataPtr, pd->nSamp);
 }
+#endif
 
 
 

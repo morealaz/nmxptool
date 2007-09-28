@@ -36,32 +36,39 @@ AC_ARG_WITH([libmseed],
 	    [AS_HELP_STRING([--without-libmseed], [disable support for libmseed])],
 	    [], 
 	    [with_libmseed=yes]
-	    ) 
+) 
+
 AC_ARG_WITH([ew],
 	    [AS_HELP_STRING([--without-ew], [disable support for earthworm])],
 	    [], 
 	    [with_ew=yes]
-	    ) 
+) 
 
-	    AS_IF([test "x$with_libmseed" != xno], 
-		  [AC_CHECK_LIB([mseed], [msr_init],
-				[LIBS="$LIBS -lmseed"
-				 AC_DEFINE([HAVE_LIBMSEED], [1], [Define if you have libreadline]) 
-				 AC_CHECK_LIB([nmxp], [nmxp_data_msr_pack],
-					      [],
-					      [AC_MSG_FAILURE([libmseed is installed but libnmxp does not support it. (Try --without-libmseed to disable)])])
-				 ], 
-				 [AC_MSG_WARN([
-				  libmseed is not available (--without-libmseed to disable)
-				 ])
-				 AC_CHECK_LIB([nmxp], [nmxp_openSocket], [], [AC_MSG_ERROR([libnmxp is not installed or it supports libmseed
-					       but libmseed is not available anymore! Try to recompile libnmxp!
-					       ])]) 
-					       ], 
-					       )
-		  ],
-		  [ AC_CHECK_LIB([nmxp], [nmxp_openSocket], [], [AC_MSG_ERROR([libnmxp is not installed or supports libmseed (--with-libmseed to enable)!])]) ]
-		  ) 
+AC_ARG_WITH([seedlink],
+	    [AS_HELP_STRING([--without-seedlink], [disable support for seedlink])],
+	    [], 
+	    [with_seedlink=yes]
+) 
+
+AS_IF([test "x$with_libmseed" != xno], 
+      [AC_CHECK_LIB([mseed], [msr_init],
+		    [LIBS="$LIBS -lmseed"
+		     AC_DEFINE([HAVE_LIBMSEED], [1], [Define if you have libreadline]) 
+		     AC_CHECK_LIB([nmxp], [nmxp_data_msr_pack],
+				  [],
+				  [AC_MSG_FAILURE([libmseed is installed but libnmxp does not support it. (Try --without-libmseed to disable)])])
+		     ], 
+		     [AC_MSG_WARN([
+		      libmseed is not available (--without-libmseed to disable)
+		     ])
+		     AC_CHECK_LIB([nmxp], [nmxp_openSocket], [], [AC_MSG_ERROR([libnmxp is not installed or it supports libmseed
+				   but libmseed is not available anymore! Try to recompile libnmxp!
+				   ])]) 
+				   ], 
+				   )
+      ],
+      [ AC_CHECK_LIB([nmxp], [nmxp_openSocket], [], [AC_MSG_ERROR([libnmxp is not installed or supports libmseed (--with-libmseed to enable)!])]) ]
+) 
 
 
 # Checks for header files.
@@ -69,7 +76,7 @@ AC_HEADER_STDC
 AC_CHECK_HEADERS([stdint.h stdlib.h string.h])
 
 
-# Earthworm check
+# Earthworm check.
 AS_IF([test "x$with_ew" != xno], 
       [
     AS_IF([test "x$EW_HOME" != x], 
@@ -89,8 +96,11 @@ AS_IF([test "x$with_ew" != xno],
 
 
 # Checks for files.
-# TODO optional
-AC_CHECK_FILES([./src/seedlink_plugin.c ./src/seedlink_plugin.h], [], AC_MSG_ERROR([seedlink plug-in sources not found!]))
+
+# Seedlink check.
+AS_IF([test "x$with_seedlink" != xno], 
+      [AC_CHECK_FILES([./src/seedlink_plugin.c ./src/seedlink_plugin.h], [], AC_MSG_ERROR([seedlink plug-in sources not found!]))]
+)
 
 
 # Checks for typedefs, structures, and compiler characteristics.

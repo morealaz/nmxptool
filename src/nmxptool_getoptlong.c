@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.25 2007-09-28 13:24:52 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.26 2007-09-28 21:04:27 mtheo Exp $
  *
  */
 
@@ -77,7 +77,14 @@ void nmxptool_supports() {
     nmxp_log(NMXP_LOG_NORM_NO, 0, "NO");
 #endif
 
-    nmxp_log(NMXP_LOG_NORM_NO, 0, ", earthworm ");
+    nmxp_log(NMXP_LOG_NORM_NO, 0, ", SeedLink ");
+#ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
+    nmxp_log(NMXP_LOG_NORM_NO, 0, "YES");
+#else
+    nmxp_log(NMXP_LOG_NORM_NO, 0, "NO");
+#endif
+
+    nmxp_log(NMXP_LOG_NORM_NO, 0, ", Earthworm ");
 #ifdef HAVE_EARTHWORMOBJS
     nmxp_log(NMXP_LOG_NORM_NO, 0, "YES");
 #else
