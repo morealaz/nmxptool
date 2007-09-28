@@ -71,7 +71,7 @@ void nmxptool_ew_detach() {
 }
 
 
-int nmx2ewring (NMXP_DATA_PROCESS *pd, SHM_INFO *pregionOut, MSG_LOGO *pwaveLogo) {
+int nmxptool_ew_pd2ewring (NMXP_DATA_PROCESS *pd, SHM_INFO *pregionOut, MSG_LOGO *pwaveLogo) {
     //m static MSrecord * msr = NULL;
     TracePacket tbuf;
     int tracebuf2 = 0;   /* TRACEBUF2 => 0: none, 1: available, 2: populated */
@@ -201,11 +201,11 @@ int nmx2ewring (NMXP_DATA_PROCESS *pd, SHM_INFO *pregionOut, MSG_LOGO *pwaveLogo
     }
 
     return EW_SUCCESS;
-}				/* End of nmx2ewring() */
+}				/* End of nmxptool_ew_pd2ewring() */
 
 int nmxptool_nxm2ew(NMXP_DATA_PROCESS *pd) {
     int ret = 0;
-    ret = nmx2ewring (pd, &regionOut, &waveLogo);
+    ret = nmxptool_ew_pd2ewring (pd, &regionOut, &waveLogo);
     return ret;
 }
 
@@ -585,6 +585,64 @@ int nmxptool_ew_proc_configfile (char * configfile) {
 
     return EW_SUCCESS;
 }				/* End of nmxptool_ew_proc_configfile() */
+
+/***************************************************************************
+ * nmxptoole_ew_report_status():
+ * Send error and hearbeat messages to transport ring.
+ *
+ ***************************************************************************/
+void nmxptoole_ew_report_status( MSG_LOGO * pLogo, short code, char * message ) {
+    char          outMsg[MAXMESSAGELEN];  /* The outgoing message.        */
+    time_t        msgTime;        /* Time of the message.                 */
+
+    /*  Get the time of the message                                       */
+    time( &msgTime );
+
+    /* Build & process the message based on the type */
+    if ( pLogo->type == typeHeartbeat ) {
+	sprintf( outMsg, "%ld %ld\n\0", (long) msgTime, (long) myPid );
+
+	/* Write the message to the output region */
+	if ( tport_putmsg( &regionOut, &hrtLogo, (long) strlen( outMsg ),
+		    outMsg ) != PUT_OK ) {
+	    /* Log an error message */
+	    logit( "et", "nmxp2ew: Failed to send a heartbeat message (%d).\n",
+		    code );
+	}
+    } else {
+	if ( message ) {
+	    sprintf( outMsg, "%ld %hd %s\n\0", (long) msgTime, code, message );
+	    logit("t","Error:%d (%s)\n", code, message );
+	} else {
+	    sprintf( outMsg, "%ld %hd\n\0", (long) msgTime, code );
+	    logit("t","Error:%d (No description)\n", code );
+	}
+
+	/* Write the message to the output region  */
+	if ( tport_putmsg( &regionOut, &errLogo, (long) strlen( outMsg ),
+		    outMsg ) != PUT_OK ) {
+	    /*     Log an error message                                    */
+	    logit( "et", "nmxp2ew: Failed to send an error message (%d).\n",
+		    code );
+	}
+
+    }
+}				/* End of nmxptool_ew_report_status() */
+
+
+/***************************************************************************
+ * nmxptool_ew_logit_msg() and nmxptool_ew_logit_err():
+ * 
+ * Hooks for Earthworm logging facility.
+ ***************************************************************************/
+void nmxptool_ew_logit_msg (const char *msg) {
+  logit ("t", (char *) msg);
+}
+
+void nmxptool_ew_logit_err (const char *msg) {
+  logit ("et", (char *) msg);
+}
+
 
 #endif
 
