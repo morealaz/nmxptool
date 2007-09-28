@@ -24,12 +24,8 @@
 #include <kom.h>
 #include <transport.h>
 #include <trace_buf.h>
-#endif
 
 #include "nmxptool_ew.h"
-
-
-#ifdef HAVE_EARTHWORMOBJS
 
 
 #define MAXMESSAGELEN   160     /* Maximum length of a status or error  */
@@ -63,6 +59,11 @@ int           heartbeatInt;      /* Heartbeat interval (seconds)         */
 int           logSwitch;         /* 1 -> write log, 0 -> no log          */
                           /* 2 -> write module log but not stderr/stdout */
 
+int nmxptool_nxm2ew(NMXP_DATA_PROCESS *pd) {
+    int ret = 0;
+
+    return ret;
+}
 
 #endif
 

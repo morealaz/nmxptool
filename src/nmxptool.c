@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.70 2007-09-28 09:51:25 mtheo Exp $
+ * $Id: nmxptool.c,v 1.71 2007-09-28 12:57:21 mtheo Exp $
  *
  */
 
@@ -23,7 +23,10 @@
 
 #include "config.h"
 #include "nmxptool_getoptlong.h"
+
+#ifdef HAVE_EARTHWORMOBJS
 #include "nmxptool_ew.h"
+#endif
 
 #ifdef HAVE_LIBMSEED
 #include <libmseed.h>
@@ -629,6 +632,11 @@ int main (int argc, char **argv) {
 	if(channelList_subset) {
 	    free(channelList_subset);
 	}
+
+#ifdef HAVE_EARTHWORMOBJS
+	tport_detach(&regionOut);
+	logit("t","%s terminated\n", argv[0]);
+#endif
 
 
     return 0;
