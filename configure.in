@@ -72,30 +72,29 @@ AC_CHECK_HEADERS([stdint.h stdlib.h string.h])
 # Earthworm check
 AS_IF([test "x$with_ew" != xno], 
       [
-AS_IF([test "x$EW_HOME" != x], 
-      [
-# AC_CHECK_HEADERS([earthworm.h kom.h transport.h trace_buf.h],
-#		 [AC_DEFINE([HAVE_EARTHWORMFILES_H], [1], [Define if you have earthworm header file])],
-#		 AC_MSG_WARN([earthworm header files not found!]))
-AC_CHECK_FILES([$EW_HOME/$EW_VERSION/lib/kom.o
-		$EW_HOME/$EW_VERSION/lib/getutil.o
-		$EW_HOME/$EW_VERSION/lib/logit_mt.o
-		$EW_HOME/$EW_VERSION/lib/socket_ew_common.o
-		$EW_HOME/$EW_VERSION/lib/transport.o
-		$EW_HOME/$EW_VERSION/lib/sleep_ew.o
-		$EW_HOME/$EW_VERSION/lib/socket_ew.o
-		$EW_HOME/$EW_VERSION/lib/time_ew.o
-		$EW_HOME/$EW_VERSION/lib/threads_ew.o
-		$EW_HOME/$EW_VERSION/lib/sema_ew.o
-		$EW_HOME/$EW_VERSION/lib/swap.o
-		$EW_HOME/$EW_VERSION/lib/mem_circ_queue.o],
-		[AC_DEFINE([HAVE_EARTHWORMOBJS], [1], [Define if you have earthworm object files])],
-		AC_MSG_WARN([earthworm object file not found!]))
-],
-[AC_MSG_WARN([Earthworm files are not available (--without-ew to disable)])]
-)
-],
-[AC_MSG_WARN([Earthworm support has been disabled!])]
+    AS_IF([test "x$EW_HOME" != x], 
+	  [
+	# AC_CHECK_HEADERS([earthworm.h kom.h transport.h trace_buf.h],
+	#		 [AC_DEFINE([HAVE_EARTHWORMFILES_H], [1], [Define if you have earthworm header file])],
+	#		 AC_MSG_WARN([earthworm header files not found!]))
+	AC_CHECK_FILES([$EW_HOME/$EW_VERSION/lib/kom.o $EW_HOME/$EW_VERSION/lib/getutil.o $EW_HOME/$EW_VERSION/lib/logit_mt.o $EW_HOME/$EW_VERSION/lib/socket_ew_common.o $EW_HOME/$EW_VERSION/lib/transport.o $EW_HOME/$EW_VERSION/lib/sleep_ew.o $EW_HOME/$EW_VERSION/lib/socket_ew.o $EW_HOME/$EW_VERSION/lib/time_ew.o $EW_HOME/$EW_VERSION/lib/threads_ew.o $EW_HOME/$EW_VERSION/lib/sema_ew.o $EW_HOME/$EW_VERSION/lib/swap.o $EW_HOME/$EW_VERSION/lib/mem_circ_queue.o], [AC_DEFINE([HAVE_EARTHWORMOBJS], [1], [Define if you have earthworm object files])], [AC_MSG_ERROR(Some earthworm object files is missing!)] )
+	LIBS="$LIBS $EW_HOME/$EW_VERSION/lib/kom.o \
+	$EW_HOME/$EW_VERSION/lib/getutil.o \
+	$EW_HOME/$EW_VERSION/lib/logit_mt.o \
+	$EW_HOME/$EW_VERSION/lib/socket_ew_common.o \
+	$EW_HOME/$EW_VERSION/lib/transport.o \
+	$EW_HOME/$EW_VERSION/lib/sleep_ew.o \
+	$EW_HOME/$EW_VERSION/lib/socket_ew.o \
+	$EW_HOME/$EW_VERSION/lib/time_ew.o \
+	$EW_HOME/$EW_VERSION/lib/threads_ew.o \
+	$EW_HOME/$EW_VERSION/lib/sema_ew.o \
+	$EW_HOME/$EW_VERSION/lib/swap.o \
+	$EW_HOME/$EW_VERSION/lib/mem_circ_queue.o"
+	],
+	[AC_MSG_WARN([Earthworm files are not available (--without-ew to disable)])]
+    )
+    ],
+    [AC_MSG_WARN([Earthworm support has been disabled!])]
 )
 
 
