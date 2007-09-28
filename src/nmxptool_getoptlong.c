@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.23 2007-09-25 07:59:39 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.24 2007-09-28 10:13:48 mtheo Exp $
  *
  */
 
@@ -67,10 +67,30 @@ void nmxptool_version() {
 	);
 }
 
+void nmxptool_supports() {
+    nmxp_log(NMXP_LOG_NORM_NO, 0, "\
+         Support for: libmseed ");
+#ifdef HAVE_LIBMSEED
+    nmxp_log(NMXP_LOG_NORM_NO, 0, "YES");
+#else
+    nmxp_log(NMXP_LOG_NORM_NO, 0, "NO");
+#endif
+
+    nmxp_log(NMXP_LOG_NORM_NO, 0, ", earthworm ");
+#ifdef HAVE_EARTHWORMOBJS
+    nmxp_log(NMXP_LOG_NORM_NO, 0, "YES");
+#else
+    nmxp_log(NMXP_LOG_NORM_NO, 0, "NO");
+#endif
+    nmxp_log(NMXP_LOG_NORM_NO, 0, ".\n");
+}
+
 
 void nmxptool_usage(struct option long_options[])
 {
     nmxptool_version();
+    nmxptool_supports();
+
     nmxp_log(NMXP_LOG_NORM_NO, 0, "\
 \n\
 Usage: %s -H hostname --listchannels [...]\n\

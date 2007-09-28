@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.h,v 1.14 2007-09-21 06:44:33 mtheo Exp $
+ * $Id: nmxptool_getoptlong.h,v 1.15 2007-09-28 10:13:48 mtheo Exp $
  *
  */
 
@@ -70,6 +70,9 @@ void nmxptool_author_support();
 
 /*! \brief Print version of tool */
 void nmxptool_version();
+
+/*! \brief Print supports of tool i.e. libmseed, earthworm, ...*/
+void nmxptool_supports();
 
 /*! \brief Print the usage of paramters */
 void nmxptool_usage(struct option long_options[]);
