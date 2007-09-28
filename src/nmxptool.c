@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.69 2007-09-28 09:47:40 mtheo Exp $
+ * $Id: nmxptool.c,v 1.70 2007-09-28 09:51:25 mtheo Exp $
  *
  */
 
@@ -31,14 +31,6 @@
 
 #ifdef HAVE___SRC_SEEDLINK_PLUGIN_H
 #include "seedlink_plugin.h"
-#endif
-
-#ifdef HAVE_EARTHWORMOBJS
-/* Earthworm includes */
-#include <earthworm.h>
-#include <kom.h>
-#include <transport.h>
-#include <trace_buf.h>
 #endif
 
 #define CURRENT_NETWORK (params.network)? params.network : DEFAULT_NETWORK

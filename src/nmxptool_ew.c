@@ -18,9 +18,19 @@
 #include "config.h"
 #include "nmxp.h"
 
+#ifdef HAVE_EARTHWORMOBJS
+/* Earthworm includes */
+#include <earthworm.h>
+#include <kom.h>
+#include <transport.h>
+#include <trace_buf.h>
+#endif
+
 #include "nmxptool_ew.h"
 
+
 #ifdef HAVE_EARTHWORMOBJS
+
 
 #define MAXMESSAGELEN   160     /* Maximum length of a status or error  */
                                 /*   message.                           */
@@ -52,6 +62,7 @@ MSG_LOGO      errLogo;           /* Error message logo                   */
 int           heartbeatInt;      /* Heartbeat interval (seconds)         */
 int           logSwitch;         /* 1 -> write log, 0 -> no log          */
                           /* 2 -> write module log but not stderr/stdout */
+
 
 #endif
 
