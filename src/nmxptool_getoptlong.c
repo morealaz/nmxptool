@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.24 2007-09-28 10:13:48 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.25 2007-09-28 13:24:52 mtheo Exp $
  *
  */
 
@@ -38,6 +38,7 @@ const NMXPTOOL_PARAMS NMXPTOOL_PARAMS_DEFAULT =
     NULL,
     DEFAULT_DELAY,
     DEFAULT_MAX_TOLLERABLE_LATENCY,
+    NULL,
     0,
     0,
     0,
@@ -274,6 +275,20 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
     strcat(optstr, "k:");
 #endif
 
+    /* Check number of command line arguments for earthworm */
+    if (argc == 2)
+    {
+	int l = strlen(argv[1]);
+	if(l >= 3) {
+	    if(argv[1][0] != '-') {
+		if(argv[1][l-2] == '.'  &&  argv[1][l-1] == 'd') {
+		    params->ew_configuration_file = argv[1];
+		    return 0;
+		}
+	    }
+	}
+    }
+
     while ( (c = getopt_long (argc, argv, optstr, long_options, &option_index)) != -1) {
 
 	/* BE CAREFUL if use synonym options !!! */
@@ -439,7 +454,9 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 int nmxptool_check_params(NMXPTOOL_PARAMS *params) {
     int ret = 0;
 
-    if(params->hostname == NULL) {
+    if(params->ew_configuration_file != NULL) {
+	/* Do nothing */
+    } else if(params->hostname == NULL) {
 	ret = -1;
 	nmxp_log(NMXP_LOG_NORM_NO, 0, "<hostname> is required!\n");
     } else if(params->flag_listchannels) {
