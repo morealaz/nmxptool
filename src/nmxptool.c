@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.68 2007-09-27 15:08:57 mtheo Exp $
+ * $Id: nmxptool.c,v 1.69 2007-09-28 09:47:40 mtheo Exp $
  *
  */
 
@@ -23,6 +23,7 @@
 
 #include "config.h"
 #include "nmxptool_getoptlong.h"
+#include "nmxptool_ew.h"
 
 #ifdef HAVE_LIBMSEED
 #include <libmseed.h>
@@ -30,6 +31,14 @@
 
 #ifdef HAVE___SRC_SEEDLINK_PLUGIN_H
 #include "seedlink_plugin.h"
+#endif
+
+#ifdef HAVE_EARTHWORMOBJS
+/* Earthworm includes */
+#include <earthworm.h>
+#include <kom.h>
+#include <transport.h>
+#include <trace_buf.h>
 #endif
 
 #define CURRENT_NETWORK (params.network)? params.network : DEFAULT_NETWORK

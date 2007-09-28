@@ -37,6 +37,11 @@ AC_ARG_WITH([libmseed],
 	    [], 
 	    [with_libmseed=yes]
 	    ) 
+AC_ARG_WITH([ew],
+	    [AS_HELP_STRING([--without-ew], [disable support for earthworm])],
+	    [], 
+	    [with_ew=yes]
+	    ) 
 
 	    AS_IF([test "x$with_libmseed" != xno], 
 		  [AC_CHECK_LIB([mseed], [msr_init],
@@ -63,11 +68,15 @@ AC_ARG_WITH([libmseed],
 AC_HEADER_STDC
 AC_CHECK_HEADERS([stdint.h stdlib.h string.h])
 
-# Earthworm files
-AC_CHECK_HEADERS([earthworm.h kom.h transport.h trace_buf.h],
-		 [AC_DEFINE([HAVE_EARTHWORMFILES_H], [1], [Define if you have earthworm header file])],
-		 AC_MSG_WARN([earthworm header files not found!]))
 
+# Earthworm check
+AS_IF([test "x$with_ew" != xno], 
+      [
+AS_IF([test "x$EW_HOME" != x], 
+      [
+# AC_CHECK_HEADERS([earthworm.h kom.h transport.h trace_buf.h],
+#		 [AC_DEFINE([HAVE_EARTHWORMFILES_H], [1], [Define if you have earthworm header file])],
+#		 AC_MSG_WARN([earthworm header files not found!]))
 AC_CHECK_FILES([$EW_HOME/$EW_VERSION/lib/kom.o
 		$EW_HOME/$EW_VERSION/lib/getutil.o
 		$EW_HOME/$EW_VERSION/lib/logit_mt.o
@@ -82,6 +91,12 @@ AC_CHECK_FILES([$EW_HOME/$EW_VERSION/lib/kom.o
 		$EW_HOME/$EW_VERSION/lib/mem_circ_queue.o],
 		[AC_DEFINE([HAVE_EARTHWORMOBJS], [1], [Define if you have earthworm object files])],
 		AC_MSG_WARN([earthworm object file not found!]))
+],
+[AC_MSG_WARN([Earthworm files are not available (--without-ew to disable)])]
+)
+],
+[AC_MSG_WARN([Earthworm support has been disabled!])]
+)
 
 
 # Checks for files.

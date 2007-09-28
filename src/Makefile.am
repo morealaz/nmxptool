@@ -4,7 +4,7 @@ bin_PROGRAMS = nmxptool
 # TODO optional
 seedlinkplugin_sources = seedlink_plugin.c
 
-nmxptool_SOURCES = nmxptool.c nmxptool_getoptlong.c \
+nmxptool_SOURCES = nmxptool.c nmxptool_getoptlong.c nmxptool_ew.c \
 		   $(seedlinkplugin_sources)
 
 #noinst_HEADERS = gdu.h
