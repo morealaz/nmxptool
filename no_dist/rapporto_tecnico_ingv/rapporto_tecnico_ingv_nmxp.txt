@@ -371,6 +371,22 @@ kyuzo:~/libnmxp-0.22.0/tools/nmxptool root# make install
 
 kyuzo:~/libnmxp-0.22.0/tools/nmxptool root# exit
 
+Lo script configure automaticamente rileva e compila, se presenti: la
+libreria per  il salvataggio dei dati in mini-SEED,  i sorgenti con le
+funzioni base di un plug-in SeedLink e i file oggetto (i file di tipo
+.o) della libreria di Earthworm. Le compilazioni di queste tre
+funzionalita di nmxptool possono essere inibite passando rispettivamente
+al comando configure i seguenti argomenti: --without-libmseed,
+--without-seedlink, --without-ew.
+
+Per configurare nmxptool come modulo Earthworm bisognera copiare i files
+nmxptool.d e nmxptool.desc nella directory dei parametri di Earthworm e
+poi modificarli secondo le proprie esigenze. La copia sara un comando
+del  tipo:
+
+kyuzo:~/libnmxp-0.22.0/tools/nmxptool mtheo$ cp earthworm/nmxptool.*
+${EW_PARAMS}
+
 Per poter configurare nmxptool come plug-in all'interno di SeisComP sara
 sufficiente copiare la directory 135_nmxptool all'interno dei templates
 di SeisComP. Supponendo la SeisComP Root uguale a /home/sysop/seiscomp,
@@ -387,7 +403,7 @@ configurazione standard di SeisComP, ovvero lanciando il comando:
 
 kyuzo:~ mtheo$ seiscomp config
 
-Documentazione
+Documentazione
 
 La documentazione della libreria i stata redatta in lingua inglese
 utilizzando dei meta-tags all'interno del codice e per mezzo del
@@ -397,7 +413,7 @@ descrizioni delle sole funzioni, quelle di pisch alto livello, contenute
 in nmxp.h. Per maggiori dettagli si faccia riferimento alla
 documentazione stessa.
 
-Documentazione della struttura dati NMXP_DATA_PROCESS per lo sviluppo
+Documentazione della struttura dati NMXP_DATA_PROCESS per lo sviluppo
 con libnmxp.
 
 NMXP_DATA_PROCESS Struct Reference
@@ -2910,5 +2926,5 @@ GNU General Public License
 
  PAGE   
 
- PAGE   20 
+ PAGE   9 
 
