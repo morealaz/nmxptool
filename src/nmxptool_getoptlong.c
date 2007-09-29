@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.26 2007-09-28 21:04:27 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.27 2007-09-29 08:14:28 mtheo Exp $
  *
  */
 
@@ -66,6 +66,8 @@ void nmxptool_version() {
 	PACKAGE_NAME, PACKAGE_VERSION,
 	nmxp_log_version()
 	);
+
+    nmxptool_supports();
 }
 
 void nmxptool_supports() {
@@ -97,7 +99,6 @@ void nmxptool_supports() {
 void nmxptool_usage(struct option long_options[])
 {
     nmxptool_version();
-    nmxptool_supports();
 
     nmxp_log(NMXP_LOG_NORM_NO, 0, "\
 \n\
@@ -184,7 +185,7 @@ PDS arguments:\n\
                            0 is for original sample rate and decompressed data.\n\
                           >0 is for specified sample rate and decompressed data.\n\
   -b, --buffered          Request also recent packets into the past.\n\
-  -M, --maxlatency=SECs   Max tollerable latency (default %d) [%d..%d].\n\
+  -M, --maxlatency=SECs   Max tolerable latency (default %d) [%d..%d].\n\
                           Usable only with Raw Stream --stc=-1.\n\
 \n\
 ",
@@ -379,8 +380,8 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 		    break;
 
 		case 'M':
-		    params->max_tollerable_latency = atoi(optarg);
-		    nmxp_log(0, 0, "Max_tollerable_latency %d\n", params->max_tollerable_latency);
+		    params->max_tolerable_latency = atoi(optarg);
+		    nmxp_log(0, 0, "Max_tolerable_latency %d\n", params->max_tolerable_latency);
 		    break;
 
 #ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
@@ -504,18 +505,18 @@ int nmxptool_check_params(NMXPTOOL_PARAMS *params) {
 	ret = -1;
 	nmxp_log(NMXP_LOG_NORM_NO, 0, "<buffered> can not be used with options <start_time> and <end_time>.\n");
     } else if( params->stc == -1
-	    && (params->max_tollerable_latency < DEFAULT_MAX_TOLLERABLE_LATENCY_MINIMUM  ||
-		params->max_tollerable_latency > DEFAULT_MAX_TOLLERABLE_LATENCY_MAXIMUM)) {
+	    && (params->max_tolerable_latency < DEFAULT_MAX_TOLLERABLE_LATENCY_MINIMUM  ||
+		params->max_tolerable_latency > DEFAULT_MAX_TOLLERABLE_LATENCY_MAXIMUM)) {
 	ret = -1;
 	nmxp_log(NMXP_LOG_NORM_NO, 0, "<maxlatency> has to be within [%d..%d].\n",
 		DEFAULT_MAX_TOLLERABLE_LATENCY_MINIMUM,
 		DEFAULT_MAX_TOLLERABLE_LATENCY_MAXIMUM);
-    } else if( params->stc != -1 && params->max_tollerable_latency > 0) {
+    } else if( params->stc != -1 && params->max_tolerable_latency > 0) {
 	nmxp_log(NMXP_LOG_WARN, 0, "<maxlatency> ignored since not defined --stc=-1.\n");
     }
 
     if( params->stc == -1 ) {
-	nmxp_log(NMXP_LOG_WARN, 0, "<maxlatency> is equal to %d sec.\n", params->max_tollerable_latency);
+	nmxp_log(NMXP_LOG_WARN, 0, "<maxlatency> is equal to %d sec.\n", params->max_tolerable_latency);
     }
 
     return ret;
