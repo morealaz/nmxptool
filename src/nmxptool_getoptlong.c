@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.27 2007-09-29 08:14:28 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.28 2007-09-29 10:41:25 mtheo Exp $
  *
  */
 
@@ -110,16 +110,20 @@ Usage: %s -H hostname --listchannels [...]\n\
 \n\
        %s -H hostname -C channellist [...]\n\
              Receive data from hostname by PDS\n\
-\n\
+\n", PACKAGE_NAME, PACKAGE_NAME, PACKAGE_NAME);
+
+#ifdef HAVE_EARTHWORMOBJS
+    nmxp_log(NMXP_LOG_NORM_NO, 0, "\
+       %s nmxptool.d\n\
+             Run as earthworm module receiving data from hostname by PDS\n\
+\n", PACKAGE_NAME);
+#endif
+
+    nmxp_log(NMXP_LOG_NORM_NO, 0, "\
 Arguments:\n\
   -H, --hostname=HOST     Nanometrics hostname.\n\
   -C, --channels=LIST     Channel list STA1.HH?,STA2.??Z,...\n\
-\n\
-",
-	    PACKAGE_NAME,
-	    PACKAGE_NAME,
-	    PACKAGE_NAME
-	  );
+\n");
 
     nmxp_log(NMXP_LOG_NORM_NO, 0, "\
 Other arguments:\n\
