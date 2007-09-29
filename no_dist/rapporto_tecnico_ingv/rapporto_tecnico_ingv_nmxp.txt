@@ -11,34 +11,36 @@ e-mail: quintiliani@ingv.it
 
   TOC \o "1-3" \h \z \u  
 
-Introduzione	  PAGEREF _Toc52248998 \h  5 
+Introduzione	  PAGEREF _Toc52703656 \h  5 
 
-1. Protocolli Nanometrics	  PAGEREF _Toc52248999 \h  6 
+1. Protocolli Nanometrics	  PAGEREF _Toc52703657 \h  6 
 
-1.1 Private Data Stream	  PAGEREF _Toc52249000 \h  6 
+1.1 Private Data Stream	  PAGEREF _Toc52703658 \h  6 
 
-1.2 Data Access Protocol	  PAGEREF _Toc52249001 \h  7 
+1.2 Data Access Protocol	  PAGEREF _Toc52703659 \h  7 
 
-2. La libreria libnmxp	  PAGEREF _Toc52249002 \h  8 
+2. La libreria libnmxp	  PAGEREF _Toc52703660 \h  8 
 
-2.1 Installazione	  PAGEREF _Toc52249003 \h  8 
+2.1 Installazione	  PAGEREF _Toc52703661 \h  8 
 
-2.2 Documentazione	  PAGEREF _Toc52249004 \h  9 
+2.2 Documentazione	  PAGEREF _Toc52703662 \h  9 
 
 2.3 Uso delle APIs per sviluppare una nuova applicazione	  PAGEREF
-_Toc52249007 \h  14 
+_Toc52703665 \h  14 
 
-3. Il programma nmxptool	  PAGEREF _Toc52249008 \h  17 
+3. Il programma nmxptool	  PAGEREF _Toc52703666 \h  17 
 
-3.1 Plug-in SeedLink	  PAGEREF _Toc52249009 \h  20 
+3.1 Modulo Earthworm	  PAGEREF _Toc52703667 \h  20 
 
-3.2 Completezza del dato Nanometrics	  PAGEREF _Toc52249010 \h  20 
+3.2 Plug-in SeedLink	  PAGEREF _Toc52703668 \h  20 
 
-4. Conclusioni	  PAGEREF _Toc52249011 \h  22 
+3.3 Completezza del dato Nanometrics	  PAGEREF _Toc52703669 \h  21 
 
-5. Ringraziamenti	  PAGEREF _Toc52249012 \h  25 
+4. Conclusioni	  PAGEREF _Toc52703670 \h  22 
 
-6. Bibliografia e riferimenti web	  PAGEREF _Toc52249013 \h  25 
+5. Ringraziamenti	  PAGEREF _Toc52703671 \h  25 
+
+6. Bibliografia e riferimenti web	  PAGEREF _Toc52703672 \h  25 
 
  
 
@@ -64,7 +66,13 @@ Insieme alla libreria viene inoltre distribuito un programma chiamato
 nmxptool che basandosi su di essa permette di eseguire interrogazioni,
 ricevere dati in tempo reale e/o off-line, ed inoltre salvare questi in
 diversi formati, quali NMX e mini-SEED. Tale programma put inoltre
-essere utilizzato come plug-in per server SeedLink.
+essere utilizzato come plug-in per server SeedLink o come modulo per il
+sistema Earthworm.
+
+Uno dei principali contributi offerti da questo sviluppo consiste nella
+possibilita di gestire connessioni di tipo Raw Stream con riordinamento
+dei pacchetti ritrasmessi, cit permette di garantire un buon compromesso
+fra la continuita del dato e una bassa latenza.
 
 L'intero sviluppo si i basato sul manuale del corso Nanometrics
 [Nanometrics, Inc., 1989-2002], in particolare su Nanometrics Data
@@ -246,8 +254,8 @@ dati;
 recuperare e convertire on-the-fly  i dati in diversi formati, (ad
 esempio mini-SEED records);
 
-redirezionare i dati in servers di altro tipo, (ad esempio SeedLink o
-Earthworm).
+redirezionare i dati in servers o sistemi di altro tipo, (ad esempio
+SeedLink o Earthworm).
 
 Al momento la libreria i in grado di trattare i dati di tipo time-series
 e non quelli di tipo serial data, triggers e state-of-healt. Per
@@ -1610,7 +1618,7 @@ XX.USI.HHZ 100Hz (2007.243,12:22:56.0000 - 2007.243,12:22:57.0000) lat
 
 
 L'opzione -R i stata utilizzata per dichiarare che i pacchetti da
-ricevere sarebbe stati scompattati dal server con una frequenza di
+ricevere sarebbero stati scompattati dal server con una frequenza di
 100Hz. Notiamo infatti che il pacchetto i di tipo 4, ovvero decompresso,
 con una capacita fissa di un secondo e che x0 e xn non sono
 significativi. Invece per i pacchetti compressi (pacchetto di tipo 1)
@@ -1634,16 +1642,17 @@ l'opzione -b, la quale permette di ricevere anche alcuni dati, in
 quantita discrezionale del server, che precedono quelli dell'istante
 attuale di richiesta.
 
+Modulo Earthworm
 
-
-Figura 3. Archiviazione dati sismici in tempo reale e completamento in
-differita. Le due attivita si basano con modalita diverse su nmxptool.
-Nel primo caso, nmxptool viene utilizzato come plug-in seedLink in
-modalita Raw Stream, nel secondo i dati mancanti vengono richiesti da
-nmxptool al DataServer e ricongiunti alla struttura di archiviazione SDS
-di SeisComP.
-
-
+nmxptool put essere eseguito come modulo del sistema Earthworm.
+Generalmente il tipo di connessione eseguita i di tipo Raw Stream e i
+parametri, invece di essere passati tramite linea di comando, vengono
+letti, rispettando lo standard dei moduli Earthworm, da un file di
+configurazione tipo .d. All'interno della distribuzione sono disponibili
+i due files nmxptool.d e nmxptool.desc, base per la configurazione di
+nmxptool all'interno del sistema Earthworm. E' comunque in corso la
+richiesta per inserire nmxptool nelle distribuzioni ufficiali di
+Earthworm.
 
 Plug-in SeedLink
 
@@ -1652,31 +1661,46 @@ nmxptool put essere lanciato come un plug-in per SeedLink per mezzo
 dell'utilizzo dell'opzione -k. Questa opzione deve essere
 necessariamente dichiarata per ultima. All'interno della distribuzione
 sono inoltre disponibili i templates SeedLink necessari alla
-configurazione del plug-in per mezzo del comando ``seiscomp config''. E'
+configurazione del plug-in tramite  del comando ``seiscomp config''. E'
 comunque in corso la richiesta per inserire nmxptool fra i plug-ins
 delle distribuzioni ufficiali di SeisComP.
+
+
+
+Figura 3. Localizzazione degli eventi e archiviazione dei dati sismici
+in tempo reale e completamento in differita. Le tre attivita si basano
+con modalita diverse su nmxptool. Nel primo e nel secondo caso, nmxptool
+si connette al NaqsServer in modalita Raw Stream e viene eseguito
+rispettivamente come modulo del sistema Earthworm e come plug-in
+SeedLink. Nel terzo i dati mancanti vengono richiesti da nmxptool al
+DataServer e ricongiunti alla struttura di archiviazione SDS di
+SeisComP.
+
+
 
 Completezza del dato Nanometrics
 
 La figura 3 illustra come nmxptool viene utilizzato all'interno
-dell'INGV per archiviare i dati sismici delle stazioni che trasmettono
-tramite i protocolli Nanometrics. Le forme d'onda vengono ricevute in
-tempo reale in modalita Raw Stream al fine di minimizzare la latenza e
-il numero di gaps. nmxptool viene configurato e lanciato all'interno del
-sistema SeisComp come plug-in per SeedLink. La latenza indotta dal
-programma e non, ad esempio quella causata dal mezzo trasmissivo, i
-determinata solo nel caso in cui si rimanga in attesa di uno o pisch
-pacchetti mancanti. Tale attesa termina nel momento in cui il buffer
-risulti completamente pieno comportando quindi una perdita di dati
-(gap).
+dell'INGV per far fluire i dati sismici delle stazioni che trasmettono
+tramite i protocolli Nanometrics, nel sistemi Earthworm e SeisComP. Le
+forme d'onda vengono ricevute in tempo reale in modalita Raw Stream al
+fine di minimizzare la latenza e il numero di gaps. nmxptool viene
+configurato e lanciato all'interno del sistema Earthworm per consentire
+il calcolo delle localizzazioni degli eventi sismici ed inoltre viene
+configurato e lanciato all'interno del sistema SeisComp come plug-in
+SeedLink per l'archiviazione dei dati. La latenza indotta dal programma
+e non, ad esempio quella causata dal mezzo trasmissivo, i determinata
+solo nel caso in cui si rimanga in attesa di uno o pisch pacchetti
+mancanti. Tale attesa termina nel momento in cui il buffer risulti
+completamente pieno comportando quindi una perdita di dati (gap).
 
 Al fine di garantire completezza dei dati archiviati i stata sviluppata
 una procedura dal nome nmdc, ovvero ``Nanometrics Data Completeness'',
-che basandosi sulla versatilita di nmxptool recupera i dati mancanti con
-differita impostata a qualche ora o il giorno successivo. In questo caso
-i gaps risultanti non potranno pisch essere colmati poichy i dati
-richiesti non risultano definitivamente pisch essere presenti sul lato
-dei servers Nanometrics.
+che basandosi sulla versatilita di nmxptool recupera i dati mancanti
+dopo qualche ora o il giorno successivo. In questo caso i gaps
+risultanti non potranno pisch essere colmati poichy i dati richiesti non
+risultano definitivamente pisch essere presenti sul lato dei servers
+Nanometrics.
 
 Conclusioni
 
@@ -1686,17 +1710,17 @@ Considerando congiuntamente libnmxp e nmxptool, anche il numero di
 funzionalita implementate risulta essere molto soddisfacente. La pisch
 importante fra tutte i sicuramente la gestione delle connessioni di tipo
 Raw Stream, che riesce a garantire una bassa latenza e nel contempo un
-numero minino di gaps. Grazie a questa caratteristica nmxptool apporta
-finalmente un fondamentale contributo alla comunita degli utilizzatori
-del sistema SeisComp per l'acquisizione da servers Nanometrics. Infatti
-naqs_plugin, il plug-in precedentemente sviluppato a tale scopo, non
-essendo in grado di gestire ne' i pacchetti compressi, ne' tantomeno
-connessioni di tipo Raw Stream, non poteva garantire minimamente la
-continuita del dato al verificarsi di una ritrasmissione dal lato
-Nanometrics Server - Stazione Sismica (fig. 1).
+numero minino di gaps. Grazie a questa caratteristica nmxptool apporta,
+per quanto concerne l'acquisizione da servers Nanometrics, un
+fondamentale contributo alle comunita degli utilizzatori dei sistemi
+SeisComp e Earthworm. Infatti sia naqs_plugin, l'attuale plug-in per
+SeedLink, che naqs2ew, l'attuale modulo per Earthworm, non essendo in
+grado di gestire connessioni di tipo Raw Stream, non possono garantire
+minimamente la continuita del dato al verificarsi di una ritrasmissione
+dal lato Nanometrics Server - Stazione Sismica (fig. 1).
 
 Le tabelle 2 e 3 mostrano i reports sintetici dei dati archiviati per i
-canali in test il 18 e il 19 settembre 2007. Giornalmente, per ogni
+canali in test il 22 e il 23 settembre 2007. Giornalmente, per ogni
 canale viene visualizzato:
 
 Totale di pacchetti ritrasmessi: per una trasmissione di tipo
@@ -1724,7 +1748,7 @@ tollerabile per quel dato canale. Su questo valore e secondariamente
 sulla latenza massima sono state ordinate le due tabelle.
 
 Normalmente il dato definitivo dovrebbe essere continuo e completo,
-quindi la presenza di un numero rilevante di gaps dovrebbe determinare
+quindi la presenza di un numero rilevante di gaps dovrebbe evidenziare
 in qualche modo un'anomalia o un problema nel sistema di acquisizione.
 E' questo infatti il caso verificatosi per la stazione di MONC durante
 il test. Esaminando i log di nmxptool si constata che tali gaps sono
@@ -1756,10 +1780,7 @@ magnitudo o del momento tensore dopo un evento sismico.
 Per il futuro, l'autore intende manutenere libnmxp e nmxptool ed
 ampliare le funzionalita della libreria anche per quanto riguarda la
 gestione dei dati di tipo serial data, triggers, events e
-state-of-health. Inoltre i in corso di sviluppo un'estensione delle
-capacita di nmxptool al fine di poter essere eseguito come modulo del
-sistema Earthworm, poichy anche l'attuale modulo naqs2ew presenta simili
-problematiche di naqs_plugin con SeisComP.
+state-of-health.
 
 
 
@@ -2889,5 +2910,5 @@ GNU General Public License
 
  PAGE   
 
- PAGE   22 
+ PAGE   20 
 
