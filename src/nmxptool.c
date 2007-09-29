@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.76 2007-09-29 08:15:47 mtheo Exp $
+ * $Id: nmxptool.c,v 1.77 2007-09-29 10:08:19 mtheo Exp $
  *
  */
 
@@ -135,10 +135,6 @@ int main (int argc, char **argv) {
     }
 
     if(params.ew_configuration_file) {
-	/* TODO set structure "params" from file */
-	nmxp_log(NMXP_LOG_NORM_NO, 0, "\n");
-	nmxp_log(NMXP_LOG_WARN, 0, "Earthworm support is still under development!\n");
-	nmxp_log(NMXP_LOG_NORM_NO, 0, "\n");
 
 #ifdef HAVE_EARTHWORMOBJS
 	nmxptool_ew_configure(argv, &params);
@@ -147,8 +143,7 @@ int main (int argc, char **argv) {
 	    return 1;
 	}
 #endif
-	
-	exit(0);
+
     } else {
 
 	/* Check consistency of params */
