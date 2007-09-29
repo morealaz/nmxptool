@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.75 2007-09-28 21:04:27 mtheo Exp $
+ * $Id: nmxptool.c,v 1.76 2007-09-29 08:15:47 mtheo Exp $
  *
  */
 
@@ -139,8 +139,18 @@ int main (int argc, char **argv) {
 	nmxp_log(NMXP_LOG_NORM_NO, 0, "\n");
 	nmxp_log(NMXP_LOG_WARN, 0, "Earthworm support is still under development!\n");
 	nmxp_log(NMXP_LOG_NORM_NO, 0, "\n");
+
+#ifdef HAVE_EARTHWORMOBJS
+	nmxptool_ew_configure(argv, &params);
+	/* Check consistency of params */
+	if(nmxptool_check_params(&params) != 0) {
+	    return 1;
+	}
+#endif
+	
 	exit(0);
     } else {
+
 	/* Check consistency of params */
 	if(nmxptool_check_params(&params) != 0) {
 	    return 1;
@@ -164,12 +174,6 @@ int main (int argc, char **argv) {
 	}
     }
 
-#ifdef HAVE_EARTHWORMOBJS
-    if(params.ew_configuration_file) {
-	nmxptool_ew_attach();
-    }
-#endif
-
     /* Get list of available channels and get a subset list of params.channels */
     channelList = nmxp_getAvailableChannelList(params.hostname, params.portnumberpds, NMXP_DATA_TIMESERIES);
     channelList_subset = nmxp_chan_subset(channelList, NMXP_DATA_TIMESERIES, params.channels);
@@ -189,7 +193,7 @@ int main (int argc, char **argv) {
 	    channelListSeq[i_chan].significant = 0;
 	    channelListSeq[i_chan].last_time = 0.0;
 	    channelListSeq[i_chan].x_1 = 0;
-	    nmxp_raw_stream_init(&(channelListSeq[i_chan].raw_stream_buffer), params.max_tollerable_latency);
+	    nmxp_raw_stream_init(&(channelListSeq[i_chan].raw_stream_buffer), params.max_tolerable_latency);
 	}
 
 #ifdef HAVE_LIBMSEED
@@ -484,6 +488,13 @@ int main (int argc, char **argv) {
 		p_func_pd[n_func_pd++] = nmxptool_send_raw_depoch;
 	    }
 #endif
+
+#ifdef HAVE_EARTHWORMOBJS
+	    if(params.ew_configuration_file) {
+		p_func_pd[n_func_pd++] = nmxptool_ew_nmx2ew;
+	    }
+#endif
+
 	}
 
 	/* ************************************************************* */
@@ -540,7 +551,14 @@ int main (int argc, char **argv) {
 	// TODO
 	exitpdscondition = 1;
 
+#ifdef HAVE_EARTHWORMOBJS
+	if(params.ew_configuration_file) {
+	    nmxptool_ew_attach();
+	}
+#endif
+
 	while(exitpdscondition) {
+
 	    /* Process Compressed or Decompressed Data */
 	    pd = nmxp_receiveData(naqssock, channelList_subset, CURRENT_NETWORK);
 
@@ -601,7 +619,29 @@ int main (int argc, char **argv) {
 
 	    // TODO
 	    exitpdscondition = 1;
+
+#ifdef HAVE_EARTHWORMOBJS
+	    if(params.ew_configuration_file) {
+
+		/* Check if we are being asked to terminate */
+		if( nmxptool_ew_check_flag_terminate() ) {
+		    logit ("t", "nmxptool terminating on request\n");
+		    exitpdscondition = 0;
+		}
+
+		/* Check if we need to send heartbeat message */
+		nmxptool_ew_send_heartbeat_if_needed();
+
+	    }
+#endif
+
 	}
+
+#ifdef HAVE_EARTHWORMOBJS
+	if(params.ew_configuration_file) {
+	    nmxptool_ew_detach();
+	}
+#endif
 
 #ifdef HAVE_LIBMSEED
 	if(params.flag_writeseed  &&  data_seed.outfile_mseed) {
@@ -620,7 +660,6 @@ int main (int argc, char **argv) {
 	/* *********************************************************** */
 	/* End subscription protocol "PRIVATE DATA STREAM" version 1.4 */
 	/* *********************************************************** */
-
 
 
 
@@ -648,12 +687,6 @@ int main (int argc, char **argv) {
 	if(channelList_subset) {
 	    free(channelList_subset);
 	}
-
-#ifdef HAVE_EARTHWORMOBJS
-	if(params.ew_configuration_file) {
-	    nmxptool_ew_detach();
-	}
-#endif
 
     return 0;
 } /* End MAIN */
