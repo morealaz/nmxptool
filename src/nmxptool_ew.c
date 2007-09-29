@@ -17,6 +17,7 @@
 
 #include "config.h"
 #include "nmxp.h"
+#include "nmxptool_getoptlong.h"
 
 #ifdef HAVE_EARTHWORMOBJS
 /* Earthworm includes */
@@ -57,7 +58,10 @@ MSG_LOGO      errLogo;           /* Error message logo                   */
 
 int           heartbeatInt;      /* Heartbeat interval (seconds)         */
 int           logSwitch;         /* 1 -> write log, 0 -> no log          */
-/* 2 -> write module log but not stderr/stdout */
+				/* 2 -> write module log but not stderr/stdout */
+
+time_t timeNow;
+time_t timeLastBeat = 0;
 
 void nmxptool_ew_attach() {
     /* Attach to Output transport ring */
@@ -186,7 +190,7 @@ int nmxptool_ew_pd2ewring (NMXP_DATA_PROCESS *pd, SHM_INFO *pregionOut, MSG_LOGO
     /* Set the approriate TRACE type in the logo */
     if ( tracebuf2 == 2 ) {
 	if ( typeWaveform2 == 0 ) {
-	    logit("et", "nmxp2ew: Error - created TRACE2_HEADER but TYPE_TRACEBUF2 is unknown\n");
+	    logit("et", "nmxptool: Error - created TRACE2_HEADER but TYPE_TRACEBUF2 is unknown\n");
 	    return EW_FAILURE;
 	} else {
 	    pwaveLogo->type = typeWaveform2;
@@ -196,15 +200,16 @@ int nmxptool_ew_pd2ewring (NMXP_DATA_PROCESS *pd, SHM_INFO *pregionOut, MSG_LOGO
     }
 
     if ( tport_putmsg( pregionOut, pwaveLogo, len, (char*)&tbuf ) != PUT_OK ) {
-	logit("et", "nmxp2ew: Error sending message via transport.\n");
+	logit("et", "nmxptool: Error sending message via transport.\n");
 	return EW_FAILURE;
     }
 
     return EW_SUCCESS;
 }				/* End of nmxptool_ew_pd2ewring() */
 
-int nmxptool_nxm2ew(NMXP_DATA_PROCESS *pd) {
-    int ret = 0;
+
+int nmxptool_ew_nmx2ew(NMXP_DATA_PROCESS *pd) {
+    int ret;
     ret = nmxptool_ew_pd2ewring (pd, &regionOut, &waveLogo);
     return ret;
 }
@@ -212,49 +217,51 @@ int nmxptool_nxm2ew(NMXP_DATA_PROCESS *pd) {
 
 
 /***************************************************************************
- * configure():
+ * nmxptoo_ew_configure():
  * Process configuration parameters.
  *
  ***************************************************************************/
-void nmxptool_ew_configure (char ** argvec) {
+void nmxptool_ew_configure (char ** argvec, NMXPTOOL_PARAMS *params) {
 
     /* Initialize name of log-file & open it */
     logit_init (argvec[1], 0, 512, 1);
 
     /* Read module config file */
-    if ( nmxptool_ew_proc_configfile (argvec[1]) == EW_FAILURE ) {
+    if ( nmxptool_ew_proc_configfile (argvec[1], params) == EW_FAILURE ) {
 	fprintf (stderr, "%s: configure() failed \n", argvec[0]);
 	exit (EW_FAILURE);
     }
 
+    params->stc=-1;
+
     /* Read node configuration info */
     if ( GetLocalInst( &myInstId) != 0 ) {
-	fprintf(stderr, "nmxp2ew: Error getting myInstId.\n" );
+	fprintf(stderr, "%s: Error getting myInstId.\n", PACKAGE_NAME );
 	exit (EW_FAILURE);
     }
 
     /* Lookup the ring key */
     if ((ringKey = GetKey (ringName) ) == -1) {
 	fprintf (stderr,
-		"nmxp2ew:  Invalid ring name <%s>; exitting!\n", ringName);
+		"%s:  Invalid ring name <%s>; exitting!\n", PACKAGE_NAME, ringName);
 	exit (EW_FAILURE);
     }
 
     /* Look up message types of interest */
     if (GetType ("TYPE_HEARTBEAT", &typeHeartbeat) != 0) {
 	fprintf (stderr, 
-		"nmxp2ew: Invalid message type <TYPE_HEARTBEAT>; exitting!\n");
+		"%s: Invalid message type <TYPE_HEARTBEAT>; exitting!\n", PACKAGE_NAME);
 	exit (EW_FAILURE);
     }
     if (GetType ("TYPE_ERROR", &typeError) != 0) {
 	fprintf (stderr, 
-		"nmxp2ew: Invalid message type <TYPE_ERROR>; exitting!\n");
+		"%s: Invalid message type <TYPE_ERROR>; exitting!\n", PACKAGE_NAME);
 	exit (EW_FAILURE);
     }
 
     if (GetType ("TYPE_TRACEBUF", &typeWaveform) != 0) {
 	fprintf (stderr, 
-		"nmxp2ew: Invalid message type <TYPE_TRACEBUF>; exitting!\n");
+		"%s: Invalid message type <TYPE_TRACEBUF>; exitting!\n", PACKAGE_NAME);
 	exit (EW_FAILURE);
     }
 
@@ -303,17 +310,11 @@ void nmxptool_ew_configure (char ** argvec) {
  * Process the module configuration parameters.
  *
  ***************************************************************************/
-int nmxptool_ew_proc_configfile (char * configfile) {
+int nmxptool_ew_proc_configfile (char * configfile, NMXPTOOL_PARAMS *params) {
     char    		*com;
     char    		*str;
     int      		nfiles;
     int      		success;
-
-    //m int    slport = 0;
-    //m char  *slhost = 0;
-    //m char   sladdr[100];
-    //m char  *selectors = 0;
-    //m char  *paramdir = 0;
 
     /* Some important initial values or defaults */
     ringName[0]   = '\0';
@@ -325,7 +326,7 @@ int nmxptool_ew_proc_configfile (char * configfile) {
     nfiles = k_open (configfile);
     if (nfiles == 0) {
 	fprintf (stderr,
-		"nmxp2ew: Error opening command file <%s>; exiting!\n", 
+		"%s: Error opening command file <%s>; exiting!\n", PACKAGE_NAME,
 		configfile);
 	return EW_FAILURE;
     }
@@ -347,7 +348,7 @@ int nmxptool_ew_proc_configfile (char * configfile) {
 		nfiles  = k_open (&com[1]);
 		if (nfiles != success) {
 		    fprintf (stderr, 
-			    "nmxp2ew: Error opening command file <%s>; exiting!\n", 
+			    "%s: Error opening command file <%s>; exiting!\n", PACKAGE_NAME,
 			    &com[1]);
 		    return EW_FAILURE;
 		}
@@ -366,7 +367,7 @@ int nmxptool_ew_proc_configfile (char * configfile) {
 
 		    /* Lookup module ID */
 		    if ( GetModId( myModName, &myModId) != 0 ) {
-			fprintf( stderr, "nmxp2ew: Error getting myModId.\n" );
+			fprintf( stderr, "%s: Error getting myModId.\n", PACKAGE_NAME );
 			exit (EW_FAILURE);
 		    }
 		}
@@ -402,44 +403,23 @@ int nmxptool_ew_proc_configfile (char * configfile) {
 		}
 	    }
 
-	    else if (k_its ("SLhost")) {
+	    else if (k_its ("nmxphost")) {
 		if ( (str = k_str ()) ) {
 		    if (strlen(str) >= MAXADDRLEN) {
-			fprintf(stderr, "SLaddr too long; max is %d characters\n",
+			fprintf(stderr, "nmxphost too long; max is %d characters\n",
 				MAXADDRLEN);
 			return EW_FAILURE;
 		    }
 		    //m slhost = strdup(str);
+		    params->hostname = strdup(str);
 		}
 	    }
 
-	    else if ( k_its ("SLport")) {
+	    else if ( k_its ("nmxpport")) {
 		//m slport = k_int();
+		params->portnumberpds = k_int();
 		//m if (slport < 1) {
 		    //m fprintf(stderr, "SLport is 0 or junk, quiting.\n");
-		    //m return EW_FAILURE;
-		//m }
-	    }
-
-	    else if (k_its ("StateFile")) {
-		/* Build a state file name of the form 'slink<modid>.state' and
-		   prepend the parameter directory */
-		//m paramdir = getenv ( "EW_PARAMS" );
-		//m statefile = (char *) malloc (strlen(paramdir) + 16);
-
-#ifdef _INTEL
-		//m sprintf (statefile, "%s\\slink%d.state", paramdir, myModId);
-#else  /* *nix brand */
-		//m sprintf (statefile, "%s/slink%d.state", paramdir, myModId);
-#endif
-	    }
-
-	    else if ( k_its ("StateFileInt")) {
-		if ( (str = k_str ()) ) {
-		    //m stateint = atoi (str);
-		}
-		//m if ( !str || stateint < 0 ) {
-		    //m fprintf(stderr, "StateFileInt is unspecified or negative, quiting\n");
 		    //m return EW_FAILURE;
 		//m }
 	    }
@@ -478,53 +458,38 @@ int nmxptool_ew_proc_configfile (char * configfile) {
 		forcetracebuf = k_int();
 	    }
 
-	    else if ( k_its ("Selectors")) {
+	    else if (k_its ("MaxTolerableLatency")) {
+		params->max_tolerable_latency = k_int();
+	    }
+
+
+	    else if (k_its ("Channel")) {
 		if ( (str = k_str ()) ) {
-		    if (strlen(str) >= 100) {
-			fprintf(stderr, "Selectors too long; max is 100 characters\n");
-			return EW_FAILURE;
+		    if(!params->channels) {
+#define MAXSIZECHANNELSTRING 8000
+			params->channels = (char *) malloc (MAXSIZECHANNELSTRING);
+			strncpy(params->channels, str, MAXSIZECHANNELSTRING);
+		    } else {
+			strncat(params->channels, ",", MAXSIZECHANNELSTRING);
+			strncat(params->channels, str, MAXSIZECHANNELSTRING);
 		    }
-		    //m selectors = strdup(str);
 		}
 	    }
 
-	    else if (k_its ("Stream")) {
+	    else if (k_its ("NetworkCode")) {
 		if ( (str = k_str ()) ) {
-		    char *net;
-		    char *sta;
-		    char netsta[20];
-		    char streamselect[100];
-
-		    streamselect[0] = '\0';
-
-		    /* Collect the stream key (the NET_STA specifier) */
-		    strncpy (netsta, str, sizeof(netsta));
-		    net = netsta;
-		    if ( (sta = strchr (netsta, '_')) == NULL ) {
-			fprintf(stderr, "Could not parse stream key: %s\n", str);
+		    if(params->network) {
+			fprintf(stderr, "NetworkCode has been replicated!\n");
 			return EW_FAILURE;
 		    } else {
-			*sta++ = '\0';
-		    }
-
-		    /* Build a selector list from an optional 3rd value */
-		    if ( (str = k_str ()) ) {
-			strncpy (streamselect, str, sizeof(streamselect));
-		    }
-		    else
-			k_err();  /* Clear the error if there was no selectors */
-
-		    if ( streamselect[0] != '\0' ) {
-			//m sl_addstream (slconn, net, sta, streamselect, -1, NULL);
-		    } else {
-			//m sl_addstream (slconn, net, sta, selectors, -1, NULL);
+			params->network = strdup(str);
 		    }
 		}
 	    }
 
 	    /* Unknown command */ 
 	    else {
-		fprintf (stderr, "nmxp2ew: <%s> Unknown command in <%s>.\n", 
+		fprintf (stderr, "%s: <%s> Unknown command in <%s>.\n", PACKAGE_NAME,
 			com, configfile);
 		continue;
 	    }
@@ -532,7 +497,7 @@ int nmxptool_ew_proc_configfile (char * configfile) {
 	    /* See if there were any errors processing the command */
 	    if (k_err ()) {
 		fprintf (stderr, 
-			"nmxp2ew: Bad command in <%s>; exiting!\n\t%s\n",
+			"%s: Bad command in <%s>; exiting!\n\t%s\n", PACKAGE_NAME,
 			configfile, k_com());
 		return EW_FAILURE;
 	    }
@@ -549,32 +514,32 @@ int nmxptool_ew_proc_configfile (char * configfile) {
 
     /* Check for required parameters */
     if ( myModName[0] == '\0' ) {
-	fprintf (stderr, "nmxp2ew: No MyModId parameter found in %s\n",
+	fprintf (stderr, "%s: No MyModId parameter found in %s\n", PACKAGE_NAME,
 		configfile);
 	return EW_FAILURE;
     }
     if ( ringName[0] == '\0' ) {
-	fprintf (stderr, "nmxp2ew: No OutRing parameter found in %s\n",
+	fprintf (stderr, "%s: No OutRing parameter found in %s\n", PACKAGE_NAME,
 		configfile);
 	return EW_FAILURE;
     }
     if ( heartbeatInt == -1 ) {
-	fprintf (stderr, "nmxp2ew: No HeartBeatInterval parameter found in %s\n",
+	fprintf (stderr, "%s: No HeartBeatInterval parameter found in %s\n", PACKAGE_NAME,
 		configfile);
 	return EW_FAILURE;
     }
     if ( logSwitch == -1 ) {
-	fprintf (stderr, "nmxp2ew: No LogFile parameter found in %s\n",
+	fprintf (stderr, "%s: No LogFile parameter found in %s\n", PACKAGE_NAME,
 		configfile);
 	return EW_FAILURE;
     }
     //m if ( !slhost ) {
-	//m fprintf (stderr, "nmxp2ew: No SLhost parameter found in %s\n",
+	//m fprintf (stderr, "%s: No SLhost parameter found in %s\n", PACKAGE_NAME,
 		//m configfile);
 	//m return EW_FAILURE;
     //m }
     //m if ( !slport ) {
-	//m fprintf (stderr, "nmxp2ew: No SLport parameter found in %s\n",
+	//m fprintf (stderr, "%s: No SLport parameter found in %s\n", PACKAGE_NAME,
 		//m configfile);
 	//m return EW_FAILURE;
     //m }
@@ -591,7 +556,7 @@ int nmxptool_ew_proc_configfile (char * configfile) {
  * Send error and hearbeat messages to transport ring.
  *
  ***************************************************************************/
-void nmxptoole_ew_report_status( MSG_LOGO * pLogo, short code, char * message ) {
+void nmxptool_ew_report_status( MSG_LOGO * pLogo, short code, char * message ) {
     char          outMsg[MAXMESSAGELEN];  /* The outgoing message.        */
     time_t        msgTime;        /* Time of the message.                 */
 
@@ -606,7 +571,7 @@ void nmxptoole_ew_report_status( MSG_LOGO * pLogo, short code, char * message ) 
 	if ( tport_putmsg( &regionOut, &hrtLogo, (long) strlen( outMsg ),
 		    outMsg ) != PUT_OK ) {
 	    /* Log an error message */
-	    logit( "et", "nmxp2ew: Failed to send a heartbeat message (%d).\n",
+	    logit( "et", "nmxptool: Failed to send a heartbeat message (%d).\n",
 		    code );
 	}
     } else {
@@ -622,13 +587,27 @@ void nmxptoole_ew_report_status( MSG_LOGO * pLogo, short code, char * message ) 
 	if ( tport_putmsg( &regionOut, &errLogo, (long) strlen( outMsg ),
 		    outMsg ) != PUT_OK ) {
 	    /*     Log an error message                                    */
-	    logit( "et", "nmxp2ew: Failed to send an error message (%d).\n",
+	    logit( "et", "nmxptool: Failed to send an error message (%d).\n",
 		    code );
 	}
 
     }
 }				/* End of nmxptool_ew_report_status() */
 
+
+int nmxptool_ew_check_flag_terminate() {
+    /* Check if we are being asked to terminate */
+    return (tport_getflag (&regionOut) == TERMINATE || tport_getflag (&regionOut) == myPid );
+}
+
+void nmxptool_ew_send_heartbeat_if_needed() {
+    /* Check if we need to send heartbeat message */
+    if ( time( &timeNow ) - timeLastBeat >= heartbeatInt )
+    {
+	timeLastBeat = timeNow;
+	nmxptool_ew_report_status ( &hrtLogo, 0, "" ); 
+    }
+}
 
 /***************************************************************************
  * nmxptool_ew_logit_msg() and nmxptool_ew_logit_err():

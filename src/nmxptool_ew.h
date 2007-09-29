@@ -27,13 +27,16 @@ void nmxptool_ew_detach();
 
 int nmxptool_ew_pd2ewring (NMXP_DATA_PROCESS *pd, SHM_INFO *pregionOut, MSG_LOGO *pwaveLogo);
 
-int nmxptool_nxm2ew(NMXP_DATA_PROCESS *pd);
+int nmxptool_ew_nmx2ew(NMXP_DATA_PROCESS *pd);
 
-void nmxptool_ew_configure (char ** argvec);
+void nmxptool_ew_configure (char ** argvec, NMXPTOOL_PARAMS *params);
 
-int nmxptool_ew_proc_configfile (char * configfile);
+int nmxptool_ew_proc_configfile (char * configfile, NMXPTOOL_PARAMS *params);
 
 void nmxptool_ew_report_status ( MSG_LOGO *pLogo, short code, char * message );
+
+int nmxptool_ew_check_flag_terminate();
+void nmxptool_ew_send_heartbeat_if_needed();
 
 void nmxptool_ew_logit_msg ( const char *msg );
 void nmxptool_ew_logit_err ( const char *msg );
