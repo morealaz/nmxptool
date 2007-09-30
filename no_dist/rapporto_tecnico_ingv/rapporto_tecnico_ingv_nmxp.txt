@@ -63,15 +63,15 @@ DataServer il quale implementa il protocollo per il recupero di dati
 archiviati.
 
 Insieme alla libreria viene inoltre distribuito un programma chiamato
-nmxptool che basandosi su di essa permette di eseguire interrogazioni,
-ricevere dati in tempo reale e/o off-line, ed inoltre salvare questi in
-diversi formati, quali NMX e mini-SEED. Tale programma put inoltre
-essere utilizzato come modulo per il sistema Earthworm o come plug-in
-per server SeedLink.
+nmxptool che basandosi su di essa, permette di eseguire interrogazioni,
+ricevere dati in tempo reale e/o off-line, ed inoltre permette di
+salvare questi ultimi in diversi formati, quali NMX e mini-SEED. Tale
+programma put inoltre essere utilizzato come modulo per il sistema
+Earthworm o come plug-in per server SeedLink.
 
 Uno dei principali contributi offerti da questo sviluppo consiste nella
 possibilita di gestire connessioni di tipo Raw Stream con riordinamento
-dei pacchetti ritrasmessi, cit permette di garantire un buon compromesso
+dei pacchetti ritrasmessi: cit permette di garantire un buon compromesso
 fra la continuita del dato e una bassa latenza.
 
 L'intero sviluppo si i basato sul manuale del corso Nanometrics
@@ -1503,6 +1503,8 @@ XX.VAGA.HHZ 100Hz (2007.242,00:00:04.7799 - 2007.242,00:00:05.0000) lat
 130112.0s [1, 7848384] (0)   22pts (-10362, -10362, -10331, -10337, 1)
 276
 
+
+
 Per ogni pacchetto ricevuto viene visualizzato:
 
 il nome del canale nella forma Network.Station.Channel
@@ -1679,7 +1681,7 @@ Modulo Earthworm
 nmxptool put essere eseguito come modulo del sistema Earthworm.
 Generalmente il tipo di connessione eseguita i di tipo Raw Stream e i
 parametri, invece di essere passati tramite linea di comando, vengono
-letti da un file di configurazione tipo .d rispettando cosm lo standard
+letti da un file di configurazione tipo .d, rispettando cosm lo standard
 dei moduli Earthworm. All'interno della distribuzione sono disponibili i
 due files nmxptool.d e nmxptool.desc, i quali possono essere usati come
 base per la configurazione di nmxptool all'interno del sistema
@@ -1708,20 +1710,20 @@ configurato e lanciato all'interno del sistema Earthworm per consentire
 il calcolo delle localizzazioni degli eventi sismici ed inoltre viene
 configurato e lanciato all'interno del sistema SeisComp come plug-in
 SeedLink per l'archiviazione dei dati. La latenza indotta dal programma
-e non, ad esempio quella causata dal mezzo trasmissivo, i determinata
-solo nel caso in cui si rimanga in attesa di uno o pisch pacchetti
-mancanti. Tale attesa termina nel momento in cui il buffer risulti
-completamente pieno comportando quindi una perdita di dati (gap). Il
-valore impostato per la massima latenza tollerabile sara, in generale,
-minore per localizzare un evento (ad esempio 30-60 sec.) rispetto a
-quello impostato per l'archiviazione (ad esempio 300-600 sec.).
+i determinata solo nel caso in cui si rimanga in attesa di uno o pisch
+pacchetti mancanti. Tale attesa termina nel momento in cui il buffer
+risulti completamente pieno comportando quindi una perdita di dati
+(gap). Il valore impostato per la massima latenza tollerabile sara, in
+generale, minore per localizzare un evento (ad esempio 30-60 sec.)
+rispetto a quello impostato per l'archiviazione (ad esempio 300-600
+sec.).
 
 Al fine di garantire completezza dei dati archiviati i stata sviluppata
 una procedura dal nome nmdc, ovvero ``Nanometrics Data Completeness'',
 che basandosi sulla versatilita di nmxptool recupera i dati mancanti
 dopo qualche ora o il giorno successivo. In questo caso i gaps
 risultanti non potranno pisch essere colmati poichy i dati richiesti non
-risultano definitivamente pisch essere presenti sul lato dei servers
+risultano pisch essere definitivamente presenti sul lato dei servers
 Nanometrics.
 
 Conclusioni
@@ -2899,9 +2901,9 @@ test il 23 settembre 2007 tramite nmxptool e seedllink.
 
 Ringraziamenti
 
-Un particolare ringraziamento va a Salvatore Mazza per la fiducia che
-sempre mi riserva. Sono inoltre riconoscente a Marco Olivieri per il suo
-supporto nel controllo di qualita dei dati prodotti dalle mie
+Un particolare ringraziamento va al Dott. Salvatore Mazza per la fiducia
+che sempre mi riserva. Sono inoltre riconoscente al Dott. Marco Olivieri
+per il suo supporto nel controllo di qualita dei dati prodotti dalle mie
 applicazioni.
 
 Bibliografia e riferimenti web
@@ -2931,5 +2933,5 @@ GNU General Public License
 
  PAGE   
 
- PAGE   22 
+ PAGE   21 
 
