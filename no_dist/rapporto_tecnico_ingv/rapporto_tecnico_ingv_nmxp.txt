@@ -23,7 +23,7 @@ Introduzione	  PAGEREF _Toc52703656 \h  5
 
 2.1 Installazione	  PAGEREF _Toc52703661 \h  8 
 
-2.2 Documentazione	  PAGEREF _Toc52703662 \h  9 
+2.2 Documentazione	  PAGEREF _Toc52703662 \h  10 
 
 2.3 Uso delle APIs per sviluppare una nuova applicazione	  PAGEREF
 _Toc52703665 \h  14 
@@ -32,7 +32,7 @@ _Toc52703665 \h  14
 
 3.1 Modulo Earthworm	  PAGEREF _Toc52703667 \h  20 
 
-3.2 Plug-in SeedLink	  PAGEREF _Toc52703668 \h  20 
+3.2 Plug-in SeedLink	  PAGEREF _Toc52703668 \h  21 
 
 3.3 Completezza del dato Nanometrics	  PAGEREF _Toc52703669 \h  21 
 
@@ -66,8 +66,8 @@ Insieme alla libreria viene inoltre distribuito un programma chiamato
 nmxptool che basandosi su di essa permette di eseguire interrogazioni,
 ricevere dati in tempo reale e/o off-line, ed inoltre salvare questi in
 diversi formati, quali NMX e mini-SEED. Tale programma put inoltre
-essere utilizzato come plug-in per server SeedLink o come modulo per il
-sistema Earthworm.
+essere utilizzato come modulo per il sistema Earthworm o come plug-in
+per server SeedLink.
 
 Uno dei principali contributi offerti da questo sviluppo consiste nella
 possibilita di gestire connessioni di tipo Raw Stream con riordinamento
@@ -408,10 +408,10 @@ kyuzo:~ mtheo$ seiscomp config
 La documentazione della libreria i stata redatta in lingua inglese
 utilizzando dei meta-tags all'interno del codice e per mezzo del
 programma doxygen. Viene rilasciata all'interno del pacchetto di
-distribuzione nei formati html, rtf e man. Segue l'elenco e le relative
-descrizioni delle sole funzioni, quelle di pisch alto livello, contenute
-in nmxp.h. Per maggiori dettagli si faccia riferimento alla
-documentazione stessa.
+distribuzione nei formati html, rtf e man. Segue la documentazione della
+struttura NMXP_DATA_PROCESS e l'elenco e le relative descrizioni delle
+sole funzioni, quelle di pisch alto livello, contenute in nmxp.h. Per
+maggiori dettagli si faccia riferimento alla documentazione stessa.
 
 Documentazione della struttura dati NMXP_DATA_PROCESS per lo sviluppo
 con libnmxp.
@@ -1219,9 +1219,11 @@ comando:
 
 kyuzo:~ mtheo$ nmxptool -h
 
-nmxptool 0.22.0, Nanometrics tool based on libnmxp-0.22.0
+nmxptool 1.1.2, Nanometrics tool based on libnmxp-1.1.2
 
         (Data Access Protocol 1.0, Private Data Stream 1.4)
+
+         Support for: libmseed YES, SeedLink YES, Earthworm YES.
 
 Usage: nmxptool -H hostname --listchannels [...]
 
@@ -1234,6 +1236,10 @@ Usage: nmxptool -H hostname --listchannels [...]
        nmxptool -H hostname -C channellist [...]
 
              Receive data from hostname by PDS
+
+       nmxptool nmxptool.d
+
+             Run as earthworm module receiving data by PDS
 
 Arguments:
 
@@ -1402,17 +1408,14 @@ USI.???,VAGA.HHZ -g
 
 Osserviamo che la data put essere scritta seguendo tali regole:
 
-DATA,ORA oppure solamente DATA
-
-dove:
+DATA,ORA oppure solamente DATA, dove:
 
 DATA put essere espressa nei seguenti formati:
 
      aaaa/mm/gg
 
-     aaa.jjj
-
-jjj i il giorno giuliano dell'anno
+     aaa.jjj                         (jjj i il giorno giuliano
+dell'anno)
 
 ORA put essere espressa nei seguenti formati:
 
@@ -1420,9 +1423,7 @@ ORA put essere espressa nei seguenti formati:
 
     hh:mm
 
-Se si specifica solo DATA allora l'ora verra
-
-automaticamente impostata a 00:00
+Se si specifica solo DATA, ORA verra automaticamente impostata a 00:00
 
 
 
@@ -1497,8 +1498,6 @@ XX.VAGA.HHZ 100Hz (2007.242,00:00:02.5399 - 2007.242,00:00:04.7799) lat
 XX.VAGA.HHZ 100Hz (2007.242,00:00:04.7799 - 2007.242,00:00:05.0000) lat
 130112.0s [1, 7848384] (0)   22pts (-10362, -10362, -10331, -10337, 1)
 276
-
-
 
 Per ogni pacchetto ricevuto viene visualizzato:
 
@@ -1658,6 +1657,19 @@ l'opzione -b, la quale permette di ricevere anche alcuni dati, in
 quantita discrezionale del server, che precedono quelli dell'istante
 attuale di richiesta.
 
+
+
+Figura 3. Localizzazione degli eventi e archiviazione dei dati sismici
+in tempo reale e completamento in differita. Le tre attivita si basano
+con modalita diverse su nmxptool. Nel primo e nel secondo caso, nmxptool
+si connette al NaqsServer in modalita Raw Stream e viene eseguito
+rispettivamente come modulo del sistema Earthworm e come plug-in
+SeedLink. Nel terzo i dati mancanti vengono richiesti da nmxptool al
+DataServer e ricongiunti alla struttura di archiviazione SDS di
+SeisComP.
+
+
+
 Modulo Earthworm
 
 nmxptool put essere eseguito come modulo del sistema Earthworm.
@@ -1680,19 +1692,6 @@ sono inoltre disponibili i templates SeedLink necessari alla
 configurazione del plug-in tramite  del comando ``seiscomp config''. E'
 comunque in corso la richiesta per inserire nmxptool fra i plug-ins
 delle distribuzioni ufficiali di SeisComP.
-
-
-
-Figura 3. Localizzazione degli eventi e archiviazione dei dati sismici
-in tempo reale e completamento in differita. Le tre attivita si basano
-con modalita diverse su nmxptool. Nel primo e nel secondo caso, nmxptool
-si connette al NaqsServer in modalita Raw Stream e viene eseguito
-rispettivamente come modulo del sistema Earthworm e come plug-in
-SeedLink. Nel terzo i dati mancanti vengono richiesti da nmxptool al
-DataServer e ricongiunti alla struttura di archiviazione SDS di
-SeisComP.
-
-
 
 Completezza del dato Nanometrics
 
@@ -2926,5 +2925,5 @@ GNU General Public License
 
  PAGE   
 
- PAGE   9 
+ PAGE   20 
 
