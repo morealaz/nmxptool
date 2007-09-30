@@ -32,7 +32,7 @@ _Toc52703665 \h  14
 
 3.1 Modulo Earthworm	  PAGEREF _Toc52703667 \h  20 
 
-3.2 Plug-in SeedLink	  PAGEREF _Toc52703668 \h  21 
+3.2 Plug-in SeedLink	  PAGEREF _Toc52703668 \h  20 
 
 3.3 Completezza del dato Nanometrics	  PAGEREF _Toc52703669 \h  21 
 
@@ -299,7 +299,7 @@ nmxptool sono
 
 I sorgenti, la documentazione e gli scripts di installazione della
 libreria e del programma vengono rilasciati in distribuzioni compresse,
-con nome del tipo libnmxp-0.22.0.tar.gz. I requisiti per l'installazione
+con nome del tipo libnmxp-1.1.2.tar.gz. I requisiti per l'installazione
 sono:
 
 Piattaforma POSIX
@@ -321,13 +321,13 @@ Lanciare il comando make install per l'installazione
 
 Quindi, a titolo di esempio, ecco la sequenza dei comandi da eseguire in
 una shell per compilare libnmxp e nmxptool contenuti nella distribuzione
-libnmxp-0.22.0.tar.gz:
+libnmxp-1.1.2.tar.gz:
 
-kyuzo:~ mtheo$ tar xvfz libnmxp-0.22.0.tar.gz
+kyuzo:~ mtheo$ tar xvfz libnmxp-1.1.2.tar.gz
 
-kyuzo:~ mtheo$ cd libnmxp-0.22.0
+kyuzo:~ mtheo$ cd libnmxp-1.1.2
 
-kyuzo:~/libnmxp-0.22.0 mtheo$ ./configure
+kyuzo:~/libnmxp-1.1.2 mtheo$ ./configure
 
 ...
 
@@ -351,40 +351,43 @@ configure:
 
                 - Nanometrics Private Data Stream  1.4
 
-kyuzo:~/libnmxp-0.22.0 mtheo$ make
+kyuzo:~/libnmxp-1.1.2 mtheo$ make
 
-kyuzo:~/libnmxp-0.22.0 mtheo$ su root
+kyuzo:~/libnmxp-1.1.2 mtheo$ su root
 
-kyuzo:~/libnmxp-0.22.0 root# make install
+kyuzo:~/libnmxp-1.1.2 root# make install
 
-kyuzo:~/libnmxp-0.22.0 root# exit
+kyuzo:~/libnmxp-1.1.2 root# exit
 
-kyuzo:~/libnmxp-0.22.0 mtheo$ cd tools/nmxptool
+kyuzo:~/libnmxp-1.1.2 mtheo$ cd tools/nmxptool
 
-kyuzo:~/libnmxp-0.22.0/tools/nmxptool mtheo$ ./configure
+kyuzo:~/libnmxp-1.1.2/tools/nmxptool mtheo$ ./configure
 
-kyuzo:~/libnmxp-0.22.0/tools/nmxptool mtheo$ make
+kyuzo:~/libnmxp-1.1.2/tools/nmxptool mtheo$ make
 
-kyuzo:~/libnmxp-0.22.0/tools/nmxptool mtheo$ su root
+kyuzo:~/libnmxp-1.1.2/tools/nmxptool mtheo$ su root
 
-kyuzo:~/libnmxp-0.22.0/tools/nmxptool root# make install
+kyuzo:~/libnmxp-1.1.2/tools/nmxptool root# make install
 
-kyuzo:~/libnmxp-0.22.0/tools/nmxptool root# exit
-
-Lo script configure automaticamente rileva e compila, se presenti: la
+Lo script configure automaticamente rileva e compila se presenti: la
 libreria per  il salvataggio dei dati in mini-SEED,  i sorgenti con le
 funzioni base di un plug-in SeedLink e i file oggetto (i file di tipo
 .o) della libreria di Earthworm. Le compilazioni di queste tre
-funzionalita di nmxptool possono essere inibite passando rispettivamente
-al comando configure i seguenti argomenti: --without-libmseed,
---without-seedlink, --without-ew.
+funzionalita a supporto di nmxptool possono essere inibite passando
+rispettivamente al configure i seguenti tre parametri:
+
+  --without-libmseed      disable support for libmseed
+
+  --without-seedlink      disable support for seedlink
+
+  --without-ew            disable support for earthworm
 
 Per configurare nmxptool come modulo Earthworm bisognera copiare i files
 nmxptool.d e nmxptool.desc nella directory dei parametri di Earthworm e
 poi modificarli secondo le proprie esigenze. La copia sara un comando
 del  tipo:
 
-kyuzo:~/libnmxp-0.22.0/tools/nmxptool mtheo$ cp earthworm/nmxptool.*
+kyuzo:~/libnmxp-1.1.2/tools/nmxptool mtheo$ cp earthworm/nmxptool.*
 ${EW_PARAMS}
 
 Per poter configurare nmxptool come plug-in all'interno di SeisComP sara
@@ -392,7 +395,7 @@ sufficiente copiare la directory 135_nmxptool all'interno dei templates
 di SeisComP. Supponendo la SeisComP Root uguale a /home/sysop/seiscomp,
 ecco un esempio del comando da lanciare:
 
-kyuzo:~/libnmxp-0.22.0/tools/nmxptool mtheo$ cp -r \
+kyuzo:~/libnmxp-1.1.2/tools/nmxptool mtheo$ cp -r \
 
 seiscomp_templates/135_nmxptool \
 
@@ -798,21 +801,22 @@ n_func_pd number of functions into the array p_func_pd
 
 
 
-Le funzioni degne di maggiore attenzione sono quelle che si occupano
-della gestione del buffer dei pacchetti nelle connessioni di tipo Raw
-Stream, cioi dei pacchetti compressi e con valore di Short-term-complete
-uguale a -1. Per un canale sismico la funzione nmxp_raw_stream_manage()
-si occupa di riordinare cronologicamente le strutture NMXP_DATA_PROCESS
-che ad ogni chiamata le vengono passate, successivamente di eseguire
-sulle stesse le n_func_pd funzioni i cui puntatori sono contenuti
-nell'array p_func_pd. Nel caso in cui rilevi una discontinuita temporale
-del dato, la funzione accoda in un buffer la struttura corrente
-inducendo cosm una latenza sul flusso dei dati per quel canale. L'attesa
-dei pacchetti mancanti termina quando il tempo massimo di latenza
-tollerabile, impostato al momento dell'inizializzazione per mezzo della
-funzione nmxp_raw_stream_init(), viene superato. In quest'ultimo caso la
-funzione forzera l'esecuzione delle funzioni sulla prima struttura
-disponibile causando quindi un gap sul flusso dei dati.
+Le funzioni a cui prestare maggiore attenzione sono quelle che si
+occupano della gestione del buffer dei pacchetti nelle connessioni di
+tipo Raw Stream, cioi dei pacchetti compressi e con valore di
+Short-term-complete uguale a -1. Per un canale sismico la funzione
+nmxp_raw_stream_manage() si occupa di riordinare cronologicamente le
+strutture NMXP_DATA_PROCESS che ad ogni chiamata le vengono passate,
+successivamente di eseguire sulle stesse le n_func_pd funzioni i cui
+puntatori sono contenuti nell'array p_func_pd. Nel caso in cui rilevi
+una discontinuita temporale del dato, la funzione accoda in un buffer la
+struttura corrente inducendo cosm una latenza sul flusso dei dati per
+quel canale. L'attesa dei pacchetti mancanti termina quando il tempo
+massimo di latenza tollerabile, impostato al momento
+dell'inizializzazione per mezzo della funzione nmxp_raw_stream_init(),
+viene superato. In quest'ultimo caso la funzione forzera l'esecuzione
+delle funzioni sulla prima struttura disponibile causando quindi un gap
+sul flusso dei dati.
 
 Uso delle APIs per sviluppare una nuova applicazione
 
@@ -1675,12 +1679,12 @@ Modulo Earthworm
 nmxptool put essere eseguito come modulo del sistema Earthworm.
 Generalmente il tipo di connessione eseguita i di tipo Raw Stream e i
 parametri, invece di essere passati tramite linea di comando, vengono
-letti, rispettando lo standard dei moduli Earthworm, da un file di
-configurazione tipo .d. All'interno della distribuzione sono disponibili
-i due files nmxptool.d e nmxptool.desc, base per la configurazione di
-nmxptool all'interno del sistema Earthworm. E' comunque in corso la
-richiesta per inserire nmxptool nelle distribuzioni ufficiali di
-Earthworm.
+letti da un file di configurazione tipo .d rispettando cosm lo standard
+dei moduli Earthworm. All'interno della distribuzione sono disponibili i
+due files nmxptool.d e nmxptool.desc, i quali possono essere usati come
+base per la configurazione di nmxptool all'interno del sistema
+Earthworm. E' comunque in corso la richiesta per inserire nmxptool nelle
+distribuzioni ufficiali di Earthworm.
 
 Plug-in SeedLink
 
@@ -1689,7 +1693,7 @@ nmxptool put essere lanciato come un plug-in per SeedLink per mezzo
 dell'utilizzo dell'opzione -k. Questa opzione deve essere
 necessariamente dichiarata per ultima. All'interno della distribuzione
 sono inoltre disponibili i templates SeedLink necessari alla
-configurazione del plug-in tramite  del comando ``seiscomp config''. E'
+configurazione del plug-in tramite  il comando ``seiscomp config''. E'
 comunque in corso la richiesta per inserire nmxptool fra i plug-ins
 delle distribuzioni ufficiali di SeisComP.
 
@@ -1697,7 +1701,7 @@ Completezza del dato Nanometrics
 
 La figura 3 illustra come nmxptool viene utilizzato all'interno
 dell'INGV per far fluire i dati sismici delle stazioni che trasmettono
-tramite i protocolli Nanometrics, nel sistemi Earthworm e SeisComP. Le
+tramite i protocolli Nanometrics nei sistemi Earthworm e SeisComP. Le
 forme d'onda vengono ricevute in tempo reale in modalita Raw Stream al
 fine di minimizzare la latenza e il numero di gaps. nmxptool viene
 configurato e lanciato all'interno del sistema Earthworm per consentire
@@ -1707,7 +1711,10 @@ SeedLink per l'archiviazione dei dati. La latenza indotta dal programma
 e non, ad esempio quella causata dal mezzo trasmissivo, i determinata
 solo nel caso in cui si rimanga in attesa di uno o pisch pacchetti
 mancanti. Tale attesa termina nel momento in cui il buffer risulti
-completamente pieno comportando quindi una perdita di dati (gap).
+completamente pieno comportando quindi una perdita di dati (gap). Il
+valore impostato per la massima latenza tollerabile sara, in generale,
+minore per localizzare un evento (ad esempio 30-60 sec.) rispetto a
+quello impostato per l'archiviazione (ad esempio 300-600 sec.).
 
 Al fine di garantire completezza dei dati archiviati i stata sviluppata
 una procedura dal nome nmdc, ovvero ``Nanometrics Data Completeness'',
@@ -1734,9 +1741,9 @@ grado di gestire connessioni di tipo Raw Stream, non possono garantire
 minimamente la continuita del dato al verificarsi di una ritrasmissione
 dal lato Nanometrics Server - Stazione Sismica (fig. 1).
 
-Le tabelle 2 e 3 mostrano i reports sintetici dei dati archiviati per i
-canali in test il 22 e il 23 settembre 2007. Giornalmente, per ogni
-canale viene visualizzato:
+Le tabelle 2 e 3 mostrano i reports sintetici dei dati archiviati per
+alcuni canali in test il 22 e il 23 settembre 2007. Giornalmente, per
+ogni canale viene visualizzato:
 
 Totale di pacchetti ritrasmessi: per una trasmissione di tipo
 short-term-complete i dati contenuti in questi pacchetti sarebbero stati
@@ -1792,10 +1799,9 @@ funzionalita offerte, sono un valido supporto a procedure che
 necessitano di dati a richiesta, come ad esempio il calcolo della
 magnitudo o del momento tensore dopo un evento sismico.
 
-Per il futuro, l'autore intende manutenere libnmxp e nmxptool ed
-ampliare le funzionalita della libreria anche per quanto riguarda la
-gestione dei dati di tipo serial data, triggers, events e
-state-of-health.
+Per il futuro l'autore intende manutenere libnmxp e nmxptool ed ampliare
+le funzionalita della libreria anche per quanto riguarda la gestione dei
+dati di tipo serial data, triggers, events e state-of-health.
 
 
 
@@ -2925,5 +2931,5 @@ GNU General Public License
 
  PAGE   
 
- PAGE   20 
+ PAGE   22 
 
