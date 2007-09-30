@@ -41,9 +41,9 @@
 			<integer>203</integer>
 			<key>Points</key>
 			<array>
-				<string>{415.868, 769.271}</string>
+				<string>{417.104, 767.699}</string>
 				<string>{326.167, 883.324}</string>
-				<string>{417.105, 981.422}</string>
+				<string>{416.085, 980.322}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -81,9 +81,9 @@
 			<integer>202</integer>
 			<key>Points</key>
 			<array>
-				<string>{217.184, 767.947}</string>
+				<string>{217.185, 767.947}</string>
 				<string>{306.912, 886.013}</string>
-				<string>{217.009, 980.336}</string>
+				<string>{215.974, 981.422}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -121,8 +121,8 @@
 			<integer>196</integer>
 			<key>Points</key>
 			<array>
-				<string>{319.7, 618.654}</string>
-				<string>{215.974, 684.9}</string>
+				<string>{319.699, 618.654}</string>
+				<string>{215.975, 684.9}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -387,7 +387,7 @@ System}</string>
 			<integer>188</integer>
 			<key>Points</key>
 			<array>
-				<string>{774.247, 197.878}</string>
+				<string>{774.247, 197.879}</string>
 				<string>{873.585, 150.71}</string>
 			</array>
 			<key>Style</key>
@@ -462,184 +462,6 @@ System}</string>
 
 \f0\b\fs36 \cf0 Client}</string>
 			</dict>
-		</dict>
-		<dict>
-			<key>Class</key>
-			<string>Group</string>
-			<key>Graphics</key>
-			<array>
-				<dict>
-					<key>Bounds</key>
-					<string>{{878.39, 480.29}, {213, 23}}</string>
-					<key>Class</key>
-					<string>ShapedGraphic</string>
-					<key>FitText</key>
-					<string>YES</string>
-					<key>Flow</key>
-					<string>Resize</string>
-					<key>FontInfo</key>
-					<dict>
-						<key>Font</key>
-						<string>Times-Roman</string>
-						<key>Size</key>
-						<real>18</real>
-					</dict>
-					<key>ID</key>
-					<integer>182</integer>
-					<key>Shape</key>
-					<string>Rectangle</string>
-					<key>Style</key>
-					<dict>
-						<key>fill</key>
-						<dict>
-							<key>Draws</key>
-							<string>NO</string>
-						</dict>
-						<key>shadow</key>
-						<dict>
-							<key>Draws</key>
-							<string>NO</string>
-						</dict>
-						<key>stroke</key>
-						<dict>
-							<key>Draws</key>
-							<string>NO</string>
-						</dict>
-					</dict>
-					<key>Text</key>
-					<dict>
-						<key>Text</key>
-						<string>{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf410
-{\fonttbl\f0\froman\fcharset77 Times-Italic;}
-{\colortbl;\red255\green255\blue255;}
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\qc
-
-\f0\i\fs36 \cf0 trasmissioni / ritrasmissioni}</string>
-					</dict>
-					<key>Wrap</key>
-					<string>NO</string>
-				</dict>
-				<dict>
-					<key>Bounds</key>
-					<string>{{929.39, 429.29}, {91, 35}}</string>
-					<key>Class</key>
-					<string>ShapedGraphic</string>
-					<key>ID</key>
-					<integer>183</integer>
-					<key>ImageID</key>
-					<integer>2</integer>
-					<key>Magnets</key>
-					<array>
-						<string>{0, 1}</string>
-						<string>{0, -1}</string>
-						<string>{1, 0}</string>
-						<string>{-1, 0}</string>
-					</array>
-					<key>Shape</key>
-					<string>Rectangle</string>
-					<key>Style</key>
-					<dict>
-						<key>fill</key>
-						<dict>
-							<key>Draws</key>
-							<string>NO</string>
-						</dict>
-						<key>shadow</key>
-						<dict>
-							<key>Color</key>
-							<dict>
-								<key>a</key>
-								<string>0.5</string>
-								<key>b</key>
-								<string>0</string>
-								<key>g</key>
-								<string>0</string>
-								<key>r</key>
-								<string>0</string>
-							</dict>
-							<key>Fuzziness</key>
-							<real>4</real>
-							<key>ShadowVector</key>
-							<string>{0, 2}</string>
-						</dict>
-						<key>stroke</key>
-						<dict>
-							<key>Cap</key>
-							<integer>0</integer>
-							<key>Draws</key>
-							<string>NO</string>
-							<key>Join</key>
-							<integer>0</integer>
-						</dict>
-					</dict>
-				</dict>
-				<dict>
-					<key>Bounds</key>
-					<string>{{955.39, 519.289}, {59, 59.0042}}</string>
-					<key>Class</key>
-					<string>ShapedGraphic</string>
-					<key>ID</key>
-					<integer>184</integer>
-					<key>ImageID</key>
-					<integer>1</integer>
-					<key>Magnets</key>
-					<array>
-						<string>{0, 1}</string>
-						<string>{0, -1}</string>
-						<string>{1, 0}</string>
-						<string>{-1, 0}</string>
-					</array>
-					<key>Shape</key>
-					<string>Rectangle</string>
-					<key>Style</key>
-					<dict>
-						<key>fill</key>
-						<dict>
-							<key>Draws</key>
-							<string>NO</string>
-						</dict>
-						<key>shadow</key>
-						<dict>
-							<key>Color</key>
-							<dict>
-								<key>a</key>
-								<string>0.5</string>
-								<key>b</key>
-								<string>0</string>
-								<key>g</key>
-								<string>0</string>
-								<key>r</key>
-								<string>0</string>
-							</dict>
-							<key>Fuzziness</key>
-							<real>4</real>
-							<key>ShadowVector</key>
-							<string>{0, 2}</string>
-						</dict>
-						<key>stroke</key>
-						<dict>
-							<key>Cap</key>
-							<integer>0</integer>
-							<key>Draws</key>
-							<string>NO</string>
-							<key>Join</key>
-							<integer>0</integer>
-						</dict>
-					</dict>
-				</dict>
-				<dict>
-					<key>Bounds</key>
-					<string>{{827.141, 416.79}, {315.5, 173.75}}</string>
-					<key>Class</key>
-					<string>ShapedGraphic</string>
-					<key>ID</key>
-					<integer>185</integer>
-					<key>Shape</key>
-					<string>Cloud</string>
-				</dict>
-			</array>
-			<key>ID</key>
-			<integer>181</integer>
 		</dict>
 		<dict>
 			<key>Class</key>
@@ -743,8 +565,8 @@ System}</string>
 			<integer>178</integer>
 			<key>Points</key>
 			<array>
-				<string>{582.523, 198.521}</string>
-				<string>{618.567, 198.522}</string>
+				<string>{582.523, 198.522}</string>
+				<string>{617.067, 198.522}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -778,8 +600,8 @@ System}</string>
 			<integer>177</integer>
 			<key>Points</key>
 			<array>
-				<string>{370.816, 198.521}</string>
-				<string>{404.367, 198.521}</string>
+				<string>{370.816, 198.522}</string>
+				<string>{404.367, 198.522}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -937,8 +759,8 @@ DataServer}</string>
 			<integer>173</integer>
 			<key>Points</key>
 			<array>
-				<string>{695.73, 618.654}</string>
-				<string>{695.73, 684.9}</string>
+				<string>{695.729, 618.654}</string>
+				<string>{695.729, 684.9}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -976,7 +798,7 @@ DataServer}</string>
 			<integer>172</integer>
 			<key>Points</key>
 			<array>
-				<string>{695.73, 768.355}</string>
+				<string>{695.729, 768.355}</string>
 				<string>{695.73, 981.422}</string>
 			</array>
 			<key>Style</key>
@@ -1595,8 +1417,8 @@ Server}</string>
 			<integer>2</integer>
 			<key>Points</key>
 			<array>
-				<string>{319.7, 618.654}</string>
-				<string>{417.105, 684.9}</string>
+				<string>{319.699, 618.654}</string>
+				<string>{417.104, 684.9}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -1641,7 +1463,7 @@ Server}</string>
 			<integer>2</integer>
 			<key>Points</key>
 			<array>
-				<string>{417.105, 1047.67}</string>
+				<string>{418.548, 1048.08}</string>
 				<string>{541.067, 1082.76}</string>
 				<string>{659.652, 1047.09}</string>
 			</array>
@@ -2146,7 +1968,7 @@ gaps}</string>
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\qc
 
 \f0\i\fs36 \cf2 some\
-gap}</string>
+gaps}</string>
 			</dict>
 			<key>Wrap</key>
 			<string>NO</string>
@@ -2830,7 +2652,7 @@ gap}</string>
 	<key>GuidesVisible</key>
 	<string>NO</string>
 	<key>HPages</key>
-	<integer>3</integer>
+	<integer>2</integer>
 	<key>ImageCounter</key>
 	<integer>4</integer>
 	<key>ImageLinkBack</key>
@@ -2841,9 +2663,9 @@ gap}</string>
 	</array>
 	<key>ImageList</key>
 	<array>
+		<string>image3.tiff</string>
 		<string>image2.pdf</string>
 		<string>image1.pdf</string>
-		<string>image3.tiff</string>
 	</array>
 	<key>IsPalette</key>
 	<string>NO</string>
@@ -2960,7 +2782,7 @@ gap}</string>
 		</dict>
 	</array>
 	<key>ModificationDate</key>
-	<string>2007-09-29 16:22:15 +0200</string>
+	<string>2007-09-30 16:57:27 +0200</string>
 	<key>Modifier</key>
 	<string>mtheo</string>
 	<key>NotesVisible</key>
@@ -3038,9 +2860,9 @@ gap}</string>
 		<key>ShowStatusBar</key>
 		<true/>
 		<key>VisibleRegion</key>
-		<string>{{0, 492.08}, {914.247, 802.655}}</string>
+		<string>{{-338, 0}, {1828.49, 1605.31}}</string>
 		<key>Zoom</key>
-		<string>0.7437811</string>
+		<string>0.3718905</string>
 	</dict>
 </dict>
 </plist>
