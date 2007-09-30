@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_log.h,v 1.6 2007-09-16 21:38:20 mtheo Exp $
+ * $Id: nmxp_log.h,v 1.7 2007-09-30 20:35:08 mtheo Exp $
  *
  */
 
@@ -31,7 +31,26 @@
 #define NMXP_LOG_NORM_PKG 4
 
 
+
+/*! \brief  TODO
+ */
 const char *nmxp_log_version();
+
+
+/*! \brief TODO
+ */
+void nmxp_log_init(int (*func_log)(char *), int (*func_log_err)(char *));
+
+
+/*! \brief TODO
+ */
+int nmxp_log_stdout(char *msg);
+
+
+/*! \brief TODO
+ */
+int nmxp_log_stderr(char *msg);
+
 
 /*! \brief A generic logging/printing routine
  * 
