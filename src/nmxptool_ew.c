@@ -614,12 +614,14 @@ void nmxptool_ew_send_heartbeat_if_needed() {
  * 
  * Hooks for Earthworm logging facility.
  ***************************************************************************/
-void nmxptool_ew_logit_msg (const char *msg) {
-  logit ("t", (char *) msg);
+int nmxptool_ew_logit_msg (char *msg) {
+  logit ("t",  msg);
+  return 0;
 }
 
-void nmxptool_ew_logit_err (const char *msg) {
-  logit ("et", (char *) msg);
+int nmxptool_ew_logit_err (char *msg) {
+  logit ("et",  msg);
+  return 0;
 }
 
 

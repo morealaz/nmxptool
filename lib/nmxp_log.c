@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_log.c,v 1.9 2007-09-30 20:35:08 mtheo Exp $
+ * $Id: nmxp_log.c,v 1.10 2007-10-01 05:44:04 mtheo Exp $
  *
  */
 
@@ -55,8 +55,17 @@ int (*p_func_log_err[NMXP_MAX_FUNC_LOG]) (char *);
 void nmxp_log_init(int (*func_log)(char *), int (*func_log_err)(char *)) {
     n_func_log = 0;
     n_func_log_err = 0;
-    p_func_log[n_func_log++]         = (func_log == NULL)?     func_log     : nmxp_log_stdout;
-    p_func_log_err[n_func_log_err++] = (func_log_err == NULL)? func_log_err : nmxp_log_stdout;
+    nmxp_log_add(func_log, func_log_err);
+}
+
+
+void nmxp_log_add(int (*func_log)(char *), int (*func_log_err)(char *)) {
+    if(func_log == NULL) {
+	p_func_log[n_func_log++] = func_log;
+    }
+    if(func_log_err == NULL) {
+	p_func_log_err[n_func_log_err++] = nmxp_log_stdout;
+    }
 
 }
 
@@ -77,6 +86,7 @@ int nmxp_log(int level, int verb, ... )
     char *format;
     va_list listptr;
     time_t loc_time;
+    int i;
 
     va_start(listptr, verb);
     format = va_arg(listptr, char *);
@@ -94,7 +104,9 @@ int nmxp_log(int level, int verb, ... )
 	    //TOREMOVE printf("%s - %s: error: %s", timestr, PACKAGE_NAME, message);
 	    sprintf(message_final, "%s - %s: error: %s", timestr, PACKAGE_NAME, message);
 	    if(n_func_log_err > 0) {
-		p_func_log_err[0](message_final);
+		for(i=0; i < n_func_log_err; i++) {
+		    p_func_log_err[i](message_final);
+		}
 	    } else {
 		nmxp_log_stdout(message_final);
 	    }
@@ -103,7 +115,9 @@ int nmxp_log(int level, int verb, ... )
 	    //TOREMOVE printf("%s - %s: warning: %s", timestr, PACKAGE_NAME, message);
 	    sprintf(message_final, "%s - %s: warning: %s", timestr, PACKAGE_NAME, message);
 	    if(n_func_log > 0) {
-		p_func_log[0](message_final);
+		for(i=0; i < n_func_log; i++) {
+		    p_func_log[i](message_final);
+		}
 	    } else {
 		nmxp_log_stdout(message_final);
 	    }
@@ -112,7 +126,9 @@ int nmxp_log(int level, int verb, ... )
 	    //TOREMOVE printf("%s", message);
 	    sprintf(message_final, "%s", message);
 	    if(n_func_log > 0) {
-		p_func_log[0](message_final);
+		for(i=0; i < n_func_log; i++) {
+		    p_func_log[i](message_final);
+		}
 	    } else {
 		nmxp_log_stdout(message_final);
 	    }
@@ -121,7 +137,9 @@ int nmxp_log(int level, int verb, ... )
 	    //TOREMOVE printf("%s: %s", PACKAGE_NAME, message);
 	    sprintf(message_final, "%s: %s", PACKAGE_NAME, message);
 	    if(n_func_log > 0) {
-		p_func_log[0](message_final);
+		for(i=0; i < n_func_log; i++) {
+		    p_func_log[i](message_final);
+		}
 	    } else {
 		nmxp_log_stdout(message_final);
 	    }
@@ -130,7 +148,9 @@ int nmxp_log(int level, int verb, ... )
 	    //TOREMOVE printf("%s - %s: %s", timestr, PACKAGE_NAME, message);
 	    sprintf(message_final, "%s - %s: %s", timestr, PACKAGE_NAME, message);
 	    if(n_func_log > 0) {
-		p_func_log[0](message_final);
+		for(i=0; i < n_func_log; i++) {
+		    p_func_log[i](message_final);
+		}
 	    } else {
 		nmxp_log_stdout(message_final);
 	    }
