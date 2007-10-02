@@ -1,5 +1,5 @@
 #
-#                     Configuration File for nmxp2ew
+#                     Configuration File for nmxptool
 #
 MyModuleId       MOD_NMXPTOOL
 RingName         WAVE_RING       # Transport ring to write data to.
@@ -9,8 +9,8 @@ LogFile               2          # 1 -> Keep log, 0 -> no log file
                                  # 2 -> write to module log but not stderr/stdout
 Verbosity      0		 # Set level of verbosity.
 
-nmxphost   naqs1a.int.ingv.it    # Host address of the SeedLink server
-nmxpport       28000             # Port number of the SeedLink server
+nmxphost   naqs1a.int.ingv.it    # Host address of the NaqsServer server
+nmxpport       28000             # Port number of the NaqsServer server
 
 #ForceTraceBuf1 0                # On systems that support TRACEBUF2
                                  # messages this flag will force the module
