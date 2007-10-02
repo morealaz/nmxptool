@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.29 2007-09-30 06:26:02 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.30 2007-10-02 09:03:04 mtheo Exp $
  *
  */
 
@@ -133,8 +133,6 @@ Other arguments:\n\
   -L, --location=LOC      Location code for writing file.\n\
   -v, --verbose           Be verbose.\n\
   -g, --logdata           Print info about data.\n\
-  -l, --listchannels      Output list of channel available on NaqsServer.\n\
-  -i, --channelinfo       Output list of channel available on NaqsServer and channelinfo.\n\
 ",
 	    DEFAULT_PORT_PDS,
 	    DEFAULT_PORT_DAP,
@@ -172,6 +170,8 @@ DAP Arguments:\n\
   -d, --delay=SECs        Receive continuosly data with delay [%d..%d].\n\
   -u, --username=USER     DataServer username.\n\
   -p, --password=PASS     DataServer password.\n\
+  -l, --listchannels      Output list of channel available on DataServer.\n\
+  -i, --channelinfo       Output list of channel available on DataServer and channelinfo.\n\
 \n\
 ",
 DEFAULT_DELAY_MINIMUM,
