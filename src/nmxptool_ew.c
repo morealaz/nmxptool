@@ -35,7 +35,7 @@
 /* Should be defined by kom.h           */
 #define MAXMODNAMELEN   30      /* Maximum length of a module name      */
 /* Should be defined by kom.h           */
-#define MAXADDRLEN      80      /* Length of SeedLink hostname/address  */
+#define MAXADDRLEN      80      /* Length of NaqsServer hostname/address  */
 
 SHM_INFO      regionOut;         /* Shared memory region                 */
 pid_t         myPid;             /* Process ID                           */
