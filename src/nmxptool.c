@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.80 2007-10-04 20:06:39 mtheo Exp $
+ * $Id: nmxptool.c,v 1.81 2007-10-04 20:36:06 mtheo Exp $
  *
  */
 
@@ -565,14 +565,17 @@ int main (int argc, char **argv) {
 		nmxp_data_log(pd);
 	    }
 
+	    if(pd) {
 	    /* Set cur_chan */
 	    cur_chan = nmxp_chan_lookupKeyIndex(pd->key, channelList_subset);
+	    }
 
 	    /* Manage Raw Stream */
 	    if(params.stc == -1) {
 		nmxp_raw_stream_manage(&(channelListSeq[cur_chan].raw_stream_buffer), pd, p_func_pd, n_func_pd);
 	    } else {
 
+	    if(pd) {
 		/* Management of gaps */
 		if(!channelListSeq[cur_chan].significant && pd->nSamp > 0) {
 		    channelListSeq[cur_chan].significant = 1;
@@ -604,7 +607,9 @@ int main (int argc, char **argv) {
 		}
 #endif
 	    }
+	    }
 
+	    if(pd) {
 	    /* Store x_1 */
 	    if(pd->nSamp > 0) {
 		channelListSeq[cur_chan].x_1 = pd->pDataPtr[pd->nSamp-1];
@@ -613,6 +618,7 @@ int main (int argc, char **argv) {
 	    if(pd->buffer) {
 		free(pd->buffer);
 		pd->buffer = NULL;
+	    }
 	    }
 
 	    // TODO
