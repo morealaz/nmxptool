@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp.c,v 1.47 2007-09-21 07:02:30 mtheo Exp $
+ * $Id: nmxp.c,v 1.48 2007-10-04 20:34:30 mtheo Exp $
  *
  */
 
@@ -550,6 +550,7 @@ int nmxp_raw_stream_manage(NMXP_RAW_STREAM_DATA *p, NMXP_DATA_PROCESS *a_pd, int
     char str_time[200];
     NMXP_DATA_PROCESS *pd = NULL;
 
+    if(a_pd) {
     if(a_pd->packet_type == 33) {
 	nmxp_data_log(a_pd);
     }
@@ -569,15 +570,18 @@ int nmxp_raw_stream_manage(NMXP_RAW_STREAM_DATA *p, NMXP_DATA_PROCESS *a_pd, int
     } else {
 	pd->pDataPtr = NULL;
     }
+    }
 
     /* First time */
-    if(p->last_seq_no_sent == -1) {
+    if(p->last_seq_no_sent == -1  && pd) {
 	p->last_seq_no_sent = pd->seq_no - 1;
 	p->last_sample_time = pd->time;
 	nmxp_log(0, 1, "First time nmxp_raw_stream_manage().\n");
     }
     
-    latency = nmxp_data_latency(p->pdlist[0]);
+    if(p->n_pdlist > 0) {
+	latency = nmxp_data_latency(p->pdlist[0]);
+    }
 
     /* Add pd and sort array */
     if(p->n_pdlist >= p->max_pdlist_items
@@ -621,7 +625,9 @@ int nmxp_raw_stream_manage(NMXP_RAW_STREAM_DATA *p, NMXP_DATA_PROCESS *a_pd, int
 
 	p->pdlist[0] = pd;
     } else {
-	p->pdlist[p->n_pdlist++] = pd;
+	if(pd) {
+	    p->pdlist[p->n_pdlist++] = pd;
+	}
     }
     qsort(p->pdlist, p->n_pdlist, sizeof(NMXP_DATA_PROCESS *), nmxp_raw_stream_seq_no_compare);
 
