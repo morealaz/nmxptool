@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.79 2007-10-01 06:03:45 mtheo Exp $
+ * $Id: nmxptool.c,v 1.80 2007-10-04 20:06:39 mtheo Exp $
  *
  */
 
@@ -702,6 +702,12 @@ static void clientShutdown(int sig) {
 	/* Close output file */
 	fclose(outfile);
     }
+
+#ifdef HAVE_EARTHWORMOBJS
+	if(params.ew_configuration_file) {
+	    nmxptool_ew_detach();
+	}
+#endif
 
 #ifdef HAVE_LIBMSEED
     if(params.flag_writeseed  &&  data_seed.outfile_mseed) {
