@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.31 2007-10-06 15:34:00 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.32 2007-10-06 17:26:06 mtheo Exp $
  *
  */
 
@@ -362,6 +362,7 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 		case 's':
 		    if(nmxp_data_parse_date(optarg, &tmp_tm) == -1) {
 			// MESSAGE ERROR
+			ret_errors++;
 		    } else {
 			params->start_time = nmxp_data_tm_to_time(&tmp_tm);
 		    }
@@ -370,6 +371,7 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 		case 'e':
 		    if(nmxp_data_parse_date(optarg, &tmp_tm) == -1) {
 			// MESSAGE ERROR
+			ret_errors++;
 		    } else {
 			params->end_time = nmxp_data_tm_to_time(&tmp_tm);
 		    }
