@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.30 2007-10-02 09:03:04 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.31 2007-10-06 15:34:00 mtheo Exp $
  *
  */
 
@@ -29,6 +29,7 @@ const NMXPTOOL_PARAMS NMXPTOOL_PARAMS_DEFAULT =
     NULL,
     NULL,
     NULL,
+    0,
     0,
     0,
     NULL,
@@ -106,11 +107,12 @@ Usage: %s -H hostname --listchannels [...]\n\
              Receive list of available channels on the host\n\
 \n\
        %s -H hostname -C channellist -s DATE -e DATE [...]\n\
+       %s -H hostname -C channellist -s DATE -t SECs [...]\n\
              Receive data from hostname by DAP\n\
 \n\
        %s -H hostname -C channellist [...]\n\
              Receive data from hostname by PDS\n\
-\n", PACKAGE_NAME, PACKAGE_NAME, PACKAGE_NAME);
+\n", PACKAGE_NAME, PACKAGE_NAME, PACKAGE_NAME, PACKAGE_NAME);
 
 #ifdef HAVE_EARTHWORMOBJS
     nmxp_log(NMXP_LOG_NORM_NO, 0, "\
@@ -167,6 +169,7 @@ DAP Arguments:\n\
                           where:\n\
                               <date> = yyyy/mm/dd | yyy.jjj\n\
                               <time> = hh:mm:ss | hh:mm\n\
+  -t, --interval=SECs     Interval from start_time.\n\
   -d, --delay=SECs        Receive continuosly data with delay [%d..%d].\n\
   -u, --username=USER     DataServer username.\n\
   -p, --password=PASS     DataServer password.\n\
@@ -234,6 +237,7 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 	{"rate",         required_argument, 0, 'R'},
 	{"start_time",   required_argument, 0, 's'},
 	{"end_time",     required_argument, 0, 'e'},
+	{"interval",     required_argument, 0, 't'},
 	{"delay",        required_argument, 0, 'd'},
 	{"username",     required_argument, 0, 'u'},
 	{"password",     required_argument, 0, 'p'},
@@ -277,7 +281,7 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
     /* init params */
     memcpy(params, &NMXPTOOL_PARAMS_DEFAULT, sizeof(NMXPTOOL_PARAMS_DEFAULT));
 
-    char optstr[100] = "H:P:D:C:N:L:S:R:s:e:d:u:p:M:vgbliwhV";
+    char optstr[100] = "H:P:D:C:N:L:S:R:s:e:t:d:u:p:M:vgbliwhV";
 
 #ifdef HAVE_LIBMSEED
     strcat(optstr, "m");
@@ -369,6 +373,10 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 		    } else {
 			params->end_time = nmxp_data_tm_to_time(&tmp_tm);
 		    }
+		    break;
+
+		case 't':
+		    params->interval = atoi(optarg);
 		    break;
 
 		case 'd':
@@ -466,6 +474,11 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 int nmxptool_check_params(NMXPTOOL_PARAMS *params) {
     int ret = 0;
 
+    if(params->start_time != 0 && params->interval != 0   &&   params->end_time == 0) {
+	params->end_time = params->start_time + params->interval;
+	params->interval = 0;
+    }
+
     if(params->ew_configuration_file != NULL) {
 	/* Do nothing */
     } else if(params->hostname == NULL) {
@@ -479,6 +492,15 @@ int nmxptool_check_params(NMXPTOOL_PARAMS *params) {
     } else if(params->channels == NULL) {
 	ret = -1;
 	nmxp_log(NMXP_LOG_NORM_NO, 0, "<STA.CHAN> is required!\n");
+    } else if(params->start_time == 0 &&  params->end_time != 0) {
+	ret = -1;
+	nmxp_log(NMXP_LOG_NORM_NO, 0, "<end_time> has to be used with <start_time>!\n");
+    } else if(params->start_time != 0 &&  params->end_time == 0) {
+	ret = -1;
+	nmxp_log(NMXP_LOG_NORM_NO, 0, "<start_time> has to be used with <end_time> or <interval>!\n");
+    } else if(params->start_time != 0 && params->interval != 0   &&   params->end_time != 0) {
+	ret = -1;
+	nmxp_log(NMXP_LOG_NORM_NO, 0, "<end_time> and <interval> are exclusives!\n");
     } else if(params->start_time != 0   &&   params->end_time != 0
 	    && params->start_time >= params->end_time) {
 	ret = -1;
@@ -519,9 +541,11 @@ int nmxptool_check_params(NMXPTOOL_PARAMS *params) {
 	nmxp_log(NMXP_LOG_WARN, 0, "<maxlatency> ignored since not defined --stc=-1.\n");
     }
 
+    /*
     if( params->stc == -1 ) {
 	nmxp_log(NMXP_LOG_WARN, 0, "<maxlatency> is equal to %d sec.\n", params->max_tolerable_latency);
     }
+    */
 
     return ret;
 }

@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.81 2007-10-04 20:36:06 mtheo Exp $
+ * $Id: nmxptool.c,v 1.82 2007-10-06 15:34:00 mtheo Exp $
  *
  */
 
@@ -81,7 +81,7 @@ MSRecord *msr_list_chan[MAX_N_CHAN];
 int main (int argc, char **argv) {
     int32_t connection_time;
     int request_SOCKET_OK;
-    int i_chan, cur_chan;
+    int i_chan, cur_chan = 0;
     int exitpdscondition;
     int exitdapcondition;
 
@@ -788,7 +788,7 @@ int nmxptool_write_miniseed(NMXP_DATA_PROCESS *pd) {
 int nmxptool_print_seq_no(NMXP_DATA_PROCESS *pd) {
     int ret = 0;
 
-    nmxp_log(NMXP_LOG_NORM_NO, 0, "%s.%s %2d %d %d  lat. %.1fs\n",
+    nmxp_log(NMXP_LOG_NORM_NO, 0, "Process %s.%s %2d %d %d  lat. %.1fs\n",
 	    pd->station,
 	    pd->channel,
 	    pd->packet_type,
