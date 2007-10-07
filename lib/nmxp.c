@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp.c,v 1.50 2007-10-07 18:13:39 mtheo Exp $
+ * $Id: nmxp.c,v 1.51 2007-10-07 19:22:29 mtheo Exp $
  *
  */
 
@@ -512,15 +512,15 @@ int nmxp_raw_stream_seq_no_compare(const void *a, const void *b)
     return ret;
 }
 
-void nmxp_raw_stream_init(NMXP_RAW_STREAM_DATA *raw_stream_buffer, int32_t max_tollerable_latency, int timeoutrecv) {
+void nmxp_raw_stream_init(NMXP_RAW_STREAM_DATA *raw_stream_buffer, int32_t max_tolerable_latency, int timeoutrecv) {
     int j;
 
     raw_stream_buffer->last_seq_no_sent = -1;
     raw_stream_buffer->last_sample_time = -1.0;
     /* TODO 
      * Suppose a packet can contain 1/4 secs of data */
-    raw_stream_buffer->max_tollerable_latency = max_tollerable_latency;
-    raw_stream_buffer->max_pdlist_items = max_tollerable_latency * 4;
+    raw_stream_buffer->max_tolerable_latency = max_tolerable_latency;
+    raw_stream_buffer->max_pdlist_items = max_tolerable_latency * 4;
     raw_stream_buffer->timeoutrecv = timeoutrecv;
     raw_stream_buffer->n_pdlist = 0;
     raw_stream_buffer->pdlist = (NMXP_DATA_PROCESS **) malloc (raw_stream_buffer->max_pdlist_items * sizeof(NMXP_DATA_PROCESS *));
@@ -597,7 +597,7 @@ int nmxp_raw_stream_manage(NMXP_RAW_STREAM_DATA *p, NMXP_DATA_PROCESS *a_pd, int
 
     /* Add pd and sort array */
     if(p->n_pdlist >= p->max_pdlist_items
-	    || latency >= p->max_tollerable_latency) {
+	    || latency >= p->max_tolerable_latency) {
 	/* Supposing p->pdlist is ordered,
 	 * handle the first item and over write it.
 	 */

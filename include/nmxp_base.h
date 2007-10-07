@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_base.h,v 1.24 2007-10-07 18:13:39 mtheo Exp $
+ * $Id: nmxp_base.h,v 1.25 2007-10-07 19:22:29 mtheo Exp $
  *
  */
 
@@ -70,7 +70,7 @@ int nmxp_send_ctrl(int isock, void *buffer, int length);
  * \param[out] buffer Data buffer.
  * \param length Length in bytes.
  * \param timeoutsec Time-out in seconds
- * \param[out] errno errno value after recv()
+ * \param[out] recv_errno errno value after recv()
  *
  * \warning Data buffer it has to be allocated before and big enough to contain length bytes!
  *
@@ -99,12 +99,14 @@ int nmxp_sendHeader(int isock, NMXP_MSG_CLIENT type, int32_t length);
  * \param isock A descriptor referencing the socket.
  * \param[out] type Type of message within \ref NMXP_MSG_CLIENT.
  * \param[out] length Length in bytes.
+ * \param timeoutsec Time-out in seconds
+ * \param[out] recv_errno errno value after recv()
  *
  * \retval NMXP_SOCKET_OK on success
  * \retval NMXP_SOCKET_ERROR on error
  *
  */
-int nmxp_receiveHeader(int isock, NMXP_MSG_SERVER *type, int32_t *lengthi, int timeoutsec, int *recv_errno );
+int nmxp_receiveHeader(int isock, NMXP_MSG_SERVER *type, int32_t *length, int timeoutsec, int *recv_errno );
 
 
 /*! \brief Sends header and body of a message.
@@ -127,6 +129,8 @@ int nmxp_sendMessage(int isock, NMXP_MSG_CLIENT type, void *buffer, int32_t leng
  * \param[out] type Type of message within \ref NMXP_MSG_SERVER.
  * \param[out] buffer Data buffer. It will need to be freed!
  * \param[out] length Length in bytes.
+ * \param timeoutsec Time-out in seconds
+ * \param[out] recv_errno errno value after recv()
  *
  * \warning buffer will need to be freed!
  *

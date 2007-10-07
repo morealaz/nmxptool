@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp.h,v 1.41 2007-10-07 18:13:39 mtheo Exp $
+ * $Id: nmxp.h,v 1.42 2007-10-07 19:22:29 mtheo Exp $
  *
  */
 
@@ -616,7 +616,9 @@ PDS arguments:
                           >0 is for specified sample rate and decompressed data.
   -b, --buffered          Request also recent packets into the past.
   -M, --maxlatency=SECs   Max tolerable latency (default 600) [60..600].
-                          Usable only with Raw Stream --stc=-1.
+  -T, --timeoutrecv=SECs  Time-out receiving packets (default 0. No time-out) [10..300].
+                          -T is useful for retrieving Data On Demand.
+                          -M, -T are usable only with Raw Stream --stc=-1.
 
 Matteo Quintiliani - Istituto Nazionale di Geofisica e Vulcanologia - Italy
 Mail bug reports and suggestions to <quintiliani@ingv.it>.
@@ -811,6 +813,10 @@ Mail bug reports and suggestions to <quintiliani@ingv.it>.
  * gestione &egrave; -M che serve a specificare la massima latenza tollerabile
  * nell'attesa di un pacchetto mancante. Di conseguenza da tale opzione
  * dipende la grandezza del buffer.
+ *
+ * Alternativamente, o in aggiunta all'opzione -M si pu&ograve; utilizzare l'opzione -T
+ * che specifica per ogni canale il tempo massimo tollerabile fra la ricezione
+ * di un pacchetto e il successivo.
  * 
  * Quando si interagisce con il NaqsServer si pu&ograve; anche utilizzare
  * l'opzione -b, la quale permette di ricevere anche alcuni dati, in
@@ -1024,7 +1030,7 @@ typedef struct {
     int32_t last_seq_no_sent;
     double last_sample_time;
     int32_t max_pdlist_items;
-    double max_tollerable_latency;
+    double max_tolerable_latency;
     int timeoutrecv;
     int32_t n_pdlist;
     NMXP_DATA_PROCESS **pdlist; /* Array for pd queue */
@@ -1090,6 +1096,8 @@ int nmxp_sendAddTimeSeriesChannel(int isock, NMXP_CHAN_LIST_NET *channelList, in
  * \param isock A descriptor referencing the socket.
  * \param channelList Channel list.
  * \param network_code Network code. It can be NULL.
+ * \param timeoutsec Time-out in seconds
+ * \param[out] recv_errno errno value after recv()
  *
  * \retval Pointer to the structure NMXP_DATA_PROCESS on success
  * \retval NULL on error
@@ -1189,11 +1197,11 @@ int nmxp_raw_stream_seq_no_compare(const void *a, const void *b);
 /*! \brief Allocate and initialize fields inside a NMXP_RAW_STREAM_DATA structure
  *
  * \param raw_stream_buffer pointer to NMXP_RAW_STREAM_DATA struct to initialize
- * \param max_pdlist_items value of max number of items in array
+ * \param max_tolerable_latency Max tolerable latency
  * \param timeoutrecv value of time-out within receving packets
  *
  */
-void nmxp_raw_stream_init(NMXP_RAW_STREAM_DATA *raw_stream_buffer, int32_t max_tollerable_latency, int timeoutrecv);
+void nmxp_raw_stream_init(NMXP_RAW_STREAM_DATA *raw_stream_buffer, int32_t max_tolerable_latency, int timeoutrecv);
 
 
 /*! \brief Free fields inside a NMXP_RAW_STREAM_DATA structure
