@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp.h,v 1.42 2007-10-07 19:22:29 mtheo Exp $
+ * $Id: nmxp.h,v 1.43 2007-10-07 19:25:30 mtheo Exp $
  *
  */
 
@@ -44,6 +44,8 @@
  * e-mail: quintiliani@ingv.it
  * </center>
  *
+ * \todo
+ * 	- Extend english version
  *
  * \section intro_sec Introduction
  *
@@ -108,19 +110,7 @@
  *
  * \section license_sec License
  *
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Library General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or (at your
- * option) any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.
- *
- * See the GNU Library General Public License (GNU-LGPL) for more details.
- * File \b COPYING inside this distribution.
- * The GNU-LGPL and further information can be found here: http://www.gnu.org/
- *
+ * http://www.gnu.org/licenses/gpl.html
  *
  * \section about_sec About
  *
