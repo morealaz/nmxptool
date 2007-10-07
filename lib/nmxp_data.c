@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_data.c,v 1.38 2007-09-25 16:39:17 mtheo Exp $
+ * $Id: nmxp_data.c,v 1.39 2007-10-07 18:13:18 mtheo Exp $
  *
  */
 
@@ -255,15 +255,19 @@ int nmxp_data_trim(NMXP_DATA_PROCESS *pd, double trim_start_time, double trim_en
     return ret;
 }
 
-
-double nmxp_data_latency(NMXP_DATA_PROCESS *pd) {
-    double latency = 0.0;
-
+time_t nmxp_data_gmtime_now() {
     time_t time_now;
     struct tm *tm_now;
     time(&time_now);
     tm_now = gmtime(&time_now);
     time_now = nmxp_data_tm_to_time(tm_now);
+
+    return time_now;
+}
+
+double nmxp_data_latency(NMXP_DATA_PROCESS *pd) {
+    double latency = 0.0;
+    time_t time_now = nmxp_data_gmtime_now();
     
     if(pd) {
 	latency = ((double) time_now) - (pd->time + ((double) pd->nSamp / (double) pd->sampRate));
@@ -319,7 +323,7 @@ int nmxp_data_log(NMXP_DATA_PROCESS *pd) {
 	}
 	*/
     } else {
-	nmxp_log(1, 0, "Pointer to NMXP_DATA_PROCESS is NULL!\n");
+	nmxp_log(NMXP_LOG_WARN, 0, "Pointer to NMXP_DATA_PROCESS is NULL!\n");
     }
 
     return 0;

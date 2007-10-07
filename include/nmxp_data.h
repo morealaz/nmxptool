@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_data.h,v 1.24 2007-09-25 16:39:17 mtheo Exp $
+ * $Id: nmxp_data.h,v 1.25 2007-10-07 18:13:18 mtheo Exp $
  *
  */
 
@@ -175,6 +175,12 @@ int nmxp_data_to_str(char *out_str, double time_d);
  *
  */
 int nmxp_data_trim(NMXP_DATA_PROCESS *pd, double trim_start_time, double trim_end_time, unsigned char exclude_bitmap);
+
+
+/*! \brief Return number of epochs in GMT 
+ *
+ */
+time_t nmxp_data_gmtime_now();
 
 
 /*! \brief Compute latency from current time and struct NMXP_DATA_PROCESS
