@@ -7,13 +7,14 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.83 2007-10-07 14:11:03 mtheo Exp $
+ * $Id: nmxptool.c,v 1.84 2007-10-07 18:12:37 mtheo Exp $
  *
  */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
 
 #include <nmxp.h>
 
@@ -44,6 +45,7 @@
 typedef struct {
     int significant;
     double last_time;
+    time_t last_time_call_raw_stream;
     int32_t x_1;
     NMXP_RAW_STREAM_DATA raw_stream_buffer;
 } NMXPTOOL_CHAN_SEQ;
@@ -84,8 +86,10 @@ int main (int argc, char **argv) {
     int32_t connection_time;
     int request_SOCKET_OK;
     int i_chan, cur_chan = 0;
+    int to_cur_chan = 0;
     int exitpdscondition;
     int exitdapcondition;
+    time_t timeout_for_channel;
 
     int span_interval = 10;
     int time_to_sleep = 0;
@@ -98,6 +102,8 @@ int main (int argc, char **argv) {
     void *buffer;
     int32_t length;
     int ret;
+
+    int recv_errno = 0;
 
     char filename[500];
     char station_code[20], channel_code[20], network_code[20];
@@ -192,8 +198,9 @@ int main (int argc, char **argv) {
 	for(i_chan = 0; i_chan < channelList_subset->number; i_chan++) {
 	    channelListSeq[i_chan].significant = 0;
 	    channelListSeq[i_chan].last_time = 0.0;
+	    channelListSeq[i_chan].last_time_call_raw_stream = 0;
 	    channelListSeq[i_chan].x_1 = 0;
-	    nmxp_raw_stream_init(&(channelListSeq[i_chan].raw_stream_buffer), params.max_tolerable_latency);
+	    nmxp_raw_stream_init(&(channelListSeq[i_chan].raw_stream_buffer), params.max_tolerable_latency, params.timeoutrecv);
 	}
 
 #ifdef HAVE_LIBMSEED
@@ -359,7 +366,7 @@ int main (int argc, char **argv) {
 		}
 
 		/* DAP Step 6: Receive Data until receiving a Ready message */
-		ret = nmxp_receiveMessage(naqssock, &type, &buffer, &length);
+		ret = nmxp_receiveMessage(naqssock, &type, &buffer, &length, 0, &recv_errno);
 		nmxp_log(0, 1, "ret = %d, type = %d\n", ret, type);
 
 		while(ret == NMXP_SOCKET_OK   &&    type != NMXP_MSG_READY) {
@@ -427,7 +434,7 @@ int main (int argc, char **argv) {
 		    }
 
 		    /* Receive Data */
-		    ret = nmxp_receiveMessage(naqssock, &type, &buffer, &length);
+		    ret = nmxp_receiveMessage(naqssock, &type, &buffer, &length, 0, &recv_errno);
 		    nmxp_log(0, 1, "ret = %d, type = %d\n", ret, type);
 		}
 
@@ -574,21 +581,10 @@ int main (int argc, char **argv) {
 #endif
 
 	
-#ifdef TEST_FOR_DOD
-	/*
-	struct timeval	timeo;
-	timeo.tv_sec  = 0;
-	timeo.tv_usec = 0;
-	if (setsockopt(naqssock, SOL_SOCKET, SO_RCVTIMEO, &timeo, sizeof(timeo)) < 0) {
-	    		perror("setsockopt SO_RCVTIMEO");
-	}
-	*/
-#endif
-
 	while(exitpdscondition) {
 
 	    /* Process Compressed or Decompressed Data */
-	    pd = nmxp_receiveData(naqssock, channelList_subset, NETCODE_OR_CURRENT_NETWORK);
+	    pd = nmxp_receiveData(naqssock, channelList_subset, NETCODE_OR_CURRENT_NETWORK, params.timeoutrecv, &recv_errno);
 
 	    /* Log contents of last packet */
 	    if(params.flag_logdata) {
@@ -596,13 +592,35 @@ int main (int argc, char **argv) {
 	    }
 
 	    if(pd) {
-	    /* Set cur_chan */
-	    cur_chan = nmxp_chan_lookupKeyIndex(pd->key, channelList_subset);
+		/* Set cur_chan */
+		cur_chan = nmxp_chan_lookupKeyIndex(pd->key, channelList_subset);
 	    }
 
 	    /* Manage Raw Stream */
 	    if(params.stc == -1) {
-		nmxp_raw_stream_manage(&(channelListSeq[cur_chan].raw_stream_buffer), pd, p_func_pd, n_func_pd);
+
+		/* cur_char is computed only for pd != NULL */
+		if(pd) {
+		    nmxp_raw_stream_manage(&(channelListSeq[cur_chan].raw_stream_buffer), pd, p_func_pd, n_func_pd);
+		    channelListSeq[cur_chan].last_time_call_raw_stream = nmxp_data_gmtime_now();
+		}
+
+		/* Check timeout for other channels */
+		if(params.timeoutrecv > 0) {
+		    to_cur_chan = 0;
+		    while(to_cur_chan < channelList_subset->number) {
+			timeout_for_channel = nmxp_data_gmtime_now() - channelListSeq[to_cur_chan].last_time_call_raw_stream;
+			if(channelListSeq[to_cur_chan].last_time_call_raw_stream != 0
+				&& timeout_for_channel >= params.timeoutrecv) {
+			    nmxp_log(NMXP_LOG_WARN, 0, "Timeout for channel %s (%d sec.)\n",
+				    channelList_subset->channel[to_cur_chan].name, timeout_for_channel);
+			    nmxp_raw_stream_manage(&(channelListSeq[to_cur_chan].raw_stream_buffer), NULL, p_func_pd, n_func_pd);
+			    channelListSeq[to_cur_chan].last_time_call_raw_stream = nmxp_data_gmtime_now();
+			}
+			to_cur_chan++;
+		    }
+		}
+
 	    } else {
 
 	    if(pd) {
@@ -817,13 +835,18 @@ int nmxptool_write_miniseed(NMXP_DATA_PROCESS *pd) {
 
 int nmxptool_print_seq_no(NMXP_DATA_PROCESS *pd) {
     int ret = 0;
+    char str_time[200];
+    nmxp_data_to_str(str_time, pd->time);
 
-    nmxp_log(NMXP_LOG_NORM_NO, 0, "Process %s.%s %2d %d %d  lat. %.1fs\n",
+    nmxp_log(NMXP_LOG_NORM_NO, 0, "Process %s.%s.%s %2d %d %d %s %dpts lat. %.1fs\n",
+	    pd->network,
 	    pd->station,
 	    pd->channel,
 	    pd->packet_type,
 	    pd->seq_no,
 	    pd->oldest_seq_no,
+	    str_time,
+	    pd->nSamp,
 	    nmxp_data_latency(pd)
 	    );
 

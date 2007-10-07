@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp.h,v 1.40 2007-10-07 14:48:56 mtheo Exp $
+ * $Id: nmxp.h,v 1.41 2007-10-07 18:13:39 mtheo Exp $
  *
  */
 
@@ -1025,6 +1025,7 @@ typedef struct {
     double last_sample_time;
     int32_t max_pdlist_items;
     double max_tollerable_latency;
+    int timeoutrecv;
     int32_t n_pdlist;
     NMXP_DATA_PROCESS **pdlist; /* Array for pd queue */
 } NMXP_RAW_STREAM_DATA;
@@ -1094,7 +1095,7 @@ int nmxp_sendAddTimeSeriesChannel(int isock, NMXP_CHAN_LIST_NET *channelList, in
  * \retval NULL on error
  * 
  */
-NMXP_DATA_PROCESS *nmxp_receiveData(int isock, NMXP_CHAN_LIST_NET *channelList, const char *network_code);
+NMXP_DATA_PROCESS *nmxp_receiveData(int isock, NMXP_CHAN_LIST_NET *channelList, const char *network_code, int timeoutsec, int *recv_errno );
 
 
 /*! \brief Sends the message "ConnectRequest" on a socket
@@ -1189,9 +1190,10 @@ int nmxp_raw_stream_seq_no_compare(const void *a, const void *b);
  *
  * \param raw_stream_buffer pointer to NMXP_RAW_STREAM_DATA struct to initialize
  * \param max_pdlist_items value of max number of items in array
+ * \param timeoutrecv value of time-out within receving packets
  *
  */
-void nmxp_raw_stream_init(NMXP_RAW_STREAM_DATA *raw_stream_buffer, int32_t max_tollerable_latency);
+void nmxp_raw_stream_init(NMXP_RAW_STREAM_DATA *raw_stream_buffer, int32_t max_tollerable_latency, int timeoutrecv);
 
 
 /*! \brief Free fields inside a NMXP_RAW_STREAM_DATA structure

@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_base.c,v 1.33 2007-10-07 14:11:23 mtheo Exp $
+ * $Id: nmxp_base.c,v 1.34 2007-10-07 18:13:39 mtheo Exp $
  *
  */
 
@@ -112,24 +112,37 @@ int nmxp_send_ctrl(int isock, void* buffer, int length)
 }
 
 
-int nmxp_recv_ctrl(int isock, void* buffer, int length)
+int nmxp_recv_ctrl(int isock, void *buffer, int length, int timeoutsec, int *recv_errno )
 {
   int recvCount;
-  int recv_errno;
   char recv_errno_str[200];
+  struct timeval timeo;
 
   /*
   struct timeval timeout;
   socklen_t size_timeout = sizeof(timeout);
-
   getsockopt(isock, SOL_SOCKET, SO_RCVTIMEO, &timeout, &size_timeout);
   */
 
+  if(timeoutsec > 0) {
+      timeo.tv_sec  = timeoutsec;
+      timeo.tv_usec = 0;
+      if (setsockopt(isock, SOL_SOCKET, SO_RCVTIMEO, &timeo, sizeof(timeo)) < 0) {
+	  perror("setsockopt SO_RCVTIMEO");
+      }
+  }
+  
   recvCount= recv(isock, (char*) buffer, length, MSG_WAITALL);
-  recv_errno  = errno;
+  *recv_errno  = errno;
+
+  timeo.tv_sec  = 0;
+  timeo.tv_usec = 0;
+  if (setsockopt(isock, SOL_SOCKET, SO_RCVTIMEO, &timeo, sizeof(timeo)) < 0) {
+      perror("setsockopt SO_RCVTIMEO");
+  }
 
   if (recvCount != length) {
-	  switch(recv_errno) {
+	  switch(*recv_errno) {
 		  case EAGAIN : strcpy(recv_errno_str, "EAGAIN"); break;
 		  case EBADF : strcpy(recv_errno_str, "EBADF"); break;
 		  case ECONNREFUSED : strcpy(recv_errno_str, "ECONNREFUSED"); break;
@@ -143,7 +156,7 @@ int nmxp_recv_ctrl(int isock, void* buffer, int length)
 			  strcpy(recv_errno_str, "DEFAULT_NO_VALUE");
 			  break;
 	  }
-    nmxp_log(0, 1, "nmxp_recv_ctrl(): (recvCount != length) %d != %d - errno = %d (%s)\n", recvCount, length, recv_errno, recv_errno_str);
+    nmxp_log(0, 1, "nmxp_recv_ctrl(): (recvCount != length) %d != %d - errno = %d (%s)\n", recvCount, length, *recv_errno, recv_errno_str);
 	    
     return NMXP_SOCKET_ERROR;
   }
@@ -164,12 +177,12 @@ int nmxp_sendHeader(int isock, NMXP_MSG_CLIENT type, int32_t length)
 }
 
 
-int nmxp_receiveHeader(int isock, NMXP_MSG_SERVER *type, int32_t *length)
+int nmxp_receiveHeader(int isock, NMXP_MSG_SERVER *type, int32_t *length, int timeoutsec, int *recv_errno )
 {  
     int ret ;
     NMXP_MESSAGE_HEADER msg;
 
-    ret = nmxp_recv_ctrl(isock, &msg, sizeof(NMXP_MESSAGE_HEADER));
+    ret = nmxp_recv_ctrl(isock, &msg, sizeof(NMXP_MESSAGE_HEADER), timeoutsec, recv_errno);
 
     *type = 0;
     *length = 0;
@@ -209,17 +222,17 @@ int nmxp_sendMessage(int isock, NMXP_MSG_CLIENT type, void *buffer, int32_t leng
 }
 
 
-int nmxp_receiveMessage(int isock, NMXP_MSG_SERVER *type, void **buffer, int32_t *length) {
+int nmxp_receiveMessage(int isock, NMXP_MSG_SERVER *type, void **buffer, int32_t *length, int timeoutsec, int *recv_errno ) {
     int ret;
     *buffer = NULL;
     *length = 0;
 
-    ret = nmxp_receiveHeader(isock, type, length);
+    ret = nmxp_receiveHeader(isock, type, length, timeoutsec, recv_errno);
 
     if( ret == NMXP_SOCKET_OK) {
 	if (*length > 0) {
 	    *buffer = malloc(*length);
-	    ret = nmxp_recv_ctrl(isock, *buffer, *length);
+	    ret = nmxp_recv_ctrl(isock, *buffer, *length, 0, recv_errno);
 
 	    if(*type == NMXP_MSG_ERROR) {
 		nmxp_log(1,0, "Received ErrorMessage: %s\n", *buffer);
@@ -227,7 +240,11 @@ int nmxp_receiveMessage(int isock, NMXP_MSG_SERVER *type, void **buffer, int32_t
 
 	}
     } else {
-	nmxp_log(1,0, "Error in nmxp_receiveMessage()\n");
+	if(*recv_errno != EAGAIN) {
+	    nmxp_log(1,0, "Error in nmxp_receiveMessage()\n");
+	} else {
+	    nmxp_log(NMXP_LOG_WARN, 0, "Timeout receveing in nmxp_receiveMessage()\n");
+	}
     }
 
     return ret;

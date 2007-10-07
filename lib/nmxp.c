@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp.c,v 1.49 2007-10-07 14:11:23 mtheo Exp $
+ * $Id: nmxp.c,v 1.50 2007-10-07 18:13:39 mtheo Exp $
  *
  */
 
@@ -30,6 +30,7 @@ int nmxp_sendTerminateSubscription(int isock, NMXP_SHUTDOWN_REASON reason, char 
 int nmxp_receiveChannelList(int isock, NMXP_CHAN_LIST **pchannelList) {
     int ret;
     int i;
+    int recv_errno;
 
     NMXP_MSG_SERVER type;
     void *buffer;
@@ -37,7 +38,7 @@ int nmxp_receiveChannelList(int isock, NMXP_CHAN_LIST **pchannelList) {
 
     *pchannelList = NULL;
 
-    ret = nmxp_receiveMessage(isock, &type, &buffer, &length);
+    ret = nmxp_receiveMessage(isock, &type, &buffer, &length, 0, &recv_errno);
 
     if(type != NMXP_MSG_CHANNELLIST) {
 	nmxp_log(1, 0, "Type %d is not NMXP_MSG_CHANNELLIST!\n", type);
@@ -100,13 +101,13 @@ int nmxp_sendAddTimeSeriesChannel(int isock, NMXP_CHAN_LIST_NET *channelList, in
 }
 
 
-NMXP_DATA_PROCESS *nmxp_receiveData(int isock, NMXP_CHAN_LIST_NET *channelList, const char *network_code) {
+NMXP_DATA_PROCESS *nmxp_receiveData(int isock, NMXP_CHAN_LIST_NET *channelList, const char *network_code, int timeoutsec, int *recv_errno ) {
     NMXP_MSG_SERVER type;
     void *buffer = NULL;
     int32_t length;
     NMXP_DATA_PROCESS *pd = NULL;
 
-    if(nmxp_receiveMessage(isock, &type, &buffer, &length) == NMXP_SOCKET_OK) {
+    if(nmxp_receiveMessage(isock, &type, &buffer, &length, timeoutsec, recv_errno) == NMXP_SOCKET_OK) {
 	if(type == NMXP_MSG_COMPRESSED) {
 	    nmxp_log(0, 1, "Type %d is NMXP_MSG_COMPRESSED!\n", type);
 	    pd = nmxp_processCompressedData(buffer, length, channelList, network_code);
@@ -165,7 +166,8 @@ int nmxp_sendConnectRequest(int isock, char *naqs_username, char *naqs_password,
 
 int nmxp_readConnectionTime(int isock, int32_t *connection_time) {
     int ret;
-    ret = nmxp_recv_ctrl(isock, connection_time, sizeof(int32_t));
+    int recv_errno;
+    ret = nmxp_recv_ctrl(isock, connection_time, sizeof(int32_t), 0, &recv_errno);
     *connection_time = ntohl(*connection_time);
     nmxp_log(0, 1, "Read connection time from socket %d.\n", *connection_time);
     if(ret != NMXP_SOCKET_OK) {
@@ -181,14 +183,15 @@ int nmxp_waitReady(int isock) {
     int32_t signature;
     int32_t type = 0;
     int32_t length;
+    int recv_errno;
 
     while(rc == NMXP_SOCKET_OK  &&  type != NMXP_MSG_READY) {
-	rc = nmxp_recv_ctrl(isock, &signature, sizeof(signature));
+	rc = nmxp_recv_ctrl(isock, &signature, sizeof(signature), 0, &recv_errno);
 	if(rc != NMXP_SOCKET_OK) return rc;
 	signature = ntohl(signature);
 	if(signature == 0) {
 	    nmxp_log(0, 1, "signature is equal to zero. receive again.\n");
-	    rc = nmxp_recv_ctrl(isock, &signature, sizeof(signature));
+	    rc = nmxp_recv_ctrl(isock, &signature, sizeof(signature), 0, &recv_errno);
 	    signature = ntohl(signature);
 	}
 	if(signature != NMX_SIGNATURE) {
@@ -197,12 +200,12 @@ int nmxp_waitReady(int isock) {
 		    int32_t err_length;
 		    int32_t err_reason;
 		    char err_buff[200];
-		    rc = nmxp_recv_ctrl(isock, &err_length, sizeof(err_length));
+		    rc = nmxp_recv_ctrl(isock, &err_length, sizeof(err_length), 0, &recv_errno);
 		    err_length = ntohl(err_length);
-		    rc = nmxp_recv_ctrl(isock, &err_reason, sizeof(err_reason));
+		    rc = nmxp_recv_ctrl(isock, &err_reason, sizeof(err_reason), 0, &recv_errno);
 		    err_reason = ntohl(err_reason);
 		    if(err_length > 4) {
-			    rc = nmxp_recv_ctrl(isock, err_buff, err_length-4);
+			    rc = nmxp_recv_ctrl(isock, err_buff, err_length-4, 0, &recv_errno);
 			    err_buff[err_length] = 0;
 		    }
 		    nmxp_log(1, 0, "TerminateMessage from Server: %s (%d).\n", err_buff, err_reason);
@@ -210,31 +213,31 @@ int nmxp_waitReady(int isock) {
 	    return NMXP_SOCKET_ERROR;
 	}
 
-	rc = nmxp_recv_ctrl(isock, &type, sizeof(type));
+	rc = nmxp_recv_ctrl(isock, &type, sizeof(type), 0, &recv_errno);
 	if(rc != NMXP_SOCKET_OK) return rc;
 	type = ntohl(type);
 	if(type != NMXP_MSG_READY) {
 	    nmxp_log(0, 1, "type is not READY. type = %d\n", type);
-	    rc = nmxp_recv_ctrl(isock, &length, sizeof(length));
+	    rc = nmxp_recv_ctrl(isock, &length, sizeof(length), 0, &recv_errno);
 	    if(rc != NMXP_SOCKET_OK) return rc;
 	    length = ntohl(length);
 	    if(length > 0) {
 		if(length == 4) {
 		    int32_t app;
-		    rc = nmxp_recv_ctrl(isock, &app, length);
+		    rc = nmxp_recv_ctrl(isock, &app, length, 0, &recv_errno);
 		    if(rc != NMXP_SOCKET_OK) return rc;
 		    app = ntohl(app);
 		    nmxp_log(0, 1, "value = %d\n", app);
 		} else {
 		    char *buf_app = (char *) malloc(sizeof(char) * length);
-		    rc = nmxp_recv_ctrl(isock, buf_app, length);
+		    rc = nmxp_recv_ctrl(isock, buf_app, length, 0, &recv_errno);
 		    if(buf_app) {
 			free(buf_app);
 		    }
 		}
 	    }
 	} else {
-	    rc = nmxp_recv_ctrl(isock, &length, sizeof(length));
+	    rc = nmxp_recv_ctrl(isock, &length, sizeof(length), 0, &recv_errno);
 	    if(rc != NMXP_SOCKET_OK) return rc;
 	    length = ntohl(length);
 	    if(length != 0) {
@@ -337,6 +340,7 @@ NMXP_META_CHAN_LIST *nmxp_getMetaChannelList(char * hostname, int portnum, NMXP_
     int32_t connection_time;
     char *datas_username = NULL, *datas_password = NULL;
     int ret_sock;
+    int recv_errno;
 
     
     NMXP_MSG_SERVER type;
@@ -381,7 +385,7 @@ NMXP_META_CHAN_LIST *nmxp_getMetaChannelList(char * hostname, int portnum, NMXP_
     /* DAP Step 5: Send Data Request */
     nmxp_sendHeader(naqssock, NMXP_MSG_CHANNELLISTREQUEST, 0);
     /* DAP Step 6: Receive Data until receiving a Ready message */
-    ret_sock = nmxp_receiveMessage(naqssock, &type, &buffer, &length);
+    ret_sock = nmxp_receiveMessage(naqssock, &type, &buffer, &length, 0, &recv_errno);
     nmxp_log(0, 1, "ret_sock = %d, type = %d, length = %d\n", ret_sock, type, length);
 
     while(ret_sock == NMXP_SOCKET_OK   &&    type != NMXP_MSG_READY) {
@@ -397,7 +401,7 @@ NMXP_META_CHAN_LIST *nmxp_getMetaChannelList(char * hostname, int portnum, NMXP_
 	}
 
 	/* Receive Message */
-	ret_sock = nmxp_receiveMessage(naqssock, &type, &buffer, &length);
+	ret_sock = nmxp_receiveMessage(naqssock, &type, &buffer, &length, 0, &recv_errno);
 	nmxp_log(0, 1, "ret_sock = %d, type = %d, length = %d\n", ret_sock, type, length);
     }
 
@@ -410,7 +414,7 @@ NMXP_META_CHAN_LIST *nmxp_getMetaChannelList(char * hostname, int portnum, NMXP_
 
 
     /* DAP Step 6: Receive Data until receiving a Ready message */
-    ret_sock = nmxp_receiveMessage(naqssock, &type, &buffer, &length);
+    ret_sock = nmxp_receiveMessage(naqssock, &type, &buffer, &length, 0, &recv_errno);
     nmxp_log(0, 1, "ret_sock = %d, type = %d, length = %d\n", ret_sock, type, length);
 
     while(ret_sock == NMXP_SOCKET_OK   &&    type != NMXP_MSG_READY) {
@@ -438,7 +442,7 @@ NMXP_META_CHAN_LIST *nmxp_getMetaChannelList(char * hostname, int portnum, NMXP_
 	}
 
 	/* Receive Message */
-	ret_sock = nmxp_receiveMessage(naqssock, &type, &buffer, &length);
+	ret_sock = nmxp_receiveMessage(naqssock, &type, &buffer, &length, 0, &recv_errno);
 	nmxp_log(0, 1, "ret_sock = %d, type = %d, length = %d\n", ret_sock, type, length);
     }
 
@@ -453,7 +457,7 @@ NMXP_META_CHAN_LIST *nmxp_getMetaChannelList(char * hostname, int portnum, NMXP_
 		nmxp_sendMessage(naqssock, NMXP_MSG_CHANNELINFOREQUEST, &channelInfoRequestBody, sizeof(NMXP_MSGBODY_CHANNELINFOREQUEST));
 
 		/* DAP Step 6: Receive Data until receiving a Ready message */
-		ret_sock = nmxp_receiveMessage(naqssock, &type, &buffer, &length);
+		ret_sock = nmxp_receiveMessage(naqssock, &type, &buffer, &length, 0, &recv_errno);
 		nmxp_log(0, 1, "ret_sock = %d, type = %d, length = %d\n", ret_sock, type, length);
 
 		while(ret_sock == NMXP_SOCKET_OK   &&    type != NMXP_MSG_READY) {
@@ -464,7 +468,7 @@ NMXP_META_CHAN_LIST *nmxp_getMetaChannelList(char * hostname, int portnum, NMXP_
 			nmxp_log(1, 0, "Key %d (%d) not found for %s!\n", iter->key, channelInfo->key, iter->name);
 		    }
 		    /* Receive Message */
-		    ret_sock = nmxp_receiveMessage(naqssock, &type, &buffer, &length);
+		    ret_sock = nmxp_receiveMessage(naqssock, &type, &buffer, &length, 0, &recv_errno);
 		    nmxp_log(0, 1, "ret_sock = %d, type = %d, length = %d\n", ret_sock, type, length);
 		}
 	    }
@@ -508,7 +512,7 @@ int nmxp_raw_stream_seq_no_compare(const void *a, const void *b)
     return ret;
 }
 
-void nmxp_raw_stream_init(NMXP_RAW_STREAM_DATA *raw_stream_buffer, int32_t max_tollerable_latency) {
+void nmxp_raw_stream_init(NMXP_RAW_STREAM_DATA *raw_stream_buffer, int32_t max_tollerable_latency, int timeoutrecv) {
     int j;
 
     raw_stream_buffer->last_seq_no_sent = -1;
@@ -517,6 +521,7 @@ void nmxp_raw_stream_init(NMXP_RAW_STREAM_DATA *raw_stream_buffer, int32_t max_t
      * Suppose a packet can contain 1/4 secs of data */
     raw_stream_buffer->max_tollerable_latency = max_tollerable_latency;
     raw_stream_buffer->max_pdlist_items = max_tollerable_latency * 4;
+    raw_stream_buffer->timeoutrecv = timeoutrecv;
     raw_stream_buffer->n_pdlist = 0;
     raw_stream_buffer->pdlist = (NMXP_DATA_PROCESS **) malloc (raw_stream_buffer->max_pdlist_items * sizeof(NMXP_DATA_PROCESS *));
     for(j=0; j<raw_stream_buffer->max_pdlist_items; j++) {
@@ -551,34 +556,41 @@ int nmxp_raw_stream_manage(NMXP_RAW_STREAM_DATA *p, NMXP_DATA_PROCESS *a_pd, int
     NMXP_DATA_PROCESS *pd = NULL;
 
     if(a_pd) {
-    if(a_pd->packet_type == 33) {
-	nmxp_data_log(a_pd);
-    }
+	/*
+	if(a_pd->packet_type == 33 || a_pd->packet_type == 97) {
+	    nmxp_data_log(a_pd);
+	}
+	*/
 
-    /* Allocate memory for pd and copy a_pd */
-    pd = (NMXP_DATA_PROCESS *) malloc (sizeof(NMXP_DATA_PROCESS));
-    memcpy(pd, a_pd, sizeof(NMXP_DATA_PROCESS));
-    if(a_pd->length > 0) {
-	pd->buffer = malloc(pd->length);
-	memcpy(pd->buffer, a_pd->buffer, a_pd->length);
-    } else {
-	pd->buffer = NULL;
-    }
-    if(a_pd->nSamp *  sizeof(int) > 0) {
-	pd->pDataPtr = (int *) malloc(a_pd->nSamp * sizeof(int));
-	memcpy(pd->pDataPtr, a_pd->pDataPtr, a_pd->nSamp * sizeof(int));
-    } else {
-	pd->pDataPtr = NULL;
-    }
+	/* Allocate memory for pd and copy a_pd */
+	pd = (NMXP_DATA_PROCESS *) malloc (sizeof(NMXP_DATA_PROCESS));
+	memcpy(pd, a_pd, sizeof(NMXP_DATA_PROCESS));
+	if(a_pd->length > 0) {
+	    pd->buffer = malloc(pd->length);
+	    memcpy(pd->buffer, a_pd->buffer, a_pd->length);
+	} else {
+	    pd->buffer = NULL;
+	}
+	if(a_pd->nSamp *  sizeof(int) > 0) {
+	    pd->pDataPtr = (int *) malloc(a_pd->nSamp * sizeof(int));
+	    memcpy(pd->pDataPtr, a_pd->pDataPtr, a_pd->nSamp * sizeof(int));
+	} else {
+	    pd->pDataPtr = NULL;
+	}
     }
 
     /* First time */
     if(p->last_seq_no_sent == -1  && pd) {
-	p->last_seq_no_sent = pd->seq_no - 1;
-	p->last_sample_time = pd->time;
+	if(p->timeoutrecv == 0) {
+	    p->last_seq_no_sent = pd->seq_no - 1;
+	    p->last_sample_time = pd->time;
+	} else {
+	    p->last_seq_no_sent = 0;
+	    p->last_sample_time = 0;
+	}
 	nmxp_log(0, 1, "First time nmxp_raw_stream_manage().\n");
     }
-    
+
     if(p->n_pdlist > 0) {
 	latency = nmxp_data_latency(p->pdlist[0]);
     }
@@ -641,7 +653,11 @@ int nmxp_raw_stream_manage(NMXP_RAW_STREAM_DATA *p, NMXP_DATA_PROCESS *a_pd, int
 	}
     }
 
-    // TODO Condition for max tollerable latency
+    // Condition for time-out (pd is NULL)
+    if(!pd && p->n_pdlist > 0) {
+	p->last_seq_no_sent = p->pdlist[0]->seq_no - 1;
+	p->last_sample_time = p->pdlist[0]->time;
+    }
 
     /* Manage array and execute func_pd() */
     j=0;

@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.h,v 1.18 2007-10-06 15:34:00 mtheo Exp $
+ * $Id: nmxptool_getoptlong.h,v 1.19 2007-10-07 18:12:37 mtheo Exp $
  *
  */
 
@@ -33,9 +33,13 @@
 #define DEFAULT_DELAY_MAXIMUM  	86400
 #define DEFAULT_DELAY    	0
 
-#define DEFAULT_MAX_TOLLERABLE_LATENCY_MINIMUM	60
-#define DEFAULT_MAX_TOLLERABLE_LATENCY_MAXIMUM	600
-#define DEFAULT_MAX_TOLLERABLE_LATENCY 		600
+#define DEFAULT_MAX_TOLERABLE_LATENCY_MINIMUM	60
+#define DEFAULT_MAX_TOLERABLE_LATENCY_MAXIMUM	600
+#define DEFAULT_MAX_TOLERABLE_LATENCY 		600
+
+#define DEFAULT_TIMEOUTRECV 			0
+#define DEFAULT_TIMEOUTRECV_MINIMUM 		10
+#define DEFAULT_TIMEOUTRECV_MAXIMUM 		300
 
 
 /*! \brief Struct that stores information about parameter of the program */
@@ -56,6 +60,7 @@ typedef struct {
     char *plugin_slink;
     int32_t delay;
     int32_t max_tolerable_latency;
+    int32_t timeoutrecv;
     char *ew_configuration_file;
     int flag_writeseed;
     int flag_verbose;

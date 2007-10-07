@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.33 2007-10-07 14:11:03 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.34 2007-10-07 18:12:37 mtheo Exp $
  *
  */
 
@@ -38,7 +38,8 @@ const NMXPTOOL_PARAMS NMXPTOOL_PARAMS_DEFAULT =
     DEFAULT_RATE,
     NULL,
     DEFAULT_DELAY,
-    DEFAULT_MAX_TOLLERABLE_LATENCY,
+    DEFAULT_MAX_TOLERABLE_LATENCY,
+    DEFAULT_TIMEOUTRECV,
     NULL,
     0,
     0,
@@ -195,14 +196,19 @@ PDS arguments:\n\
                           >0 is for specified sample rate and decompressed data.\n\
   -b, --buffered          Request also recent packets into the past.\n\
   -M, --maxlatency=SECs   Max tolerable latency (default %d) [%d..%d].\n\
-                          Usable only with Raw Stream --stc=-1.\n\
+  -T, --timeoutrecv=SECs  Time-out receiving packets (default %d. No time-out) [%d..%d].\n\
+                          -T is useful for retrieving Data On Demand.\n\
+                          -M, -T are usable only with Raw Stream --stc=-1.\n\
 \n\
 ",
 	    DEFAULT_STC,
 	    DEFAULT_RATE,
-	    DEFAULT_MAX_TOLLERABLE_LATENCY,
-	    DEFAULT_MAX_TOLLERABLE_LATENCY_MINIMUM,
-	    DEFAULT_MAX_TOLLERABLE_LATENCY_MAXIMUM
+	    DEFAULT_MAX_TOLERABLE_LATENCY,
+	    DEFAULT_MAX_TOLERABLE_LATENCY_MINIMUM,
+	    DEFAULT_MAX_TOLERABLE_LATENCY_MAXIMUM,
+	    DEFAULT_TIMEOUTRECV,
+	    DEFAULT_TIMEOUTRECV_MINIMUM,
+	    DEFAULT_TIMEOUTRECV_MAXIMUM
 	  );
 
     nmxptool_author_support();
@@ -244,6 +250,7 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 	{"username",     required_argument, 0, 'u'},
 	{"password",     required_argument, 0, 'p'},
 	{"maxlatency",   required_argument, 0, 'M'},
+	{"timeoutrecv",  required_argument, 0, 'T'},
 	/* Following are flags */
 	{"verbose",      no_argument,       0, 'v'},
 	{"logdata",      no_argument,       0, 'g'},
@@ -283,7 +290,7 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
     /* init params */
     memcpy(params, &NMXPTOOL_PARAMS_DEFAULT, sizeof(NMXPTOOL_PARAMS_DEFAULT));
 
-    char optstr[100] = "H:P:D:C:N:L:S:R:s:e:t:d:u:p:M:vgbliwhV";
+    char optstr[100] = "H:P:D:C:N:L:S:R:s:e:t:d:u:p:M:T:vgbliwhV";
 
 #ifdef HAVE_LIBMSEED
     strcat(optstr, "m");
@@ -398,6 +405,11 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 		case 'M':
 		    params->max_tolerable_latency = atoi(optarg);
 		    nmxp_log(0, 0, "Max_tolerable_latency %d\n", params->max_tolerable_latency);
+		    break;
+
+		case 'T':
+		    params->timeoutrecv = atoi(optarg);
+		    nmxp_log(0, 0, "Time-out receiving %d\n", params->timeoutrecv);
 		    break;
 
 #ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
@@ -535,14 +547,26 @@ int nmxptool_check_params(NMXPTOOL_PARAMS *params) {
 	ret = -1;
 	nmxp_log(NMXP_LOG_NORM_NO, 0, "<buffered> can not be used with options <start_time> and <end_time>.\n");
     } else if( params->stc == -1
-	    && (params->max_tolerable_latency < DEFAULT_MAX_TOLLERABLE_LATENCY_MINIMUM  ||
-		params->max_tolerable_latency > DEFAULT_MAX_TOLLERABLE_LATENCY_MAXIMUM)) {
+	    && (params->max_tolerable_latency < DEFAULT_MAX_TOLERABLE_LATENCY_MINIMUM  ||
+		params->max_tolerable_latency > DEFAULT_MAX_TOLERABLE_LATENCY_MAXIMUM)) {
 	ret = -1;
 	nmxp_log(NMXP_LOG_NORM_NO, 0, "<maxlatency> has to be within [%d..%d].\n",
-		DEFAULT_MAX_TOLLERABLE_LATENCY_MINIMUM,
-		DEFAULT_MAX_TOLLERABLE_LATENCY_MAXIMUM);
-    } else if( params->stc != -1 && params->max_tolerable_latency > 0) {
+		DEFAULT_MAX_TOLERABLE_LATENCY_MINIMUM,
+		DEFAULT_MAX_TOLERABLE_LATENCY_MAXIMUM);
+    } else if( params->stc == -1
+	    && (params->timeoutrecv < DEFAULT_TIMEOUTRECV_MINIMUM  ||
+		params->timeoutrecv > DEFAULT_TIMEOUTRECV_MAXIMUM)) {
+	if(params->timeoutrecv != 0) {
+	    ret = -1;
+	    nmxp_log(NMXP_LOG_NORM_NO, 0, "<timeoutrecv> has to be within [%d..%d] or equal to zero for not time-out.\n",
+		    DEFAULT_TIMEOUTRECV_MINIMUM,
+		    DEFAULT_TIMEOUTRECV_MAXIMUM);
+	}
+    } else if( params->stc != -1 && params->max_tolerable_latency > 0 ){
 	nmxp_log(NMXP_LOG_WARN, 0, "<maxlatency> ignored since not defined --stc=-1.\n");
+    } else if(params->stc != -1 && params->timeoutrecv > 0) {
+	params->timeoutrecv = 0;
+	nmxp_log(NMXP_LOG_WARN, 0, "<timeoutrecv> ignored since not defined --stc=-1.\n");
     }
 
     /*
