@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp.c,v 1.51 2007-10-07 19:22:29 mtheo Exp $
+ * $Id: nmxp.c,v 1.52 2007-10-07 20:28:44 mtheo Exp $
  *
  */
 
@@ -601,41 +601,51 @@ int nmxp_raw_stream_manage(NMXP_RAW_STREAM_DATA *p, NMXP_DATA_PROCESS *a_pd, int
 	/* Supposing p->pdlist is ordered,
 	 * handle the first item and over write it.
 	 */
-	seq_no_diff = p->pdlist[0]->seq_no - p->last_seq_no_sent;
-	time_diff = p->pdlist[0]->time - p->last_sample_time;
-	latency = nmxp_data_latency(p->pdlist[0]);
-	nmxp_data_to_str(str_time, p->pdlist[0]->time);
-	if( seq_no_diff > 0) {
-	    nmxp_log(NMXP_LOG_WARN, 0, "Force handling packet %s.%s.%d.%d (%s - %.2f sec.)  time_diff %.2fs  n_pdlist %d  lat. %.1fs!\n",
-		    p->pdlist[0]->station, p->pdlist[0]->channel, p->pdlist[0]->seq_no, p->pdlist[0]->packet_type, str_time,
-		    (double) p->pdlist[0]->nSamp / (double) p->pdlist[0]->sampRate, time_diff, p->n_pdlist, latency);
-	    for(i_func_pd=0; i_func_pd<n_func_pd; i_func_pd++) {
-		(*p_func_pd[i_func_pd])(p->pdlist[0]);
+
+	if(p->n_pdlist > 0) {
+	    seq_no_diff = p->pdlist[0]->seq_no - p->last_seq_no_sent;
+	    time_diff = p->pdlist[0]->time - p->last_sample_time;
+	    latency = nmxp_data_latency(p->pdlist[0]);
+	    nmxp_data_to_str(str_time, p->pdlist[0]->time);
+	    if( seq_no_diff > 0) {
+		nmxp_log(NMXP_LOG_WARN, 0, "Force handling packet %s.%s.%d.%d (%s - %.2f sec.)  time_diff %.2fs  n_pdlist %d  lat. %.1fs!\n",
+			p->pdlist[0]->station, p->pdlist[0]->channel, p->pdlist[0]->seq_no, p->pdlist[0]->packet_type, str_time,
+			(double) p->pdlist[0]->nSamp / (double) p->pdlist[0]->sampRate, time_diff, p->n_pdlist, latency);
+		for(i_func_pd=0; i_func_pd<n_func_pd; i_func_pd++) {
+		    (*p_func_pd[i_func_pd])(p->pdlist[0]);
+		}
+		p->last_seq_no_sent = (p->pdlist[0]->seq_no);
+		p->last_sample_time = (p->pdlist[0]->time + ((double) p->pdlist[0]->nSamp / (double) p->pdlist[0]->sampRate ));
+	    } else {
+		/* It should not occur */
+		nmxp_log(NMXP_LOG_WARN, 0, "NOT OCCUR! Packets %s.%s.%d.%d (%s - %.2f sec.) discarded, seq_no_diff=%d time_diff %.2fs  lat. %.1fs\n",
+			p->pdlist[0]->station, p->pdlist[0]->channel, p->pdlist[0]->seq_no, p->pdlist[0]->packet_type, str_time,
+			(double) p->pdlist[0]->nSamp / (double) p->pdlist[0]->sampRate, seq_no_diff, time_diff, latency);
 	    }
-	    p->last_seq_no_sent = (p->pdlist[0]->seq_no);
-	    p->last_sample_time = (p->pdlist[0]->time + ((double) p->pdlist[0]->nSamp / (double) p->pdlist[0]->sampRate ));
+
+	    /* Free handled packet */
+	    if(p->pdlist[0]->buffer) {
+		free(p->pdlist[0]->buffer);
+		p->pdlist[0]->buffer = NULL;
+	    }
+	    if(p->pdlist[0]->pDataPtr) {
+		free(p->pdlist[0]->pDataPtr);
+		p->pdlist[0]->pDataPtr = NULL;
+	    }
+	    if(p->pdlist[0]) {
+		free(p->pdlist[0]);
+		p->pdlist[0] = NULL;
+	    }
+	    if(pd) {
+		p->pdlist[0] = pd;
+	    }
 	} else {
-	    /* It should not occur */
-	    nmxp_log(NMXP_LOG_WARN, 0, "NOT OCCUR! Packets %s.%s.%d.%d (%s - %.2f sec.) discarded, seq_no_diff=%d time_diff %.2fs  lat. %.1fs\n",
-		    p->pdlist[0]->station, p->pdlist[0]->channel, p->pdlist[0]->seq_no, p->pdlist[0]->packet_type, str_time,
-		    (double) p->pdlist[0]->nSamp / (double) p->pdlist[0]->sampRate, seq_no_diff, time_diff, latency);
+	    if(pd) {
+		p->n_pdlist = 1;
+		p->pdlist[0] = pd;
+	    }
 	}
 
-	/* Free handled packet */
-	if(p->pdlist[0]->buffer) {
-	    free(p->pdlist[0]->buffer);
-	    p->pdlist[0]->buffer = NULL;
-	}
-	if(p->pdlist[0]->pDataPtr) {
-	    free(p->pdlist[0]->pDataPtr);
-	    p->pdlist[0]->pDataPtr = NULL;
-	}
-	if(p->pdlist[0]) {
-	    free(p->pdlist[0]);
-	    p->pdlist[0] = NULL;
-	}
-
-	p->pdlist[0] = pd;
     } else {
 	if(pd) {
 	    p->pdlist[p->n_pdlist++] = pd;
