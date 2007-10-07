@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp.h,v 1.39 2007-10-07 14:11:23 mtheo Exp $
+ * $Id: nmxp.h,v 1.40 2007-10-07 14:48:56 mtheo Exp $
  *
  */
 
@@ -551,117 +551,72 @@
  * <pre>
 kyuzo:~ mtheo$ nmxptool -h
 
-nmxptool 1.1.2, Nanometrics tool based on libnmxp-1.1.2
-
-       (Data Access Protocol 1.0, Private Data Stream 1.4)
-
-	Support for: libmseed YES, SeedLink YES, Earthworm YES.
+nmxptool 1.1.5, Nanometrics tool based on libnmxp-1.1.5
+        (Data Access Protocol 1.0, Private Data Stream 1.4)
+         Support for: libmseed YES, SeedLink YES, Earthworm YES.
 
 Usage: nmxptool -H hostname --listchannels [...]
+             Receive list of available channels on the host
 
-	    Receive list of available channels on the host
+       nmxptool -H hostname -C channellist -s DATE -e DATE [...]
+       nmxptool -H hostname -C channellist -s DATE -t SECs [...]
+             Receive data from hostname by DAP
 
-      nmxptool -H hostname -C channellist -s DATE -e DATE [...]
+       nmxptool -H hostname -C channellist [...]
+             Receive data from hostname by PDS
 
-	    Receive data from hostname by DAP
-
-      nmxptool -H hostname -C channellist [...]
-
-	    Receive data from hostname by PDS
-
-      nmxptool nmxptool.d
-
-	    Run as earthworm module receiving data by PDS
+       nmxptool nmxptool.d
+             Run as earthworm module receiving data by PDS
 
 Arguments:
-
- -H, --hostname=HOST     Nanometrics hostname.
-
- -C, --channels=LIST     Channel list STA1.HH?,STA2.??Z,...
+  -H, --hostname=HOST     Nanometrics hostname.
+  -C, --channels=LIST     Channel list NET.STA.CHAN (NET. is optional)
+                             N1.STA1.HH?,N2.STA2.??Z,STA3.?H?,...
+                          NET is used only for output!
 
 Other arguments:
-
- -P, --portpds=PORT      NaqsServer port number (default 28000).
-
- -D, --portdap=PORT      DataServer port number (default 28002).
-
- -N, --network=NET       Declare Network code for all stations (default 'XX').
-
- -L, --location=LOC      Location code for writing file.
-
- -v, --verbose           Be verbose.
-
- -g, --logdata           Print info about data.
-
- -l, --listchannels      Output list of channel available on NaqsServer.
-
- -i, --channelinfo       Output list of channel available on NaqsServer and channelinfo.
-
- -m, --writeseed         Pack received data in Mini-SEED records and write to a file.
-
- -w, --writefile         Dump received data to a file.
-
- -k, --slink=plug_name   Send received data to SeedLink like as plug-in.
-
-			 plug_name is set by SeisComP daemon.
-
-			 THIS OPTION MUST BE THE LAST WITHOUT plug_name
-IN seedlink.ini!
-
- -V, --version           Print tool version.
-
- -h, --help              Print this help.
+  -P, --portpds=PORT      NaqsServer port number (default 28000).
+  -D, --portdap=PORT      DataServer port number (default 28002).
+  -N, --network=NET       Default Network code for stations without value. (default 'XX').
+  -L, --location=LOC      Location code for writing file.
+  -v, --verbose           Be verbose.
+  -g, --logdata           Print info about data.
+  -m, --writeseed         Pack received data in Mini-SEED records and write to a file.
+  -w, --writefile         Dump received data to a file.
+  -k, --slink=plug_name   Send received data to SeedLink like as plug-in.
+                          plug_name is set by SeisComP daemon.
+                          THIS OPTION MUST BE THE LAST WITHOUT plug_name IN seedlink.ini!
+  -V, --version           Print tool version.
+  -h, --help              Print this help.
 
 DAP Arguments:
-
- -s, --start_time=DATE   Start time in date format.
-
- -e, --end_time=DATE     End time in date format.
-
-			 DATE can be in formats:
-
-			     <date>,<time> | <date>
-
-			 where:
-
-			     <date> = yyyy/mm/dd | yyy.jjj
-
-			     <time> = hh:mm:ss | hh:mm
-
- -d, --delay=SECs        Receive continuosly data with delay [60..86400].
-
- -u, --username=USER     DataServer username.
-
- -p, --password=PASS     DataServer password.
+  -s, --start_time=DATE   Start time in date format.
+  -e, --end_time=DATE     End time in date format.
+                          DATE can be in formats:
+                              <date>,<time> | <date>
+                          where:
+                              <date> = yyyy/mm/dd | yyy.jjj
+                              <time> = hh:mm:ss | hh:mm
+  -t, --interval=SECs     Time interval from start_time.
+  -d, --delay=SECs        Receive continuosly data with delay [60..86400].
+  -u, --username=USER     DataServer username.
+  -p, --password=PASS     DataServer password.
+  -l, --listchannels      Output list of channel available on DataServer.
+  -i, --channelinfo       Output list of channel available on DataServer and channelinfo.
 
 PDS arguments:
-
- -S, --stc=SECs          Short-term-completion (default -1).
-
-			 -1 is for Raw Stream, no short-term completion.
-
-			  0 chronological order without waiting for missing data.
-
-			 [0..300] wait a period for the gap to be filled by retransmitted packets.
-
-			 Raw Stream is usable only with --rate=-1.
-
- -R, --rate=Hz           Receive data with specified sample rate (default -1).
-
-			 -1 is for original sample rate and compressed
-data.
-
-			  0 is for original sample rate and
-decompressed data.
-
-			 >0 is for specified sample rate and
-decompressed data.
-
- -b, --buffered          Request also recent packets into the past.
-
- -M, --maxlatency=SECs   Max tolerable latency (default 600) [60..600].
-
-			 Usable only with Raw Stream --stc=-1.
+  -S, --stc=SECs          Short-term-completion (default -1).
+                          -1 is for Raw Stream, no short-term completion.
+                           0 chronological order without waiting for missing data.
+                          [0..300] wait a period for the gap to be filled by retransmitted packets.
+                          Raw Stream is usable only with --rate=-1.
+  -R, --rate=Hz           Receive data with specified sample rate (default -1).
+                          -1 is for original sample rate and compressed data.
+                           0 is for original sample rate and decompressed data.
+                          >0 is for specified sample rate and decompressed data.
+  -b, --buffered          Request also recent packets into the past.
+  -M, --maxlatency=SECs   Max tolerable latency (default 600) [60..600].
+                          Usable only with Raw Stream --stc=-1.
 
 Matteo Quintiliani - Istituto Nazionale di Geofisica e Vulcanologia - Italy
 Mail bug reports and suggestions to <quintiliani@ingv.it>.
@@ -687,12 +642,12 @@ Mail bug reports and suggestions to <quintiliani@ingv.it>.
  * 
  * <pre>
  * ...
- * 1255538946 USI.HHE.IV      (2007.233,10:39:21.0000  - 2007.243,09:59:44.0000)
- * 1255538945 USI.HHN.IV      (2007.233,16:20:53.0000  - 2007.243,09:59:45.0000)
- * 1255538944 USI.HHZ.IV      (2007.233,22:26:08.0000  - 2007.243,09:59:31.0000)
- * 1238565122 VAGA.HHE.IV     (2007.225,07:10:14.0000  - 2007.243,09:59:19.0000)
- * 1238565121 VAGA.HHN.IV     (2007.225,08:35:24.0000  - 2007.243,09:59:29.0000)
- * 1238565120 VAGA.HHZ.IV     (2007.225,00:03:14.0000  - 2007.243,09:59:29.0000)
+ * 1255538946 USI.HHE.        (2007.233,10:39:21.0000  - 2007.243,09:59:44.0000)
+ * 1255538945 USI.HHN.        (2007.233,16:20:53.0000  - 2007.243,09:59:45.0000)
+ * 1255538944 USI.HHZ.        (2007.233,22:26:08.0000  - 2007.243,09:59:31.0000)
+ * 1238565122 VAGA.HHE.       (2007.225,07:10:14.0000  - 2007.243,09:59:19.0000)
+ * 1238565121 VAGA.HHN.       (2007.225,08:35:24.0000  - 2007.243,09:59:29.0000)
+ * 1238565120 VAGA.HHZ.       (2007.225,00:03:14.0000  - 2007.243,09:59:29.0000)
  * ...
  * </pre>
  * 
@@ -711,8 +666,11 @@ Mail bug reports and suggestions to <quintiliani@ingv.it>.
  * 
  * <pre>
  * kyuzo:~ mtheo$ nmxptool -H hostname -s 2007.242,00:00 -e 2007/08/30,00:00:05 \
- *                                                       -C USI.???,VAGA.HHZ -g
+ *                                                       -C IV.USI.???,VAGA.HHZ -g
  * </pre>
+ *
+ * In alternativa al posto dell'opzione -e si pu&ograve; utilizzare l'opzione -t
+ * che specifica la quantit&agrave; in secondi di dati da richiedere.
  * 
  * Osserviamo che la data pu&ograve; essere scritta seguendo tali regole:
  * 
@@ -737,23 +695,23 @@ Mail bug reports and suggestions to <quintiliani@ingv.it>.
  * informazioni su ogni pacchetto ricevuto. Ecco un output possibile:
  * 
  * <pre>
- * XX.USI.HHE 100Hz (2007.242,00:00:00.0000 - 2007.242,00:00:00.8699) lat 130115.1s [1, 48353370] (0)   87pts (-1128, -1128, 1742, 3226, 1) 276
- * XX.USI.HHE 100Hz (2007.242,00:00:00.8699 - 2007.242,00:00:01.9899) lat 130114.0s [1, 48353371] (0)  112pts (3226, 3226, 2423, 2688, 1) 276
- * XX.USI.HHE 100Hz (2007.242,00:00:01.9900 - 2007.242,00:00:03.1099) lat 130112.9s [1, 48353372] (0)  112pts (2688, 2688, -548, -686, 1) 276
- * XX.USI.HHE 100Hz (2007.242,00:00:03.1099 - 2007.242,00:00:04.2500) lat 130111.8s [1, 48353373] (0)  114pts (-686, -686, -857, -74, 1) 276
- * XX.USI.HHE 100Hz (2007.242,00:00:04.2500 - 2007.242,00:00:05.0000) lat 130111.0s [1, 48353374] (0)   75pts (-74, -74, 1290, 1338, 1) 276
- * XX.USI.HHN 100Hz (2007.242,00:00:00.0000 - 2007.242,00:00:00.2500) lat 130116.8s [1, 49688091] (0)   25pts (301, 301, 11, -143, 1) 276
- * XX.USI.HHN 100Hz (2007.242,00:00:00.2500 - 2007.242,00:00:01.3699) lat 130115.6s [1, 49688092] (0)  112pts (-143, -143, 926, 1534, 1) 276
- * XX.USI.HHN 100Hz (2007.242,00:00:01.3699 - 2007.242,00:00:02.5099) lat 130114.5s [1, 49688093] (0)  114pts (1534, 1534, -220, -17, 1) 276
- * XX.USI.HHN 100Hz (2007.242,00:00:02.5099 - 2007.242,00:00:03.6299) lat 130113.4s [1, 49688094] (0)  112pts (-17, -17, -866, -837, 1) 276
- * XX.USI.HHN 100Hz (2007.242,00:00:03.6300 - 2007.242,00:00:04.7900) lat 130112.2s [1, 49688095] (0)  116pts (-837, -837, -716, -527, 1) 276
- * XX.USI.HHN 100Hz (2007.242,00:00:04.7899 - 2007.242,00:00:05.0000) lat 130112.0s [1, 49688096] (0)   21pts (-527, -527, 999, 790, 1) 276
- * XX.USI.HHZ 100Hz (2007.242,00:00:00.0000 - 2007.242,00:00:00.4400) lat 130116.6s [1, 50549101] (0)   44pts (-5470, -5470, -4031, -4326, 1) 276
- * XX.USI.HHZ 100Hz (2007.242,00:00:00.4400 - 2007.242,00:00:01.5599) lat 130115.4s [1, 50549102] (0)  112pts (-4326, -4326, -6154, -6408, 1) 276
- * XX.USI.HHZ 100Hz (2007.242,00:00:01.5599 - 2007.242,00:00:02.6799) lat 130114.3s [1, 50549103] (0)  112pts (-6408, -6408, -5355, -5326, 1) 276
- * XX.USI.HHZ 100Hz (2007.242,00:00:02.6800 - 2007.242,00:00:03.7999) lat 130113.2s [1, 50549104] (0)  112pts (-5326, -5326, -4203, -4963, 1) 276
- * XX.USI.HHZ 100Hz (2007.242,00:00:03.7999 - 2007.242,00:00:04.9199) lat 130112.1s [1, 50549105] (0)  112pts (-4963, -4963, -4980, -5066, 1) 276
- * XX.USI.HHZ 100Hz (2007.242,00:00:04.9200 - 2007.242,00:00:05.0000) lat 130112.0s [1, 50549106] (0)    8pts (-5066, -5066, -4823, -4804, 1) 276
+ * IV.USI.HHE 100Hz (2007.242,00:00:00.0000 - 2007.242,00:00:00.8699) lat 130115.1s [1, 48353370] (0)   87pts (-1128, -1128, 1742, 3226, 1) 276
+ * IV.USI.HHE 100Hz (2007.242,00:00:00.8699 - 2007.242,00:00:01.9899) lat 130114.0s [1, 48353371] (0)  112pts (3226, 3226, 2423, 2688, 1) 276
+ * IV.USI.HHE 100Hz (2007.242,00:00:01.9900 - 2007.242,00:00:03.1099) lat 130112.9s [1, 48353372] (0)  112pts (2688, 2688, -548, -686, 1) 276
+ * IV.USI.HHE 100Hz (2007.242,00:00:03.1099 - 2007.242,00:00:04.2500) lat 130111.8s [1, 48353373] (0)  114pts (-686, -686, -857, -74, 1) 276
+ * IV.USI.HHE 100Hz (2007.242,00:00:04.2500 - 2007.242,00:00:05.0000) lat 130111.0s [1, 48353374] (0)   75pts (-74, -74, 1290, 1338, 1) 276
+ * IV.USI.HHN 100Hz (2007.242,00:00:00.0000 - 2007.242,00:00:00.2500) lat 130116.8s [1, 49688091] (0)   25pts (301, 301, 11, -143, 1) 276
+ * IV.USI.HHN 100Hz (2007.242,00:00:00.2500 - 2007.242,00:00:01.3699) lat 130115.6s [1, 49688092] (0)  112pts (-143, -143, 926, 1534, 1) 276
+ * IV.USI.HHN 100Hz (2007.242,00:00:01.3699 - 2007.242,00:00:02.5099) lat 130114.5s [1, 49688093] (0)  114pts (1534, 1534, -220, -17, 1) 276
+ * IV.USI.HHN 100Hz (2007.242,00:00:02.5099 - 2007.242,00:00:03.6299) lat 130113.4s [1, 49688094] (0)  112pts (-17, -17, -866, -837, 1) 276
+ * IV.USI.HHN 100Hz (2007.242,00:00:03.6300 - 2007.242,00:00:04.7900) lat 130112.2s [1, 49688095] (0)  116pts (-837, -837, -716, -527, 1) 276
+ * IV.USI.HHN 100Hz (2007.242,00:00:04.7899 - 2007.242,00:00:05.0000) lat 130112.0s [1, 49688096] (0)   21pts (-527, -527, 999, 790, 1) 276
+ * IV.USI.HHZ 100Hz (2007.242,00:00:00.0000 - 2007.242,00:00:00.4400) lat 130116.6s [1, 50549101] (0)   44pts (-5470, -5470, -4031, -4326, 1) 276
+ * IV.USI.HHZ 100Hz (2007.242,00:00:00.4400 - 2007.242,00:00:01.5599) lat 130115.4s [1, 50549102] (0)  112pts (-4326, -4326, -6154, -6408, 1) 276
+ * IV.USI.HHZ 100Hz (2007.242,00:00:01.5599 - 2007.242,00:00:02.6799) lat 130114.3s [1, 50549103] (0)  112pts (-6408, -6408, -5355, -5326, 1) 276
+ * IV.USI.HHZ 100Hz (2007.242,00:00:02.6800 - 2007.242,00:00:03.7999) lat 130113.2s [1, 50549104] (0)  112pts (-5326, -5326, -4203, -4963, 1) 276
+ * IV.USI.HHZ 100Hz (2007.242,00:00:03.7999 - 2007.242,00:00:04.9199) lat 130112.1s [1, 50549105] (0)  112pts (-4963, -4963, -4980, -5066, 1) 276
+ * IV.USI.HHZ 100Hz (2007.242,00:00:04.9200 - 2007.242,00:00:05.0000) lat 130112.0s [1, 50549106] (0)    8pts (-5066, -5066, -4823, -4804, 1) 276
  * XX.VAGA.HHZ 100Hz (2007.242,00:00:00.0000 - 2007.242,00:00:00.2999) lat 130116.7s [1, 7848381] (0)   30pts (-10567, -10567, -10553, -10550, 1) 276
  * XX.VAGA.HHZ 100Hz (2007.242,00:00:00.2999 - 2007.242,00:00:02.5399) lat 130114.5s [1, 7848382] (0)  224pts (-10550, -10550, -10456, -10458, 1) 276
  * XX.VAGA.HHZ 100Hz (2007.242,00:00:02.5399 - 2007.242,00:00:04.7799) lat 130112.2s [1, 7848383] (0)  224pts (-10458, -10458, -10363, -10362, 1) 276
@@ -805,32 +763,32 @@ Mail bug reports and suggestions to <quintiliani@ingv.it>.
  * restituirebbe un output simile a questo di seguito:
  * 
  * <pre>
- * XX.USI.HHN 100Hz (2007.243,12:22:48.0000 - 2007.243,12:22:49.0000) lat 9.0s [4, -1] (-1)  100pts (-1, 2080, 2488, -1, 0) 420
- * XX.USI.HHZ 100Hz (2007.243,12:22:48.0000 - 2007.243,12:22:49.0000) lat 9.0s [4, -1] (-1)  100pts (-1, 703, 2789, -1, 0) 420
- * XX.USI.HHZ 100Hz (2007.243,12:22:49.0000 - 2007.243,12:22:50.0000) lat 8.0s [4, -1] (-1)  100pts (-1, 2947, -1268, -1, 0) 420
- * XX.USI.HHE 100Hz (2007.243,12:22:49.0000 - 2007.243,12:22:50.0000) lat 8.0s [4, -1] (-1)  100pts (-1, 1924, 204, -1, 0) 420
- * XX.USI.HHN 100Hz (2007.243,12:22:49.0000 - 2007.243,12:22:50.0000) lat 8.0s [4, -1] (-1)  100pts (-1, 2490, -1004, -1, 0) 420
- * XX.USI.HHN 100Hz (2007.243,12:22:50.0000 - 2007.243,12:22:51.0000) lat 7.0s [4, -1] (-1)  100pts (-1, -931, 1006, -1, 0) 420
- * XX.USI.HHZ 100Hz (2007.243,12:22:50.0000 - 2007.243,12:22:51.0000) lat 7.0s [4, -1] (-1)  100pts (-1, -1131, 1239, -1, 0) 420
- * XX.USI.HHE 100Hz (2007.243,12:22:50.0000 - 2007.243,12:22:51.0000) lat 7.0s [4, -1] (-1)  100pts (-1, -103, -588, -1, 0) 420
- * XX.USI.HHN 100Hz (2007.243,12:22:51.0000 - 2007.243,12:22:52.0000) lat 6.0s [4, -1] (-1)  100pts (-1, 951, 3495, -1, 0) 420
- * XX.USI.HHZ 100Hz (2007.243,12:22:51.0000 - 2007.243,12:22:52.0000) lat 6.0s [4, -1] (-1)  100pts (-1, 1318, 790, -1, 0) 420
- * XX.USI.HHE 100Hz (2007.243,12:22:51.0000 - 2007.243,12:22:52.0000) lat 6.0s [4, -1] (-1)  100pts (-1, -467, 93, -1, 0) 420
- * XX.USI.HHE 100Hz (2007.243,12:22:52.0000 - 2007.243,12:22:53.0000) lat 5.0s [4, -1] (-1)  100pts (-1, 365, 956, -1, 0) 420
- * XX.USI.HHN 100Hz (2007.243,12:22:52.0000 - 2007.243,12:22:53.0000) lat 5.0s [4, -1] (-1)  100pts (-1, 3356, 2437, -1, 0) 420
- * XX.USI.HHZ 100Hz (2007.243,12:22:52.0000 - 2007.243,12:22:53.0000) lat 5.0s [4, -1] (-1)  100pts (-1, 1034, 1527, -1, 0) 420
- * XX.USI.HHE 100Hz (2007.243,12:22:53.0000 - 2007.243,12:22:54.0000) lat 4.0s [4, -1] (-1)  100pts (-1, 951, 16, -1, 0) 420
- * XX.USI.HHN 100Hz (2007.243,12:22:53.0000 - 2007.243,12:22:54.0000) lat 4.0s [4, -1] (-1)  100pts (-1, 2559, -319, -1, 0) 420
- * XX.USI.HHZ 100Hz (2007.243,12:22:53.0000 - 2007.243,12:22:54.0000) lat 4.0s [4, -1] (-1)  100pts (-1, 1472, 675, -1, 0) 420
- * XX.USI.HHE 100Hz (2007.243,12:22:54.0000 - 2007.243,12:22:55.0000) lat 3.0s [4, -1] (-1)  100pts (-1, 255, -351, -1, 0) 420
- * XX.USI.HHN 100Hz (2007.243,12:22:54.0000 - 2007.243,12:22:55.0000) lat 3.0s [4, -1] (-1)  100pts (-1, -668, 1457, -1, 0) 420
- * XX.USI.HHZ 100Hz (2007.243,12:22:54.0000 - 2007.243,12:22:55.0000) lat 3.0s [4, -1] (-1)  100pts (-1, 1101, 1541, -1, 0) 420
- * XX.USI.HHE 100Hz (2007.243,12:22:55.0000 - 2007.243,12:22:56.0000) lat 2.0s [4, -1] (-1)  100pts (-1, -540, 1162, -1, 0) 420
- * XX.USI.HHN 100Hz (2007.243,12:22:55.0000 - 2007.243,12:22:56.0000) lat 2.0s [4, -1] (-1)  100pts (-1, 1593, -488, -1, 0) 420
- * XX.USI.HHZ 100Hz (2007.243,12:22:55.0000 - 2007.243,12:22:56.0000) lat 2.0s [4, -1] (-1)  100pts (-1, 1608, 1355, -1, 0) 420
- * XX.USI.HHE 100Hz (2007.243,12:22:56.0000 - 2007.243,12:22:57.0000) lat 1.0s [4, -1] (-1)  100pts (-1, 1324, -1674, -1, 0) 420
- * XX.USI.HHN 100Hz (2007.243,12:22:56.0000 - 2007.243,12:22:57.0000) lat 2.0s [4, -1] (-1)  100pts (-1, -371, 2315, -1, 0) 420
- * XX.USI.HHZ 100Hz (2007.243,12:22:56.0000 - 2007.243,12:22:57.0000) lat 2.0s [4, -1] (-1)  100pts (-1, 1279, 967, -1, 0) 420
+ * IV.USI.HHN 100Hz (2007.243,12:22:48.0000 - 2007.243,12:22:49.0000) lat 9.0s [4, -1] (-1)  100pts (-1, 2080, 2488, -1, 0) 420
+ * IV.USI.HHZ 100Hz (2007.243,12:22:48.0000 - 2007.243,12:22:49.0000) lat 9.0s [4, -1] (-1)  100pts (-1, 703, 2789, -1, 0) 420
+ * IV.USI.HHZ 100Hz (2007.243,12:22:49.0000 - 2007.243,12:22:50.0000) lat 8.0s [4, -1] (-1)  100pts (-1, 2947, -1268, -1, 0) 420
+ * IV.USI.HHE 100Hz (2007.243,12:22:49.0000 - 2007.243,12:22:50.0000) lat 8.0s [4, -1] (-1)  100pts (-1, 1924, 204, -1, 0) 420
+ * IV.USI.HHN 100Hz (2007.243,12:22:49.0000 - 2007.243,12:22:50.0000) lat 8.0s [4, -1] (-1)  100pts (-1, 2490, -1004, -1, 0) 420
+ * IV.USI.HHN 100Hz (2007.243,12:22:50.0000 - 2007.243,12:22:51.0000) lat 7.0s [4, -1] (-1)  100pts (-1, -931, 1006, -1, 0) 420
+ * IV.USI.HHZ 100Hz (2007.243,12:22:50.0000 - 2007.243,12:22:51.0000) lat 7.0s [4, -1] (-1)  100pts (-1, -1131, 1239, -1, 0) 420
+ * IV.USI.HHE 100Hz (2007.243,12:22:50.0000 - 2007.243,12:22:51.0000) lat 7.0s [4, -1] (-1)  100pts (-1, -103, -588, -1, 0) 420
+ * IV.USI.HHN 100Hz (2007.243,12:22:51.0000 - 2007.243,12:22:52.0000) lat 6.0s [4, -1] (-1)  100pts (-1, 951, 3495, -1, 0) 420
+ * IV.USI.HHZ 100Hz (2007.243,12:22:51.0000 - 2007.243,12:22:52.0000) lat 6.0s [4, -1] (-1)  100pts (-1, 1318, 790, -1, 0) 420
+ * IV.USI.HHE 100Hz (2007.243,12:22:51.0000 - 2007.243,12:22:52.0000) lat 6.0s [4, -1] (-1)  100pts (-1, -467, 93, -1, 0) 420
+ * IV.USI.HHE 100Hz (2007.243,12:22:52.0000 - 2007.243,12:22:53.0000) lat 5.0s [4, -1] (-1)  100pts (-1, 365, 956, -1, 0) 420
+ * IV.USI.HHN 100Hz (2007.243,12:22:52.0000 - 2007.243,12:22:53.0000) lat 5.0s [4, -1] (-1)  100pts (-1, 3356, 2437, -1, 0) 420
+ * IV.USI.HHZ 100Hz (2007.243,12:22:52.0000 - 2007.243,12:22:53.0000) lat 5.0s [4, -1] (-1)  100pts (-1, 1034, 1527, -1, 0) 420
+ * IV.USI.HHE 100Hz (2007.243,12:22:53.0000 - 2007.243,12:22:54.0000) lat 4.0s [4, -1] (-1)  100pts (-1, 951, 16, -1, 0) 420
+ * IV.USI.HHN 100Hz (2007.243,12:22:53.0000 - 2007.243,12:22:54.0000) lat 4.0s [4, -1] (-1)  100pts (-1, 2559, -319, -1, 0) 420
+ * IV.USI.HHZ 100Hz (2007.243,12:22:53.0000 - 2007.243,12:22:54.0000) lat 4.0s [4, -1] (-1)  100pts (-1, 1472, 675, -1, 0) 420
+ * IV.USI.HHE 100Hz (2007.243,12:22:54.0000 - 2007.243,12:22:55.0000) lat 3.0s [4, -1] (-1)  100pts (-1, 255, -351, -1, 0) 420
+ * IV.USI.HHN 100Hz (2007.243,12:22:54.0000 - 2007.243,12:22:55.0000) lat 3.0s [4, -1] (-1)  100pts (-1, -668, 1457, -1, 0) 420
+ * IV.USI.HHZ 100Hz (2007.243,12:22:54.0000 - 2007.243,12:22:55.0000) lat 3.0s [4, -1] (-1)  100pts (-1, 1101, 1541, -1, 0) 420
+ * IV.USI.HHE 100Hz (2007.243,12:22:55.0000 - 2007.243,12:22:56.0000) lat 2.0s [4, -1] (-1)  100pts (-1, -540, 1162, -1, 0) 420
+ * IV.USI.HHN 100Hz (2007.243,12:22:55.0000 - 2007.243,12:22:56.0000) lat 2.0s [4, -1] (-1)  100pts (-1, 1593, -488, -1, 0) 420
+ * IV.USI.HHZ 100Hz (2007.243,12:22:55.0000 - 2007.243,12:22:56.0000) lat 2.0s [4, -1] (-1)  100pts (-1, 1608, 1355, -1, 0) 420
+ * IV.USI.HHE 100Hz (2007.243,12:22:56.0000 - 2007.243,12:22:57.0000) lat 1.0s [4, -1] (-1)  100pts (-1, 1324, -1674, -1, 0) 420
+ * IV.USI.HHN 100Hz (2007.243,12:22:56.0000 - 2007.243,12:22:57.0000) lat 2.0s [4, -1] (-1)  100pts (-1, -371, 2315, -1, 0) 420
+ * IV.USI.HHZ 100Hz (2007.243,12:22:56.0000 - 2007.243,12:22:57.0000) lat 2.0s [4, -1] (-1)  100pts (-1, 1279, 967, -1, 0) 420
  * </pre>
  * 
  * 
