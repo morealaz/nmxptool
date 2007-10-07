@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.82 2007-10-06 15:34:00 mtheo Exp $
+ * $Id: nmxptool.c,v 1.83 2007-10-07 14:11:03 mtheo Exp $
  *
  */
 
@@ -36,7 +36,9 @@
 #include "seedlink_plugin.h"
 #endif
 
-#define CURRENT_NETWORK (params.network)? params.network : DEFAULT_NETWORK
+#define CURRENT_NETWORK ( (params.network)? params.network : DEFAULT_NETWORK )
+#define NETCODE_OR_CURRENT_NETWORK ( (network_code[0] != 0)? network_code : CURRENT_NETWORK )
+
 #define GAP_TOLLERANCE 0.001
 
 typedef struct {
@@ -68,7 +70,7 @@ NMXPTOOL_PARAMS params;
 int naqssock = 0;
 FILE *outfile = NULL;
 NMXP_CHAN_LIST *channelList = NULL;
-NMXP_CHAN_LIST *channelList_subset = NULL;
+NMXP_CHAN_LIST_NET *channelList_subset = NULL;
 NMXPTOOL_CHAN_SEQ *channelListSeq = NULL;
 
 #ifdef HAVE_LIBMSEED
@@ -98,7 +100,7 @@ int main (int argc, char **argv) {
     int ret;
 
     char filename[500];
-    char station_code[20], channel_code[20];
+    char station_code[20], channel_code[20], network_code[20];
 
     NMXP_DATA_PROCESS *pd;
 
@@ -174,7 +176,7 @@ int main (int argc, char **argv) {
 
     /* Get list of available channels and get a subset list of params.channels */
     channelList = nmxp_getAvailableChannelList(params.hostname, params.portnumberpds, NMXP_DATA_TIMESERIES);
-    channelList_subset = nmxp_chan_subset(channelList, NMXP_DATA_TIMESERIES, params.channels);
+    channelList_subset = nmxp_chan_subset(channelList, NMXP_DATA_TIMESERIES, params.channels, CURRENT_NETWORK);
 
     /* Check if some channel already exists */
     if(channelList_subset->number <= 0) {
@@ -205,11 +207,11 @@ int main (int argc, char **argv) {
 	    msr_list_chan[i_chan] = msr_init(NULL);
 
 	    /* Separate station_code and channel_code */
-	    if(nmxp_chan_cpy_sta_chan(channelList_subset->channel[i_chan].name, station_code, channel_code)) {
+	    if(nmxp_chan_cpy_sta_chan(channelList_subset->channel[i_chan].name, station_code, channel_code, network_code)) {
 
-		nmxp_log(0, 1, "%s.%s.%s\n", CURRENT_NETWORK, station_code, channel_code);
+		nmxp_log(0, 1, "%s.%s.%s\n", NETCODE_OR_CURRENT_NETWORK, station_code, channel_code);
 
-		strcpy(msr_list_chan[i_chan]->network, CURRENT_NETWORK);
+		strcpy(msr_list_chan[i_chan]->network, NETCODE_OR_CURRENT_NETWORK);
 		strcpy(msr_list_chan[i_chan]->station, station_code);
 		strcpy(msr_list_chan[i_chan]->channel, channel_code);
 
@@ -297,11 +299,19 @@ int main (int argc, char **argv) {
 
 		if(params.flag_writefile) {
 		    /* Open output file */
-		    sprintf(filename, "%s.%s_%s_%s.nmx",
-			    CURRENT_NETWORK,
-			    channelList_subset->channel[i_chan].name,
-			    str_start_time,
-			    str_end_time);
+		    if(nmxp_chan_cpy_sta_chan(channelList_subset->channel[i_chan].name, station_code, channel_code, network_code)) {
+			sprintf(filename, "%s.%s.%s_%s_%s.nmx",
+				NETCODE_OR_CURRENT_NETWORK,
+				station_code,
+				channel_code,
+				str_start_time,
+				str_end_time);
+		    } else {
+			sprintf(filename, "%s_%s_%s.nmx",
+				channelList_subset->channel[i_chan].name,
+				str_start_time,
+				str_end_time);
+		    }
 
 		    outfile = fopen(filename, "w");
 		    if(!outfile) {
@@ -312,11 +322,19 @@ int main (int argc, char **argv) {
 #ifdef HAVE_LIBMSEED
 		if(params.flag_writeseed) {
 		    /* Open output Mini-SEED file */
-		    sprintf(data_seed.filename_mseed, "%s.%s_%s_%s.miniseed",
-			    CURRENT_NETWORK,
-			    channelList_subset->channel[i_chan].name,
-			    str_start_time,
-			    str_end_time);
+		    if(nmxp_chan_cpy_sta_chan(channelList_subset->channel[i_chan].name, station_code, channel_code, network_code)) {
+			sprintf(data_seed.filename_mseed, "%s.%s.%s_%s_%s.miniseed",
+				NETCODE_OR_CURRENT_NETWORK,
+				station_code,
+				channel_code,
+				str_start_time,
+				str_end_time);
+		    } else {
+			sprintf(filename, "%s_%s_%s.miniseed",
+				channelList_subset->channel[i_chan].name,
+				str_start_time,
+				str_end_time);
+		    }
 
 		    data_seed.outfile_mseed = fopen(data_seed.filename_mseed, "w");
 		    if(!data_seed.outfile_mseed) {
@@ -329,11 +347,11 @@ int main (int argc, char **argv) {
 		    /* Compute SNCL line */
 
 		    /* Separate station_code_old_way and channel_code_old_way */
-		    if(nmxp_chan_cpy_sta_chan(channelList_subset->channel[i_chan].name, station_code, channel_code)) {
+		    if(nmxp_chan_cpy_sta_chan(channelList_subset->channel[i_chan].name, station_code, channel_code, network_code)) {
 			/* Write SNCL line */
 			fprintf(outfile, "%s.%s.%s.%s\n",
 				station_code,
-				CURRENT_NETWORK,
+				NETCODE_OR_CURRENT_NETWORK,
 				channel_code,
 				(params.location)? params.location : "");
 		    }
@@ -347,7 +365,7 @@ int main (int argc, char **argv) {
 		while(ret == NMXP_SOCKET_OK   &&    type != NMXP_MSG_READY) {
 
 		    /* Process a packet and return value in NMXP_DATA_PROCESS structure */
-		    pd = nmxp_processCompressedData(buffer, length, channelList_subset, CURRENT_NETWORK);
+		    pd = nmxp_processCompressedData(buffer, length, channelList_subset, NETCODE_OR_CURRENT_NETWORK);
 		    nmxp_data_trim(pd, params.start_time, params.end_time, 0);
 
 		    /* Log contents of last packet */
@@ -519,7 +537,7 @@ int main (int argc, char **argv) {
 	}
 
 	/* Get a subset of channel from arguments */
-	channelList_subset = nmxp_chan_subset(channelList, NMXP_DATA_TIMESERIES, params.channels);
+	channelList_subset = nmxp_chan_subset(channelList, NMXP_DATA_TIMESERIES, params.channels, CURRENT_NETWORK);
 
 
 	/* PDS Step 4: Send a Request Pending (optional) */
@@ -555,10 +573,22 @@ int main (int argc, char **argv) {
 	}
 #endif
 
+	
+#ifdef TEST_FOR_DOD
+	/*
+	struct timeval	timeo;
+	timeo.tv_sec  = 0;
+	timeo.tv_usec = 0;
+	if (setsockopt(naqssock, SOL_SOCKET, SO_RCVTIMEO, &timeo, sizeof(timeo)) < 0) {
+	    		perror("setsockopt SO_RCVTIMEO");
+	}
+	*/
+#endif
+
 	while(exitpdscondition) {
 
 	    /* Process Compressed or Decompressed Data */
-	    pd = nmxp_receiveData(naqssock, channelList_subset, CURRENT_NETWORK);
+	    pd = nmxp_receiveData(naqssock, channelList_subset, NETCODE_OR_CURRENT_NETWORK);
 
 	    /* Log contents of last packet */
 	    if(params.flag_logdata) {

@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp.c,v 1.48 2007-10-04 20:34:30 mtheo Exp $
+ * $Id: nmxp.c,v 1.49 2007-10-07 14:11:23 mtheo Exp $
  *
  */
 
@@ -61,7 +61,7 @@ int nmxp_receiveChannelList(int isock, NMXP_CHAN_LIST **pchannelList) {
 }
 
 
-int nmxp_sendAddTimeSeriesChannel(int isock, NMXP_CHAN_LIST *channelList, int32_t shortTermCompletion, int32_t out_format, NMXP_BUFFER_FLAG buffer_flag) {
+int nmxp_sendAddTimeSeriesChannel(int isock, NMXP_CHAN_LIST_NET *channelList, int32_t shortTermCompletion, int32_t out_format, NMXP_BUFFER_FLAG buffer_flag) {
     int ret;
     int32_t buffer_length = 16 + (4 * channelList->number); 
     char *buffer = malloc(buffer_length);
@@ -100,7 +100,7 @@ int nmxp_sendAddTimeSeriesChannel(int isock, NMXP_CHAN_LIST *channelList, int32_
 }
 
 
-NMXP_DATA_PROCESS *nmxp_receiveData(int isock, NMXP_CHAN_LIST *channelList, const char *network_code) {
+NMXP_DATA_PROCESS *nmxp_receiveData(int isock, NMXP_CHAN_LIST_NET *channelList, const char *network_code) {
     NMXP_MSG_SERVER type;
     void *buffer = NULL;
     int32_t length;

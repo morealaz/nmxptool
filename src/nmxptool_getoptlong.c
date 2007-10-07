@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.32 2007-10-06 17:26:06 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.33 2007-10-07 14:11:03 mtheo Exp $
  *
  */
 
@@ -124,14 +124,16 @@ Usage: %s -H hostname --listchannels [...]\n\
     nmxp_log(NMXP_LOG_NORM_NO, 0, "\
 Arguments:\n\
   -H, --hostname=HOST     Nanometrics hostname.\n\
-  -C, --channels=LIST     Channel list STA1.HH?,STA2.??Z,...\n\
+  -C, --channels=LIST     Channel list NET.STA.CHAN (NET. is optional)\n\
+                             N1.STA1.HH?,N2.STA2.??Z,STA3.?H?,...\n\
+                          NET is used only for output!\n\
 \n");
 
     nmxp_log(NMXP_LOG_NORM_NO, 0, "\
 Other arguments:\n\
   -P, --portpds=PORT      NaqsServer port number (default %d).\n\
   -D, --portdap=PORT      DataServer port number (default %d).\n\
-  -N, --network=NET       Declare Network code for all stations (default '%s').\n\
+  -N, --network=NET       Default Network code for stations without value. (default '%s').\n\
   -L, --location=LOC      Location code for writing file.\n\
   -v, --verbose           Be verbose.\n\
   -g, --logdata           Print info about data.\n\
@@ -169,7 +171,7 @@ DAP Arguments:\n\
                           where:\n\
                               <date> = yyyy/mm/dd | yyy.jjj\n\
                               <time> = hh:mm:ss | hh:mm\n\
-  -t, --interval=SECs     Interval from start_time.\n\
+  -t, --interval=SECs     Time interval from start_time.\n\
   -d, --delay=SECs        Receive continuosly data with delay [%d..%d].\n\
   -u, --username=USER     DataServer username.\n\
   -p, --password=PASS     DataServer password.\n\

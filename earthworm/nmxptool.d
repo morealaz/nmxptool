@@ -19,9 +19,10 @@ nmxpport          28000                 # Port number of the NaqsServer server
 
 MaxTolerableLatency 120
 
-NetworkCode	XX
+DefaultNetworkCode	IV
 
-Channel		BOB.HH?
+Channel		ES.BOB.HH?
+Channel		MN.TIR.HH?
 Channel		MDI.HH?
 Channel		DOI.HH?
 Channel		SALO.HH?

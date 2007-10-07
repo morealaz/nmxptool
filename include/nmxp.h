@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp.h,v 1.38 2007-10-03 13:38:27 mtheo Exp $
+ * $Id: nmxp.h,v 1.39 2007-10-07 14:11:23 mtheo Exp $
  *
  */
 
@@ -1123,7 +1123,7 @@ int nmxp_receiveChannelList(int isock, NMXP_CHAN_LIST **pchannelList);
  * \retval SOCKET_ERROR on error
  * 
  */
-int nmxp_sendAddTimeSeriesChannel(int isock, NMXP_CHAN_LIST *channelList, int32_t shortTermCompletion, int32_t out_format, NMXP_BUFFER_FLAG buffer_flag);
+int nmxp_sendAddTimeSeriesChannel(int isock, NMXP_CHAN_LIST_NET *channelList, int32_t shortTermCompletion, int32_t out_format, NMXP_BUFFER_FLAG buffer_flag);
 
 
 /*! \brief Receive Compressed or Decompressed Data message from a socket and launch func_processData() on the extracted data
@@ -1136,7 +1136,7 @@ int nmxp_sendAddTimeSeriesChannel(int isock, NMXP_CHAN_LIST *channelList, int32_
  * \retval NULL on error
  * 
  */
-NMXP_DATA_PROCESS *nmxp_receiveData(int isock, NMXP_CHAN_LIST *channelList, const char *network_code);
+NMXP_DATA_PROCESS *nmxp_receiveData(int isock, NMXP_CHAN_LIST_NET *channelList, const char *network_code);
 
 
 /*! \brief Sends the message "ConnectRequest" on a socket

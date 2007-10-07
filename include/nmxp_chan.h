@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_chan.h,v 1.20 2007-09-07 07:08:30 mtheo Exp $
+ * $Id: nmxp_chan.h,v 1.21 2007-10-07 14:11:23 mtheo Exp $
  *
  */
 
@@ -34,14 +34,26 @@ typedef enum {
 } NMXP_META_CHAN_LIST_SORT_TYPE;
 
 
+/*! \brief Max number of channels */
+#define MAX_N_CHAN 2000
+
+/*! \brief The key/name info for one channel */
+typedef struct {
+    int32_t key;
+    char name[24];
+} NMXP_CHAN_KEY_NET;
+
+/*! \brief Channel list */
+typedef struct {
+    int32_t number;
+    NMXP_CHAN_KEY_NET channel[MAX_N_CHAN];
+} NMXP_CHAN_LIST_NET;
+
 /*! \brief The key/name info for one channel */
 typedef struct {
     int32_t key;
     char name[12];
 } NMXP_CHAN_KEY;
-
-/*! \brief Max number of channels */
-#define MAX_N_CHAN 1000
 
 /*! \brief Channel list */
 typedef struct {
@@ -105,9 +117,10 @@ typedef struct {
 
 /*! \brief Copy station code and channel code from name
  *
- * \param station_dot_channel string containing STA.CHAN
+ * \param net_dot_station_dot_channel string containing NET.STA.CHAN where NET. is optional
  * \param[out] station_code Pointer to string for station code
- * \param[out] channel_code Pointer to string for char code
+ * \param[out] channel_code Pointer to string for channel code
+ * \param[out] network_code Pointer to string for station code
  *
  * \warning Parametes can not be NULL!
  *
@@ -115,13 +128,13 @@ typedef struct {
  * \retval 0 on error
  *
  */
-int nmxp_chan_cpy_sta_chan(const char *station_dot_channel, char *station_code, char *channel_code);
+int nmxp_chan_cpy_sta_chan(const char *net_dot_station_dot_channel, char *station_code, char *channel_code, char *network_code);
 
 
 /*! \brief Match station_dot_channel against pattern, treating errors as no match.
  *
- * \param station_dot_channel STA.CHAN format
- * \param pattern STA.?HZ or STA.H?Z or STA.HH? or STA.?H? or ....
+ * \param net_dot_station_dot_channel NET.STA.CHAN format (NET. is optional)
+ * \param pattern N1.STA.?HZ or N2.STA.H?Z or STA.HH? or STA.?H? or ....
  *
  * \retval 1 for match
  * \retval 0 for no match
@@ -129,7 +142,7 @@ int nmxp_chan_cpy_sta_chan(const char *station_dot_channel, char *station_code, 
  * \retval -2 on error for invalid station_dot_channel
  *
  */
-int nmxp_chan_match(const char *station_dot_channel, char *pattern);
+int nmxp_chan_match(const char *net_dot_station_dot_channel, char *pattern);
 
 
 
@@ -152,7 +165,7 @@ int nmxp_chan_lookupKey(char* name, NMXP_CHAN_LIST *channelList);
  * \return Index of channel with key. -1 on error.
  *
  */
-int nmxp_chan_lookupKeyIndex(int32_t key, NMXP_CHAN_LIST *channelList);
+int nmxp_chan_lookupKeyIndex(int32_t key, NMXP_CHAN_LIST_NET *channelList);
 
 
 /*! \brief Looks up a channel name in the list using a key
@@ -163,7 +176,7 @@ int nmxp_chan_lookupKeyIndex(int32_t key, NMXP_CHAN_LIST *channelList);
  * \return Name of channel with key. NULL on error.
  *
  */
-char *nmxp_chan_lookupName(int32_t key, NMXP_CHAN_LIST *channelList);
+char *nmxp_chan_lookupName(int32_t key, NMXP_CHAN_LIST_NET *channelList);
 
 
 /*! \brief Looks up a channel with specified data type.
@@ -184,13 +197,14 @@ NMXP_CHAN_LIST *nmxp_chan_getType(NMXP_CHAN_LIST *channelList, NMXP_DATATYPE dat
  * \param channelList Channel list.
  * \param dataType Type of channel.
  * \param sta_chan_list String list of item STA.CHAN, separeted by comma.
+ * \param network_code_default Default Network code
  *
  * \return Channel list with specified dataType. It will need to be freed!
  *
  * \warning Returned value will need to be freed!
  *
  */
-NMXP_CHAN_LIST *nmxp_chan_subset(NMXP_CHAN_LIST *channelList, NMXP_DATATYPE dataType, char *sta_chan_list);
+NMXP_CHAN_LIST_NET *nmxp_chan_subset(NMXP_CHAN_LIST *channelList, NMXP_DATATYPE dataType, char *sta_chan_list, const char *network_code_default);
 
 
 /*! Sort list by channel key
@@ -214,7 +228,7 @@ void nmxp_chan_sortByName(NMXP_CHAN_LIST *channelList);
  * \param channelList Channel List
  *
  */
-void nmxp_chan_print_channelList(NMXP_CHAN_LIST *channelList);
+void nmxp_chan_print_channelList(NMXP_CHAN_LIST_NET *channelList);
 
 
 void nmxp_meta_chan_free(NMXP_META_CHAN_LIST **chan_list);

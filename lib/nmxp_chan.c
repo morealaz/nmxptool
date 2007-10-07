@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_chan.c,v 1.21 2007-09-07 07:08:30 mtheo Exp $
+ * $Id: nmxp_chan.c,v 1.22 2007-10-07 14:11:23 mtheo Exp $
  *
  */
 
@@ -17,31 +17,59 @@
 #include <string.h>
 #include <stdlib.h>
 
-int nmxp_chan_cpy_sta_chan(const char *station_dot_channel, char *station_code, char *channel_code) {
+int nmxp_chan_cpy_sta_chan(const char *net_dot_station_dot_channel, char *station_code, char *channel_code, char *network_code) {
     int ret = 0;
-    char *sta_code_tmp, *cha_code_tmp;
+    int errors = 0;
+    int i;
+    char *period1 = NULL, *period2 = NULL;
+    char *tmp_name = NULL;
 
-    if(station_dot_channel || station_code || channel_code) {
+    if(net_dot_station_dot_channel || station_code || channel_code || network_code) {
+
 	station_code[0] = 0;
 	channel_code[0] = 0;
+	network_code[0] = 0;
 
-	/* validate pattern channel */
-	sta_code_tmp = strdup(station_dot_channel);
-	if( (cha_code_tmp = strchr(sta_code_tmp, '.')) == NULL ) {
-	    nmxp_log(1, 0, "Name %s is not in STA.CHAN format!\n", station_dot_channel);
-	} else {
-	    if(cha_code_tmp) {
-		*cha_code_tmp++ = '\0';
-		strcpy(station_code, sta_code_tmp);
-		strcpy(channel_code, cha_code_tmp);
-		free(sta_code_tmp);
-		ret = 1;
-	    } else {
-		nmxp_log(1, 0, "Name %s is not in STA.CHAN format! Channel is missing?\n", station_dot_channel);
+	tmp_name = strdup(net_dot_station_dot_channel);
+	/* count '.' */
+	i=0;
+	while(i < strlen(tmp_name)  && !errors) {
+	    if(tmp_name[i] == '.') {
+		if(!period1) {
+		    period1 = tmp_name+i;
+		} else if(!period2) {
+		    period2 = tmp_name+i;
+		} else {
+		    errors++;
+		}
 	    }
+	    i++;
 	}
+	if(!errors && period1) {
+	    ret = 1;
+	    if(period2) {
+		/* NET.STA.CHAN */
+		*period1++ = '\0';
+		*period2++ = '\0';
+		strcpy(network_code, tmp_name);
+		strcpy(station_code, period1);
+		strcpy(channel_code, period2);
+	    } else {
+		/* STA.CHAN */
+		*period1++ = '\0';
+		strcpy(station_code, tmp_name);
+		strcpy(channel_code, period1);
+	    }
+	} else {
+	    nmxp_log(1, 0, "Name %s is not in NET.STA.CHAN format! (NET. is optional)\n", net_dot_station_dot_channel);
+	}
+
+	if(tmp_name) {
+	    free(tmp_name);
+	}
+
     } else {
-	nmxp_log(1, 0, "Some parameter is NULL in nmxp_chan_cpy_sta_chan().\n",  station_dot_channel);
+	nmxp_log(1, 0, "Some parameter is NULL in nmxp_chan_cpy_sta_chan().\n",  net_dot_station_dot_channel);
     }
 
     return ret;
@@ -55,21 +83,37 @@ int nmxp_chan_cpy_sta_chan(const char *station_dot_channel, char *station_code, 
  *
  * return 1 for match, 0 for no match, -1 on error for invalid pattern, -2 on error for invalid station_dot_channel
  */
-int nmxp_chan_match(const char *station_dot_channel, char *pattern)
+int nmxp_chan_match(const char *net_dot_station_dot_channel, char *pattern)
 {
     int ret = 0;
     int i, l;
     char sta_pattern[20];
     char cha_pattern[20];
+    char net_pattern[20];
     char sta_sdc[20];
     char *cha_sdc;
 
     /* validate pattern channel */
-    if(!nmxp_chan_cpy_sta_chan(pattern, sta_pattern, cha_pattern)) {
+    if(!nmxp_chan_cpy_sta_chan(pattern, sta_pattern, cha_pattern, net_pattern)) {
 	nmxp_log(1, 0, "Channel pattern %s is not in STA.CHAN format!\n", pattern);
 	return -1;
     }
 
+    l = strlen(net_pattern);
+    i = 0;
+    while(i < l  &&  ret != -1) {
+	if(  !(
+		(net_pattern[i] >= 'A'  &&  net_pattern[i] <= 'Z')
+		|| (net_pattern[i] >= 'a'  &&  net_pattern[i] <= 'z')
+		|| (net_pattern[i] >= '0'  &&  net_pattern[i] <= '9')
+		)
+	  ) {
+	    nmxp_log(1, 0, "Channel pattern %s has not valid NET format!\n", pattern);
+	    return -1;
+	}
+	i++;
+    }
+    
     l = strlen(sta_pattern);
     i = 0;
     while(i < l  &&  ret != -1) {
@@ -106,9 +150,9 @@ int nmxp_chan_match(const char *station_dot_channel, char *pattern)
 	i++;
     }
 
-    strcpy(sta_sdc, station_dot_channel);
+    strcpy(sta_sdc, net_dot_station_dot_channel);
     if( (cha_sdc = strchr(sta_sdc, '.')) == NULL ) {
-	nmxp_log(1, 0, "Channel %s is not in STA.CHAN format!\n", station_dot_channel);
+	nmxp_log(1, 0, "Channel %s is not in STA.CHAN format!\n", net_dot_station_dot_channel);
 	return -2;
     }
     if(cha_sdc) {
@@ -150,7 +194,7 @@ int nmxp_chan_lookupKey(char* name, NMXP_CHAN_LIST *channelList)
 }
 
 
-int nmxp_chan_lookupKeyIndex(int32_t key, NMXP_CHAN_LIST *channelList)
+int nmxp_chan_lookupKeyIndex(int32_t key, NMXP_CHAN_LIST_NET *channelList)
 {
     int i_chan = 0;
     int ret = -1;
@@ -168,7 +212,7 @@ int nmxp_chan_lookupKeyIndex(int32_t key, NMXP_CHAN_LIST *channelList)
 }
 
 
-char *nmxp_chan_lookupName(int32_t key, NMXP_CHAN_LIST *channelList)
+char *nmxp_chan_lookupName(int32_t key, NMXP_CHAN_LIST_NET *channelList)
 {
     int i_chan = 0;
     static char ret[12];
@@ -213,13 +257,16 @@ NMXP_CHAN_LIST *nmxp_chan_getType(NMXP_CHAN_LIST *channelList, NMXP_DATATYPE dat
 }
 
 
-NMXP_CHAN_LIST *nmxp_chan_subset(NMXP_CHAN_LIST *channelList, NMXP_DATATYPE dataType, char *sta_chan_list) {
-    NMXP_CHAN_LIST *ret_channelList = NULL;
+NMXP_CHAN_LIST_NET *nmxp_chan_subset(NMXP_CHAN_LIST *channelList, NMXP_DATATYPE dataType, char *sta_chan_list, const char *network_code_default) {
+    NMXP_CHAN_LIST_NET *ret_channelList = NULL;
     int istalist, ista;
     char sta_chan_code_pattern[100];
     int i_chan, ret_match;
+    char network_code[20];
+    char station_code[20];
+    char channel_code[20];
 
-    ret_channelList = (NMXP_CHAN_LIST *) malloc(sizeof(NMXP_CHAN_LIST));
+    ret_channelList = (NMXP_CHAN_LIST_NET *) malloc(sizeof(NMXP_CHAN_LIST_NET));
     ret_channelList->number = 0;
 
     istalist = 0;
@@ -240,6 +287,9 @@ NMXP_CHAN_LIST *nmxp_chan_subset(NMXP_CHAN_LIST *channelList, NMXP_DATATYPE data
 		    if(i_chan != -1  && getDataTypeFromKey(channelList->channel[i_chan].key) == dataType) {
 			ret_channelList->channel[ret_channelList->number].key =        channelList->channel[i_chan].key;
 			strcpy(ret_channelList->channel[ret_channelList->number].name, channelList->channel[i_chan].name);
+			nmxp_chan_cpy_sta_chan(sta_chan_code_pattern, station_code, channel_code, network_code);
+			sprintf(ret_channelList->channel[ret_channelList->number].name, "%s.%s",
+				(network_code[0] != 0)? network_code : network_code_default, channelList->channel[i_chan].name);
 			ret_channelList->number++;
 		    }
 	    }
@@ -283,7 +333,7 @@ void nmxp_chan_sortByName(NMXP_CHAN_LIST *channelList) {
     qsort (channelList->channel, channelList->number, sizeof (NMXP_CHAN_KEY), chan_name_compare);
 }
 
-void nmxp_chan_print_channelList(NMXP_CHAN_LIST *channelList) {
+void nmxp_chan_print_channelList(NMXP_CHAN_LIST_NET *channelList) {
     int chan_number = channelList->number;
     int i_chan = 0;
 

@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_base.c,v 1.32 2007-10-05 12:54:35 mtheo Exp $
+ * $Id: nmxp_base.c,v 1.33 2007-10-07 14:11:23 mtheo Exp $
  *
  */
 
@@ -234,7 +234,7 @@ int nmxp_receiveMessage(int isock, NMXP_MSG_SERVER *type, void **buffer, int32_t
 }
 
 
-NMXP_DATA_PROCESS *nmxp_processDecompressedData(char* buffer_data, int length_data, NMXP_CHAN_LIST *channelList, const char *network_code)
+NMXP_DATA_PROCESS *nmxp_processDecompressedData(char* buffer_data, int length_data, NMXP_CHAN_LIST_NET *channelList, const char *network_code_default)
 {
   int32_t   netInt    = 0;
   int32_t   pKey      = 0;
@@ -248,6 +248,7 @@ NMXP_DATA_PROCESS *nmxp_processDecompressedData(char* buffer_data, int length_da
 
   char station_code[20];
   char channel_code[20];
+  char network_code[20];
 
   static NMXP_DATA_PROCESS pd;
 
@@ -274,15 +275,17 @@ NMXP_DATA_PROCESS *nmxp_processDecompressedData(char* buffer_data, int length_da
       pDataPtr[idx] = netInt;
   }
 
-  if(!nmxp_chan_cpy_sta_chan(nmxp_chan_lookupName(pKey, channelList), station_code, channel_code)) {
+  if(!nmxp_chan_cpy_sta_chan(nmxp_chan_lookupName(pKey, channelList), station_code, channel_code, network_code)) {
     nmxp_log(1,0, "Channel name not in STN.CHAN format: %s\n", nmxp_chan_lookupName(pKey, channelList));
   }
   
   nmxp_data_init(&pd);
 
   pd.key = pKey;
-  if(network_code) {
+  if(network_code[0] != 0) {
       strcpy(pd.network, network_code);
+  } else {
+      strcpy(pd.network, network_code_default);
   }
   if(station_code[0] != 0) {
       strncpy(pd.station, station_code, STATION_LENGTH);
@@ -308,7 +311,7 @@ NMXP_DATA_PROCESS *nmxp_processDecompressedData(char* buffer_data, int length_da
 }
 
 
-NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data, NMXP_CHAN_LIST *channelList, const char *network_code)
+NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data, NMXP_CHAN_LIST_NET *channelList, const char *network_code_default)
 {
     int32_t   pKey      = 0;
     double    pTime     = 0.0;
@@ -318,6 +321,7 @@ NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data
 
     char station_code[20];
     char channel_code[20];
+    char network_code[20];
 
     static NMXP_DATA_PROCESS pd;
 
@@ -442,7 +446,7 @@ NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data
 
 	pSampRate = this_sample_rate;
 
-	if(!nmxp_chan_cpy_sta_chan(nmxp_chan_lookupName(pKey, channelList), station_code, channel_code)) {
+	if(!nmxp_chan_cpy_sta_chan(nmxp_chan_lookupName(pKey, channelList), station_code, channel_code, network_code)) {
 	    nmxp_log(1,0, "Channel name not in STN.CHAN format: %s\n", nmxp_chan_lookupName(pKey, channelList));
 	}
   
@@ -451,8 +455,10 @@ NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data
 	nmxp_data_init(&pd);
 
 	pd.key = pKey;
-	if(network_code) {
+	if(network_code[0] != 0) {
 	    strcpy(pd.network, network_code);
+	} else {
+	    strcpy(pd.network, network_code_default);
 	}
 	if(station_code[0] != 0) {
 	    strncpy(pd.station, station_code, STATION_LENGTH);
