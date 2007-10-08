@@ -355,8 +355,7 @@ int nmxptool_ew_proc_configfile (char * configfile, NMXPTOOL_PARAMS *params) {
 	    }
 
 	    else if (k_its ("Verbosity")) {
-		verbose = k_int();
-		if(verbose != 0) {
+		if(k_int() != 0) {
 		    params->flag_verbose = 1;
 		} else {
 		    params->flag_verbose = 0;
