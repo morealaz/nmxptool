@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.34 2007-10-07 18:12:37 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.35 2007-10-08 13:52:20 mtheo Exp $
  *
  */
 
@@ -104,21 +104,21 @@ void nmxptool_usage(struct option long_options[])
 
     nmxp_log(NMXP_LOG_NORM_NO, 0, "\
 \n\
-Usage: %s -H hostname --listchannels [...]\n\
-             Receive list of available channels on the host\n\
+Usage: %s -H hostname --listchannels\n\
+             Print list of available channels on DataServer.\n\
 \n\
        %s -H hostname -C channellist -s DATE -e DATE [...]\n\
        %s -H hostname -C channellist -s DATE -t SECs [...]\n\
-             Receive data from hostname by DAP\n\
+             Receive data from DataServer by DAP.\n\
 \n\
        %s -H hostname -C channellist [...]\n\
-             Receive data from hostname by PDS\n\
+             Receive data from NaqsServer by PDS.\n\
 \n", PACKAGE_NAME, PACKAGE_NAME, PACKAGE_NAME, PACKAGE_NAME);
 
 #ifdef HAVE_EARTHWORMOBJS
     nmxp_log(NMXP_LOG_NORM_NO, 0, "\
        %s nmxptool.d\n\
-             Run as earthworm module receiving data by PDS\n\
+             Run as earthworm module receiving data from NaqServer by PDS.\n\
 \n", PACKAGE_NAME);
 #endif
 
@@ -134,7 +134,7 @@ Arguments:\n\
 Other arguments:\n\
   -P, --portpds=PORT      NaqsServer port number (default %d).\n\
   -D, --portdap=PORT      DataServer port number (default %d).\n\
-  -N, --network=NET       Default Network code for stations without value. (default '%s').\n\
+  -N, --network=NET       Default Network code. (default '%s').\n\
   -L, --location=LOC      Location code for writing file.\n\
   -v, --verbose           Be verbose.\n\
   -g, --logdata           Print info about data.\n\
@@ -146,7 +146,8 @@ Other arguments:\n\
 
 #ifdef HAVE_LIBMSEED
     nmxp_log(NMXP_LOG_NORM_NO, 0, "\
-  -m, --writeseed         Pack received data in Mini-SEED records and write to a file.\n");
+  -m, --writeseed         Pack received data in Mini-SEED records\n\
+                          and write to a file.\n");
 #endif
 
     nmxp_log(NMXP_LOG_NORM_NO, 0, "\
@@ -154,9 +155,10 @@ Other arguments:\n\
 
 #ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
     nmxp_log(NMXP_LOG_NORM_NO, 0, "\
-  -k, --slink=plug_name   Send received data to SeedLink like as plug-in.\n\
+  -k, --slink=plug_name   Send received data to SeedLink as a plug-in.\n\
                           plug_name is set by SeisComP daemon.\n\
-                          THIS OPTION MUST BE THE LAST WITHOUT plug_name IN seedlink.ini!\n");
+                          INTO THE FILE seedlink.in, THIS OPTION MUST BE\n\
+                          THE LAST WITHOUT ADDING VALUE FOR plug_name!\n");
 #endif
     nmxp_log(NMXP_LOG_NORM_NO, 0, "\
   -V, --version           Print tool version.\n\
@@ -176,8 +178,8 @@ DAP Arguments:\n\
   -d, --delay=SECs        Receive continuosly data with delay [%d..%d].\n\
   -u, --username=USER     DataServer username.\n\
   -p, --password=PASS     DataServer password.\n\
-  -l, --listchannels      Output list of channel available on DataServer.\n\
-  -i, --channelinfo       Output list of channel available on DataServer and channelinfo.\n\
+  -l, --listchannels      Print list of available channels.\n\
+  -i, --channelinfo       Print list of available channels and channelinfo.\n\
 \n\
 ",
 DEFAULT_DELAY_MINIMUM,
@@ -187,18 +189,22 @@ DEFAULT_DELAY_MAXIMUM);
 PDS arguments:\n\
   -S, --stc=SECs          Short-term-completion (default %d).\n\
                           -1 is for Raw Stream, no short-term completion.\n\
-                           0 chronological order without waiting for missing data.\n\
-                          [0..300] wait a period for the gap to be filled by retransmitted packets.\n\
+                           0 chronological order without waiting\n\
+                             for missing data.\n\
+                          [1..300] chronological order waiting a period\n\
+                             for missing data.\n\
                           Raw Stream is usable only with --rate=-1.\n\
   -R, --rate=Hz           Receive data with specified sample rate (default %d).\n\
-                          -1 is for original sample rate and compressed data.\n\
-                           0 is for original sample rate and decompressed data.\n\
-                          >0 is for specified sample rate and decompressed data.\n\
+                          -1 for original sample rate and compressed data.\n\
+                           0 for original sample rate and decompressed data.\n\
+                          >0 for specified sample rate and decompressed data.\n\
   -b, --buffered          Request also recent packets into the past.\n\
   -M, --maxlatency=SECs   Max tolerable latency (default %d) [%d..%d].\n\
-  -T, --timeoutrecv=SECs  Time-out receiving packets (default %d. No time-out) [%d..%d].\n\
+  -T, --timeoutrecv=SECs  Time-out for flushing buffered packets.\n\
+                          (default %d. No time-out.) [%d..%d].\n\
                           -T is useful for retrieving Data On Demand.\n\
                           -M, -T are usable only with Raw Stream --stc=-1.\n\
+                          In general, -M and -T are mutually exclusives.\n\
 \n\
 ",
 	    DEFAULT_STC,
