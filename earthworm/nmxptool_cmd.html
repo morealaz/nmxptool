@@ -8,7 +8,7 @@
 <center>
 <h1>Earthworm Modules: <br>
 nmxptool configuration file </h1>
-<i>(last revised 8 March, 2005)</i></center>
+<i>(last revised 10 October, 2007)</i></center>
 Page Index:<br>
 1. <a href="#function">Functional command listing</a><br>
 2. <a href="#alphabet">Alphabetic command listing &amp; description</a><br>
@@ -17,11 +17,9 @@ Page Index:<br>
 <p><!-- ADD HERE: Paragraph "On startup, xxxx reads the..." --> On
 startup, nmxptool reads the configuration file named on the command
 line. Commands in this file set all the parameters used for configuring
-the Earthworm SeedLink client module (SeedLink is a component of the
-Seismological Communication Processor, or <a
- href="http://www.gfz-potsdam.de/geofon/seiscomp/welcome.html">SeisComP</a>,
-originally developed&nbsp; at <a
- href="http://www.gfz-potsdam.de/geofon/">GEOFON</a>). In the control
+the Earthworm Nanometrics client module nmxptool
+(<a href="http://www.nanometrics.ca/">Nanometrics</a>).
+In the control
 file, lines may begin with a valid nmxptool command (listed below) or
 with one of 2 special characters: </p>
 <blockquote>
@@ -35,21 +33,31 @@ permitted in the control file.<br>
 <p><!-- ADD HERE: Paragraph "Below are the commands recognized..." -->
 Below are the commands recognized by nmxptool, grouped by the function
 they influence. Most of the commands are required; they may be
-specified in any order in the control file.<!-- ADD HERE: The pre-formatted functional command listing      --><!-- To make an anchor for each command, surround it with these: --><br>
+specified in any order in the control file.
+<!-- ADD HERE: The pre-formatted functional command listing      --><!-- To make an anchor for each command, surround it with these: -->
+<br>
 </p>
-<pre>        Earthworm system setup:<br>                <a
- href="#MyModuleId">MyModuleId</a>              required<br>                <a
- href="#RingName">RingName</a>                required<br>                <a
- href="#HeartBeatInterval">HeartBeatInterval</a>       required<br>                <a
- href="#Verbosity">Verbosity</a>		optional<br><br>        SeedLink server and connection parameters:<br>                <a
- href="#SLaddr">SLaddr</a>                  required<br>                <a
- href="#SLport">SLport</a>                  required<br>		<a
- href="#Selectors">Selectors</a>		optional<br>		<a href="#Stream">Stream</a>			optional<br>		<a
- href="#NetworkTimeout">NetworkTimeout</a>		optional<br>		<a
- href="#NetworkDelay">NetworkDelay</a>		optional<br>		<a
- href="#KeepAlive">KeepAlive</a>		optional<br>		<a
- href="#ForceTraceBuf1">ForceTraceBuf1</a>		optional  (nmxptool >= 1.1)<br><br>	Output control:<br>		<a
- href="#LogFile">LogFile</a>			required<br>		<a href="#StateFile">StateFile</a>		optional<br>		<a
+<pre>        Earthworm system setup:<br>
+<a href="#MyModuleId">MyModuleId</a>              required<br>
+<a href="#RingName">RingName</a>                required<br>
+<a href="#HeartBeatInterval">HeartBeatInterval</a>       required<br>
+<a href="#Verbosity">Verbosity</a>		optional<br><br>
+
+SeedLink server and connection parameters:<br>
+<a href="#SLaddr">SLaddr</a>                  required<br>
+<a href="#SLport">SLport</a>                  required<br>
+<a href="#Selectors">Selectors</a>		optional<br>
+<a href="#Stream">Stream</a>			optional<br>
+<a href="#NetworkTimeout">NetworkTimeout</a>		optional<br>
+<a href="#NetworkDelay">NetworkDelay</a>		optional<br>
+<a href="#KeepAlive">KeepAlive</a>		optional<br>
+<a href="#ForceTraceBuf1">ForceTraceBuf1</a>		optional  (nmxptool >= 1.1)<br><br>
+
+Output control:<br>
+<a
+ href="#LogFile">LogFile</a>			required<br>
+<a href="#StateFile">StateFile</a>		optional<br>
+<a
  href="#StateFileInt">StateFileInt</a>		optional<br></pre>
 <h2><a name="alphabet">2. ALPHABETIC COMMAND LISTING &amp; DESCRIPTION</a></h2>
 <p> In the following section, all configuration file commands are
