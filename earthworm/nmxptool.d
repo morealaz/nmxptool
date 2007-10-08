@@ -1,30 +1,35 @@
 #
 #                     Configuration File for nmxptool
 #
-MyModuleId         MOD_NMXPTOOL
-RingName           WAVE_RING       # Transport ring to write data to.
+MyModuleId           MOD_NMXPTOOL
+RingName             WAVE_RING             # Transport ring to write data to.
 
-HeartBeatInterval  30            # Heartbeat interval, in seconds.
-LogFile            1             # 1 -> Keep log, 0 -> no log file
-                                 # 2 -> write to module log but not stderr/stdout
-Verbosity          1		 # Set level of verbosity.
+HeartBeatInterval    30                    # Heartbeat interval, in seconds.
+LogFile              1                     # 1 -> Keep log, 0 -> no log file
+                                           # 2 -> write to module log but not stderr/stdout
+Verbosity            1                     # Set level of verbosity.
 
-nmxphost          naqs1a.int.ingv.it    # Host address of the NaqsServer server
-nmxpport          28000                 # Port number of the NaqsServer server
+NmxpHost             naqs1a.int.ingv.it    # Host address of the NaqsServer server
+NmxpPortPDS          28000                 # Port number of the NaqsServer server (Default 28000)
+NmxpPortDAP          28002                 # Port number of the DataServer server (Default 28002)
 
-#ForceTraceBuf1 0                # On systems that support TRACEBUF2
-                                 # messages this flag will force the module
-                                 # to create TRACEBUF messages instead.
-                                 # Most people will never need this.
+#ForceTraceBuf1      0                      # On systems that support TRACEBUF2
+                                           # messages this flag will force the module
+                                           # to create TRACEBUF messages instead.
+                                           # Most people will never need this.
 
-MaxTolerableLatency 120
+TimeoutRecv          0                     # Time-out in seconds for flushing queued data for each channel
+                                           # Useful for Data On Demand (i.e. channel HL) (Default 0. No time-out)
 
-DefaultNetworkCode	IV
+MaxTolerableLatency  120                   # Max tolerable latency for each channel (In general not use with TimeoutRecv)
 
-Channel		ES.BOB.HH?
-Channel		MN.TIR.HH?
-Channel		MDI.HH?
-Channel		DOI.HH?
-Channel		SALO.HH?
-Channel		MONC.HH?
+DefaultNetworkCode   IV                    # Default network code where in Channel is not declared
+
+                                           # Channel is like NET.STA.CHAN where NET. is optional
+Channel              ES.BOB.HH?
+Channel              MN.TIR.HH?
+Channel              MDI.HH?
+Channel              DOI.HH?
+Channel              SALO.HH?
+Channel              MONC.HH?
 

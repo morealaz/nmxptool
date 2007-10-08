@@ -393,75 +393,57 @@ int nmxptool_ew_proc_configfile (char * configfile, NMXPTOOL_PARAMS *params) {
 		logSwitch = k_int();
 	    }
 
-	    else if ( k_its("Verbosity") ) {
-		if ( (str = k_str ()) ) {
-		    //m verbose = atoi (str);
-		}
-		if ( !str ) {
-		    fprintf(stderr, "Verbosity is unspecified, quiting\n");
-		    return EW_FAILURE;
+	    else if (k_its ("Verbosity")) {
+		verbose = k_int();
+		if(verbose != 0) {
+		    params->flag_verbose = 1;
+		} else {
+		    params->flag_verbose = 0;
 		}
 	    }
 
-	    else if (k_its ("nmxphost")) {
+	    else if (k_its ("NmxpHost")) {
 		if ( (str = k_str ()) ) {
 		    if (strlen(str) >= MAXADDRLEN) {
 			fprintf(stderr, "nmxphost too long; max is %d characters\n",
 				MAXADDRLEN);
 			return EW_FAILURE;
 		    }
-		    //m slhost = strdup(str);
 		    params->hostname = strdup(str);
 		}
 	    }
 
-	    else if ( k_its ("nmxpport")) {
-		//m slport = k_int();
+	    else if ( k_its ("NmxpPortPDS")) {
 		params->portnumberpds = k_int();
-		//m if (slport < 1) {
-		    //m fprintf(stderr, "SLport is 0 or junk, quiting.\n");
-		    //m return EW_FAILURE;
-		//m }
 	    }
 
-	    else if ( k_its ("NetworkTimeout")) {
-		if ( (str = k_str ()) ) {
-		    //m slconn->netto = atoi (str);
-		}
-		//m if ( !str || slconn->netto < 0 ) {
-		    //m fprintf(stderr, "NetworkTimeout is unspecified or negative, quiting\n");
-		    //m return EW_FAILURE;
-		//m }
-	    }
-
-	    else if ( k_its ("NetworkDelay")) {
-		if ( (str = k_str ()) ) {
-		    //m slconn->netdly = atoi (str);
-		}
-		//m if ( !str || slconn->netdly < 0 ) {
-		    //m fprintf(stderr, "NetworkDelay is unspecified or negative, quiting\n");
-		    //m return EW_FAILURE;
-		//m }
-	    }
-
-	    else if ( k_its ("KeepAlive")) {
-		if ( (str = k_str ()) ) {
-		    //m slconn->keepalive = atoi (str);
-		}
-		//m if ( !str || slconn->keepalive < 0 ) {
-		    //m fprintf(stderr, "KeepAlive is unspecified or negative, quiting\n");
-		    //m return EW_FAILURE;
-		//m }
+	    else if ( k_its ("NmxpPortDAP")) {
+		params->portnumberdap = k_int();
 	    }
 
 	    else if (k_its ("ForceTraceBuf1")) {
 		forcetracebuf = k_int();
 	    }
 
+	    else if (k_its ("TimeoutRecv")) {
+		params->timeoutrecv = k_int();
+	    }
+
 	    else if (k_its ("MaxTolerableLatency")) {
 		params->max_tolerable_latency = k_int();
 	    }
 
+
+	    else if (k_its ("DefaultNetworkCode")) {
+		if ( (str = k_str ()) ) {
+		    if(params->network) {
+			fprintf(stderr, "DefaultNetworkCode has been replicated!\n");
+			return EW_FAILURE;
+		    } else {
+			params->network = strdup(str);
+		    }
+		}
+	    }
 
 	    else if (k_its ("Channel")) {
 		if ( (str = k_str ()) ) {
@@ -476,16 +458,6 @@ int nmxptool_ew_proc_configfile (char * configfile, NMXPTOOL_PARAMS *params) {
 		}
 	    }
 
-	    else if (k_its ("NetworkCode")) {
-		if ( (str = k_str ()) ) {
-		    if(params->network) {
-			fprintf(stderr, "NetworkCode has been replicated!\n");
-			return EW_FAILURE;
-		    } else {
-			params->network = strdup(str);
-		    }
-		}
-	    }
 
 	    /* Unknown command */ 
 	    else {
@@ -508,10 +480,6 @@ int nmxptool_ew_proc_configfile (char * configfile, NMXPTOOL_PARAMS *params) {
 
     } /** while nfiles **/
 
-    /* Configure uni-station mode if no streams were specified */
-    //m if ( slconn->streams == NULL )
-	//m sl_setuniparams (slconn, selectors, -1, 0);
-
     /* Check for required parameters */
     if ( myModName[0] == '\0' ) {
 	fprintf (stderr, "%s: No MyModId parameter found in %s\n", PACKAGE_NAME,
@@ -533,20 +501,6 @@ int nmxptool_ew_proc_configfile (char * configfile, NMXPTOOL_PARAMS *params) {
 		configfile);
 	return EW_FAILURE;
     }
-    //m if ( !slhost ) {
-	//m fprintf (stderr, "%s: No SLhost parameter found in %s\n", PACKAGE_NAME,
-		//m configfile);
-	//m return EW_FAILURE;
-    //m }
-    //m if ( !slport ) {
-	//m fprintf (stderr, "%s: No SLport parameter found in %s\n", PACKAGE_NAME,
-		//m configfile);
-	//m return EW_FAILURE;
-    //m }
-
-    /* Configure the SeedLink connection description thing */
-    //m snprintf (sladdr, sizeof(sladdr), "%s:%d", slhost, slport);
-    //m slconn->sladdr = strdup(sladdr);
 
     return EW_SUCCESS;
 }				/* End of nmxptool_ew_proc_configfile() */
