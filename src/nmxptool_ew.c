@@ -76,21 +76,14 @@ void nmxptool_ew_detach() {
 
 
 int nmxptool_ew_pd2ewring (NMXP_DATA_PROCESS *pd, SHM_INFO *pregionOut, MSG_LOGO *pwaveLogo) {
-    //m static MSrecord * msr = NULL;
     TracePacket tbuf;
     int tracebuf2 = 0;   /* TRACEBUF2 => 0: none, 1: available, 2: populated */
     int len;
     int32_t *samples;
     int i;
 
-    //m msr_parse (slconn->log, msrecord, &msr, 1, 1);
-
     /* TRACE_HEADER and TRACE2_HEADER are the same size */
     memset (&tbuf, 0, sizeof(TRACE_HEADER));
-
-    /* Log packet details if the verbosity is high */
-    //m if ( verbose > 1 )
-    //m  msr_print (slconn->log, msr, verbose - 1);
 
     /* Create a TRACEBUF2 message if supported */
 #ifdef TRACE2_STA_LEN
@@ -98,27 +91,17 @@ int nmxptool_ew_pd2ewring (NMXP_DATA_PROCESS *pd, SHM_INFO *pregionOut, MSG_LOGO
 
     if ( ! forcetracebuf ) {
 	tbuf.trh2.pinno = 0;
-	//m tbuf.trh2.nsamp = msr->numsamples;
 	tbuf.trh2.nsamp = pd->nSamp;
 
-	//m tbuf.trh2.starttime = msr_depochstime(msr);
 	tbuf.trh2.starttime = pd->time;
-	//m msr_dsamprate (msr, &tbuf.trh2.samprate);
 	tbuf.trh2.samprate = pd->sampRate;
 	tbuf.trh2.endtime = (tbuf.trh2.starttime +
 		((tbuf.trh2.nsamp - 1) / tbuf.trh2.samprate));
 
-	//m strncpclean(tbuf.trh2.net, msr->fsdh.network, 2);
-	//m strncpclean(tbuf.trh2.sta, msr->fsdh.station, 5);
-	//m strncpclean(tbuf.trh2.chan, msr->fsdh.channel, 3);
 	strcpy(tbuf.trh2.net, pd->network);
 	strcpy(tbuf.trh2.sta, pd->station);
 	strcpy(tbuf.trh2.chan, pd->channel);
 
-	//m if ( strncmp(msr->fsdh.location, "  ", 2) == 0 )
-	//m strncpclean(tbuf.trh2.loc, LOC_NULL_STRING, 2);
-	//m else
-	//m strncpclean(tbuf.trh2.loc, msr->fsdh.location, 2);
 	strncpy(tbuf.trh2.loc, LOC_NULL_STRING, 2);
 
 	tbuf.trh2.version[0] = TRACE2_VERSION0;
@@ -132,7 +115,6 @@ int nmxptool_ew_pd2ewring (NMXP_DATA_PROCESS *pd, SHM_INFO *pregionOut, MSG_LOGO
 	strcpy(tbuf.trh2.datatype, "s4");
 #endif
 
-	//m tbuf.trh2.quality[0] = msr->fsdh.dq_flags;
 	tbuf.trh2.quality[0] = 100; /* TODO */
 	tbuf.trh2.quality[1] = 0;
 
@@ -143,19 +125,13 @@ int nmxptool_ew_pd2ewring (NMXP_DATA_PROCESS *pd, SHM_INFO *pregionOut, MSG_LOGO
     if ( tracebuf2 != 2 ) {
 	/* Create a TRACEBUF message otherwise */
 	tbuf.trh.pinno = 0;
-	//m tbuf.trh.nsamp = msr->numsamples;
 	tbuf.trh.nsamp = pd->nSamp;
 
-	//m tbuf.trh.starttime = msr_depochstime(msr);
 	tbuf.trh.starttime = pd->time;
-	//m msr_dsamprate (msr, &tbuf.trh.samprate);
 	tbuf.trh.samprate = pd->sampRate;
 	tbuf.trh.endtime = (tbuf.trh.starttime +
 		((tbuf.trh.nsamp - 1) / tbuf.trh.samprate));
 
-	//m strncpclean(tbuf.trh.net, msr->fsdh.network, 2);
-	//m strncpclean(tbuf.trh.sta, msr->fsdh.station, 5);
-	//m strncpclean(tbuf.trh.chan, msr->fsdh.channel, 3);
 	strcpy(tbuf.trh.net, pd->network);
 	strcpy(tbuf.trh.sta, pd->station);
 	strcpy(tbuf.trh.chan, pd->channel);
@@ -168,23 +144,20 @@ int nmxptool_ew_pd2ewring (NMXP_DATA_PROCESS *pd, SHM_INFO *pregionOut, MSG_LOGO
 	strcpy(tbuf.trh.datatype, "s4");
 #endif
 
-	//m tbuf.trh.quality[0] = msr->fsdh.dq_flags;
 	tbuf.trh.quality[0] = 100; /* TODO */
 	tbuf.trh.quality[1] = 0;
     }
 
 
-    /* SeedLink always uses 512-byte Mini-SEED records, all of the samples
+    /* TODO : all of the samples
        should always fit into a single TracePacket if MAX_TRACEBUF_SIZ
        remains defined in Trace_buf.h as 4096 or greater */
 
     samples = (int32_t *) ((char *)&tbuf + sizeof(TRACE_HEADER));
-    //m memcpy (samples, msr->datasamples, msr->numsamples * sizeof(int32_t));
     for(i=0; i < pd->nSamp; i++) {
 	samples[i] = pd->pDataPtr[i];
     }
 
-    //m len = (msr->numsamples * sizeof(int32_t)) + sizeof(TRACE_HEADER);
     len = (pd->nSamp * sizeof(int32_t)) + sizeof(TRACE_HEADER);
 
     /* Set the approriate TRACE type in the logo */
