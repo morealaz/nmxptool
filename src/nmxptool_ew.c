@@ -260,18 +260,6 @@ void nmxptool_ew_configure (char ** argvec, NMXPTOOL_PARAMS *params) {
     logit ("et" , "%s(%s): Read command file <%s>\n",
 	    argvec[0], myModName, argvec[1]);
 
-    /* Initialize libslink logging facility */
-    //m sl_loginit (verbose,
-    //m 	      &logit_msg, "",
-    //m 	      &logit_err, "error: ");
-
-    /* Attempt to recover sequence numbers from state file */
-    //m if ( statefile ) {
-    //m if (sl_recoverstate (slconn, statefile) < 0) {
-    //m sl_log (1, 0, "state recovery failed\n");
-    //m }
-    //m }
-
     /* Reinitialize the logging level */
     logit_init (argvec[1], 0, 512, logSwitch);
 
