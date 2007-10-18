@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_chan.c,v 1.22 2007-10-07 14:11:23 mtheo Exp $
+ * $Id: nmxp_chan.c,v 1.23 2007-10-18 14:33:03 mtheo Exp $
  *
  */
 
@@ -511,7 +511,7 @@ void nmxp_meta_chan_print(NMXP_META_CHAN_LIST *chan_list) {
 	nmxp_data_to_str(str_start_time, iter->start_time);
 	nmxp_data_to_str(str_end_time,   iter->end_time);
 
-	nmxp_log(0, 0, "%10d %11s.%-5s (%s  -  %s)\n",
+	nmxp_log(NMXP_LOG_NORM_NO, 0, "%10d %11s.%-5s (%s  -  %s)\n",
 		iter->key,
 		iter->name,
 		iter->network,
