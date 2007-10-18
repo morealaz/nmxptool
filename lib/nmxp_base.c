@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_base.c,v 1.34 2007-10-07 18:13:39 mtheo Exp $
+ * $Id: nmxp_base.c,v 1.35 2007-10-18 14:34:17 mtheo Exp $
  *
  */
 
@@ -117,6 +117,9 @@ int nmxp_recv_ctrl(int isock, void *buffer, int length, int timeoutsec, int *rec
   int recvCount;
   char recv_errno_str[200];
   struct timeval timeo;
+  int cc;
+  char *buffer_char = buffer;
+
 
   /*
   struct timeval timeout;
@@ -132,8 +135,13 @@ int nmxp_recv_ctrl(int isock, void *buffer, int length, int timeoutsec, int *rec
       }
   }
   
-  recvCount= recv(isock, (char*) buffer, length, MSG_WAITALL);
-  *recv_errno  = errno;
+  *recv_errno  = 0;
+  recvCount = 0;
+  while(*recv_errno == 0  && recvCount < length) {
+      cc = recv(isock, buffer_char + recvCount, length - recvCount, 0);
+      *recv_errno  = errno;
+      recvCount += cc;
+  }
 
   timeo.tv_sec  = 0;
   timeo.tv_usec = 0;
