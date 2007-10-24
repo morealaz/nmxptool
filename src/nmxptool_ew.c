@@ -534,7 +534,7 @@ int nmxptool_ew_logit_msg (char *msg) {
 }
 
 int nmxptool_ew_logit_err (char *msg) {
-  logit ("et",  msg);
+  logit ("t",  msg);
   return 0;
 }
 
