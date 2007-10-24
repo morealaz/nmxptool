@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_base.c,v 1.35 2007-10-18 14:34:17 mtheo Exp $
+ * $Id: nmxp_base.c,v 1.36 2007-10-24 08:13:44 mtheo Exp $
  *
  */
 
@@ -135,21 +135,28 @@ int nmxp_recv_ctrl(int isock, void *buffer, int length, int timeoutsec, int *rec
       }
   }
   
+  cc = 1;
   *recv_errno  = 0;
   recvCount = 0;
-  while(*recv_errno == 0  && recvCount < length) {
+  while(cc > 0 && *recv_errno == 0  && recvCount < length) {
       cc = recv(isock, buffer_char + recvCount, length - recvCount, 0);
       *recv_errno  = errno;
-      recvCount += cc;
+      if(cc <= 0) {
+	  nmxp_log(1, 0, "nmxp_recv_ctrl(): (cc=%d <= 0) errno=%d  recvCount=%d  length=%d\n", cc, *recv_errno, recvCount, length);
+      } else {
+	  recvCount += cc;
+      }
   }
 
-  timeo.tv_sec  = 0;
-  timeo.tv_usec = 0;
-  if (setsockopt(isock, SOL_SOCKET, SO_RCVTIMEO, &timeo, sizeof(timeo)) < 0) {
-      perror("setsockopt SO_RCVTIMEO");
+  if(timeoutsec > 0) {
+      timeo.tv_sec  = 0;
+      timeo.tv_usec = 0;
+      if (setsockopt(isock, SOL_SOCKET, SO_RCVTIMEO, &timeo, sizeof(timeo)) < 0) {
+	  perror("setsockopt SO_RCVTIMEO");
+      }
   }
 
-  if (recvCount != length) {
+  if (recvCount != length  ||  *recv_errno != 0  ||  cc <= 0) {
 	  switch(*recv_errno) {
 		  case EAGAIN : strcpy(recv_errno_str, "EAGAIN"); break;
 		  case EBADF : strcpy(recv_errno_str, "EBADF"); break;
@@ -164,7 +171,7 @@ int nmxp_recv_ctrl(int isock, void *buffer, int length, int timeoutsec, int *rec
 			  strcpy(recv_errno_str, "DEFAULT_NO_VALUE");
 			  break;
 	  }
-    nmxp_log(0, 1, "nmxp_recv_ctrl(): (recvCount != length) %d != %d - errno = %d (%s)\n", recvCount, length, *recv_errno, recv_errno_str);
+    nmxp_log(0, 1, "nmxp_recv_ctrl(): recvCount=%d  length=%d  (cc=%d) errno=%d (%s)\n", recvCount, length, cc, *recv_errno, recv_errno_str);
 	    
     return NMXP_SOCKET_ERROR;
   }
