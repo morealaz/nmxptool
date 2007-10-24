@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_base.c,v 1.36 2007-10-24 08:13:44 mtheo Exp $
+ * $Id: nmxp_base.c,v 1.37 2007-10-24 10:05:33 mtheo Exp $
  *
  */
 
@@ -392,7 +392,7 @@ NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data
 	memcpy (&nmx_ptype, nmx_hdr+0, 1);
 	if ( (nmx_ptype & 0xf) == 9) {
 	    /* Filler packet.  Discard entire packet.   */
-	    nmxp_log (1,0, "Filler packet - discarding\n");
+	    nmxp_log (NMXP_LOG_ERR,0, "Filler packet - discarding\n");
 	    //m continue;
 	    exit(0);
 	}
@@ -441,6 +441,18 @@ NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data
 	nmxp_log(0, 1, "nmx_sample_rate    = %d\n", nmx_sample_rate);
 	nmxp_log(0, 1, "this_sample_rate    = %d\n", this_sample_rate);
 
+	pKey = (nmx_instr_id << 16) | ( 1 << 8) | ( chan_code);
+
+	pTime = nmx_seconds_double;
+
+	pSampRate = this_sample_rate;
+
+	if(!nmxp_chan_cpy_sta_chan(nmxp_chan_lookupName(pKey, channelList), station_code, channel_code, network_code)) {
+	    nmxp_log(NMXP_LOG_ERR,0, "Channel name not in STN.CHAN format: %s\n", nmxp_chan_lookupName(pKey, channelList));
+	}
+  
+	nmxp_log(0, 1, "Channel key %d for %s.%s\n", pKey, station_code, channel_code);
+
 	comp_bytecount = length_data-21;
 	indata = (unsigned char *) buffer_data + 21;
 
@@ -450,16 +462,16 @@ NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data
 	nout = 1;
 	for (i=0; i<comp_bytecount; i+=17) {
 	    if (i+17>comp_bytecount) {
-		nmxp_log (1,0, "comp_bytecount = %d, i+17 = %d\n",
+		nmxp_log (NMXP_LOG_ERR,0, "comp_bytecount = %d, i+17 = %d\n",
 			comp_bytecount, i+17);
 		exit(1);
 	    }
 	    if (nout+16 > MAX_OUTDATA)  {
-		nmxp_log (1,0, "Output buffer size too small\n");
+		nmxp_log (NMXP_LOG_ERR, 0, "Output buffer size too small\n");
 		exit(1);
 	    }
 	    k = nmxp_data_unpack_bundle (outdata+nout,indata+i,&prev_xn);
-	    if (k < 0) nmxp_log (1,0, "Break: (k=%d) %s %d\n", k, __FILE__,  __LINE__);
+	    if (k < 0) nmxp_log (NMXP_LOG_WARN, 1, "Null bundle: %s.%s.%s (k=%d) %s %d\n", network_code, station_code, channel_code, k, __FILE__,  __LINE__);
 	    if (k < 0) break;
 	    nout += k;
 	    /* prev_xn = outdata[nout-1]; */
@@ -468,21 +480,9 @@ NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data
 
 	nmxp_log(0, 1, "Unpacked %d samples.\n", nout);
 
-	pKey = (nmx_instr_id << 16) | ( 1 << 8) | ( chan_code);
-
-	pTime = nmx_seconds_double;
-
 	pDataPtr = outdata;
 
 	pNSamp = nout;
-
-	pSampRate = this_sample_rate;
-
-	if(!nmxp_chan_cpy_sta_chan(nmxp_chan_lookupName(pKey, channelList), station_code, channel_code, network_code)) {
-	    nmxp_log(1,0, "Channel name not in STN.CHAN format: %s\n", nmxp_chan_lookupName(pKey, channelList));
-	}
-  
-	nmxp_log(0, 1, "Channel key %d for %s.%s\n", pKey, station_code, channel_code);
 
 	nmxp_data_init(&pd);
 
