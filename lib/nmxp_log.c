@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_log.c,v 1.11 2007-10-01 06:03:45 mtheo Exp $
+ * $Id: nmxp_log.c,v 1.12 2007-10-25 13:45:36 mtheo Exp $
  *
  */
 
@@ -46,10 +46,11 @@ int nmxp_log_stderr(char *msg) {
 
 #define NMXP_MAX_FUNC_LOG 10
 
-int n_func_log = 0;
-int n_func_log_err = 0;
-int (*p_func_log[NMXP_MAX_FUNC_LOG]) (char *);
-int (*p_func_log_err[NMXP_MAX_FUNC_LOG]) (char *);
+/* private variables */
+static int n_func_log = 0;
+static int n_func_log_err = 0;
+static int (*p_func_log[NMXP_MAX_FUNC_LOG]) (char *);
+static int (*p_func_log_err[NMXP_MAX_FUNC_LOG]) (char *);
 
 
 void nmxp_log_init(int (*func_log)(char *), int (*func_log_err)(char *)) {

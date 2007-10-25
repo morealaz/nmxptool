@@ -529,12 +529,12 @@ void nmxptool_ew_send_heartbeat_if_needed() {
  * Hooks for Earthworm logging facility.
  ***************************************************************************/
 int nmxptool_ew_logit_msg (char *msg) {
-  logit ("t",  msg);
+  logit ("o",  msg);
   return 0;
 }
 
 int nmxptool_ew_logit_err (char *msg) {
-  logit ("t",  msg);
+  logit ("e",  msg);
   return 0;
 }
 
