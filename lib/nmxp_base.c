@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_base.c,v 1.37 2007-10-24 10:05:33 mtheo Exp $
+ * $Id: nmxp_base.c,v 1.38 2007-10-25 09:11:34 mtheo Exp $
  *
  */
 
@@ -142,7 +142,7 @@ int nmxp_recv_ctrl(int isock, void *buffer, int length, int timeoutsec, int *rec
       cc = recv(isock, buffer_char + recvCount, length - recvCount, 0);
       *recv_errno  = errno;
       if(cc <= 0) {
-	  nmxp_log(1, 0, "nmxp_recv_ctrl(): (cc=%d <= 0) errno=%d  recvCount=%d  length=%d\n", cc, *recv_errno, recvCount, length);
+	  nmxp_log(NMXP_LOG_ERR, 0, "nmxp_recv_ctrl(): (cc=%d <= 0) errno=%d  recvCount=%d  length=%d\n", cc, *recv_errno, recvCount, length);
       } else {
 	  recvCount += cc;
       }
@@ -171,9 +171,11 @@ int nmxp_recv_ctrl(int isock, void *buffer, int length, int timeoutsec, int *rec
 			  strcpy(recv_errno_str, "DEFAULT_NO_VALUE");
 			  break;
 	  }
-    nmxp_log(0, 1, "nmxp_recv_ctrl(): recvCount=%d  length=%d  (cc=%d) errno=%d (%s)\n", recvCount, length, cc, *recv_errno, recv_errno_str);
+    nmxp_log(NMXP_LOG_ERR, 0, "nmxp_recv_ctrl(): recvCount=%d  length=%d  (cc=%d) errno=%d (%s)\n", recvCount, length, cc, *recv_errno, recv_errno_str);
 	    
-    return NMXP_SOCKET_ERROR;
+    if(recvCount != length || *recv_errno != EAGAIN) {
+	return NMXP_SOCKET_ERROR;
+    }
   }
   
   return NMXP_SOCKET_OK;
@@ -244,21 +246,25 @@ int nmxp_receiveMessage(int isock, NMXP_MSG_SERVER *type, void **buffer, int32_t
 
     ret = nmxp_receiveHeader(isock, type, length, timeoutsec, recv_errno);
 
-    if( ret == NMXP_SOCKET_OK) {
+    if( ret == NMXP_SOCKET_OK  ) {
 	if (*length > 0) {
 	    *buffer = malloc(*length);
 	    ret = nmxp_recv_ctrl(isock, *buffer, *length, 0, recv_errno);
 
 	    if(*type == NMXP_MSG_ERROR) {
-		nmxp_log(1,0, "Received ErrorMessage: %s\n", *buffer);
+		nmxp_log(NMXP_LOG_ERR, 0, "Received ErrorMessage: %s\n", *buffer);
+	    } else {
+		nmxp_log(NMXP_LOG_WARN, 1, "Received message type: %d  length=%d\n", *type, *length);
 	    }
 
 	}
-    } else {
-	if(*recv_errno != EAGAIN) {
-	    nmxp_log(1,0, "Error in nmxp_receiveMessage()\n");
-	} else {
+    }
+
+    if(*recv_errno != 0) {
+	if(*recv_errno == EAGAIN) {
 	    nmxp_log(NMXP_LOG_WARN, 0, "Timeout receveing in nmxp_receiveMessage()\n");
+	} else {
+	    nmxp_log(NMXP_LOG_ERR, 0, "Error in nmxp_receiveMessage()\n");
 	}
     }
 

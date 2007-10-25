@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.85 2007-10-24 10:05:02 mtheo Exp $
+ * $Id: nmxptool.c,v 1.86 2007-10-25 09:11:18 mtheo Exp $
  *
  */
 
@@ -53,6 +53,8 @@ typedef struct {
 static void clientShutdown(int sig);
 static void clientDummyHandler(int sig);
 
+static void flushing_raw_data_stream();
+
 #ifdef HAVE_LIBMSEED
 int nmxptool_write_miniseed(NMXP_DATA_PROCESS *pd);
 #endif
@@ -74,6 +76,9 @@ FILE *outfile = NULL;
 NMXP_CHAN_LIST *channelList = NULL;
 NMXP_CHAN_LIST_NET *channelList_subset = NULL;
 NMXPTOOL_CHAN_SEQ *channelListSeq = NULL;
+int n_func_pd = 0;
+int (*p_func_pd[NMXP_MAX_FUNC_PD]) (NMXP_DATA_PROCESS *);
+
 
 #ifdef HAVE_LIBMSEED
 /* Mini-SEED variables */
@@ -488,9 +493,6 @@ int main (int argc, char **argv) {
 
     } else {
 
-	int n_func_pd = 0;
-	int (*p_func_pd[NMXP_MAX_FUNC_PD]) (NMXP_DATA_PROCESS *);
-
 	if(params.stc == -1) {
 
 
@@ -587,6 +589,12 @@ int main (int argc, char **argv) {
 	    pd = nmxp_receiveData(naqssock, channelList_subset, NETCODE_OR_CURRENT_NETWORK, params.timeoutrecv, &recv_errno);
 
 	    if(recv_errno == 0) {
+		// TODO
+		exitpdscondition = 1;
+	    } else {
+		nmxp_log(1, 0, "Error receiving data. pd=%p recv_errno=%d\n", pd, recv_errno);
+		exitpdscondition = 0;
+	    }
 
 	    /* Log contents of last packet */
 	    if(params.flag_logdata) {
@@ -609,6 +617,7 @@ int main (int argc, char **argv) {
 
 		/* Check timeout for other channels */
 		if(params.timeoutrecv > 0) {
+		    exitpdscondition = 1;
 		    to_cur_chan = 0;
 		    while(to_cur_chan < channelList_subset->number) {
 			timeout_for_channel = nmxp_data_gmtime_now() - channelListSeq[to_cur_chan].last_time_call_raw_stream;
@@ -671,13 +680,6 @@ int main (int argc, char **argv) {
 	    }
 	    }
 
-	    // TODO
-	    exitpdscondition = 1;
-	    } else {
-		nmxp_log(1, 0, "Error receiving data.\n");
-		exitpdscondition = 0;
-	    }
-
 #ifdef HAVE_EARTHWORMOBJS
 	    if(params.ew_configuration_file) {
 
@@ -694,6 +696,9 @@ int main (int argc, char **argv) {
 #endif
 
 	}
+	
+	/* Flush raw data stream for each channel */
+	flushing_raw_data_stream();
 
 #ifdef HAVE_EARTHWORMOBJS
 	if(params.ew_configuration_file) {
@@ -752,11 +757,27 @@ int main (int argc, char **argv) {
 
 
 
+static void flushing_raw_data_stream() {
+    int to_cur_chan;
+
+    /* Flush raw data stream for each channel */
+    if(params.stc == -1) {
+	to_cur_chan = 0;
+	while(to_cur_chan < channelList_subset->number) {
+	    nmxp_log(NMXP_LOG_WARN, 0, "Flushing data for channel %s\n",
+		    channelList_subset->channel[to_cur_chan].name);
+	    nmxp_raw_stream_manage(&(channelListSeq[to_cur_chan].raw_stream_buffer), NULL, p_func_pd, n_func_pd);
+	    to_cur_chan++;
+	}
+    }
+}
 
 /* Do any needed cleanup and exit */
 static void clientShutdown(int sig) {
 
     nmxp_log(0, 0, "Program interrupted!\n");
+
+    flushing_raw_data_stream();
 
     if(params.flag_writefile  &&  outfile) {
 	/* Close output file */
