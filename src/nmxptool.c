@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.86 2007-10-25 09:11:18 mtheo Exp $
+ * $Id: nmxptool.c,v 1.87 2007-11-21 13:12:49 mtheo Exp $
  *
  */
 
@@ -191,12 +191,12 @@ int main (int argc, char **argv) {
 
     /* Check if some channel already exists */
     if(channelList_subset->number <= 0) {
-	nmxp_log(1, 0, "Channels not found!\n");
+	nmxp_log(NMXP_LOG_ERR, 0, "Channels not found!\n");
 	return 1;
     } else {
 	nmxp_chan_print_channelList(channelList_subset);
 
-	nmxp_log(0, 1, "Init channelListSeq.\n");
+	nmxp_log(NMXP_LOG_NORM, 1, "Init channelListSeq.\n");
 
 	/* init channelListSeq */
 	channelListSeq = (NMXPTOOL_CHAN_SEQ *) malloc(sizeof(NMXPTOOL_CHAN_SEQ) * channelList_subset->number);
@@ -209,19 +209,19 @@ int main (int argc, char **argv) {
 	}
 
 #ifdef HAVE_LIBMSEED
-	nmxp_log(0, 1, "Init mini-SEED record list.\n");
+	nmxp_log(NMXP_LOG_NORM, 1, "Init mini-SEED record list.\n");
 
 	/* Init mini-SEED record list */
 	for(i_chan = 0; i_chan < channelList_subset->number; i_chan++) {
 
-	    nmxp_log(0, 1, "Init mini-SEED record for %s\n", channelList_subset->channel[i_chan].name);
+	    nmxp_log(NMXP_LOG_NORM, 1, "Init mini-SEED record for %s\n", channelList_subset->channel[i_chan].name);
 
 	    msr_list_chan[i_chan] = msr_init(NULL);
 
 	    /* Separate station_code and channel_code */
 	    if(nmxp_chan_cpy_sta_chan(channelList_subset->channel[i_chan].name, station_code, channel_code, network_code)) {
 
-		nmxp_log(0, 1, "%s.%s.%s\n", NETCODE_OR_CURRENT_NETWORK, station_code, channel_code);
+		nmxp_log(NMXP_LOG_NORM, 1, "%s.%s.%s\n", NETCODE_OR_CURRENT_NETWORK, station_code, channel_code);
 
 		strcpy(msr_list_chan[i_chan]->network, NETCODE_OR_CURRENT_NETWORK);
 		strcpy(msr_list_chan[i_chan]->station, station_code);
@@ -231,7 +231,7 @@ int main (int argc, char **argv) {
 		msr_list_chan[i_chan]->encoding = DE_STEIM1;  /* Steim 1 compression */
 
 	    } else {
-		nmxp_log(1, 0, "Channels %s error in format!\n");
+		nmxp_log(NMXP_LOG_ERR, 0, "Channels %s error in format!\n");
 		return 1;
 	    }
 
@@ -246,7 +246,7 @@ int main (int argc, char **argv) {
 	channelList = NULL;
     }
 
-    nmxp_log(0, 1, "Starting comunication.\n");
+    nmxp_log(NMXP_LOG_NORM, 1, "Starting comunication.\n");
 
     /* TODO condition starting DAP or PDS */
     if( (params.start_time != 0   &&   params.end_time != 0)
@@ -265,25 +265,25 @@ int main (int argc, char **argv) {
 
 	/* DAP Step 1: Open a socket */
 	if( (naqssock = nmxp_openSocket(params.hostname, params.portnumberdap)) == NMXP_SOCKET_ERROR) {
-	    nmxp_log(1, 0, "Error opening socket!\n");
+	    nmxp_log(NMXP_LOG_ERR, 0, "Error opening socket!\n");
 	    return 1;
 	}
 
 	/* DAP Step 2: Read connection time */
 	if(nmxp_readConnectionTime(naqssock, &connection_time) != NMXP_SOCKET_OK) {
-	    nmxp_log(1, 0, "Error reading connection time from server!\n");
+	    nmxp_log(NMXP_LOG_ERR, 0, "Error reading connection time from server!\n");
 	    return 1;
 	}
 
 	/* DAP Step 3: Send a ConnectRequest */
 	if(nmxp_sendConnectRequest(naqssock, params.datas_username, params.datas_password, connection_time) != NMXP_SOCKET_OK) {
-	    nmxp_log(1, 0, "Error sending connect request!\n");
+	    nmxp_log(NMXP_LOG_ERR, 0, "Error sending connect request!\n");
 	    return 1;
 	}
 
 	/* DAP Step 4: Wait for a Ready message */
 	if(nmxp_waitReady(naqssock) != NMXP_SOCKET_OK) {
-	    nmxp_log(1, 0, "Error waiting Ready message!\n");
+	    nmxp_log(NMXP_LOG_ERR, 0, "Error waiting Ready message!\n");
 	    return 1;
 	}
 
@@ -291,7 +291,7 @@ int main (int argc, char **argv) {
 
 	while(exitdapcondition) {
 
-	nmxp_log(0, 1, "start_time = %d - end_time = %d\n", params.start_time, params.end_time);
+	nmxp_log(NMXP_LOG_NORM, 1, "start_time = %d - end_time = %d\n", params.start_time, params.end_time);
 
 	/* Start loop for sending requests */
 	i_chan=0;
@@ -327,7 +327,7 @@ int main (int argc, char **argv) {
 
 		    outfile = fopen(filename, "w");
 		    if(!outfile) {
-			nmxp_log(1, 0, "Can not to open file %s!", filename);
+			nmxp_log(NMXP_LOG_ERR, 0, "Can not to open file %s!", filename);
 		    }
 		}
 
@@ -350,7 +350,7 @@ int main (int argc, char **argv) {
 
 		    data_seed.outfile_mseed = fopen(data_seed.filename_mseed, "w");
 		    if(!data_seed.outfile_mseed) {
-			nmxp_log(1, 0, "Can not to open file %s!", data_seed.filename_mseed);
+			nmxp_log(NMXP_LOG_ERR, 0, "Can not to open file %s!", data_seed.filename_mseed);
 		    }
 		}
 #endif
@@ -372,7 +372,7 @@ int main (int argc, char **argv) {
 
 		/* DAP Step 6: Receive Data until receiving a Ready message */
 		ret = nmxp_receiveMessage(naqssock, &type, &buffer, &length, 0, &recv_errno);
-		nmxp_log(0, 1, "ret = %d, type = %d\n", ret, type);
+		nmxp_log(NMXP_LOG_NORM, 1, "ret = %d, type = %d\n", ret, type);
 
 		while(ret == NMXP_SOCKET_OK   &&    type != NMXP_MSG_READY) {
 
@@ -440,7 +440,7 @@ int main (int argc, char **argv) {
 
 		    /* Receive Data */
 		    ret = nmxp_receiveMessage(naqssock, &type, &buffer, &length, 0, &recv_errno);
-		    nmxp_log(0, 1, "ret = %d, type = %d\n", ret, type);
+		    nmxp_log(NMXP_LOG_NORM, 1, "ret = %d, type = %d\n", ret, type);
 		}
 
 		if(params.flag_writefile  &&  outfile) {
@@ -467,7 +467,7 @@ int main (int argc, char **argv) {
 	    if(time_to_sleep >= 0) {
 		sleep(time_to_sleep);
 	    } else {
-		nmxp_log(1, 0, "time to sleep %dsec.\n", time_to_sleep);
+		nmxp_log(NMXP_LOG_ERR, 0, "time to sleep %dsec.\n", time_to_sleep);
 		sleep(3);
 	    }
 	    params.start_time = params.end_time;
@@ -566,9 +566,9 @@ int main (int argc, char **argv) {
 
 	    data_seed.outfile_mseed = fopen(data_seed.filename_mseed, "w");
 	    if(!data_seed.outfile_mseed) {
-		nmxp_log(1, 0, "Can not to open file %s!", data_seed.filename_mseed);
+		nmxp_log(NMXP_LOG_ERR, 0, "Can not to open file %s!", data_seed.filename_mseed);
 	    } else {
-		nmxp_log(0, 1, "Opened file %s!\n", data_seed.filename_mseed);
+		nmxp_log(NMXP_LOG_NORM, 1, "Opened file %s!\n", data_seed.filename_mseed);
 	    }
 	}
 #endif
@@ -592,7 +592,7 @@ int main (int argc, char **argv) {
 		// TODO
 		exitpdscondition = 1;
 	    } else {
-		nmxp_log(1, 0, "Error receiving data. pd=%p recv_errno=%d\n", pd, recv_errno);
+		nmxp_log(NMXP_LOG_ERR, 0, "Error receiving data. pd=%p recv_errno=%d\n", pd, recv_errno);
 		exitpdscondition = 0;
 	    }
 
@@ -775,7 +775,7 @@ static void flushing_raw_data_stream() {
 /* Do any needed cleanup and exit */
 static void clientShutdown(int sig) {
 
-    nmxp_log(0, 0, "Program interrupted!\n");
+    nmxp_log(NMXP_LOG_NORM, 0, "Program interrupted!\n");
 
     flushing_raw_data_stream();
 
@@ -854,7 +854,7 @@ int nmxptool_write_miniseed(NMXP_DATA_PROCESS *pd) {
 	ret = nmxp_data_msr_pack(pd, &data_seed, msr_list_chan[cur_chan]);
 
     } else {
-	nmxp_log(1, 0, "Key %d not found in channelList_subset!\n", pd->key);
+	nmxp_log(NMXP_LOG_ERR, 0, "Key %d not found in channelList_subset!\n", pd->key);
     }
     return ret;
 }
@@ -902,10 +902,10 @@ int nmxptool_check_and_log_gap(double time1, double time2, const double gap_toll
     nmxp_data_to_str(str_time1, time1);
     nmxp_data_to_str(str_time2, time2);
     if(gap > gap_tollerance) {
-	nmxp_log(1, 0, "Gap %.2f sec. for %s.%s from %s to %s!\n", gap, station, channel, str_time2, str_time1);
+	nmxp_log(NMXP_LOG_ERR, 0, "Gap %.2f sec. for %s.%s from %s to %s!\n", gap, station, channel, str_time2, str_time1);
 	ret = 1;
     } else if (gap < -gap_tollerance) {
-	nmxp_log(1, 0, "Overlap %.2f sec. for %s.%s from %s to %s!\n", gap, station, channel, str_time1, str_time2);
+	nmxp_log(NMXP_LOG_ERR, 0, "Overlap %.2f sec. for %s.%s from %s to %s!\n", gap, station, channel, str_time1, str_time2);
 	ret = 1;
     }
     return ret;

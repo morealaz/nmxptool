@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.36 2007-11-21 11:04:56 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.37 2007-11-21 13:12:49 mtheo Exp $
  *
  */
 
@@ -368,7 +368,7 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 
 		case 'S':
 		    params->stc = atoi(optarg);
-		    nmxp_log(0, 0, "Short-Term-Completion %d.\n", params->stc);
+		    nmxp_log(NMXP_LOG_NORM, 0, "Short-Term-Completion %d.\n", params->stc);
 		    break;
 
 		case 'R':
@@ -411,12 +411,12 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 
 		case 'M':
 		    params->max_tolerable_latency = atoi(optarg);
-		    nmxp_log(0, 0, "Max_tolerable_latency %d\n", params->max_tolerable_latency);
+		    nmxp_log(NMXP_LOG_NORM, 0, "Max_tolerable_latency %d\n", params->max_tolerable_latency);
 		    break;
 
 		case 'T':
 		    params->timeoutrecv = atoi(optarg);
-		    nmxp_log(0, 0, "Time-out receiving %d\n", params->timeoutrecv);
+		    nmxp_log(NMXP_LOG_NORM, 0, "Time-out receiving %d\n", params->timeoutrecv);
 		    break;
 
 #ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
