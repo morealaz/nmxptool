@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.35 2007-10-08 13:52:20 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.36 2007-11-21 11:04:56 mtheo Exp $
  *
  */
 
@@ -63,10 +63,11 @@ Mail bug reports and suggestions to <%s>.\n",
 
 void nmxptool_version() {
     nmxp_log(NMXP_LOG_NORM_NO, 0, "\
-%s %s, Nanometrics tool based on %s\n\
+%s %s, Nanometrics tool based on %s, build %d\n\
         (Data Access Protocol 1.0, Private Data Stream 1.4)\n",
 	PACKAGE_NAME, PACKAGE_VERSION,
-	nmxp_log_version()
+	nmxp_log_version(),
+	PACKAGE_BUILD
 	);
 
     nmxptool_supports();
