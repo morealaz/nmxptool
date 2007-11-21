@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_base.c,v 1.38 2007-10-25 09:11:34 mtheo Exp $
+ * $Id: nmxp_base.c,v 1.39 2007-11-21 13:22:20 mtheo Exp $
  *
  */
 
@@ -115,7 +115,8 @@ int nmxp_send_ctrl(int isock, void* buffer, int length)
 int nmxp_recv_ctrl(int isock, void *buffer, int length, int timeoutsec, int *recv_errno )
 {
   int recvCount;
-  char recv_errno_str[200];
+#define MAXLEN_RECV_ERRNO_STR 200
+  char recv_errno_str[MAXLEN_RECV_ERRNO_STR];
   struct timeval timeo;
   int cc;
   char *buffer_char = buffer;
@@ -157,6 +158,8 @@ int nmxp_recv_ctrl(int isock, void *buffer, int length, int timeoutsec, int *rec
   }
 
   if (recvCount != length  ||  *recv_errno != 0  ||  cc <= 0) {
+      strerror_r(*recv_errno, recv_errno_str, MAXLEN_RECV_ERRNO_STR);
+      /*
 	  switch(*recv_errno) {
 		  case EAGAIN : strcpy(recv_errno_str, "EAGAIN"); break;
 		  case EBADF : strcpy(recv_errno_str, "EBADF"); break;
@@ -171,6 +174,7 @@ int nmxp_recv_ctrl(int isock, void *buffer, int length, int timeoutsec, int *rec
 			  strcpy(recv_errno_str, "DEFAULT_NO_VALUE");
 			  break;
 	  }
+	  */
     nmxp_log(NMXP_LOG_ERR, 0, "nmxp_recv_ctrl(): recvCount=%d  length=%d  (cc=%d) errno=%d (%s)\n", recvCount, length, cc, *recv_errno, recv_errno_str);
 	    
     if(recvCount != length || *recv_errno != EAGAIN) {
