@@ -26,6 +26,35 @@ echo "DIRBASE = $DIRBASE"
 DIRMODULE=nmxptool
 DIRSOURCE=nmxptool
 DIRSOURCEVERSION=$DIRSOURCE-$VERSION
+CVSTAGVERSION=`echo $DIRMODULE-$VERSION | sed -e "s/[\.-]/_/g"`
+
+if [ -z $CVSWORK ]; then
+    echo "WARNING: CVSWORK is not defined and will be set to the current directory!"
+    CVSWORK=`pwd`
+fi
+
+CVSDIRBASE=$CVSWORK
+CVSDIRMODULE=$CVSWORK/$DIRMODULE
+
+if [ ! -d $CVSDIRMODULE ]; then
+    echo "ERROR: $CVSDIRMODULE is not a directory!"
+    exit
+fi
+
+echo "CVSTAGVERSION = $CVSTAGVERSION"
+
+printf "Do you want execute 'cvs tag $CVSTAGVERSION' from directory $CVSDIRMODULE ? [ y/n ] "
+EXECVSTAG=x
+while [ $EXECVSTAG != y ]  &&  [ $EXECVSTAG != n ] && [ $EXECVSTAG != Y ]  &&  [ $EXECVSTAG != N ]; do
+    read -s -n 1 -a EXECVSTAG
+done
+echo ""
+echo "EXECVSTAG = $EXECVSTAG"
+if [ $EXECVSTAG == y ]; then
+    CURDIR=`pwd`
+    cd $CVSDIRMODULE  &&  cvs tag $CVSTAGVERSION
+    cd $CURDIR
+fi
 
 DIRTMP=/tmp/casa
 
@@ -35,13 +64,13 @@ mkdir $DIRTMP
 
 cd $DIRTMP
 
-cvs co $DIRMODULE
+cvs export -r $CVSTAGVERSION $DIRMODULE  ||  exit
 
 mv $DIRMODULE $DIRSOURCEVERSION
 
-# rm -fr $DIRSOURCEVERSION/tools/nmxp_dap $DIRSOURCEVERSION/tools/nmxp_pds
 rm -fr $DIRSOURCEVERSION/doc/rapporto_tecnico_ingv_nmxp.*
 rm -fr $DIRSOURCEVERSION/doc/nanometrics_naqs_and_data.graffle
+rm -fr $DIRSOURCEVERSION/no_dist
 
 for DIRECTORY in $DIRSOURCEVERSION/libnmxp $DIRSOURCEVERSION ; do
     cd $DIRECTORY
