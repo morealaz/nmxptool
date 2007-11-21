@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.37 2007-11-21 13:12:49 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.38 2007-11-21 14:07:37 mtheo Exp $
  *
  */
 
@@ -201,7 +201,7 @@ PDS arguments:\n\
                           >0 for specified sample rate and decompressed data.\n\
   -b, --buffered          Request also recent packets into the past.\n\
   -M, --maxlatency=SECs   Max tolerable latency (default %d) [%d..%d].\n\
-  -T, --timeoutrecv=SECs  Time-out for flushing buffered packets.\n\
+  -T, --timeoutrecv=SECs  Time-out for flushing buffered packets. DISABLED!\n\
                           (default %d. No time-out.) [%d..%d].\n\
                           -T is useful for retrieving Data On Demand.\n\
                           -M, -T are usable only with Raw Stream --stc=-1.\n\
@@ -415,8 +415,12 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 		    break;
 
 		case 'T':
-		    params->timeoutrecv = atoi(optarg);
-		    nmxp_log(NMXP_LOG_NORM, 0, "Time-out receiving %d\n", params->timeoutrecv);
+		    if(1) {
+			nmxp_log(NMXP_LOG_WARN, 0, "Time-out is currently disabled!\n");
+		    } else {
+			params->timeoutrecv = atoi(optarg);
+			nmxp_log(NMXP_LOG_NORM, 0, "Time-out receiving %d\n", params->timeoutrecv);
+		    }
 		    break;
 
 #ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
