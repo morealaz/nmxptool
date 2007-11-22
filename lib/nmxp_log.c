@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_log.c,v 1.12 2007-10-25 13:45:36 mtheo Exp $
+ * $Id: nmxp_log.c,v 1.13 2007-11-22 06:53:23 mtheo Exp $
  *
  */
 
@@ -65,7 +65,7 @@ void nmxp_log_add(int (*func_log)(char *), int (*func_log_err)(char *)) {
 	p_func_log[n_func_log++] = func_log;
     }
     if(func_log_err != NULL) {
-	p_func_log_err[n_func_log_err++] = nmxp_log_stdout;
+	p_func_log_err[n_func_log_err++] = func_log_err;
     }
 
 }
