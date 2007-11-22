@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.38 2007-11-21 14:07:37 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.39 2007-11-22 11:13:05 mtheo Exp $
  *
  */
 
@@ -40,8 +40,8 @@ const NMXPTOOL_PARAMS NMXPTOOL_PARAMS_DEFAULT =
     DEFAULT_DELAY,
     DEFAULT_MAX_TOLERABLE_LATENCY,
     DEFAULT_TIMEOUTRECV,
+    DEFAULT_VERBOSE_LEVEL,
     NULL,
-    0,
     0,
     0,
     0,
@@ -53,7 +53,7 @@ const NMXPTOOL_PARAMS NMXPTOOL_PARAMS_DEFAULT =
 
 
 void nmxptool_author_support() {
-    nmxp_log(NMXP_LOG_NORM_NO, 0, "\
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
 Matteo Quintiliani - Istituto Nazionale di Geofisica e Vulcanologia - Italy\n\
 Mail bug reports and suggestions to <%s>.\n",
 	    PACKAGE_BUGREPORT
@@ -62,7 +62,7 @@ Mail bug reports and suggestions to <%s>.\n",
 
 
 void nmxptool_version() {
-    nmxp_log(NMXP_LOG_NORM_NO, 0, "\
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
 %s %s, Nanometrics tool based on %s, build %d\n\
         (Data Access Protocol 1.0, Private Data Stream 1.4)\n",
 	PACKAGE_NAME, PACKAGE_VERSION,
@@ -74,28 +74,28 @@ void nmxptool_version() {
 }
 
 void nmxptool_supports() {
-    nmxp_log(NMXP_LOG_NORM_NO, 0, "\
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
          Support for: libmseed ");
 #ifdef HAVE_LIBMSEED
-    nmxp_log(NMXP_LOG_NORM_NO, 0, "YES");
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "YES");
 #else
-    nmxp_log(NMXP_LOG_NORM_NO, 0, "NO");
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "NO");
 #endif
 
-    nmxp_log(NMXP_LOG_NORM_NO, 0, ", SeedLink ");
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, ", SeedLink ");
 #ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
-    nmxp_log(NMXP_LOG_NORM_NO, 0, "YES");
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "YES");
 #else
-    nmxp_log(NMXP_LOG_NORM_NO, 0, "NO");
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "NO");
 #endif
 
-    nmxp_log(NMXP_LOG_NORM_NO, 0, ", Earthworm ");
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, ", Earthworm ");
 #ifdef HAVE_EARTHWORMOBJS
-    nmxp_log(NMXP_LOG_NORM_NO, 0, "YES");
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "YES");
 #else
-    nmxp_log(NMXP_LOG_NORM_NO, 0, "NO");
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "NO");
 #endif
-    nmxp_log(NMXP_LOG_NORM_NO, 0, ".\n");
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, ".\n");
 }
 
 
@@ -103,7 +103,7 @@ void nmxptool_usage(struct option long_options[])
 {
     nmxptool_version();
 
-    nmxp_log(NMXP_LOG_NORM_NO, 0, "\
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
 \n\
 Usage: %s -H hostname --listchannels\n\
              Print list of available channels on DataServer.\n\
@@ -117,13 +117,13 @@ Usage: %s -H hostname --listchannels\n\
 \n", PACKAGE_NAME, PACKAGE_NAME, PACKAGE_NAME, PACKAGE_NAME);
 
 #ifdef HAVE_EARTHWORMOBJS
-    nmxp_log(NMXP_LOG_NORM_NO, 0, "\
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
        %s nmxptool.d\n\
              Run as earthworm module receiving data from NaqServer by PDS.\n\
 \n", PACKAGE_NAME);
 #endif
 
-    nmxp_log(NMXP_LOG_NORM_NO, 0, "\
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
 Arguments:\n\
   -H, --hostname=HOST     Nanometrics hostname.\n\
   -C, --channels=LIST     Channel list NET.STA.CHAN (NET. is optional)\n\
@@ -131,42 +131,57 @@ Arguments:\n\
                           NET is used only for output!\n\
 \n");
 
-    nmxp_log(NMXP_LOG_NORM_NO, 0, "\
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
 Other arguments:\n\
   -P, --portpds=PORT      NaqsServer port number (default %d).\n\
   -D, --portdap=PORT      DataServer port number (default %d).\n\
   -N, --network=NET       Default Network code. (default '%s').\n\
   -L, --location=LOC      Location code for writing file.\n\
-  -v, --verbose           Be verbose.\n\
+  -v, --verbose=level     Be verbose. level is a bitmap:\n\
+                          %d Packet, %d Channel, %d Raw Stream,\n\
+                          %d CRC32, %d Connection flow,\n\
+                          %d Packet Management, %d Extra, %d Date,\n\
+                          %d Gap, %d DOD, %d All messages.\n\
   -g, --logdata           Print info about data.\n\
 ",
 	    DEFAULT_PORT_PDS,
 	    DEFAULT_PORT_DAP,
-	    DEFAULT_NETWORK
+	    DEFAULT_NETWORK,
+	    NMXP_LOG_D_PACKET,
+	    NMXP_LOG_D_CHANNEL,
+	    NMXP_LOG_D_RAWSTREAM,
+	    NMXP_LOG_D_CRC,
+	    NMXP_LOG_D_CONNFLOW,
+	    NMXP_LOG_D_PACKETMAN,
+	    NMXP_LOG_D_EXTRA,
+	    NMXP_LOG_D_DATE,
+	    NMXP_LOG_D_GAP,
+	    NMXP_LOG_D_DOD,
+	    NMXP_LOG_D_ANY
 		);
 
 #ifdef HAVE_LIBMSEED
-    nmxp_log(NMXP_LOG_NORM_NO, 0, "\
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
   -m, --writeseed         Pack received data in Mini-SEED records\n\
                           and write to a file.\n");
 #endif
 
-    nmxp_log(NMXP_LOG_NORM_NO, 0, "\
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
   -w, --writefile         Dump received data to a file.\n");
 
 #ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
-    nmxp_log(NMXP_LOG_NORM_NO, 0, "\
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
   -k, --slink=plug_name   Send received data to SeedLink as a plug-in.\n\
                           plug_name is set by SeisComP daemon.\n\
                           INTO THE FILE seedlink.in, THIS OPTION MUST BE\n\
                           THE LAST WITHOUT ADDING VALUE FOR plug_name!\n");
 #endif
-    nmxp_log(NMXP_LOG_NORM_NO, 0, "\
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
   -V, --version           Print tool version.\n\
   -h, --help              Print this help.\n\
 \n");
 
-    nmxp_log(NMXP_LOG_NORM_NO, 0, "\
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
 DAP Arguments:\n\
   -s, --start_time=DATE   Start time in date format.\n\
   -e, --end_time=DATE     End time in date format.\n\
@@ -186,7 +201,7 @@ DAP Arguments:\n\
 DEFAULT_DELAY_MINIMUM,
 DEFAULT_DELAY_MAXIMUM);
 
-    nmxp_log(NMXP_LOG_NORM_NO, 0, "\
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
 PDS arguments:\n\
   -S, --stc=SECs          Short-term-completion (default %d).\n\
                           -1 is for Raw Stream, no short-term completion.\n\
@@ -224,7 +239,7 @@ PDS arguments:\n\
     if(long_options) {
 	int i=0;
 	while(long_options[i].name) {
-	    nmxp_log(NMXP_LOG_NORM_NO, 0, "%s %d %d %d %c\n", long_options[i].name, long_options[i].has_arg, (long_options[i].flag)? *(long_options[i].flag) : 0, long_options[i].val, long_options[i].val);
+	    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_EXTRA, "%s %d %d %d %c\n", long_options[i].name, long_options[i].has_arg, (long_options[i].flag)? *(long_options[i].flag) : 0, long_options[i].val, long_options[i].val);
 	    i++;
 	}
     }
@@ -258,8 +273,8 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 	{"password",     required_argument, 0, 'p'},
 	{"maxlatency",   required_argument, 0, 'M'},
 	{"timeoutrecv",  required_argument, 0, 'T'},
+	{"verbose",      required_argument, 0, 'v'},
 	/* Following are flags */
-	{"verbose",      no_argument,       0, 'v'},
 	{"logdata",      no_argument,       0, 'g'},
 	{"buffered",     no_argument,       0, 'b'},
 	{"listchannels", no_argument,       0, 'l'},
@@ -297,7 +312,7 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
     /* init params */
     memcpy(params, &NMXPTOOL_PARAMS_DEFAULT, sizeof(NMXPTOOL_PARAMS_DEFAULT));
 
-    char optstr[100] = "H:P:D:C:N:L:S:R:s:e:t:d:u:p:M:T:vgbliwhV";
+    char optstr[100] = "H:P:D:C:N:L:S:R:s:e:t:d:u:p:M:T:v:gbliwhV";
 
 #ifdef HAVE_LIBMSEED
     strcat(optstr, "m");
@@ -328,7 +343,7 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 
 	if(one_time_option[c] > 1) {
 	    ret_errors++;
-	    nmxp_log(NMXP_LOG_NORM_NO, 0, "Replicated option -%c (value %s)\n", c, optarg);
+	    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "Replicated option -%c (value %s)\n", c, optarg);
 	} else {
 	    switch (c)
 	    {
@@ -336,10 +351,10 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 		    /* If this option set a flag, do nothing else now. */
 		    if (long_options[option_index].flag != 0)
 			break;
-		    nmxp_log(NMXP_LOG_NORM_NO, 0, "option %s", long_options[option_index].name);
+		    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "option %s", long_options[option_index].name);
 		    if (optarg)
-			nmxp_log(NMXP_LOG_NORM_NO, 0, " with arg %s", optarg);
-		    nmxp_log(NMXP_LOG_NORM_NO, 0, "\n");
+			nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, " with arg %s", optarg);
+		    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\n");
 		    break;
 
 		case 'H':
@@ -368,7 +383,7 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 
 		case 'S':
 		    params->stc = atoi(optarg);
-		    nmxp_log(NMXP_LOG_NORM, 0, "Short-Term-Completion %d.\n", params->stc);
+		    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "Short-Term-Completion %d.\n", params->stc);
 		    break;
 
 		case 'R':
@@ -411,17 +426,22 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 
 		case 'M':
 		    params->max_tolerable_latency = atoi(optarg);
-		    nmxp_log(NMXP_LOG_NORM, 0, "Max_tolerable_latency %d\n", params->max_tolerable_latency);
+		    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "Max_tolerable_latency %d\n", params->max_tolerable_latency);
 		    break;
 
 		case 'T':
 		    if(1) {
-			nmxp_log(NMXP_LOG_WARN, 0, "Time-out is currently disabled!\n");
+			nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "Time-out is currently disabled!\n");
 		    } else {
 			params->timeoutrecv = atoi(optarg);
-			nmxp_log(NMXP_LOG_NORM, 0, "Time-out receiving %d\n", params->timeoutrecv);
+			nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "Time-out receiving %d\n", params->timeoutrecv);
 		    }
 		    break;
+
+		case 'v':
+		    params->verbose_level = atoi(optarg);
+		    break;
+
 
 #ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
 		case 'k':
@@ -429,10 +449,6 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 		    params->plugin_slink = optarg;
 		    break;
 #endif
-
-		case 'v':
-		    params->flag_verbose = 1;
-		    break;
 
 		case 'g':
 		    params->flag_logdata = 1;
@@ -488,9 +504,9 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
     {
 	ret_errors += optind;
 
-	nmxp_log(NMXP_LOG_NORM_NO, 0, "non-option ARGV-elements: ");
+	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "non-option ARGV-elements: ");
 	while (optind < argc)
-	    nmxp_log(NMXP_LOG_NORM_NO, 0, "%s ", argv[optind++]);
+	    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "%s ", argv[optind++]);
 	putchar ('\n');
     }
 
@@ -510,58 +526,58 @@ int nmxptool_check_params(NMXPTOOL_PARAMS *params) {
 	/* Do nothing */
     } else if(params->hostname == NULL) {
 	ret = -1;
-	nmxp_log(NMXP_LOG_NORM_NO, 0, "<hostname> is required!\n");
+	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "<hostname> is required!\n");
     } else if(params->flag_listchannels) {
 	/* Do nothing */
     } else if(params->hostname == NULL) {
 	ret = -1;
-	nmxp_log(NMXP_LOG_NORM_NO, 0, "<hostname> is required!\n");
+	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "<hostname> is required!\n");
     } else if(params->channels == NULL) {
 	ret = -1;
-	nmxp_log(NMXP_LOG_NORM_NO, 0, "<STA.CHAN> is required!\n");
+	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "<STA.CHAN> is required!\n");
     } else if(params->start_time == 0 &&  params->end_time != 0) {
 	ret = -1;
-	nmxp_log(NMXP_LOG_NORM_NO, 0, "<end_time> has to be used with <start_time>!\n");
+	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "<end_time> has to be used with <start_time>!\n");
     } else if(params->start_time != 0 &&  params->end_time == 0) {
 	ret = -1;
-	nmxp_log(NMXP_LOG_NORM_NO, 0, "<start_time> has to be used with <end_time> or <interval>!\n");
+	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "<start_time> has to be used with <end_time> or <interval>!\n");
     } else if(params->start_time != 0 && params->interval != 0   &&   params->end_time != 0) {
 	ret = -1;
-	nmxp_log(NMXP_LOG_NORM_NO, 0, "<end_time> and <interval> are exclusives!\n");
+	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "<end_time> and <interval> are exclusives!\n");
     } else if(params->start_time != 0   &&   params->end_time != 0
 	    && params->start_time >= params->end_time) {
 	ret = -1;
-	nmxp_log(NMXP_LOG_NORM_NO, 0, "<start_time> is less than <end_time>!\n");
+	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "<start_time> is less than <end_time>!\n");
     } else if(params->stc < DEFAULT_STC_MINIMUM   ||   params->stc > DEFAULT_STC_MAXIMUM) {
 	ret = -1;
-	nmxp_log(NMXP_LOG_NORM_NO, 0, "<stc> has to be in the interval [%d..%d] secs.\n",
+	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "<stc> has to be in the interval [%d..%d] secs.\n",
 		DEFAULT_STC_MINIMUM, DEFAULT_STC_MAXIMUM);
     } else if(params->stc == -1   &&   params->rate != DEFAULT_RATE) {
 	ret = -1;
-	nmxp_log(NMXP_LOG_NORM_NO, 0, "<rate> has to be equal to -1 when <stc> is equal to -1 (Raw Stream).\n");
+	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "<rate> has to be equal to -1 when <stc> is equal to -1 (Raw Stream).\n");
     } else if(params->delay > 0 && params->start_time != 0   &&   params->end_time != 0) {
 	ret = -1;
-	nmxp_log(NMXP_LOG_NORM_NO, 0, "<delay> can not be used with options <start_time> and <end_time>.\n");
+	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "<delay> can not be used with options <start_time> and <end_time>.\n");
     } else if( params->delay != DEFAULT_DELAY &&
 	    (params->delay < DEFAULT_DELAY_MINIMUM  || params->delay > DEFAULT_DELAY_MAXIMUM) ) {
 	ret = -1;
-	nmxp_log(NMXP_LOG_NORM_NO, 0, "<delay> has to be in the interval [%d..%d] secs.\n",
+	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "<delay> has to be in the interval [%d..%d] secs.\n",
 		DEFAULT_DELAY_MINIMUM, DEFAULT_DELAY_MAXIMUM);
     } else if(params->rate < DEFAULT_RATE_MINIMUM  ||  params->rate > DEFAULT_RATE_MAXIMUM) {
 	ret = -1;
-	nmxp_log(NMXP_LOG_NORM_NO, 0, "<rate> has to be in the interval [%d..%d].\n",
+	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "<rate> has to be in the interval [%d..%d].\n",
 		DEFAULT_RATE_MINIMUM, DEFAULT_RATE_MAXIMUM);
     } else if(params->rate != -1 && params->start_time != 0   &&   params->end_time != 0) {
 	ret = -1;
-	nmxp_log(NMXP_LOG_NORM_NO, 0, "<rate> can not be used with options <start_time> and <end_time>.\n");
+	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "<rate> can not be used with options <start_time> and <end_time>.\n");
     } else if(params->flag_buffered != 0 && params->start_time != 0   &&   params->end_time != 0) {
 	ret = -1;
-	nmxp_log(NMXP_LOG_NORM_NO, 0, "<buffered> can not be used with options <start_time> and <end_time>.\n");
+	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "<buffered> can not be used with options <start_time> and <end_time>.\n");
     } else if( params->stc == -1
 	    && (params->max_tolerable_latency < DEFAULT_MAX_TOLERABLE_LATENCY_MINIMUM  ||
 		params->max_tolerable_latency > DEFAULT_MAX_TOLERABLE_LATENCY_MAXIMUM)) {
 	ret = -1;
-	nmxp_log(NMXP_LOG_NORM_NO, 0, "<maxlatency> has to be within [%d..%d].\n",
+	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "<maxlatency> has to be within [%d..%d].\n",
 		DEFAULT_MAX_TOLERABLE_LATENCY_MINIMUM,
 		DEFAULT_MAX_TOLERABLE_LATENCY_MAXIMUM);
     } else if( params->stc == -1
@@ -569,20 +585,20 @@ int nmxptool_check_params(NMXPTOOL_PARAMS *params) {
 		params->timeoutrecv > DEFAULT_TIMEOUTRECV_MAXIMUM)) {
 	if(params->timeoutrecv != 0) {
 	    ret = -1;
-	    nmxp_log(NMXP_LOG_NORM_NO, 0, "<timeoutrecv> has to be within [%d..%d] or equal to zero for not time-out.\n",
+	    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "<timeoutrecv> has to be within [%d..%d] or equal to zero for not time-out.\n",
 		    DEFAULT_TIMEOUTRECV_MINIMUM,
 		    DEFAULT_TIMEOUTRECV_MAXIMUM);
 	}
     } else if( params->stc != -1 && params->max_tolerable_latency > 0 ){
-	nmxp_log(NMXP_LOG_WARN, 0, "<maxlatency> ignored since not defined --stc=-1.\n");
+	nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "<maxlatency> ignored since not defined --stc=-1.\n");
     } else if(params->stc != -1 && params->timeoutrecv > 0) {
 	params->timeoutrecv = 0;
-	nmxp_log(NMXP_LOG_WARN, 0, "<timeoutrecv> ignored since not defined --stc=-1.\n");
+	nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "<timeoutrecv> ignored since not defined --stc=-1.\n");
     }
 
     /*
     if( params->stc == -1 ) {
-	nmxp_log(NMXP_LOG_WARN, 0, "<maxlatency> is equal to %d sec.\n", params->max_tolerable_latency);
+	nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "<maxlatency> is equal to %d sec.\n", params->max_tolerable_latency);
     }
     */
 

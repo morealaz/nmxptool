@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.h,v 1.20 2007-11-21 11:04:56 mtheo Exp $
+ * $Id: nmxptool_getoptlong.h,v 1.21 2007-11-22 11:13:05 mtheo Exp $
  *
  */
 
@@ -43,6 +43,8 @@
 #define DEFAULT_TIMEOUTRECV_MINIMUM 		10
 #define DEFAULT_TIMEOUTRECV_MAXIMUM 		300
 
+#define DEFAULT_VERBOSE_LEVEL 			NMXP_LOG_D_NULL
+
 
 /*! \brief Struct that stores information about parameter of the program */
 typedef struct {
@@ -63,9 +65,9 @@ typedef struct {
     int32_t delay;
     int32_t max_tolerable_latency;
     int32_t timeoutrecv;
+    int32_t verbose_level;
     char *ew_configuration_file;
     int flag_writeseed;
-    int flag_verbose;
     int flag_listchannels;
     int flag_request_channelinfo;
     int flag_writefile;
