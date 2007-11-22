@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_log.c,v 1.13 2007-11-22 06:53:23 mtheo Exp $
+ * $Id: nmxp_log.c,v 1.14 2007-11-22 11:10:40 mtheo Exp $
  *
  */
 
@@ -71,23 +71,33 @@ void nmxp_log_add(int (*func_log)(char *), int (*func_log_err)(char *)) {
 }
 
 
+/* Private function */
+void nmxp_log_print_all(char *message, int (*a_func_log[NMXP_MAX_FUNC_LOG]) (char *), int a_n_func_log) {
+    int i;
+    if(a_n_func_log > 0) {
+	for(i=0; i < a_n_func_log; i++) {
+	    a_func_log[i](message);
+	}
+    } else {
+	nmxp_log_stdout(message);
+    }
+}
+
 int nmxp_log(int level, int verb, ... )
 {
   static int staticverb = 0;
   int retvalue = 0;
+  char message[MAX_LOG_MESSAGE_LENGTH];
+  char message_final[MAX_LOG_MESSAGE_LENGTH];
+  char timestr[100];
+  char *format;
+  va_list listptr;
+  time_t loc_time;
 
-  if ( level == -1 ) {
+  if ( level == NMXP_LOG_SET ) {
     staticverb = verb;
     retvalue = staticverb;
-  }
-  else if (verb <= staticverb) {
-    char message[MAX_LOG_MESSAGE_LENGTH];
-    char message_final[MAX_LOG_MESSAGE_LENGTH];
-    char timestr[100];
-    char *format;
-    va_list listptr;
-    time_t loc_time;
-    int i;
+  } else if ( (verb & staticverb)  ||  level == NMXP_LOG_ERR  ||  verb == NMXP_LOG_D_ANY ) {
 
     va_start(listptr, verb);
     format = va_arg(listptr, char *);
@@ -102,63 +112,27 @@ int nmxp_log(int level, int verb, ... )
 
     switch(level) {
 	case NMXP_LOG_ERR:
-	    //TOREMOVE printf("%s - %s: error: %s", timestr, PACKAGE_NAME, message);
 	    sprintf(message_final, "%s - %s: error: %s", timestr, PACKAGE_NAME, message);
-	    if(n_func_log_err > 0) {
-		for(i=0; i < n_func_log_err; i++) {
-		    p_func_log_err[i](message_final);
-		}
-	    } else {
-		nmxp_log_stdout(message_final);
-	    }
+	    nmxp_log_print_all(message_final, p_func_log_err, n_func_log_err);
 	    break;
 	case NMXP_LOG_WARN:
-	    //TOREMOVE printf("%s - %s: warning: %s", timestr, PACKAGE_NAME, message);
 	    sprintf(message_final, "%s - %s: warning: %s", timestr, PACKAGE_NAME, message);
-	    if(n_func_log > 0) {
-		for(i=0; i < n_func_log; i++) {
-		    p_func_log[i](message_final);
-		}
-	    } else {
-		nmxp_log_stdout(message_final);
-	    }
+	    nmxp_log_print_all(message_final, p_func_log, n_func_log);
 	    break;
 	case NMXP_LOG_NORM_NO:
-	    //TOREMOVE printf("%s", message);
 	    sprintf(message_final, "%s", message);
-	    if(n_func_log > 0) {
-		for(i=0; i < n_func_log; i++) {
-		    p_func_log[i](message_final);
-		}
-	    } else {
-		nmxp_log_stdout(message_final);
-	    }
+	    nmxp_log_print_all(message_final, p_func_log, n_func_log);
 	    break;
 	case NMXP_LOG_NORM_PKG:
-	    //TOREMOVE printf("%s: %s", PACKAGE_NAME, message);
 	    sprintf(message_final, "%s: %s", PACKAGE_NAME, message);
-	    if(n_func_log > 0) {
-		for(i=0; i < n_func_log; i++) {
-		    p_func_log[i](message_final);
-		}
-	    } else {
-		nmxp_log_stdout(message_final);
-	    }
+	    nmxp_log_print_all(message_final, p_func_log, n_func_log);
 	    break;
 	default:
-	    //TOREMOVE printf("%s - %s: %s", timestr, PACKAGE_NAME, message);
 	    sprintf(message_final, "%s - %s: %s", timestr, PACKAGE_NAME, message);
-	    if(n_func_log > 0) {
-		for(i=0; i < n_func_log; i++) {
-		    p_func_log[i](message_final);
-		}
-	    } else {
-		nmxp_log_stdout(message_final);
-	    }
+	    nmxp_log_print_all(message_final, p_func_log, n_func_log);
 	    break;
     }
 
-    //TOREMOVE fflush(stdout);
     va_end(listptr);
   }
 

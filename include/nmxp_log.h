@@ -7,13 +7,16 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_log.h,v 1.8 2007-10-01 05:44:04 mtheo Exp $
+ * $Id: nmxp_log.h,v 1.9 2007-11-22 11:10:40 mtheo Exp $
  *
  */
 
 #ifndef NMXP_LOG_H
 #define NMXP_LOG_H 1
 
+
+/*! normal output with time and package name */
+#define NMXP_LOG_SET     -1
 
 /*! normal output with time and package name */
 #define NMXP_LOG_NORM     0
@@ -30,6 +33,22 @@
 /*! normal output with only package name */
 #define NMXP_LOG_NORM_PKG 4
 
+
+/*! kind of log message */
+#define NMXP_LOG_D_NULL        0
+#define NMXP_LOG_D_PACKET      1
+#define NMXP_LOG_D_CHANNEL     2
+#define NMXP_LOG_D_RAWSTREAM   4
+#define NMXP_LOG_D_CRC         8
+#define NMXP_LOG_D_CONNFLOW   16
+#define NMXP_LOG_D_PACKETMAN  32
+#define NMXP_LOG_D_EXTRA      64
+#define NMXP_LOG_D_DATE      128
+#define NMXP_LOG_D_GAP       256
+#define NMXP_LOG_D_DOD       512
+#define NMXP_LOG_D_ANY  \
+( NMXP_LOG_D_PACKET | NMXP_LOG_D_CHANNEL | NMXP_LOG_D_RAWSTREAM | NMXP_LOG_D_CRC | NMXP_LOG_D_CONNFLOW | \
+  NMXP_LOG_D_PACKETMAN | NMXP_LOG_D_EXTRA | NMXP_LOG_D_DATE | NMXP_LOG_D_GAP | NMXP_LOG_D_DOD )
 
 
 /*! \brief  TODO
@@ -62,12 +81,13 @@ int nmxp_log_stderr(char *msg);
  *   This function works in two modes:
  *
  *   -# Initialization, expecting 2 arguments with the first (level)
- *       being -1 and the second being verbosity.  This will set the
- *       verbosity for all future calls, the default is 0.  Can be used
- *       to change the verbosity at any time. I.e. 'sl_log(-1,2);'
- *   -# Expecting 3+ arguments, log level, verbosity level, printf
- *       format, and printf arguments.  If the verbosity level is less
- *       than or equal to the set verbosity (see mode 1), the printf
+ *       being NMXP_LOG_SET and the second being verbosity bitmap. This will
+ *       set the verbosity for all future calls, the default is NMXP_LOG_D_NULL.
+ *       Can be used to change the verbosity at any time.
+ *       I.e. 'nmxp_log(NMXP_LOG_SET, NMXP_LOG_D_PACKET | NMXP_LOG_D_CONNFLOW);'
+ *   -# Expecting 3+ arguments, log level, verbosity, printf
+ *       format, and printf arguments.  If the verbosity is included
+ *       into the set verbosity bitmap (see mode 1), the printf
  *       format and arguments will be printed at the appropriate log
  *       level, where level represents:
  *       -# 0, normal output with time and package name
@@ -75,6 +95,8 @@ int nmxp_log_stderr(char *msg);
  *       -# 2, warning output with time and package name
  *       -# 3, normal output without time and package name
  *       -# 4, normal output with only package name
+ *   N.B. Error messages will always be printed!
+ *        TODO Optional for all warning messages
  *
  *
  *   \retval new_verbosity if using mode 1.
