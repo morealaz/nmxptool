@@ -34,7 +34,7 @@ instId   INST_INGV
 #    page or mail limit is exceeded, no further errors will be reported
 #    until the status manager is restarted.
 #
-tsec: 120  page: 3  mail: 1 
+tsec: 60  page: 3  mail: 1 
 #
 # Uncomment the "restartMe" line to enable automatic restart of this
 # process by statmgr/startstop.  statmgr will issue a TYPE_RESTART message

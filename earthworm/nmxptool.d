@@ -7,7 +7,11 @@ RingName             WAVE_RING             # Transport ring to write data to.
 HeartBeatInterval    30                    # Heartbeat interval, in seconds.
 LogFile              1                     # 1 -> Keep log, 0 -> no log file
                                            # 2 -> write to module log but not stderr/stdout
-Verbosity            1                     # Set level of verbosity.
+Verbosity            0                     # Set level of verbosity. Verbosity is a bitmap:
+                                           # 1 Packet, 2 Channel, 4 Raw Stream,
+                                           # 8 CRC32, 16 Connection flow,
+                                           # 32 Packet Management, 64 Extra, 128 Date,
+                                           # 256 Gap, 512 DOD, 1023 All messages.
 
 NmxpHost             naqs1a.int.ingv.it    # Host address of the NaqsServer server
 NmxpPortPDS          28000                 # Port number of the NaqsServer server (Default 28000)
