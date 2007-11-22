@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_base.c,v 1.40 2007-11-22 11:12:08 mtheo Exp $
+ * $Id: nmxp_base.c,v 1.41 2007-11-22 13:36:34 mtheo Exp $
  *
  */
 
@@ -212,9 +212,6 @@ int nmxp_receiveHeader(int isock, NMXP_MSG_SERVER *type, int32_t *length, int ti
 	msg.signature = ntohl(msg.signature);
 	msg.type      = ntohl(msg.type);
 	msg.length    = ntohl(msg.length);
-
-	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CONNFLOW, "nmxp_receiveHeader(): signature = %d, type = %d, length = %d\n",
-		    msg.signature, msg.type, msg.length);
 
 	if (msg.signature != NMX_SIGNATURE)
 	{
