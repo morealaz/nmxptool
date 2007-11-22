@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_chan.c,v 1.23 2007-10-18 14:33:03 mtheo Exp $
+ * $Id: nmxp_chan.c,v 1.24 2007-11-22 11:12:08 mtheo Exp $
  *
  */
 
@@ -61,7 +61,7 @@ int nmxp_chan_cpy_sta_chan(const char *net_dot_station_dot_channel, char *statio
 		strcpy(channel_code, period1);
 	    }
 	} else {
-	    nmxp_log(1, 0, "Name %s is not in NET.STA.CHAN format! (NET. is optional)\n", net_dot_station_dot_channel);
+	    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANNEL, "Name %s is not in NET.STA.CHAN format! (NET. is optional)\n", net_dot_station_dot_channel);
 	}
 
 	if(tmp_name) {
@@ -69,7 +69,7 @@ int nmxp_chan_cpy_sta_chan(const char *net_dot_station_dot_channel, char *statio
 	}
 
     } else {
-	nmxp_log(1, 0, "Some parameter is NULL in nmxp_chan_cpy_sta_chan().\n",  net_dot_station_dot_channel);
+	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANNEL, "Some parameter is NULL in nmxp_chan_cpy_sta_chan().\n",  net_dot_station_dot_channel);
     }
 
     return ret;
@@ -95,7 +95,7 @@ int nmxp_chan_match(const char *net_dot_station_dot_channel, char *pattern)
 
     /* validate pattern channel */
     if(!nmxp_chan_cpy_sta_chan(pattern, sta_pattern, cha_pattern, net_pattern)) {
-	nmxp_log(1, 0, "Channel pattern %s is not in STA.CHAN format!\n", pattern);
+	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANNEL, "Channel pattern %s is not in STA.CHAN format!\n", pattern);
 	return -1;
     }
 
@@ -108,7 +108,7 @@ int nmxp_chan_match(const char *net_dot_station_dot_channel, char *pattern)
 		|| (net_pattern[i] >= '0'  &&  net_pattern[i] <= '9')
 		)
 	  ) {
-	    nmxp_log(1, 0, "Channel pattern %s has not valid NET format!\n", pattern);
+	    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANNEL, "Channel pattern %s has not valid NET format!\n", pattern);
 	    return -1;
 	}
 	i++;
@@ -124,7 +124,7 @@ int nmxp_chan_match(const char *net_dot_station_dot_channel, char *pattern)
 		|| (sta_pattern[i] == '_' )
 	     )
 	  ) {
-	    nmxp_log(1, 0, "Channel pattern %s has not valid STA format!\n", pattern);
+	    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANNEL, "Channel pattern %s has not valid STA format!\n", pattern);
 	    return -1;
 	}
 	i++;
@@ -132,7 +132,7 @@ int nmxp_chan_match(const char *net_dot_station_dot_channel, char *pattern)
     
     l = strlen(cha_pattern);
     if(l != 3) {
-	nmxp_log(1, 0, "Channel pattern %s has not valid CHAN format!\n", pattern);
+	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANNEL, "Channel pattern %s has not valid CHAN format!\n", pattern);
 	return -1;
     }
     i = 0;
@@ -144,7 +144,7 @@ int nmxp_chan_match(const char *net_dot_station_dot_channel, char *pattern)
 		    || (cha_pattern[i] == '?' )
 	      )
 	  ) {
-	    nmxp_log(1, 0, "Channel pattern %s has not valid CHAN format!\n", pattern);
+	    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANNEL, "Channel pattern %s has not valid CHAN format!\n", pattern);
 	    return -1;
 	}
 	i++;
@@ -152,7 +152,7 @@ int nmxp_chan_match(const char *net_dot_station_dot_channel, char *pattern)
 
     strcpy(sta_sdc, net_dot_station_dot_channel);
     if( (cha_sdc = strchr(sta_sdc, '.')) == NULL ) {
-	nmxp_log(1, 0, "Channel %s is not in STA.CHAN format!\n", net_dot_station_dot_channel);
+	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANNEL, "Channel %s is not in STA.CHAN format!\n", net_dot_station_dot_channel);
 	return -2;
     }
     if(cha_sdc) {
@@ -160,7 +160,7 @@ int nmxp_chan_match(const char *net_dot_station_dot_channel, char *pattern)
     }
     l = strlen(cha_sdc);
     if(l != 3) {
-	nmxp_log(1, 0, "Channel %s has not valid CHAN format!\n", pattern);
+	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANNEL, "Channel %s has not valid CHAN format!\n", pattern);
 	return -1;
     }
 
@@ -227,7 +227,7 @@ char *nmxp_chan_lookupName(int32_t key, NMXP_CHAN_LIST_NET *channelList)
     }
 
     if(ret[0] == 0) {
-	nmxp_log(1, 0, "Key %d not found!", key);
+	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANNEL, "Key %d not found!", key);
 	return NULL;
     } else {
 	return ret;
@@ -337,11 +337,11 @@ void nmxp_chan_print_channelList(NMXP_CHAN_LIST_NET *channelList) {
     int chan_number = channelList->number;
     int i_chan = 0;
 
-    nmxp_log(0, 0, "%04d channels:\n", chan_number);
+    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CHANNEL, "%04d channels:\n", chan_number);
 
     for (i_chan = 0; i_chan < chan_number; i_chan++)
     {
-	nmxp_log(0, 0, "%04d %12d %s\n", i_chan+1, channelList->channel[i_chan].key, channelList->channel[i_chan].name);
+	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CHANNEL, "%04d %12d %s\n", i_chan+1, channelList->channel[i_chan].key, channelList->channel[i_chan].name);
     }
 
 }
@@ -351,7 +351,7 @@ void nmxp_meta_chan_free(NMXP_META_CHAN_LIST **chan_list) {
     NMXP_META_CHAN_LIST *iter = *chan_list;
     NMXP_META_CHAN_LIST *iter_next = NULL;
 
-    nmxp_log(0, 1, "nmxp_meta_chan_free()\n");
+    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CHANNEL, "nmxp_meta_chan_free()\n");
 
     if(iter) {
 	iter_next = iter->next;
@@ -393,7 +393,7 @@ int nmxp_meta_chan_compare(NMXP_META_CHAN_LIST *item1, NMXP_META_CHAN_LIST *item
 	    }
 	    break;
 	default:
-	    nmxp_log(1, 0, "Sort type %d not defined!\n", sorttype);
+	    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANNEL, "Sort type %d not defined!\n", sorttype);
 	    break;
     }
     return ret;
@@ -403,10 +403,10 @@ NMXP_META_CHAN_LIST *nmxp_meta_chan_add(NMXP_META_CHAN_LIST **chan_list, int32_t
     NMXP_META_CHAN_LIST *iter = NULL;
     NMXP_META_CHAN_LIST *new_item = NULL;
 
-    nmxp_log(0, 1, "nmxp_meta_chan_add(%d, %d, %s, %d, %d, %s, %d)\n", *chan_list, key, name, start_time, end_time, network, sorttype);
+    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CHANNEL, "nmxp_meta_chan_add(%d, %d, %s, %d, %d, %s, %d)\n", *chan_list, key, name, start_time, end_time, network, sorttype);
 
     if(sorttype != NMXP_META_SORT_KEY  &&  sorttype != NMXP_META_SORT_NAME) {
-	nmxp_log(1, 0, "nmxp_meta_chan_add() can only accept NMXP_META_SORT_KEY or NMXP_META_SORT_NAME. Fixed NMXP_META_SORT_KEY!\n");
+	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANNEL, "nmxp_meta_chan_add() can only accept NMXP_META_SORT_KEY or NMXP_META_SORT_NAME. Fixed NMXP_META_SORT_KEY!\n");
 	sorttype = NMXP_META_SORT_KEY;
     }
 
@@ -449,7 +449,7 @@ NMXP_META_CHAN_LIST *nmxp_meta_chan_search_key(NMXP_META_CHAN_LIST *chan_list, i
     NMXP_META_CHAN_LIST *iter = chan_list;
     int found = 0;
 
-    nmxp_log(0, 1, "nmxp_meta_chan_search_key()\n");
+    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CHANNEL, "nmxp_meta_chan_search_key()\n");
 
     while(iter != NULL  &&  !found) {
 	if(iter->key == key) {
@@ -465,7 +465,7 @@ NMXP_META_CHAN_LIST *nmxp_meta_chan_search_key(NMXP_META_CHAN_LIST *chan_list, i
 NMXP_META_CHAN_LIST *nmxp_meta_chan_set_name(NMXP_META_CHAN_LIST *chan_list, int32_t key, char *name) {
     NMXP_META_CHAN_LIST *ret = NULL;
 
-    nmxp_log(0, 1, "nmxp_meta_chan_set_name()\n");
+    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CHANNEL, "nmxp_meta_chan_set_name()\n");
 
     if( (ret = nmxp_meta_chan_search_key(chan_list, key)) ) {
 	strncpy(ret->name, name, 12);
@@ -477,7 +477,7 @@ NMXP_META_CHAN_LIST *nmxp_meta_chan_set_name(NMXP_META_CHAN_LIST *chan_list, int
 NMXP_META_CHAN_LIST *nmxp_meta_chan_set_times(NMXP_META_CHAN_LIST *chan_list, int32_t key, int32_t start_time, int32_t end_time) {
     NMXP_META_CHAN_LIST *ret = NULL;
 
-    nmxp_log(0, 1, "nmxp_meta_chan_set_times()\n");
+    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CHANNEL, "nmxp_meta_chan_set_times()\n");
 
     if( (ret = nmxp_meta_chan_search_key(chan_list, key)) ) {
 	ret->start_time = start_time;
@@ -490,7 +490,7 @@ NMXP_META_CHAN_LIST *nmxp_meta_chan_set_times(NMXP_META_CHAN_LIST *chan_list, in
 NMXP_META_CHAN_LIST *nmxp_meta_chan_set_network(NMXP_META_CHAN_LIST *chan_list, int32_t key, char *network) {
     NMXP_META_CHAN_LIST *ret = NULL;
 
-    nmxp_log(0, 1, "nmxp_meta_chan_set_network()\n");
+    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CHANNEL, "nmxp_meta_chan_set_network()\n");
 
     if( (ret = nmxp_meta_chan_search_key(chan_list, key)) ) {
 	strncpy(ret->network, network, 12);
@@ -505,13 +505,13 @@ void nmxp_meta_chan_print(NMXP_META_CHAN_LIST *chan_list) {
     str_start_time[0] = 0;
     str_end_time[0] = 0;
 
-    nmxp_log(0, 1, "nmxp_meta_chan_print()\n");
+    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CHANNEL, "nmxp_meta_chan_print()\n");
 
     while(iter != NULL) {
 	nmxp_data_to_str(str_start_time, iter->start_time);
 	nmxp_data_to_str(str_end_time,   iter->end_time);
 
-	nmxp_log(NMXP_LOG_NORM_NO, 0, "%10d %11s.%-5s (%s  -  %s)\n",
+	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "%10d %11s.%-5s (%s  -  %s)\n",
 		iter->key,
 		iter->name,
 		iter->network,

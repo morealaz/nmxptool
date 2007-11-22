@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_base.c,v 1.39 2007-11-21 13:22:20 mtheo Exp $
+ * $Id: nmxp_base.c,v 1.40 2007-11-22 11:12:08 mtheo Exp $
  *
  */
 
@@ -42,12 +42,12 @@ int nmxp_openSocket(char *hostname, int portNum)
   
   if (!hostname)
   {
-    nmxp_log(1,0, "Empty host name?\n");
+    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CONNFLOW, "Empty host name?\n");
     return -1;
   }
 
   if ( (hostinfo = gethostbyname(hostname)) == NULL) {
-    nmxp_log(1,0, "Cannot lookup host: %s\n", hostname);
+    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CONNFLOW, "Cannot lookup host: %s\n", hostname);
     return -1;
   }
 
@@ -56,7 +56,7 @@ int nmxp_openSocket(char *hostname, int portNum)
     isock = socket (AF_INET, SOCK_STREAM, 0);
     if (isock < 0)
     {
-      nmxp_log (1,0, "Can't open stream socket\n");
+      nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CONNFLOW, "Can't open stream socket\n");
       exit(1);
     }
 
@@ -70,19 +70,19 @@ int nmxp_openSocket(char *hostname, int portNum)
     /* Report action and resolved address */
     memcpy(&hostaddr.s_addr, *hostinfo->h_addr_list,
 	   sizeof (hostaddr.s_addr));
-    nmxp_log(0,1, "Attempting to connect to %s port %d\n",
+    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CONNFLOW, "Attempting to connect to %s port %d\n",
 	    inet_ntoa(hostaddr), portNum);
 
     if (connect(isock, (struct sockaddr *)&psServAddr, sizeof(psServAddr)) >= 0)
     {
       sleepTime = 1;
-      nmxp_log(0, 1, "Connection established: socket=%i,IP=%s,port=%d\n",
+      nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CONNFLOW, "Connection established: socket=%i,IP=%s,port=%d\n",
 	      isock, inet_ntoa(hostaddr), portNum);
       return isock;
     }
     else
     {
-      nmxp_log(1, 0, "Connecting to %s port %d. Trying again after %d seconds...\n",
+      nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CONNFLOW, "Connecting to %s port %d. Trying again after %d seconds...\n",
 	      inet_ntoa(hostaddr), portNum, sleepTime);
       close (isock);
       sleep (sleepTime);
@@ -96,7 +96,7 @@ int nmxp_openSocket(char *hostname, int portNum)
 
 int nmxp_closeSocket(int isock)
 {
-    nmxp_log(0, 1, "Closed connection.\n");
+    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CONNFLOW, "Closed connection.\n");
     return close(isock);
 }
 
@@ -143,7 +143,7 @@ int nmxp_recv_ctrl(int isock, void *buffer, int length, int timeoutsec, int *rec
       cc = recv(isock, buffer_char + recvCount, length - recvCount, 0);
       *recv_errno  = errno;
       if(cc <= 0) {
-	  nmxp_log(NMXP_LOG_ERR, 0, "nmxp_recv_ctrl(): (cc=%d <= 0) errno=%d  recvCount=%d  length=%d\n", cc, *recv_errno, recvCount, length);
+	  nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CONNFLOW, "nmxp_recv_ctrl(): (cc=%d <= 0) errno=%d  recvCount=%d  length=%d\n", cc, *recv_errno, recvCount, length);
       } else {
 	  recvCount += cc;
       }
@@ -175,7 +175,7 @@ int nmxp_recv_ctrl(int isock, void *buffer, int length, int timeoutsec, int *rec
 			  break;
 	  }
 	  */
-    nmxp_log(NMXP_LOG_ERR, 0, "nmxp_recv_ctrl(): recvCount=%d  length=%d  (cc=%d) errno=%d (%s)\n", recvCount, length, cc, *recv_errno, recv_errno_str);
+    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CONNFLOW, "nmxp_recv_ctrl(): recvCount=%d  length=%d  (cc=%d) errno=%d (%s)\n", recvCount, length, cc, *recv_errno, recv_errno_str);
 	    
     if(recvCount != length || *recv_errno != EAGAIN) {
 	return NMXP_SOCKET_ERROR;
@@ -213,13 +213,13 @@ int nmxp_receiveHeader(int isock, NMXP_MSG_SERVER *type, int32_t *length, int ti
 	msg.type      = ntohl(msg.type);
 	msg.length    = ntohl(msg.length);
 
-	nmxp_log(0,1, "nmxp_receiveHeader(): signature = %d, type = %d, length = %d\n",
+	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CONNFLOW, "nmxp_receiveHeader(): signature = %d, type = %d, length = %d\n",
 		    msg.signature, msg.type, msg.length);
 
 	if (msg.signature != NMX_SIGNATURE)
 	{
 	    ret = NMXP_SOCKET_ERROR;
-	    nmxp_log(1,0, "nmxp_receiveHeader(): signature mismatches. signature = %d, type = %d, length = %d\n",
+	    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CONNFLOW, "nmxp_receiveHeader(): signature mismatches. signature = %d, type = %d, length = %d\n",
 		    msg.signature, msg.type, msg.length);
 	} else {
 	    *type = msg.type;
@@ -256,9 +256,9 @@ int nmxp_receiveMessage(int isock, NMXP_MSG_SERVER *type, void **buffer, int32_t
 	    ret = nmxp_recv_ctrl(isock, *buffer, *length, 0, recv_errno);
 
 	    if(*type == NMXP_MSG_ERROR) {
-		nmxp_log(NMXP_LOG_ERR, 0, "Received ErrorMessage: %s\n", *buffer);
+		nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_PACKETMAN, "Received ErrorMessage: %s\n", *buffer);
 	    } else {
-		nmxp_log(NMXP_LOG_WARN, 1, "Received message type: %d  length=%d\n", *type, *length);
+		nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_PACKETMAN, "Received message type: %d  length=%d\n", *type, *length);
 	    }
 
 	}
@@ -266,9 +266,9 @@ int nmxp_receiveMessage(int isock, NMXP_MSG_SERVER *type, void **buffer, int32_t
 
     if(*recv_errno != 0) {
 	if(*recv_errno == EAGAIN) {
-	    nmxp_log(NMXP_LOG_WARN, 0, "Timeout receveing in nmxp_receiveMessage()\n");
+	    nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_CONNFLOW, "Timeout receveing in nmxp_receiveMessage()\n");
 	} else {
-	    nmxp_log(NMXP_LOG_ERR, 0, "Error in nmxp_receiveMessage()\n");
+	    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CONNFLOW, "Error in nmxp_receiveMessage()\n");
 	}
     }
 
@@ -318,7 +318,7 @@ NMXP_DATA_PROCESS *nmxp_processDecompressedData(char* buffer_data, int length_da
   }
 
   if(!nmxp_chan_cpy_sta_chan(nmxp_chan_lookupName(pKey, channelList), station_code, channel_code, network_code)) {
-    nmxp_log(1,0, "Channel name not in STN.CHAN format: %s\n", nmxp_chan_lookupName(pKey, channelList));
+    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_PACKETMAN, "Channel name not in STA.CHAN format: %s\n", nmxp_chan_lookupName(pKey, channelList));
   }
   
   nmxp_data_init(&pd);
@@ -392,17 +392,17 @@ NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data
 
 	// TOREMOVE int my_order = get_my_wordorder();
 	int my_host_is_bigendian = nmxp_data_bigendianhost();
-	nmxp_log(0, 1, "my_host_is_bigendian %d\n", my_host_is_bigendian);
+	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN, "my_host_is_bigendian %d\n", my_host_is_bigendian);
 
 	memcpy(&nmx_oldest_sequence_number, buffer_data, 4);
-	nmxp_log(0, 1, "Oldest sequence number = %d\n", nmx_oldest_sequence_number);
+	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN, "Oldest sequence number = %d\n", nmx_oldest_sequence_number);
 
 	memcpy(nmx_hdr, buffer_data+4, 17);
 	/* Decode the Nanometrics packet header bundle. */
 	memcpy (&nmx_ptype, nmx_hdr+0, 1);
 	if ( (nmx_ptype & 0xf) == 9) {
 	    /* Filler packet.  Discard entire packet.   */
-	    nmxp_log (NMXP_LOG_ERR,0, "Filler packet - discarding\n");
+	    nmxp_log (NMXP_LOG_ERR, NMXP_LOG_D_PACKETMAN, "Filler packet - discarding\n");
 	    //m continue;
 	    exit(0);
 	}
@@ -419,7 +419,7 @@ NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data
 	const uint32_t high_scale_p = 4096 * 4096;
 	/* check if nmx_x0 is negative like as signed 3-byte int */
 	if( (nmx_x0 & high_scale) ==  high_scale) {
-	    // nmxp_log(0, 1, "WARNING: changed nmx_x0, old value = %d\n",  nmx_x0);
+	    // nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN, "WARNING: changed nmx_x0, old value = %d\n",  nmx_x0);
 	    nmx_x0 -= high_scale_p;
 	}
 	/* TOREMOVE if (my_order != SEED_LITTLE_ENDIAN) { */
@@ -439,17 +439,17 @@ NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data
 	chan_code = nmx_sample_rate&7;
 	this_sample_rate = nmx_rate_code_to_sample_rate[rate_code];
 
-	nmxp_log(0, 1, "nmx_ptype          = %d\n", nmx_ptype);
-	nmxp_log(0, 1, "nmx_seconds        = %d\n", nmx_seconds);
-	nmxp_log(0, 1, "nmx_ticks          = %d\n", nmx_ticks);
+	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN, "nmx_ptype          = %d\n", nmx_ptype);
+	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN, "nmx_seconds        = %d\n", nmx_seconds);
+	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN, "nmx_ticks          = %d\n", nmx_ticks);
 
-	nmxp_log(0, 1, "nmx_seconds_double = %f\n", nmx_seconds_double);
-	nmxp_log(0, 1, "nmx_x0             = %d\n", nmx_x0);
+	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN, "nmx_seconds_double = %f\n", nmx_seconds_double);
+	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN, "nmx_x0             = %d\n", nmx_x0);
 
-	nmxp_log(0, 1, "nmx_instr_id       = %d\n", nmx_instr_id);
-	nmxp_log(0, 1, "nmx_seqno          = %d\n", nmx_seqno);
-	nmxp_log(0, 1, "nmx_sample_rate    = %d\n", nmx_sample_rate);
-	nmxp_log(0, 1, "this_sample_rate    = %d\n", this_sample_rate);
+	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN, "nmx_instr_id       = %d\n", nmx_instr_id);
+	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN, "nmx_seqno          = %d\n", nmx_seqno);
+	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN, "nmx_sample_rate    = %d\n", nmx_sample_rate);
+	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN, "this_sample_rate    = %d\n", this_sample_rate);
 
 	pKey = (nmx_instr_id << 16) | ( 1 << 8) | ( chan_code);
 
@@ -458,10 +458,10 @@ NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data
 	pSampRate = this_sample_rate;
 
 	if(!nmxp_chan_cpy_sta_chan(nmxp_chan_lookupName(pKey, channelList), station_code, channel_code, network_code)) {
-	    nmxp_log(NMXP_LOG_ERR,0, "Channel name not in STN.CHAN format: %s\n", nmxp_chan_lookupName(pKey, channelList));
+	    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_PACKETMAN, "Channel name not in STA.CHAN format: %s\n", nmxp_chan_lookupName(pKey, channelList));
 	}
   
-	nmxp_log(0, 1, "Channel key %d for %s.%s\n", pKey, station_code, channel_code);
+	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN, "Channel key %d for %s.%s\n", pKey, station_code, channel_code);
 
 	comp_bytecount = length_data-21;
 	indata = (unsigned char *) buffer_data + 21;
@@ -472,23 +472,23 @@ NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data
 	nout = 1;
 	for (i=0; i<comp_bytecount; i+=17) {
 	    if (i+17>comp_bytecount) {
-		nmxp_log (NMXP_LOG_ERR,0, "comp_bytecount = %d, i+17 = %d\n",
+		nmxp_log (NMXP_LOG_ERR, NMXP_LOG_D_PACKETMAN, "comp_bytecount = %d, i+17 = %d\n",
 			comp_bytecount, i+17);
 		exit(1);
 	    }
 	    if (nout+16 > MAX_OUTDATA)  {
-		nmxp_log (NMXP_LOG_ERR, 0, "Output buffer size too small\n");
+		nmxp_log (NMXP_LOG_ERR,  NMXP_LOG_D_PACKETMAN, "Output buffer size too small\n");
 		exit(1);
 	    }
 	    k = nmxp_data_unpack_bundle (outdata+nout,indata+i,&prev_xn);
-	    if (k < 0) nmxp_log (NMXP_LOG_WARN, 1, "Null bundle: %s.%s.%s (k=%d) %s %d\n", network_code, station_code, channel_code, k, __FILE__,  __LINE__);
+	    if (k < 0) nmxp_log (NMXP_LOG_WARN, NMXP_LOG_D_PACKETMAN, "Null bundle: %s.%s.%s (k=%d) %s %d\n", network_code, station_code, channel_code, k, __FILE__,  __LINE__);
 	    if (k < 0) break;
 	    nout += k;
 	    /* prev_xn = outdata[nout-1]; */
 	}
 	nout--;
 
-	nmxp_log(0, 1, "Unpacked %d samples.\n", nout);
+	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN, "Unpacked %d samples.\n", nout);
 
 	pDataPtr = outdata;
 

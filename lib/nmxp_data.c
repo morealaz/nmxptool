@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_data.c,v 1.39 2007-10-07 18:13:18 mtheo Exp $
+ * $Id: nmxp_data.c,v 1.40 2007-11-22 11:12:08 mtheo Exp $
  *
  */
 
@@ -95,7 +95,7 @@ int nmxp_data_unpack_bundle (int32_t *outdata, unsigned char *indata, int32_t *p
 
 	for (j=0; j<4; j++) {
 		/*
-		nmxp_log (0,1, "cb[%d]=%d\n", j, cb[j]);
+		nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN, "cb[%d]=%d\n", j, cb[j]);
 		*/
 		switch (cb[j]) 
 		{   
@@ -134,7 +134,7 @@ int nmxp_data_unpack_bundle (int32_t *outdata, unsigned char *indata, int32_t *p
 
 		for (i=0; i<k; i++) {
 			*outdata = *prev + d4[i];
-			/* nmxp_log(0, 0, "val = %d, diff[%d] = %d, *prev = %d\n",
+			/* nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN, "val = %d, diff[%d] = %d, *prev = %d\n",
 				*outdata, i, d4[i], *prev);
 				*/
 			*prev = *outdata;
@@ -179,27 +179,27 @@ int nmxp_data_trim(NMXP_DATA_PROCESS *pd, double trim_start_time, double trim_en
 
 
     if(pd) {
-	nmxp_log(0, 1, "nmxp_data_trim(..., %.4f, %.4f, %d!\n", trim_start_time, trim_end_time, exclude_bitmap);
+	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN, "nmxp_data_trim(..., %.4f, %.4f, %d!\n", trim_start_time, trim_end_time, exclude_bitmap);
 	first_time = pd->time;
 	last_time = pd->time + ((double) pd->nSamp / (double) pd->sampRate);
 	if(first_time <= trim_start_time &&  trim_start_time <= last_time) {
 	    first_nsamples_to_remove = (int) ( ((trim_start_time - first_time) * (double) pd->sampRate) + 0.5 );
 	    if((exclude_bitmap & NMXP_DATA_TRIM_EXCLUDE_FIRST)) {
 		first_nsamples_to_remove++;
-		nmxp_log(0, 1, "Excluded the first sample!\n");
+		nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN, "Excluded the first sample!\n");
 	    }
 	}
 	if(first_time <= trim_end_time  &&  trim_end_time <= last_time) {
 	    last_nsamples_to_remove = (int) ( ((last_time - trim_end_time) * (double) pd->sampRate) + 0.5 );
 	    if((exclude_bitmap & NMXP_DATA_TRIM_EXCLUDE_LAST)) {
 		last_nsamples_to_remove++;
-		nmxp_log(0, 1, "Excluded the last sample!\n");
+		nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN, "Excluded the last sample!\n");
 	    }
 	}
 
-	nmxp_log(0, 1, "first_time=%.2f last_time=%.2f trim_start_time=%.2f trim_end_time=%.2f\n",
+	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN, "first_time=%.2f last_time=%.2f trim_start_time=%.2f trim_end_time=%.2f\n",
 		first_time, last_time, trim_start_time, trim_end_time);
-	nmxp_log(0, 1, "first_nsamples_to_remove=%d last_nsamples_to_remove=%d pd->nSamp=%d\n",
+	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN, "first_nsamples_to_remove=%d last_nsamples_to_remove=%d pd->nSamp=%d\n",
 		first_nsamples_to_remove,
 		last_nsamples_to_remove,
 		pd->nSamp);
@@ -229,28 +229,28 @@ int nmxp_data_trim(NMXP_DATA_PROCESS *pd, double trim_start_time, double trim_en
 
 	    } else if(new_nSamp == 0) {
 		if(pd->pDataPtr) {
-		    nmxp_log(0, 0, "nmxp_data_trim() nSamp = %d\n", new_nSamp);
+		    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN, "nmxp_data_trim() nSamp = %d\n", new_nSamp);
 		}
 		pd->nSamp = 0;
 		pd->x0 = -1;
 		pd->xn = -1;
 		ret = 1;
 	    } else {
-		    nmxp_log(1, 0, "Error in nmxp_data_trim() nSamp = %d\n", new_nSamp);
+		    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_PACKETMAN, "Error in nmxp_data_trim() nSamp = %d\n", new_nSamp);
 	    }
 
 	} else {
 	    ret = 2;
 	}
     } else {
-	nmxp_log(1, 0, "nmxp_data_trim() is called with pd = NULL\n");
+	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_PACKETMAN, "nmxp_data_trim() is called with pd = NULL\n");
     }
 
     if(ret == 1) {
-	nmxp_log(0, 1, "nmxp_data_trim() trimmed data! (Output %d samples)\n", pd->nSamp);
+	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN, "nmxp_data_trim() trimmed data! (Output %d samples)\n", pd->nSamp);
     }
 
-    nmxp_log(0, 1, "nmxp_data_trim() exit ret=%d\n", ret);
+    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN, "nmxp_data_trim() exit ret=%d\n", ret);
 
     return ret;
 }
@@ -288,9 +288,9 @@ int nmxp_data_log(NMXP_DATA_PROCESS *pd) {
 	nmxp_data_to_str(str_start, pd->time);
 	nmxp_data_to_str(str_end, pd->time + ((double) pd->nSamp / (double) pd->sampRate));
 
-	// nmxp_log(0, 0, "%12d %5s.%3s rate=%03d (%s - %s) [%d, %d] pts=%04d (%d, %d, %d, %d) lat=%.1f len=%d\n",
+	// nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN, "%12d %5s.%3s rate=%03d (%s - %s) [%d, %d] pts=%04d (%d, %d, %d, %d) lat=%.1f len=%d\n",
 	// printf("%10d %5s.%3s 03dHz (%s - %s) lat=%.1fs [%d, %d] pts=%04d (%d, %d, %d, %d) len=%d\n",
-	nmxp_log(NMXP_LOG_NORM_NO, 0, "%s.%s.%3s %3dHz (%s - %s) lat %.1fs [%d, %d] (%d) %4dpts (%d, %d, %d, %d, %d) %d\n",
+	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "%s.%s.%3s %3dHz (%s - %s) lat %.1fs [%d, %d] (%d) %4dpts (%d, %d, %d, %d, %d) %d\n",
 		/* pd->key, */
 		pd->network,
 		(strlen(pd->station) == 0)? "XXXX" : pd->station,
@@ -323,7 +323,7 @@ int nmxp_data_log(NMXP_DATA_PROCESS *pd) {
 	}
 	*/
     } else {
-	nmxp_log(NMXP_LOG_WARN, 0, "Pointer to NMXP_DATA_PROCESS is NULL!\n");
+	nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_PACKETMAN, "Pointer to NMXP_DATA_PROCESS is NULL!\n");
     }
 
     return 0;
@@ -360,14 +360,14 @@ int nmxp_data_parse_date(const char *pstr_date, struct tm *ret_tm) {
     int state;
     int flag_finished = 0;
 
-    nmxp_log(0, 1, "Date to validate '%s'\n", pstr_date);
+    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_DATE, "Date to validate '%s'\n", pstr_date);
 	
     strncpy(str_date, pstr_date, MAX_LENGTH_STR_MESSAGE);
     pEnd = str_date;
     app = strtol(str_date, &pEnd, 10);
     state = 0;
     if(  errno == EINVAL ||  errno == ERANGE ) {
-	nmxp_log(1, 0, "%s\n", strerror(errno));
+	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_DATE, "%s\n", strerror(errno));
 	ret = -1;
     }
 
@@ -406,7 +406,7 @@ int nmxp_data_parse_date(const char *pstr_date, struct tm *ret_tm) {
 	    &&  errno != ERANGE
 	    ) {
 
-    nmxp_log(0, 1, "state=%d value=%d flag_finished=%d ret=%d pEnd[0]=%c [%d]  (%s)\n", state, app, flag_finished, ret, (pEnd[0]==0)? '_' : pEnd[0], pEnd[0], pEnd);
+    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_DATE, "state=%d value=%d flag_finished=%d ret=%d pEnd[0]=%c [%d]  (%s)\n", state, app, flag_finished, ret, (pEnd[0]==0)? '_' : pEnd[0], pEnd[0], pEnd);
 
 	/* switch on state */
 	switch(state) {
@@ -464,7 +464,7 @@ int nmxp_data_parse_date(const char *pstr_date, struct tm *ret_tm) {
 		ret_tm->tm_mon = m;
 		ret_tm->tm_mday = d;
 
-		nmxp_log(0, 1, "Month %d Day %d\n", m, d);
+		nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_DATE, "Month %d Day %d\n", m, d);
 
 		if(pEnd[0] == 0) {
 		    flag_finished = 1;
@@ -517,13 +517,13 @@ int nmxp_data_parse_date(const char *pstr_date, struct tm *ret_tm) {
 	    pEnd[0] = ' '; /* overwrite separator with space */
 	    app = strtol(pEnd, &pEnd, 10);
 	    if(  errno == EINVAL ||  errno == ERANGE ) {
-		nmxp_log(1, 0, "%s\n", strerror(errno));
+		nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_DATE, "%s\n", strerror(errno));
 		ret = -1;
 	    }
 	}
     }
 
-    nmxp_log(0, 1, "FINAL: state=%d value=%d flag_finished=%d ret=%d pEnd[0]=%c [%d]  (%s)\n", state, app, flag_finished, ret, (pEnd[0]==0)? '_' : pEnd[0], pEnd[0], pEnd);
+    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_DATE, "FINAL: state=%d value=%d flag_finished=%d ret=%d pEnd[0]=%c [%d]  (%s)\n", state, app, flag_finished, ret, (pEnd[0]==0)? '_' : pEnd[0], pEnd[0], pEnd);
 
     if(!flag_finished && (ret == 0)) {
 	strncpy(err_message, "Date incomplete!", MAX_LENGTH_ERR_MESSAGE);
@@ -531,9 +531,9 @@ int nmxp_data_parse_date(const char *pstr_date, struct tm *ret_tm) {
     }
 
     if(ret == -1) {
-	nmxp_log(1, 0, "in date '%s' %s\n", pstr_date, err_message);
+	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_DATE, "in date '%s' %s\n", pstr_date, err_message);
     } else {
-	nmxp_log(0, 1, "Date '%s' has been validate! %04d/%02d/%02d %02d:%02d:%02d\n",
+	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_DATE, "Date '%s' has been validate! %04d/%02d/%02d %02d:%02d:%02d\n",
 		pstr_date,
 		ret_tm->tm_year,
 		ret_tm->tm_mon,
@@ -614,7 +614,7 @@ int nmxp_data_msr_pack(NMXP_DATA_PROCESS *pd, NMXP_DATA_SEED *data_seed, void *p
 	msr_srcname (msr, data_seed->srcname, 0);
 
 	pDataDest = msr->datasamples;
-	nmxp_log(0, 1, "x0 %d, xn %d\n", pDataDest[0], pDataDest[msr->numsamples-1]);
+	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN, "x0 %d, xn %d\n", pDataDest[0], pDataDest[msr->numsamples-1]);
 
 	/* msr_print(msr, 2); */
 
