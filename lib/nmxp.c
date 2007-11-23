@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp.c,v 1.53 2007-11-22 11:12:08 mtheo Exp $
+ * $Id: nmxp.c,v 1.54 2007-11-23 17:34:18 mtheo Exp $
  *
  */
 
@@ -18,6 +18,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#ifdef HAVE_ARPA_INET_H
+#include <arpa/inet.h>
+#endif
 
 int nmxp_sendConnect(int isock) {
     return nmxp_sendMessage(isock, NMXP_MSG_CONNECT, NULL, 0);
