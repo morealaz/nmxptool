@@ -26,7 +26,7 @@ NmxpPortDAP          28002                 # Port number of the DataServer serve
                                            # Useful for Data On Demand (i.e. channel HL) (Default 0. No time-out)
 
 MaxTolerableLatency  120                   # Max tolerable latency for each channel. (Default 600 sec.)
-                                           # In general, it is not use with parameter TimeoutRecv.
+                                           # In general, do not use with parameter TimeoutRecv.
 
 DefaultNetworkCode   IV                    # Default network code where in Channel is not declared
 
