@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.h,v 1.21 2007-11-22 11:13:05 mtheo Exp $
+ * $Id: nmxptool_getoptlong.h,v 1.22 2007-11-23 16:58:52 mtheo Exp $
  *
  */
 
@@ -44,6 +44,8 @@
 #define DEFAULT_TIMEOUTRECV_MAXIMUM 		300
 
 #define DEFAULT_VERBOSE_LEVEL 			NMXP_LOG_D_NULL
+#define DEFAULT_VERBOSE_LEVEL_MINIMUM		NMXP_LOG_D_NULL
+#define DEFAULT_VERBOSE_LEVEL_MAXIMUM		NMXP_LOG_D_ANY
 
 
 /*! \brief Struct that stores information about parameter of the program */
