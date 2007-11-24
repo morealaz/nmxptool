@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_chan.h,v 1.21 2007-10-07 14:11:23 mtheo Exp $
+ * $Id: nmxp_chan.h,v 1.22 2007-11-24 21:39:54 mtheo Exp $
  *
  */
 
@@ -228,7 +228,15 @@ void nmxp_chan_sortByName(NMXP_CHAN_LIST *channelList);
  * \param channelList Channel List
  *
  */
-void nmxp_chan_print_channelList(NMXP_CHAN_LIST_NET *channelList);
+void nmxp_chan_print_channelList(NMXP_CHAN_LIST *channelList);
+
+
+/*! Print channel information
+ *
+ * \param channelList Channel List
+ *
+ */
+void nmxp_chan_print_netchannelList(NMXP_CHAN_LIST_NET *channelList);
 
 
 void nmxp_meta_chan_free(NMXP_META_CHAN_LIST **chan_list);

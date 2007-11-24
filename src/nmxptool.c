@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.90 2007-11-24 20:24:49 mtheo Exp $
+ * $Id: nmxptool.c,v 1.91 2007-11-24 21:40:23 mtheo Exp $
  *
  */
 
@@ -172,14 +172,15 @@ int main (int argc, char **argv) {
 	/* List available channels on server */
 	if(params.flag_listchannels) {
 
-	    // TOREMOVE
-	    // channelList = nmxp_getAvailableChannelList(params.hostname, params.portnumberpds, NMXP_DATA_TIMESERIES);
-	    // TOREMOVE
-	    // nmxp_chan_print_channelList(channelList);
-
 	    nmxp_getMetaChannelList(params.hostname, params.portnumberdap, NMXP_DATA_TIMESERIES, params.flag_request_channelinfo);
-
 	    return 1;
+
+	} else if(params.flag_listchannelsnaqs) {
+
+	    channelList = nmxp_getAvailableChannelList(params.hostname, params.portnumberpds, NMXP_DATA_TIMESERIES);
+	    nmxp_chan_print_channelList(channelList);
+	    return 1;
+
 	}
     }
 
@@ -195,7 +196,7 @@ int main (int argc, char **argv) {
 	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANNEL, "Channels not found!\n");
 	return 1;
     } else {
-	nmxp_chan_print_channelList(channelList_subset);
+	nmxp_chan_print_netchannelList(channelList_subset);
 
 	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CHANNEL, "Init channelListSeq.\n");
 

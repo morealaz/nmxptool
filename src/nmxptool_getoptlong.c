@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.41 2007-11-24 20:58:48 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.42 2007-11-24 21:40:23 mtheo Exp $
  *
  */
 
@@ -42,6 +42,7 @@ const NMXPTOOL_PARAMS NMXPTOOL_PARAMS_DEFAULT =
     DEFAULT_TIMEOUTRECV,
     DEFAULT_VERBOSE_LEVEL,
     NULL,
+    0,
     0,
     0,
     0,
@@ -104,8 +105,8 @@ void nmxptool_usage(struct option long_options[])
 
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
 \n\
-Usage: %s -H hostname --listchannels\n\
-             Print list of available channels on DataServer.\n\
+Usage: %s -H hostname --listchannels |  --listchannelsnaqs\n\
+             Print list of available channels on DataServer or NaqsServer.\n\
 \n\
        %s -H hostname -C channellist -s DATE -e DATE [...]\n\
        %s -H hostname -C channellist -s DATE -t SECs [...]\n\
@@ -193,7 +194,7 @@ DAP Arguments:\n\
   -d, --delay=SECs        Receive continuosly data with delay [%d..%d].\n\
   -u, --username=USER     DataServer username.\n\
   -p, --password=PASS     DataServer password.\n\
-  -l, --listchannels      Print list of available channels.\n\
+  -l, --listchannels      Print list of available channels on DataServer.\n\
   -i, --channelinfo       Print list of available channels and channelinfo.\n\
 \n\
 ",
@@ -214,12 +215,13 @@ PDS arguments:\n\
                            0 for original sample rate and decompressed data.\n\
                           >0 for specified sample rate and decompressed data.\n\
   -b, --buffered          Request also recent packets into the past.\n\
+  -L, --listchannelsnaqs  Print list of available channels on NaqsServer.\n\
   -M, --maxlatency=SECs   Max tolerable latency (default %d) [%d..%d].\n\
   -T, --timeoutrecv=SECs  Time-out for flushing buffered packets. DISABLED!\n\
                           (default %d. No time-out.) [%d..%d].\n\
                           -T is useful for retrieving Data On Demand.\n\
                           -M, -T are usable only with Raw Stream --stc=-1.\n\
-                          In general, -M and -T are mutually exclusives.\n\
+                          In general, -M and -T are not used together.\n\
 \n\
 ",
 	    DEFAULT_STC,
@@ -261,7 +263,7 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 	{"portdap",      required_argument, 0, 'D'},
 	{"channels",     required_argument, 0, 'C'},
 	{"network",      required_argument, 0, 'N'},
-	{"location",     required_argument, 0, 'L'},
+	{"location",     required_argument, 0, 'n'},
 	{"stc",          required_argument, 0, 'S'},
 	{"rate",         required_argument, 0, 'R'},
 	{"start_time",   required_argument, 0, 's'},
@@ -277,6 +279,7 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 	{"logdata",      no_argument,       0, 'g'},
 	{"buffered",     no_argument,       0, 'b'},
 	{"listchannels", no_argument,       0, 'l'},
+	{"listchannelsnaqs", no_argument,   0, 'L'},
 	{"channelinfo",  no_argument,       0, 'i'},
 #ifdef HAVE_LIBMSEED
 	{"writeseed",    no_argument,       0, 'm'},
@@ -311,7 +314,7 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
     /* init params */
     memcpy(params, &NMXPTOOL_PARAMS_DEFAULT, sizeof(NMXPTOOL_PARAMS_DEFAULT));
 
-    char optstr[100] = "H:P:D:C:N:L:S:R:s:e:t:d:u:p:M:T:v:gbliwhV";
+    char optstr[100] = "H:P:D:C:N:n:S:R:s:e:t:d:u:p:M:T:v:gblLiwhV";
 
 #ifdef HAVE_LIBMSEED
     strcat(optstr, "m");
@@ -376,7 +379,7 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 		    params->network = optarg;
 		    break;
 
-		case 'L':
+		case 'n':
 		    params->location = optarg;
 		    break;
 
@@ -461,6 +464,10 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 		    params->flag_listchannels = 1;
 		    break;
 
+		case 'L':
+		    params->flag_listchannelsnaqs = 1;
+		    break;
+
 		case 'i':
 		    params->flag_request_channelinfo = 1;
 		    break;
@@ -527,6 +534,11 @@ int nmxptool_check_params(NMXPTOOL_PARAMS *params) {
 	ret = -1;
 	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "<hostname> is required!\n");
     } else if(params->flag_listchannels) {
+	if(params->flag_listchannelsnaqs) {
+	    ret = -1;
+	    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "-l and -L can not be used together!\n");
+	}
+    } else if(params->flag_listchannelsnaqs) {
 	/* Do nothing */
     } else if(params->hostname == NULL) {
 	ret = -1;
@@ -542,7 +554,7 @@ int nmxptool_check_params(NMXPTOOL_PARAMS *params) {
 	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "<start_time> has to be used with <end_time> or <interval>!\n");
     } else if(params->start_time != 0 && params->interval != 0   &&   params->end_time != 0) {
 	ret = -1;
-	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "<end_time> and <interval> are exclusives!\n");
+	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "<end_time> and <interval> can not be used together!\n");
     } else if(params->start_time != 0   &&   params->end_time != 0
 	    && params->start_time >= params->end_time) {
 	ret = -1;

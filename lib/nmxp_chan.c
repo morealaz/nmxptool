@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_chan.c,v 1.25 2007-11-24 20:32:47 mtheo Exp $
+ * $Id: nmxp_chan.c,v 1.26 2007-11-24 21:39:54 mtheo Exp $
  *
  */
 
@@ -333,7 +333,21 @@ void nmxp_chan_sortByName(NMXP_CHAN_LIST *channelList) {
     qsort (channelList->channel, channelList->number, sizeof (NMXP_CHAN_KEY), chan_name_compare);
 }
 
-void nmxp_chan_print_channelList(NMXP_CHAN_LIST_NET *channelList) {
+
+void nmxp_chan_print_channelList(NMXP_CHAN_LIST *channelList) {
+    int chan_number = channelList->number;
+    int i_chan = 0;
+
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "%04d channels:\n", chan_number);
+
+    for (i_chan = 0; i_chan < chan_number; i_chan++)
+    {
+	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "%04d %12d %s\n", i_chan+1, channelList->channel[i_chan].key, channelList->channel[i_chan].name);
+    }
+
+}
+
+void nmxp_chan_print_netchannelList(NMXP_CHAN_LIST_NET *channelList) {
     int chan_number = channelList->number;
     int i_chan = 0;
 
@@ -465,7 +479,7 @@ NMXP_META_CHAN_LIST *nmxp_meta_chan_search_key(NMXP_META_CHAN_LIST *chan_list, i
 NMXP_META_CHAN_LIST *nmxp_meta_chan_set_name(NMXP_META_CHAN_LIST *chan_list, int32_t key, char *name) {
     NMXP_META_CHAN_LIST *ret = NULL;
 
-    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CHANNEL, "nmxp_meta_chan_set_name()\n");
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_CHANNEL, "nmxp_meta_chan_set_name()\n");
 
     if( (ret = nmxp_meta_chan_search_key(chan_list, key)) ) {
 	strncpy(ret->name, name, 12);
