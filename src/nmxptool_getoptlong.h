@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.h,v 1.22 2007-11-23 16:58:52 mtheo Exp $
+ * $Id: nmxptool_getoptlong.h,v 1.23 2007-11-24 20:58:48 mtheo Exp $
  *
  */
 
@@ -17,7 +17,8 @@
 #include <getopt.h>
 #include <stdint.h>
 
-#define PACKAGE_BUILD 1101
+/* For stable release set to "" */
+#define PACKAGE_BUILD "-beta11"
 
 #define DEFAULT_NETWORK  	"XX"
 #define DEFAULT_PORT_DAP 	28002
