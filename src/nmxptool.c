@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.89 2007-11-23 16:58:36 mtheo Exp $
+ * $Id: nmxptool.c,v 1.90 2007-11-24 20:24:49 mtheo Exp $
  *
  */
 
@@ -150,12 +150,14 @@ int main (int argc, char **argv) {
     if(params.ew_configuration_file) {
 
 #ifdef HAVE_EARTHWORMOBJS
+	nmxp_log_init(nmxptool_ew_logit_msg, nmxptool_ew_logit_err);
+
 	nmxptool_ew_configure(argv, &params);
+
 	/* Check consistency of params */
 	if(nmxptool_check_params(&params) != 0) {
 	    return 1;
 	}
-	nmxp_log_init(nmxptool_ew_logit_msg, nmxptool_ew_logit_err);
 #endif
 
     } else {
