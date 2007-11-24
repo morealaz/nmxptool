@@ -66,7 +66,7 @@ time_t timeLastBeat = 0;
 void nmxptool_ew_attach() {
     /* Attach to Output transport ring */
     tport_attach (&regionOut, ringKey);
-    logit ("t", "%s version %s\n", PACKAGE_NAME, PACKAGE_VERSION);
+    logit ("t", "%s version %s%s\n", PACKAGE_NAME, PACKAGE_VERSION, PACKAGE_BUILD);
 }
 
 void nmxptool_ew_detach() {
@@ -163,7 +163,7 @@ int nmxptool_ew_pd2ewring (NMXP_DATA_PROCESS *pd, SHM_INFO *pregionOut, MSG_LOGO
     /* Set the approriate TRACE type in the logo */
     if ( tracebuf2 == 2 ) {
 	if ( typeWaveform2 == 0 ) {
-	    logit("et", "nmxptool: Error - created TRACE2_HEADER but TYPE_TRACEBUF2 is unknown\n");
+	    logit("et", "%s: Error - created TRACE2_HEADER but TYPE_TRACEBUF2 is unknown\n", PACKAGE_NAME);
 	    return EW_FAILURE;
 	} else {
 	    pwaveLogo->type = typeWaveform2;
@@ -173,7 +173,7 @@ int nmxptool_ew_pd2ewring (NMXP_DATA_PROCESS *pd, SHM_INFO *pregionOut, MSG_LOGO
     }
 
     if ( tport_putmsg( pregionOut, pwaveLogo, len, (char*)&tbuf ) != PUT_OK ) {
-	logit("et", "nmxptool: Error sending message via transport.\n");
+	logit("et", "%s: Error sending message via transport.\n", PACKAGE_NAME);
 	return EW_FAILURE;
     }
 
@@ -481,7 +481,8 @@ void nmxptool_ew_report_status( MSG_LOGO * pLogo, short code, char * message ) {
 	if ( tport_putmsg( &regionOut, &hrtLogo, (long) strlen( outMsg ),
 		    outMsg ) != PUT_OK ) {
 	    /* Log an error message */
-	    logit( "et", "nmxptool: Failed to send a heartbeat message (%d).\n",
+	    logit( "et", "%s: Failed to send a heartbeat message (%d).\n",
+		    PACKAGE_NAME,
 		    code );
 	}
     } else {
@@ -497,7 +498,8 @@ void nmxptool_ew_report_status( MSG_LOGO * pLogo, short code, char * message ) {
 	if ( tport_putmsg( &regionOut, &errLogo, (long) strlen( outMsg ),
 		    outMsg ) != PUT_OK ) {
 	    /*     Log an error message                                    */
-	    logit( "et", "nmxptool: Failed to send an error message (%d).\n",
+	    logit( "et", "%s: Failed to send an error message (%d).\n",
+		    PACKAGE_NAME,
 		    code );
 	}
 
