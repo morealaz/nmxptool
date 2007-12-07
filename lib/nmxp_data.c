@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_data.c,v 1.40 2007-11-22 11:12:08 mtheo Exp $
+ * $Id: nmxp_data.c,v 1.41 2007-12-07 13:49:28 mtheo Exp $
  *
  */
 
@@ -34,6 +34,9 @@ UTC, call mktime() and restore the value of TZ.  Something like
 
 time_t my_timegm (struct tm *tm) {
     time_t ret;
+#ifdef HAVE_WINDOWS_H
+        ret = mktime(tm);
+#else
     char *tz;
 
     tz = getenv("TZ");
@@ -45,6 +48,7 @@ time_t my_timegm (struct tm *tm) {
     else
 	unsetenv("TZ");
     tzset();
+#endif
     return ret;
 }
 
