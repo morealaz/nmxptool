@@ -7,10 +7,11 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_base.c,v 1.41 2007-11-22 13:36:34 mtheo Exp $
+ * $Id: nmxp_base.c,v 1.42 2007-12-07 13:48:56 mtheo Exp $
  *
  */
 
+#include "config.h"
 #include "nmxp_base.h"
 
 #include <stdio.h>
@@ -18,6 +19,10 @@
 #include <string.h>
 #include <stdarg.h>
 
+#ifdef HAVE_WINDOWS_H
+#include "winsock2.h"
+#warning You are compiling on Windows MinGW...
+#else
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -25,11 +30,30 @@
 #include <errno.h>
 #include <time.h>
 #include <unistd.h>
-
-#include "config.h"
+#endif
 
 #define MAX_OUTDATA 4096
 
+
+
+/* Private function for winsock2 initialization */
+#ifdef HAVE_WINDOWS_H
+void nmxp_initWinsock() {
+	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CONNFLOW, "WSAStartup\n");
+	WORD wVersionRequested = MAKEWORD(2, 2);
+	WSADATA wsaData;
+	/* Initialize Winsock */
+	int iResult = WSAStartup( wVersionRequested, &wsaData );
+	if( iResult != 0 ) {
+		nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CONNFLOW, "Error at WSAStartup\n");
+	}
+	if( LOBYTE(wsaData.wVersion) != 2 || HIBYTE(wsaData.wVersion != 2) ) {
+		nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CONNFLOW, "winsock library\n");
+		WSACleanup();
+		exit(1);
+	}
+}
+#endif
 
 
 int nmxp_openSocket(char *hostname, int portNum)
@@ -39,7 +63,9 @@ int nmxp_openSocket(char *hostname, int portNum)
   struct hostent *hostinfo = NULL;
   struct sockaddr_in psServAddr;
   struct in_addr hostaddr;
-  
+
+  nmxp_initWinsock();
+
   if (!hostname)
   {
     nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CONNFLOW, "Empty host name?\n");
@@ -54,18 +80,33 @@ int nmxp_openSocket(char *hostname, int portNum)
   while(1)
   {
     isock = socket (AF_INET, SOCK_STREAM, 0);
+
+#ifdef HAVE_WINDOWS_H
+    if (isock == INVALID_SOCKET) {
+	    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CONNFLOW,"Error at socket()\n");
+	    WSACleanup();
+	    exit(1);
+    }
+#else
     if (isock < 0)
     {
       nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CONNFLOW, "Can't open stream socket\n");
       exit(1);
     }
+#endif
 
     /* Fill in the structure "psServAddr" with the address of server
        that we want to connect with */
     memset (&psServAddr, 0, sizeof(psServAddr));
     psServAddr.sin_family = AF_INET;
     psServAddr.sin_port = htons((unsigned short) portNum);
+#ifdef HAVE_WINDOWS_H
+    unsigned long address;
+    memcpy(&address, hostinfo->h_addr, (size_t) hostinfo->h_length);
+    psServAddr.sin_addr.s_addr = address;
+#else
     psServAddr.sin_addr = *(struct in_addr *)hostinfo->h_addr_list[0];
+#endif
 
     /* Report action and resolved address */
     memcpy(&hostaddr.s_addr, *hostinfo->h_addr_list,
@@ -84,8 +125,12 @@ int nmxp_openSocket(char *hostname, int portNum)
     {
       nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CONNFLOW, "Connecting to %s port %d. Trying again after %d seconds...\n",
 	      inet_ntoa(hostaddr), portNum, sleepTime);
-      close (isock);
+      nmxp_closeSocket(isock);
+#ifdef HAVE_WINDOWS_H
+      Sleep (sleepTime);
+#else
       sleep (sleepTime);
+#endif
       sleepTime *= 2;
       if (sleepTime > NMXP_SLEEPMAX)
         sleepTime = NMXP_SLEEPMAX;
@@ -94,10 +139,16 @@ int nmxp_openSocket(char *hostname, int portNum)
 }
 
 
-int nmxp_closeSocket(int isock)
-{
-    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CONNFLOW, "Closed connection.\n");
-    return close(isock);
+int nmxp_closeSocket(int isock) {
+	int ret;
+	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CONNFLOW, "Closed connection.\n");
+#ifdef HAVE_WINDOWS_H
+	ret = closesocket(isock);
+	WSACleanup();
+#else
+	ret = close(isock);
+#endif
+	return ret;
 }
 
 
@@ -115,9 +166,14 @@ int nmxp_send_ctrl(int isock, void* buffer, int length)
 int nmxp_recv_ctrl(int isock, void *buffer, int length, int timeoutsec, int *recv_errno )
 {
   int recvCount;
+#ifdef HAVE_WINDOWS_H
+  char *recv_errno_str;
+  int timeos;
+#else
 #define MAXLEN_RECV_ERRNO_STR 200
   char recv_errno_str[MAXLEN_RECV_ERRNO_STR];
   struct timeval timeo;
+#endif
   int cc;
   char *buffer_char = buffer;
 
@@ -129,11 +185,20 @@ int nmxp_recv_ctrl(int isock, void *buffer, int length, int timeoutsec, int *rec
   */
 
   if(timeoutsec > 0) {
+#ifdef HAVE_WINDOWS_H
+      timeos  = timeoutsec;
+      if (setsockopt(isock, SOL_SOCKET, SO_RCVTIMEO, (char *) &timeos, sizeof(timeos)) < 0)
+      {
+	  perror("setsockopt SO_RCVTIMEO");
+      }
+#else
+
       timeo.tv_sec  = timeoutsec;
       timeo.tv_usec = 0;
       if (setsockopt(isock, SOL_SOCKET, SO_RCVTIMEO, &timeo, sizeof(timeo)) < 0) {
 	  perror("setsockopt SO_RCVTIMEO");
       }
+#endif
   }
   
   cc = 1;
@@ -150,15 +215,27 @@ int nmxp_recv_ctrl(int isock, void *buffer, int length, int timeoutsec, int *rec
   }
 
   if(timeoutsec > 0) {
+#ifdef HAVE_WINDOWS_H
+      timeos  = 0;
+      if (setsockopt(isock, SOL_SOCKET, SO_RCVTIMEO, (char *) &timeos, sizeof(timeos))
+	      < 0) {
+	  perror("setsockopt SO_RCVTIMEO");
+      }
+#else
       timeo.tv_sec  = 0;
       timeo.tv_usec = 0;
       if (setsockopt(isock, SOL_SOCKET, SO_RCVTIMEO, &timeo, sizeof(timeo)) < 0) {
 	  perror("setsockopt SO_RCVTIMEO");
       }
+#endif
   }
 
   if (recvCount != length  ||  *recv_errno != 0  ||  cc <= 0) {
+#ifdef HAVE_WINDOWS_H
+      recv_errno_str = strerror(*recv_errno);
+#else
       strerror_r(*recv_errno, recv_errno_str, MAXLEN_RECV_ERRNO_STR);
+#endif
       /*
 	  switch(*recv_errno) {
 		  case EAGAIN : strcpy(recv_errno_str, "EAGAIN"); break;
@@ -177,7 +254,11 @@ int nmxp_recv_ctrl(int isock, void *buffer, int length, int timeoutsec, int *rec
 	  */
     nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CONNFLOW, "nmxp_recv_ctrl(): recvCount=%d  length=%d  (cc=%d) errno=%d (%s)\n", recvCount, length, cc, *recv_errno, recv_errno_str);
 	    
+#ifdef HAVE_WINDOWS_H
+    if(recvCount != length) {
+#else
     if(recvCount != length || *recv_errno != EAGAIN) {
+#endif
 	return NMXP_SOCKET_ERROR;
     }
   }
@@ -262,11 +343,15 @@ int nmxp_receiveMessage(int isock, NMXP_MSG_SERVER *type, void **buffer, int32_t
     }
 
     if(*recv_errno != 0) {
+#ifndef HAVE_WINDOWS_H
 	if(*recv_errno == EAGAIN) {
 	    nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_CONNFLOW, "Timeout receveing in nmxp_receiveMessage()\n");
 	} else {
+#endif
 	    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CONNFLOW, "Error in nmxp_receiveMessage()\n");
+#ifndef HAVE_WINDOWS_H
 	}
+#endif
     }
 
     return ret;
