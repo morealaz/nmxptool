@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_base.c,v 1.44 2007-12-07 14:23:34 mtheo Exp $
+ * $Id: nmxp_base.c,v 1.45 2007-12-07 14:43:46 mtheo Exp $
  *
  */
 
@@ -163,16 +163,21 @@ int nmxp_send_ctrl(int isock, void* buffer, int length)
 int nmxp_recv_ctrl(int isock, void *buffer, int length, int timeoutsec, int *recv_errno )
 {
   int recvCount;
-#ifdef HAVE_WINDOWS_H
-  char *recv_errno_str;
-  int timeos;
-#else
-#define MAXLEN_RECV_ERRNO_STR 200
-  char recv_errno_str[MAXLEN_RECV_ERRNO_STR];
-  struct timeval timeo;
-#endif
   int cc;
   char *buffer_char = buffer;
+
+#ifdef HAVE_STRERROR_R
+#define MAXLEN_RECV_ERRNO_STR 200
+  char recv_errno_str[MAXLEN_RECV_ERRNO_STR];
+#else
+  char *recv_errno_str;
+#endif
+
+#ifdef HAVE_WINDOWS_H
+  int timeos;
+#else
+  struct timeval timeo;
+#endif
 
 
   /*
@@ -228,10 +233,10 @@ int nmxp_recv_ctrl(int isock, void *buffer, int length, int timeoutsec, int *rec
   }
 
   if (recvCount != length  ||  *recv_errno != 0  ||  cc <= 0) {
-#ifdef HAVE_WINDOWS_H
-      recv_errno_str = strerror(*recv_errno);
-#else
+#ifdef HAVE_STRERROR_R
       strerror_r(*recv_errno, recv_errno_str, MAXLEN_RECV_ERRNO_STR);
+#else
+      recv_errno_str = strerror(*recv_errno);
 #endif
       /*
 	  switch(*recv_errno) {
