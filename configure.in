@@ -94,13 +94,14 @@ AS_IF([test "x$with_ew" != xno],
 	#		 AC_MSG_WARN([earthworm header files not found!]))
 	EWOBJS="$EW_HOME/$EW_VERSION/lib/kom.o $EW_HOME/$EW_VERSION/lib/getutil.o $EW_HOME/$EW_VERSION/lib/logit_mt.o $EW_HOME/$EW_VERSION/lib/socket_ew_common.o $EW_HOME/$EW_VERSION/lib/transport.o $EW_HOME/$EW_VERSION/lib/sleep_ew.o $EW_HOME/$EW_VERSION/lib/socket_ew.o $EW_HOME/$EW_VERSION/lib/time_ew.o $EW_HOME/$EW_VERSION/lib/threads_ew.o $EW_HOME/$EW_VERSION/lib/sema_ew.o $EW_HOME/$EW_VERSION/lib/swap.o $EW_HOME/$EW_VERSION/lib/mem_circ_queue.o"
 	AC_CHECK_FILES([$EW_HOME/$EW_VERSION/lib/kom.o $EW_HOME/$EW_VERSION/lib/getutil.o $EW_HOME/$EW_VERSION/lib/logit_mt.o $EW_HOME/$EW_VERSION/lib/socket_ew_common.o $EW_HOME/$EW_VERSION/lib/transport.o $EW_HOME/$EW_VERSION/lib/sleep_ew.o $EW_HOME/$EW_VERSION/lib/socket_ew.o $EW_HOME/$EW_VERSION/lib/time_ew.o $EW_HOME/$EW_VERSION/lib/threads_ew.o $EW_HOME/$EW_VERSION/lib/sema_ew.o $EW_HOME/$EW_VERSION/lib/swap.o $EW_HOME/$EW_VERSION/lib/mem_circ_queue.o], [AC_DEFINE([HAVE_EARTHWORMOBJS], [1], [Define if you have earthworm object files])], [AC_MSG_ERROR(Some earthworm object files is missing!)] )
-	LIBS="$LIBS $EWOBJS"
+	# LIBS="$LIBS $EWOBJS"
 	],
 	[AC_MSG_WARN([Earthworm files are not available (--without-ew to disable)])]
     )
     ],
     [AC_MSG_WARN([Earthworm support has been disabled!])]
 )
+AM_CONDITIONAL(WITHEW, test x$with_ew != xno)
 
 
 # Checks for files.
