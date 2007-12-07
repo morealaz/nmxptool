@@ -36,6 +36,9 @@ AC_SEARCH_LIBS(socket, socket, ,
 AC_SEARCH_LIBS(rt, nanosleep, ,
 	           [AC_CHECK_LIB(rt, nanosleep, LIBS="$LIBS -lrt", , -lrt)])
 
+AC_SEARCH_LIBS(ws2_32, puts, ,
+		[AC_CHECK_LIB(ws2_32, puts, LIBS="$LIBS -lws2_32", , -lws2_32)])
+
 AC_ARG_WITH([libmseed],
 	    [AS_HELP_STRING([--without-libmseed], [disable support for libmseed])],
 	    [], 
@@ -78,6 +81,7 @@ AS_IF([test "x$with_libmseed" != xno],
 # Checks for header files.
 AC_HEADER_STDC
 AC_CHECK_HEADERS([stdint.h stdlib.h string.h])
+AC_CHECK_HEADERS([windows.h winsock2.h])
 
 
 # Earthworm check.
