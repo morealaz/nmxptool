@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp.c,v 1.54 2007-11-23 17:34:18 mtheo Exp $
+ * $Id: nmxp.c,v 1.55 2007-12-07 13:45:44 mtheo Exp $
  *
  */
 
@@ -21,6 +21,10 @@
 
 #ifdef HAVE_ARPA_INET_H
 #include <arpa/inet.h>
+#endif
+
+#ifdef HAVE_WINDOWS_H
+#include "winsock2.h"
 #endif
 
 int nmxp_sendConnect(int isock) {
