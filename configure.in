@@ -109,6 +109,8 @@ AS_IF([test "x$with_ew" != xno],
 AS_IF([test "x$with_seedlink" != xno], 
       [AC_CHECK_FILES([./src/seedlink_plugin.c ./src/seedlink_plugin.h], [], AC_MSG_ERROR([seedlink plug-in sources not found!]))]
 )
+AM_CONDITIONAL(WITHSEEDLINK, test x$with_seedlink != xno)
+
 
 
 # Checks for typedefs, structures, and compiler characteristics.

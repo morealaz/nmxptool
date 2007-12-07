@@ -1,11 +1,11 @@
 AUTOMAKE_OPTIONS = gnu
 bin_PROGRAMS = nmxptool
 
-# TODO optional
-seedlinkplugin_sources = seedlink_plugin.c
+nmxptool_SOURCES = nmxptool.c nmxptool_getoptlong.c nmxptool_ew.c
 
-nmxptool_SOURCES = nmxptool.c nmxptool_getoptlong.c nmxptool_ew.c \
-		   $(seedlinkplugin_sources)
+if WITHSEEDLINK
+nmxptool_SOURCES += seedlink_plugin.c
+endif
 
 #noinst_HEADERS = gdu.h
 
