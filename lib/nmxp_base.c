@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_base.c,v 1.42 2007-12-07 13:48:56 mtheo Exp $
+ * $Id: nmxp_base.c,v 1.43 2007-12-07 14:02:21 mtheo Exp $
  *
  */
 
@@ -33,7 +33,6 @@
 #endif
 
 #define MAX_OUTDATA 4096
-
 
 
 /* Private function for winsock2 initialization */
@@ -64,7 +63,9 @@ int nmxp_openSocket(char *hostname, int portNum)
   struct sockaddr_in psServAddr;
   struct in_addr hostaddr;
 
+#ifdef HAVE_WINDOWS_H
   nmxp_initWinsock();
+#endif
 
   if (!hostname)
   {
@@ -126,11 +127,7 @@ int nmxp_openSocket(char *hostname, int portNum)
       nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CONNFLOW, "Connecting to %s port %d. Trying again after %d seconds...\n",
 	      inet_ntoa(hostaddr), portNum, sleepTime);
       nmxp_closeSocket(isock);
-#ifdef HAVE_WINDOWS_H
-      Sleep (sleepTime);
-#else
-      sleep (sleepTime);
-#endif
+      nmxp_sleep (sleepTime);
       sleepTime *= 2;
       if (sleepTime > NMXP_SLEEPMAX)
         sleepTime = NMXP_SLEEPMAX;
@@ -604,5 +601,14 @@ NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data
 	pd.sampRate = pSampRate;
 
 	return &pd;
+}
+
+
+unsigned int nmxp_sleep(unsigned int sleep_time) {
+#ifdef HAVE_WINDOWS_H
+    return Sleep(sleep_time);
+#else
+    return sleep(sleep_time);
+#endif
 }
 

@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.92 2007-12-07 13:52:48 mtheo Exp $
+ * $Id: nmxptool.c,v 1.93 2007-12-07 14:02:21 mtheo Exp $
  *
  */
 
@@ -475,12 +475,10 @@ int main (int argc, char **argv) {
 	if(params.delay > 0) {
 	    time_to_sleep = (params.end_time - params.start_time) - (time(NULL) - (params.start_time + params.delay + span_interval));
 	    if(time_to_sleep >= 0) {
-		/* TODO */
-		Sleep(time_to_sleep);
+		nmxp_sleep(time_to_sleep);
 	    } else {
 		nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CONNFLOW, "time to sleep %d sec.\n", time_to_sleep);
-		/* TODO */
-		Sleep(3);
+		nmxp_sleep(3);
 	    }
 	    params.start_time = params.end_time;
 	    params.end_time = params.start_time + span_interval;
