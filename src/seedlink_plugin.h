@@ -14,6 +14,7 @@
 #ifndef PLUGIN_H
 #define PLUGIN_H
 
+#include <stdint.h>
 #include <sys/types.h>
 
 #ifdef PLUGIN_COMPATIBILITY
