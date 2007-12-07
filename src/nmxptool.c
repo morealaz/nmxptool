@@ -7,9 +7,11 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.91 2007-11-24 21:40:23 mtheo Exp $
+ * $Id: nmxptool.c,v 1.92 2007-12-07 13:52:48 mtheo Exp $
  *
  */
+
+#include "config.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -18,11 +20,14 @@
 
 #include <nmxp.h>
 
-#ifndef WIN32
+#ifndef HAVE_WINDOWS_H
 #include <signal.h>
 #endif
 
-#include "config.h"
+#ifdef HAVE_WINDOWS_H
+#include <windows.h>
+#endif
+
 #include "nmxptool_getoptlong.h"
 
 #ifdef HAVE_EARTHWORMOBJS
@@ -50,8 +55,11 @@ typedef struct {
     NMXP_RAW_STREAM_DATA raw_stream_buffer;
 } NMXPTOOL_CHAN_SEQ;
 
+
+#ifndef HAVE_WINDOWS_H
 static void clientShutdown(int sig);
 static void clientDummyHandler(int sig);
+#endif
 
 static void flushing_raw_data_stream();
 
@@ -120,7 +128,7 @@ int main (int argc, char **argv) {
     nmxp_data_seed_init(&data_seed);
 #endif
 
-#ifndef WIN32
+#ifndef HAVE_WINDOWS_H
     /* Signal handling, use POSIX calls with standardized semantics */
     struct sigaction sa;
 
@@ -467,10 +475,12 @@ int main (int argc, char **argv) {
 	if(params.delay > 0) {
 	    time_to_sleep = (params.end_time - params.start_time) - (time(NULL) - (params.start_time + params.delay + span_interval));
 	    if(time_to_sleep >= 0) {
-		sleep(time_to_sleep);
+		/* TODO */
+		Sleep(time_to_sleep);
 	    } else {
 		nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CONNFLOW, "time to sleep %d sec.\n", time_to_sleep);
-		sleep(3);
+		/* TODO */
+		Sleep(3);
 	    }
 	    params.start_time = params.end_time;
 	    params.end_time = params.start_time + span_interval;
@@ -774,6 +784,7 @@ static void flushing_raw_data_stream() {
     }
 }
 
+#ifndef HAVE_WINDOWS_H
 /* Do any needed cleanup and exit */
 static void clientShutdown(int sig) {
 
@@ -843,6 +854,8 @@ static void clientShutdown(int sig) {
 /* Empty signal handler routine */
 static void clientDummyHandler(int sig) {
 }
+
+#endif /* HAVE_WINDOWS_H */
 
 
 
