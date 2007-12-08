@@ -83,6 +83,7 @@ AC_HEADER_STDC
 AC_CHECK_HEADERS([stdint.h stdlib.h string.h])
 AC_CHECK_HEADERS([windows.h winsock2.h])
 
+EWOSOURCES=no
 
 # Earthworm check.
 AS_IF([test "x$with_ew" != xno], 
@@ -92,17 +93,52 @@ AS_IF([test "x$with_ew" != xno],
 	# AC_CHECK_HEADERS([earthworm.h kom.h transport.h trace_buf.h],
 	#		 [AC_DEFINE([HAVE_EARTHWORMFILES_H], [1], [Define if you have earthworm header file])],
 	#		 AC_MSG_WARN([earthworm header files not found!]))
-	EWOBJS="$EW_HOME/$EW_VERSION/lib/kom.o $EW_HOME/$EW_VERSION/lib/getutil.o $EW_HOME/$EW_VERSION/lib/logit_mt.o $EW_HOME/$EW_VERSION/lib/socket_ew_common.o $EW_HOME/$EW_VERSION/lib/transport.o $EW_HOME/$EW_VERSION/lib/sleep_ew.o $EW_HOME/$EW_VERSION/lib/socket_ew.o $EW_HOME/$EW_VERSION/lib/time_ew.o $EW_HOME/$EW_VERSION/lib/threads_ew.o $EW_HOME/$EW_VERSION/lib/sema_ew.o $EW_HOME/$EW_VERSION/lib/swap.o $EW_HOME/$EW_VERSION/lib/mem_circ_queue.o"
-	AC_CHECK_FILES([$EW_HOME/$EW_VERSION/lib/kom.o $EW_HOME/$EW_VERSION/lib/getutil.o $EW_HOME/$EW_VERSION/lib/logit_mt.o $EW_HOME/$EW_VERSION/lib/socket_ew_common.o $EW_HOME/$EW_VERSION/lib/transport.o $EW_HOME/$EW_VERSION/lib/sleep_ew.o $EW_HOME/$EW_VERSION/lib/socket_ew.o $EW_HOME/$EW_VERSION/lib/time_ew.o $EW_HOME/$EW_VERSION/lib/threads_ew.o $EW_HOME/$EW_VERSION/lib/sema_ew.o $EW_HOME/$EW_VERSION/lib/swap.o $EW_HOME/$EW_VERSION/lib/mem_circ_queue.o], [AC_DEFINE([HAVE_EARTHWORMOBJS], [1], [Define if you have earthworm object files])], [AC_MSG_ERROR(Some earthworm object files is missing!)] )
-	# TODO: if there are object files use them, otherwise try to compile sources!!!
-	# LIBS="$LIBS $EWOBJS"
+	EWLIB=$EW_HOME/$EW_VERSION/lib
+	EWOBJS="$EWLIB/kom.o $EWLIB/getutil.o $EWLIB/logit_mt.o $EWLIB/socket_ew_common.o $EWLIB/transport.o $EWLIB/sleep_ew.o $EWLIB/socket_ew.o $EWLIB/time_ew.o $EWLIB/threads_ew.o $EWLIB/sema_ew.o $EWLIB/swap.o $EWLIB/mem_circ_queue.o"
+	AC_CHECK_FILES([$EWLIB/kom.o $EWLIB/getutil.o $EWLIB/logit_mt.o $EWLIB/socket_ew_common.o $EWLIB/transport.o $EWLIB/sleep_ew.o $EWLIB/socket_ew.o $EWLIB/time_ew.o $EWLIB/threads_ew.o $EWLIB/sema_ew.o $EWLIB/swap.o $EWLIB/mem_circ_queue.o],
+		       [ ],
+		       [
+			AC_MSG_WARN(Earthworm object file is missing! Attempt to compile from source!)
+			EWOSOURCES=yes
+			]
+		       )
+	AC_DEFINE([HAVE_EARTHWORMOBJS], [1], [Define if you have all earthworm object files])
+	AS_IF([test "x$EWOSOURCES" != xno],
+	      [ 
+		case "$OSTYPE" in
+		solaris*)
+		    EWOS=solaris
+		;;
+		darwin*)
+		    EWOS=unix
+		;;
+		linux*)
+		    EWOS=unix
+		;;
+		win32*)
+		    EWOS=winnt
+		;;
+		msys*)
+		    EWOS=winnt
+		;;
+		*)
+		    EWOS=unix
+		    AC_MSG_WARN(Unrecognised OS $OSTYPE)
+		;;
+		esac
+		AC_MSG_WARN(EWOS set to $EWOS)
+		AC_SUBST(EWOS)
+	       ],
+	      [
+	       LIBS="$LIBS $EWOBJS"
+	       ])
 	],
 	[AC_MSG_WARN([Earthworm files are not available (--without-ew to disable)])]
     )
     ],
     [AC_MSG_WARN([Earthworm support has been disabled!])]
 )
-AM_CONDITIONAL(WITHEW, test x$with_ew != xno)
+AM_CONDITIONAL(WITHEWSOURCES, test x$EWOS != x)
 
 
 # Checks for files.

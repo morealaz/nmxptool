@@ -7,14 +7,10 @@ if WITHSEEDLINK
 nmxptool_SOURCES += seedlink_plugin.c
 endif
 
-if WITHEW
+if WITHEWSOURCES
 EW_LIBSRC=$(EW_HOME)/$(EW_VERSION)/src/libsrc
 EW_LIBSRC_UTIL=$(EW_LIBSRC)/util
-EW_LIBSRC_UNIX=$(EW_LIBSRC)/unix
-EW_LIBSRC_SOLARIS=$(EW_LIBSRC)/solaris
-EW_LIBSRC_WINNT=$(EW_LIBSRC)/winnt
-# TODO: change depends on operating system
-EW_LIBSRC_OS=$(EW_LIBSRC_UNIX)
+EW_LIBSRC_OS=$(EW_LIBSRC)/@EWOS@
 nmxptool_SOURCES += $(EW_LIBSRC_UTIL)/kom.c
 nmxptool_SOURCES += $(EW_LIBSRC_UTIL)/getutil.c
 nmxptool_SOURCES += $(EW_LIBSRC_UTIL)/logit.c
