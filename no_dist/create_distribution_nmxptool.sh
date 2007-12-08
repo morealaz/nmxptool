@@ -68,10 +68,6 @@ cvs export -r $CVSTAGVERSION $DIRMODULE  ||  exit
 
 mv $DIRMODULE $DIRSOURCEVERSION
 
-rm -fr $DIRSOURCEVERSION/libnmxp/doc/rapporto_tecnico_ingv_nmxp.*
-rm -fr $DIRSOURCEVERSION/libnmxp/doc/nanometrics_naqs_and_data.graffle
-rm -fr $DIRSOURCEVERSION/no_dist
-
 for DIRECTORY in $DIRSOURCEVERSION/libnmxp $DIRSOURCEVERSION ; do
     cd $DIRECTORY
     echo Cleaning $DIRECTORY
@@ -93,6 +89,11 @@ for DIRECTORY in $DIRSOURCEVERSION/libnmxp $DIRSOURCEVERSION ; do
 done
 
 rm -f `find . -iname "*~"`
+rm -fr $DIRSOURCEVERSION/libnmxp/doc/rapporto_tecnico_ingv_nmxp.*
+rm -fr $DIRSOURCEVERSION/libnmxp/doc/nanometrics_naqs_and_data.graffle
+rm -fr $DIRSOURCEVERSION/no_dist
+rm -f `find $DIRSOURCEVERSION -iname "configure.in"`
+rm -f `find $DIRSOURCEVERSION -iname "Makefile.am"`
 
 tar cvfz $DIRSOURCEVERSION.tar.gz $DIRSOURCEVERSION
 

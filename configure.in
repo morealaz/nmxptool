@@ -90,6 +90,7 @@ AS_IF([test "x$with_ew" != xno],
       [
     AS_IF([test "x$EW_HOME" != x], 
 	  [
+	   # TODO: Added automatically GLOBALFLAGS to CFLAGS
 	# AC_CHECK_HEADERS([earthworm.h kom.h transport.h trace_buf.h],
 	#		 [AC_DEFINE([HAVE_EARTHWORMFILES_H], [1], [Define if you have earthworm header file])],
 	#		 AC_MSG_WARN([earthworm header files not found!]))
