@@ -57,6 +57,11 @@ AC_ARG_WITH([seedlink],
 	    [with_seedlink=yes]
 ) 
 
+# Checks for header files.
+AC_HEADER_STDC
+AC_CHECK_HEADERS([stdint.h stdlib.h string.h])
+AC_CHECK_HEADERS([windows.h winsock2.h])
+
 AS_IF([test "x$with_libmseed" != xno], 
       [AC_CHECK_LIB([mseed], [msr_init],
 		    [LIBS="$LIBS -lmseed"
@@ -75,14 +80,12 @@ AS_IF([test "x$with_libmseed" != xno],
 				   ], 
 				   )
       ],
-      [ AC_CHECK_LIB([nmxp], [nmxp_openSocket], [], [AC_MSG_ERROR([libnmxp is not installed or supports libmseed (--with-libmseed to enable)!])]) ]
+      [
+       AC_CHECK_LIB([nmxp], [nmxp_openSocket], [], [AC_MSG_ERROR([libnmxp is not installed or supports libmseed (--with-libmseed to enable)!])]) 
+       AC_MSG_WARN([Mini-SEED support has been disabled!])
+      ]
 ) 
 
-
-# Checks for header files.
-AC_HEADER_STDC
-AC_CHECK_HEADERS([stdint.h stdlib.h string.h])
-AC_CHECK_HEADERS([windows.h winsock2.h])
 
 EWOSOURCES=no
 
@@ -151,7 +154,6 @@ AS_IF([test "x$with_seedlink" != xno],
     [AC_MSG_WARN([SeedLink support has been disabled!])]
 )
 AM_CONDITIONAL(WITHSEEDLINK, test x$with_seedlink != xno)
-
 
 
 # Checks for typedefs, structures, and compiler characteristics.
