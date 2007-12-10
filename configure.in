@@ -25,6 +25,12 @@ AC_CONFIG_HEADER([config.h])
 # AM_INIT_AUTOMAKE(FULL_PACKAGE_NAME,VERSION)
 AM_INIT_AUTOMAKE([full_package_name], [version])
 
+NMXP_CFLAGS="-I`pwd`/libnmxp/src"
+NMXP_LDFLAGS="-L`pwd`/libnmxp/src"
+
+CFLAGS="$CFLAGS $NMXP_CFLAGS"
+LDFLAGS="$LDFLAGS $NMXP_LDFLAGS"
+
 # Checks for programs.
 AC_PROG_CC
 
@@ -66,22 +72,22 @@ AS_IF([test "x$with_libmseed" != xno],
       [AC_CHECK_LIB([mseed], [msr_init],
 		    [LIBS="$LIBS -lmseed"
 		     AC_DEFINE([HAVE_LIBMSEED], [1], [Define if you have libmseed]) 
-		     AC_CHECK_LIB([nmxp], [nmxp_openSocket], [], [AC_MSG_ERROR([libnmxp is not installed])]) 
+		     AC_CHECK_LIB([nmxp], [nmxp_openSocket], [], [AC_MSG_ERROR([libnmxp not found!])]) 
 		     AC_CHECK_LIB([nmxp], [nmxp_data_msr_pack],
 				  [],
-				  [AC_MSG_FAILURE([libmseed is installed but libnmxp does not support it. (Try --without-libmseed to disable)])])
+				  [AC_MSG_FAILURE([libmseed found but libnmxp does not support it. (Try --without-libmseed to disable)])])
 		     ], 
 		     [AC_MSG_WARN([
 		      libmseed is not available (--without-libmseed to disable)
 		     ])
-		     AC_CHECK_LIB([nmxp], [nmxp_openSocket], [], [AC_MSG_ERROR([libnmxp is not installed or it supports libmseed
+		     AC_CHECK_LIB([nmxp], [nmxp_openSocket], [], [AC_MSG_ERROR([libnmxp not found or it supports libmseed
 				   but libmseed is not available anymore! Try to recompile libnmxp!
 				   ])]) 
 				   ], 
 				   )
       ],
       [
-       AC_CHECK_LIB([nmxp], [nmxp_openSocket], [], [AC_MSG_ERROR([libnmxp is not installed or supports libmseed (--with-libmseed to enable)!])]) 
+       AC_CHECK_LIB([nmxp], [nmxp_openSocket], [], [AC_MSG_ERROR([libnmxp not found or supports libmseed (--with-libmseed to enable)!])]) 
        AC_MSG_WARN([Mini-SEED support has been disabled!])
       ]
 ) 
