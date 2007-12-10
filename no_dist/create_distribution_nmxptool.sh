@@ -70,17 +70,24 @@ mv $DIRMODULE $DIRSOURCEVERSION
 
 for DIRECTORY in $DIRSOURCEVERSION/libnmxp $DIRSOURCEVERSION ; do
     cd $DIRECTORY
-    echo Cleaning $DIRECTORY
     rm -fr `find . -name CVS`
+    echo "Compiling $DIRECTORY"
     ./bootstrap
     mv configure configure.old
     cat configure.old | sed -e "s/^\(#define malloc rpl_malloc\)/\/\/ mtheo removed for solaris  \1/" > configure
+    rm configure.old
     chmod 755 configure
     ./configure
     make
+    cd -
+done
+
+for DIRECTORY in $DIRSOURCEVERSION/libnmxp $DIRSOURCEVERSION ; do
+    cd $DIRECTORY
+    echo "Cleaning $DIRECTORY"
     make clean
     make distclean
-    rm missing bootstrap
+    rm bootstrap
     if [ -f Doxyfile ]; then
 	doxygen
 	rm Doxyfile
@@ -92,8 +99,6 @@ rm -f `find . -iname "*~"`
 rm -fr $DIRSOURCEVERSION/libnmxp/doc/rapporto_tecnico_ingv_nmxp.*
 rm -fr $DIRSOURCEVERSION/libnmxp/doc/nanometrics_naqs_and_data.graffle
 rm -fr $DIRSOURCEVERSION/no_dist
-rm -f `find $DIRSOURCEVERSION -iname "configure.in"`
-rm -f `find $DIRSOURCEVERSION -iname "Makefile.am"`
 
 tar cvfz $DIRSOURCEVERSION.tar.gz $DIRSOURCEVERSION
 
