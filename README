@@ -77,9 +77,17 @@ moreover, you can use them to develop software to:
            If some object file is missing then it will attempt to discover sources
            dependents on your operating system and compile them before linking.
 
+           cp earthworm/nmxptool.d earthworm/nmxptool.desc ${EW_PARAMS}
+           cp nmxptool_ovr.html $EW_HOME/$EW_VERSION/ewdoc/WEB_DOC/ovr/
+
     * seedlink, inside the directory `src` has been copied files
                 `seedlink_plugin.c` and `seedlink_plugin.h` from `plugin.c` and `plugin.h`
                  belonging to the SeisComP 2.x distribution
+
+                 cp -r seiscomp_templates/135_nmxptool \
+                            /home/sysop/seiscomp/acquisition/templates/source/
+                 seiscomp config
+
 
 - LICENSE
   Read file COPYING
