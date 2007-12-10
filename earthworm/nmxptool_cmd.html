@@ -8,7 +8,7 @@
 <center>
 <h1>Earthworm Modules: <br>
 nmxptool configuration file </h1>
-<i>(last revised 10 October, 2007)</i></center>
+<i>(last revised 10 December, 2007)</i></center>
 Page Index:<br>
 1. <a href="#function">Functional command listing</a><br>
 2. <a href="#alphabet">Alphabetic command listing &amp; description</a><br>
@@ -46,13 +46,13 @@ specified in any order in the control file.
 
 Nanometrics server and connection parameters:<br>
 <a href="#NmxpHost">NmxpHost</a>                required<br>
-<a href="#Channel">Channel</a>			required<br>
 <a href="#NmxpPortPDS">NmxpPortPDS</a>		optional<br>
 <a href="#NmxpPortDAP">NmxpPortDAP</a>		optional<br>
-<a href="#TimeoutRecv">TimeoutRecv</a>		optional<br>
+<a href="#ForceTraceBuf1">ForceTraceBuf1</a>		optional<br>
 <a href="#MaxTolerableLatency">MaxTolerableLatency</a>	optional<br>
 <a href="#DefaultNetworkCode">DefaultNetworkCode</a>	optional<br>
-<a href="#ForceTraceBuf1">ForceTraceBuf1</a>		optional<br><br>
+<a href="#Channel">Channel</a>			required<br>
+<br>
 
 Output control:<br>
 <a href="#LogFile">LogFile</a>			required<br>
@@ -71,8 +71,24 @@ and example commands are listed after each command description. </p>
 
 <pre><b><br>command <font color="red">arg </font>                                 processed by            in function</b></pre>
 
-<hr><!-- command name as anchor inside quotes -->
+<hr><!-- ADD HERE: all commands; below is a sample command blank: --><!-- command name as anchor inside quotes -->
+<pre><a name="Channel"><b>Channel <font color="red">streamkey</font>                 ReadConfig              nmxptool parameters<br></b><!-- command args ... -->           <br></a></pre>
+<blockquote><!-- command description goes here --> Specifies one stream
+of data to be requested from the NmxpHost.
+The <font color="red">streamkey</font> is composed of a network, station and channel code
+separated by period. network is optional and it is used only for output.
+Within channel code can appear character &#63; that stands for any characters.
+  <pre><br>Default:  none<br>Example:  Channel  ES.BOB.HH?<br>          Channel  MN.TIR.HH?<br>          Channel  SALO.BH?</pre>
+</blockquote>
 
+<hr><!-- ADD HERE: all commands; below is a sample command blank: --><!-- command name as anchor inside quotes -->
+<pre><a name="DefaultNetworkCode"><b>DefaultNetworkCode <font color="red">network_code</font>                 ReadConfig              nmxptool parameters<br></b><!-- command args ... -->           <br></a></pre>
+<blockquote><!-- command description goes here --> Specifies default <font color="red">network code</font>
+    for channels where is omitted.
+  <pre><br>Default:  none<br>Example:  DefaultNetworkCode  IV</pre>
+</blockquote>
+
+<hr><!-- ADD HERE: all commands; below is a sample command blank: --><!-- command name as anchor inside quotes -->
 <pre><a name="ForceTraceBuf1"><b>ForceTraceBuf1 <font color="red">switch</font>                        ReadConfig              Earthworm setup<br></b><!-- command args ... -->           <br></a></pre>
 
 <blockquote><!-- command description goes here --> Sets the on-off <font
@@ -111,15 +127,9 @@ stdout and stderr is suppressed.
 </blockquote>
 
 <hr><!-- command name as anchor inside quotes -->
-<pre><b><a name="KeepAlive"></a>KeepAlive <b><font color="red">interval</font></b></b><b>                           ReadConfig              Data Selection<br></b><!-- command args ... -->           <br></pre>
-<blockquote><!-- command description goes here --> Specifies the <font
- color="red">interval</font> in seconds that the module will send keep
-alive (heartbeat) packets to the remote SeedLink server.&nbsp; A value
-of 0 disables the feature.&nbsp; This feature only works with versions
-of SeedLink 2.93 or greater.&nbsp; This is useful for keeping a network
-connection open that might be closed by itermediate firewalls/gateways
-when the data stream only flows at intervals.<br>
-  <pre><br>Default:  0 (disabled)<br>Example:  KeepAlive   600<br>  </pre>
+<pre><a name="MaxTolerableLatency"><b>MaxTolerableLatency <font color="red">seconds</font>                                  ReadConfig              nmxptool parameters<br></b><!-- command args ... -->           <br></a></pre>
+<blockquote><!-- command description goes here --> Specifies the max tolerable latency for raw stream connection. Range is [60..600].
+  <pre><!-- Default and example go here   --><br>Default:  600<br>Example:  MaxTolerableLatency  200</pre>
 </blockquote>
 
 <hr><!-- command name as anchor inside quotes -->
@@ -132,13 +142,28 @@ listed in earthworm.d) that relates to a unique single-byte number.
 </blockquote>
 
 <hr><!-- command name as anchor inside quotes -->
-<pre><a name="TimeoutRecv"><b>TimeoutRecv <font color="red">timeout</font>                       ReadConfig              Earthworm setup<br></b><br></a></pre>
-<blockquote><!-- command description goes here --> Sets the network <font
- color="red">timeout </font>in seconds.&nbsp; If the module has not
-received any packets from the remote SeedLink server in this amount of
-time the connection will be closed and re-opened if possible.&nbsp; A
-value of 0 disables this feature.<br>
-  <pre><!-- Default and example go here   --><br>Default:  600<br>Example:  TimeoutRecv 300<br></pre>
+<pre><a name="NmxpHost"><b>NmxpHost <font color="red">address</font>                               ReadConfig              nmxptool parameters<br></b><!-- command args ... -->           <br></a></pre>
+<blockquote><!-- command description goes here --> Specify the <font
+ color="red">address</font> of the Nanometrics server. This can be either
+on IP address (four period-separated numbers) or the domain name of the
+server.
+  <pre><!-- Default and example go here   --><br>Default:  none<br>Example:  NmxpHost      naqs1a.int.ingv.it<br></pre>
+</blockquote>
+
+<hr><!-- command name as anchor inside quotes -->
+<pre><a name="NmxpPortDAP"><b>NmxpPortDAP <font color="red">port</font>                                  ReadConfig              nmxptool parameters<br></b><!-- command args ... -->           <br></a></pre>
+<blockquote><!-- command description goes here --> Specifies the IP <font
+	color="red">port</font> number for the DataServer (<a href="#NmxpHost">NmxpHost</a>). This is
+commonly 28002.
+  <pre><!-- Default and example go here   --><br>Default:  28002<br>Example:  NmxpPortDAP  28002</pre>
+</blockquote>
+
+<hr><!-- command name as anchor inside quotes -->
+<pre><a name="NmxpPortPDS"><b>NmxpPortPDS <font color="red">port</font>                                  ReadConfig              nmxptool parameters<br></b><!-- command args ... -->           <br></a></pre>
+<blockquote><!-- command description goes here --> Specifies the IP <font
+	color="red">port</font> number for the NaqsServer (<a href="#NmxpHost">NmxpHost</a>). This is
+commonly 28000.
+  <pre><!-- Default and example go here   --><br>Default:  28000<br>Example:  NmxpPortPDS  28000</pre>
 </blockquote>
 
 <hr><!-- command name as anchor inside quotes -->
@@ -152,95 +177,27 @@ memory region.
   <pre><!-- Default and example go here   --><br>Default:  none<br>Example:  RingName WAVE_RING<br></pre>
 </blockquote>
 
-
-<hr><!-- command name as anchor inside quotes -->
-<pre><a name="NmxpHost"><b>NmxpHost <font color="red">address</font>                               ReadConfig              SeedLink parameters<br></b><!-- command args ... -->           <br></a></pre>
-<blockquote><!-- command description goes here --> Specify the <font
- color="red">address</font> of the SeedLink server. This can be either
-on IP address (four period-separated numbers) or the domain name of the
-server.
-  <pre><!-- Default and example go here   --><br>Default:  none<br>Example:  NmxpHost      st27.gfz-postdam.de<br></pre>
-</blockquote>
-
-<hr><!-- command name as anchor inside quotes -->
-<pre><a name="NmxpPortPDS"><b>NmxpPortPDS <font color="red">port</font>                                  ReadConfig              SeedLink parameters<br></b><!-- command args ... -->           <br></a></pre>
-<blockquote><!-- command description goes here --> Specifies the IP <font
- color="red">port</font> number for the SeedLink server.&nbsp; This is
-commonly 18000.
-  <pre><!-- Default and example go here   --><br>Default:  none<br>Example:  NmxpPortPDS  18000</pre>
-</blockquote>
-
-
-<hr><!-- ADD HERE: all commands; below is a sample command blank: --><!-- command name as anchor inside quotes -->
-<pre><a name="Channel"><b>Channel <font color="red">streamkey [selectors]</font>                 ReadConfig              Data selection <br></b><!-- command args ... -->           <br></a></pre>
-<blockquote><!-- command description goes here --> Specifies one stream
-of data to be requested from the remote SeedLink server.&nbsp; This
-command implies the use of multi-station mode and can be specified
-multiple times to requested multiple data streams.&nbsp; The <font
- color="red">streamkey</font> is composed of a network and station code
-separated by an underscore.&nbsp; Optional <a
- href="file:///usr/public/nmxptool/Doc/nmxptool_cmd.html#SLselectors">SeedLink
-selectors</a> may be specified after the stream key.&nbsp; Multiple <font
- color="red">selectors</font> must be enclosed in quotes.&nbsp; Beware
-of collecting multiple data streams with the same station code and
-differing location codes as the rest of Earthworm does not know about
-location codes, so the two data streams would get mixed together with
-bad results.
-  <pre><br>Default:  none<br>Example:  Channel  GE_DSB  "BH?.D HH?.D"</pre>
-</blockquote>
-
 <hr><!-- command name as anchor inside quotes -->
 <pre><a name="Verbosity"><b>Verbosity  </b></a><b><font color="red">level</font></b><b>                             ReadConfig              Earthworm setup <br></b><!-- command args ... -->           <br></pre>
 <blockquote><!-- command description goes here --> Specifies the <b><font
- color="red">level</font></b> of logging verbosity.&nbsp; Level 0 is
-rather quiet and mostly reports errors, level 1 shows negotiation
-details and every received packet and level 2 shows a lot of details.
-  <pre><!-- Default and example go here   --><br>Default:  0<br>Example:  Verbosity 0</pre>
+	    color="red">level</font></b> of logging verbosity.
+    Verbosity is a bitmap:<br>
+    1 Packet, 2 Channel, 4 Raw Stream, 8 CRC32, 16 Connection flow, 32 Packet Management, 64 Extra, 128 Date, 256 Gap, 512 DOD, 1023 All messages.
+  <pre><!-- Default and example go here   --><br>Default:  0<br>Example:  Verbosity 16</pre>
 </blockquote>
+
+
+
+
 
 <hr>
 <h2><a name="advanced_description"></a>3. Advanced Description<br>
 </h2>
-<pre><a name="SLmode"><b>SeedLink data transfer, uni-station and multi-station mode</b></a></pre>
-<blockquote> The SeedLink protocol allows two different modes of data
-transfer.&nbsp; Uni-station mode is the method used for transmitting a
-single data stream (station) over a single network connection.&nbsp; In
-this case the client does not specify a stream key (network and station
-code) as the data stream is implied by which address and port the
-client
-connects to (similar to LISS Protocol ver.&nbsp; 1).&nbsp;
-Multi-station
-mode is the method used for transmitting multiple data streams
-(stations) multiplexed together over a single network connection.&nbsp;
-Uni-station mode is supported by all current SeedLink versions.&nbsp;
-Multi-station mode is supported by SeedLink 2.5 or later
-(SeisComP-1.1.6 or later).<br>
-  <br>
-For nmxptool the presence of one or more <a href="#Channel">Channel</a>
-commands in the configuration file triggers multi-station mode.&nbsp;
-Otherwise the module defaults to uni-station mode.<br>
+<pre><a name="SLmode"><b>...</b></a></pre>
+<blockquote> ..... .<br>
 </blockquote>
-<pre><a name="SLselectors"><b>SeedLink selectors</b></a><br></pre>
-<blockquote>SeedLink selectors are used to request specific types of
-data within a given data stream, in effect limiting the default action
-of sending all data types.&nbsp; A data packet is sent to the client if
-it matches any positive selector (without leading "!") and doesn't
-match
-any negative selectors (with a leading "!").&nbsp; The general format
-of
-selectors is LLSSS.T, where LL is location, SSS is channel and T is
-type (one of [DECOTL] for Data, Event, Calibration, Blockette, Timing,
-and Log records).&nbsp; "LL", ".T", and "LLSSS." can be omitted,
-implying anything in that field.&nbsp; It is also possible to use "?"
-in
-place of L and S as a single character wildcard.&nbsp; Multiple
-selectors are separated by space(s).<br>
-  <br>
-Some examples:
-  <pre>BH?&nbsp;&nbsp; &nbsp;      - BHZ, BHN, BHE (all record types)<br>00BH?.D&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - BHZ, BHN, BHE with location code '00' (data records)<br>BH? !E&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - BHZ, BHN, BHE (excluding detection records)<br>BH? E&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  - BHZ, BHN, BHE &amp; detection records of all channels<br>!LCQ !LEP&nbsp;&nbsp;&nbsp; - exclude LCQ and LEP channels<br>!L !T&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - exclude log and timing records<br></pre>
-For nmxptool only data records will be written to the ring.&nbsp; In
-other words, requesting any records in addition to data records is a
-waste and you should always append ".D" to any specified selectors.<br>
+<pre><a name="SLselectors"><b>.....</b></a><br></pre>
+<blockquote>.....<br>
 </blockquote>
 <h2><a name="sample_config"></a>4. Sample Configuration File </h2>
 
@@ -255,7 +212,11 @@ RingName             WAVE_RING             # Transport ring to write data to.
 HeartBeatInterval    30                    # Heartbeat interval, in seconds.
 LogFile              1                     # 1 -> Keep log, 0 -> no log file
                                            # 2 -> write to module log but not stderr/stdout
-Verbosity            1                     # Set level of verbosity.
+Verbosity            16                    # Set level of verbosity. Verbosity is a bitmap:
+                                           # 1 Packet, 2 Channel, 4 Raw Stream,
+                                           # 8 CRC32, 16 Connection flow,
+                                           # 32 Packet Management, 64 Extra, 128 Date,
+                                           # 256 Gap, 512 DOD, 1023 All messages.
 
 NmxpHost             naqs1a.int.ingv.it    # Host address of the NaqsServer server
 NmxpPortPDS          28000                 # Port number of the NaqsServer server (Default 28000)
@@ -270,7 +231,7 @@ NmxpPortDAP          28002                 # Port number of the DataServer serve
                                            # Useful for Data On Demand (i.e. channel HL) (Default 0. No time-out)
 
 MaxTolerableLatency  120                   # Max tolerable latency for each channel. (Default 600 sec.)
-                                           # In general, it is not use with parameter TimeoutRecv.
+                                           # In general, do not use with parameter TimeoutRecv.
 
 DefaultNetworkCode   IV                    # Default network code where in Channel is not declared
 
@@ -281,7 +242,6 @@ Channel              MDI.HH?
 Channel              DOI.HH?
 Channel              SALO.HH?
 Channel              MONC.HH?
-
 </pre>
 
 <hr>
