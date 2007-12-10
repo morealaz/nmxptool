@@ -7,7 +7,7 @@ RingName             WAVE_RING             # Transport ring to write data to.
 HeartBeatInterval    30                    # Heartbeat interval, in seconds.
 LogFile              1                     # 1 -> Keep log, 0 -> no log file
                                            # 2 -> write to module log but not stderr/stdout
-Verbosity            0                     # Set level of verbosity. Verbosity is a bitmap:
+Verbosity            16                    # Set level of verbosity. Verbosity is a bitmap:
                                            # 1 Packet, 2 Channel, 4 Raw Stream,
                                            # 8 CRC32, 16 Connection flow,
                                            # 32 Packet Management, 64 Extra, 128 Date,
