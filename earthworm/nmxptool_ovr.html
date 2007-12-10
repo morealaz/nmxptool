@@ -7,61 +7,75 @@
 <h1 align="center">Earthworm Modules: <br>
 nmxptool overview</h1>
 <center>
-<p><i>(last revised 10 October, 2007)</i> </p>
+<p><i>(last revised 10 December, 2007)</i> </p>
 </center>
+<p>
+nmxptool is a client for Nanometrics Server and a module for Earthworm as well. It is based on libnmxp that provides a set of documented APIs which allow to develop software capable of interacting with Nanometrics Servers:
+<ul>
+<li> NaqsServer (Private Data Stream 1.4)
+<ul>
+    <li>Buffered Stream: short-term complete data stream. Packets are in chronological order but small gap whenever a retransmission occurs.
+    <li>Raw Stream: packets are forwarded in the original order. Packets may be missing, duplicated, or out of order, but minimal delay.
+</ul>
+<li>DataServer (Data Access Protocol 1.0)<br>
+<ul>
+    <li>Data may be requested by channel, start time and end time.
+</ul>
+</ul>
+</p>
+
+<p>
+nmxptool allows to retrieve or monitor real-time and off-line data. Mainly, it can be used:
+<ul>
+    <li>stand-alone to save data in mini-SEED format<br>
+    <li>like a plug-in for SeedLink<br>
+    <li>like a module for Earthworm<br>
+</ul>
+Dependencies:
+<ul>
+    <li>libmseed - http://www.iris.edu/manuals/<br>
+    <li>plugin.h and plugin.c from SeisComp distribution<br>
+    <li>Several object files inside the Earthworm library directory $EW_HOME/$EW_VERSION/lib,
+    or alternatively, sources dependents on your operating system.
+</ul>
+nmxptool have been developed in C using the GNU Build Tools (automake, autoconf) and taking in account the POSIX Cross-Platform aspects.<br>
+</p>
+
+<p>
+Why a new software client for Nanometrics Server?<br>
+When we connect to a NaqsServer by a Short-term data stream connection we get a gap for each retransmitted packet. Unfortunately, previous available software were not able to reorder retransmitted packets.
+nmxptool is capable to manage a buffer of packets and order them chronologically when is needed, that is when a retransmission occurs. The management of this buffer reduce number of gaps in spite of the increment of latency. However, some tests showed that almost all packets are retrivied maximum within 60 seconds.<br>
 <br>
-nmxptool is a Nanometrics client module for Earthworm.&nbsp; Nanometrics is
-the data server component of the Seismological Communication Processor,
-or <a href="http://www.gfz-potsdam.de/geofon/seiscomp/welcome.html">SeisComP</a>,
-originally developed at <a href="http://www.gfz-potsdam.de/geofon/">GEOFON</a>.<br>
-<br>
-The Nanometrics protocol can be summarized as a simple negotiation scheme
-followed by the streaming of data packets from the server.&nbsp;
-Nanometrics packets are composed of a small header followed by a 512-byte
-Mini-SEED record (data only SEED).&nbsp; The negotiation phase allows
-the client to request only specified data types from the server for
-each data stream.&nbsp; A data stream is defined by a network and
-station code pair.<br>
-<br>
-By utilizing sequence numbers for each packet in a data stream the
-Nanometrics protocol allows for connections to be resumed, eliminating
-most data gaps.&nbsp; The ability to resume data streams is primarily
-dependant on how much data, time-wise, the remote Nanometrics has in it's
-buffer.<br>
-<br>
-The protocol allows for two different modes of data transmission,
-uni-station and multi-station modes.&nbsp; Uni-station mode operates
-by transmitting a single data stream (data from a single station)
-through one network connection.&nbsp; In this mode the data stream
-does not need to be specified by the client as it is implied by the
-internet address and port.&nbsp; Multi-station mode operates by
-transmitting multiplexed data streams (data from multiple stations)
-through a single network connection.<br>
-<br>
+Main parameter to set for Raw Stream is the max tolerable latency you can accept, a sort of short-term-completion but managed by the client and not by the server.<br>
+</p>
+
+<p>
 The maxium size of the TRACEBUF messages created by nmxptool is
-limited to the maximum number of samples (using Steim2 compression)
-that can fit into a 512-byte Mini-SEED record (721 samples = 2884
+limited to the maximum number of samples
+that can fit into a Nanometrics compressed packet (???? samples = ????
 bytes) plus the size of the TRACEBUF header (64 bytes).  So 2948 bytes
 is a good estimate of the maximum size of TRACEBUF messages created by
-nmxptool.<br>
-<br>
-Version 1.1 and greater of nmxptool supports the creation of either
+nmxptool.</p>
+
+<p>
+nmxptool supports the creation of either
 TRACEBUF or TRACEBUF2 messages depending on which version of Earthworm
 the module was built for.  By default the module will create TRACEBUF2
 messages if the system supports them and TRACEBUF messages otherwise.
 Additionally there is an optional command ForceTraceBuf1 that will
 force the use of TRACEBUF messages on systems that support
-TRACEBUF2.<br>
+TRACEBUF2.
+</p>
+
+<p>
+nmxptool is open-source and actively supported by the
+<a href="http://www.ingv.it/">Istituto Nazionale di Geofisica e Vulcanologia</a>.
 <br>
-SeisComP and Nanometrics are actively supported by the
-<a href="http://www.gfz-potsdam.de/geofon/">GEOFON Project</a>,
-<a href="http://orfeus.knmi.nl/">ORFEUS Data Center</a> and 
-<a href="http://www.iris.edu/">IRIS Data Management Center</a> in
-addition to the user community.<br>
 <p> <a href="../modules.html">Module Index</a> | <a
  href="../cmd/nmxptool_cmd.html">nmxptool Commands</a>
 <!-- USGS-required stuff at the end -->
 </p>
+
 <hr>
 </b>Contact: <b>quintiliani at ingv.it</b><br>
 </address>

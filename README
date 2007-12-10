@@ -1,0 +1,86 @@
+
+NMXPTOOL AND LIBNMXP : OPEN-SOURCE SOFTWARE FOR
+                      NANOMETRICS SEISMIC DATA TRANSMISSION
+
+  nmxptool and libnmxp have been developed for interacting
+  with NaqsServer and DataServer.
+
+  Matteo Quintiliani - Istituto Nazionale di Geofisica e Vulcanologia - Italy
+  Mail bug reports and suggestions to <quintiliani@ingv.it> 
+
+
+- INTRODUCTION
+
+nmxptool is based on libnmxp.
+
+The library offers APIs to:
+    * interact with NaqsServer that uses
+      version 1.4 of the Private Data Stream Protocol
+    * interact with DataServer that uses
+      version 1.0 of the Nanometrics Data Access Protocol
+    * manage Nanometrics data formats
+    * request, receive and interpret online and offline data
+
+moreover, you can use them to develop software to:
+    * analyze data in realtime (waveforms, triggers, ...)
+    * retrieve and convert on the fly data
+      into the mini-SEED records (optional)
+    * feed SeedLink server (optional)
+
+
+- DOCUMENTATION
+    * ./nmxptool -h
+    * Earthworm module: earthworm/nmxptool_cmd.html
+                                  nmxptool_ovr.html
+
+- DEPENDENCIES
+  Optional libraries:
+
+    * Earthworm 6.2 or later: http://www.isti2.com/ew/
+
+    * libmseed-2.1.4 or later: http://www.iris.edu/manuals/
+      The Mini-SEED library. A C library framework for manipulating and
+      managing SEED data records.  Author: Chad Trabant, IRIS DMC
+
+
+- QUICK INSTALLATION
+     cd libnmxp
+     ./configure
+     make
+     cd ..
+     ./configure
+     make
+     cp src/nmxptool <where_you_want>
+
+
+- INSTALLATION
+  nmxptool and libnmxp have been developed using GNU Build Tools
+  (automake, autoconf and configure script) taking in account the
+  POSIX Cross-Platform aspects. So you should be able to compile
+  and install them everywhere you can launch the following commands:
+
+     ./configure
+     make
+     make install
+
+    Optional Packages:
+      --without-libmseed      disable support for libmseed
+      --without-ew            disable support for earthworm
+      --without-seedlink      disable support for seedlink
+
+    * libmseed, if available within includes and libraries path,
+                this library will enable Mini-SEED support.
+
+    * ew, compiling depends on environment variables $EW_HOME, $EW_VERSION
+          `configure` look for necessary earthworm object files inside $EW_HOME/$EW_VERSION/lib
+           and link them to nmxptool in order to enable Earthworm support.
+           If some object file is missing then it will attempt to discover sources
+           dependents on your operating system and compile them before linking.
+
+    * seedlink, inside the directory `src` has been copied files
+                `seedlink_plugin.c` and `seedlink_plugin.h` from `plugin.c` and `plugin.h`
+                 belonging to the SeisComP 2.x distribution
+
+- LICENSE
+  Read file COPYING
+
