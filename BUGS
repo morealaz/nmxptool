@@ -1,0 +1,8 @@
+###########
+KNOWN BUGS:
+###########
+
+* DAP authentication do not work
+  Presently you can connect to DataServer if authentication is required.
+  user "any" with password "none".
+
