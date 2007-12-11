@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_chan.c,v 1.26 2007-11-24 21:39:54 mtheo Exp $
+ * $Id: nmxp_chan.c,v 1.27 2007-12-11 05:08:11 mtheo Exp $
  *
  */
 
@@ -115,6 +115,9 @@ int nmxp_chan_match(const char *net_dot_station_dot_channel, char *pattern)
     }
     
     l = strlen(sta_pattern);
+    if(((l == 1) && sta_pattern[0] == '*')) {
+	/* do nothing */
+    } else {
     i = 0;
     while(i < l  &&  ret != -1) {
 	if(  !(
@@ -128,6 +131,7 @@ int nmxp_chan_match(const char *net_dot_station_dot_channel, char *pattern)
 	    return -1;
 	}
 	i++;
+    }
     }
     
     l = strlen(cha_pattern);
@@ -164,7 +168,9 @@ int nmxp_chan_match(const char *net_dot_station_dot_channel, char *pattern)
 	return -1;
     }
 
-    if (strcasecmp(sta_sdc, sta_pattern) == 0) {
+    l = strlen(sta_pattern);
+    if ( (strcasecmp(sta_sdc, sta_pattern) == 0) 
+	    || ((l == 1) && sta_pattern[0] == '*')) {
 	/* matching CHAN */
 	ret = 1;
 	i = 0;
