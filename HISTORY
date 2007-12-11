@@ -3,7 +3,7 @@ nmxptool Release History
 #########################
 
 * Release 1.1.7
-    - Added support for WindowsXP and Windows2000 (compiling under MinGW)
+    - Added support for WindowsXP and Windows2000 (compilation under MinGW)
     - Added support for recompiling earthworm sources when object files are missing
     - Added possibility defining channel list pattern to match all stations
     - Added documentation in README, earthworm/nmxptool_cmd.html, earthworm/nmxptool_ovr.html
