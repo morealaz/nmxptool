@@ -228,22 +228,23 @@ NmxpPortDAP          28002                 # Port number of the DataServer serve
                                            # to create TRACEBUF messages instead.
                                            # Most people will never need this.
 
-#TimeoutRecv          30                    # Time-out in seconds for flushing queued data for each channel.
-                                           # Useful for Data On Demand (i.e. channel HL) (Default 0. No time-out)
-
 MaxTolerableLatency  120                   # Max tolerable latency for each channel. (Default 600 sec.)
                                            # In general, do not use with parameter TimeoutRecv.
 
 DefaultNetworkCode   IV                    # Default network code where in Channel is not declared
 
-                                           # Channel is like NET.STA.CHAN where NET. is optional
+                                           # Channel is like NET.STA.CHAN
+                                           # NET  is optional and used only for output.
+                                           # STA  can be '*', stands for all stations.
+                                           # CHAN can contain '?', stands for any character.
+                                           # Example:  *.HH?,N1.STA2.??Z,STA3.?H?
 Channel              ES.BOB.HH?
 Channel              MN.TIR.HH?
 Channel              MDI.HH?
 Channel              DOI.HH?
 Channel              SALO.HH?
 Channel              MONC.HH?
-Channel              *.HHZ
+# Channel              *.BHZ               # Channel selection
 </pre>
 
 <hr>
