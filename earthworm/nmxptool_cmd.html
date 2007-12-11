@@ -8,7 +8,7 @@
 <center>
 <h1>Earthworm Modules: <br>
 nmxptool configuration file </h1>
-<i>(last revised 10 December, 2007)</i></center>
+<i>(beta revision, last revised 10 December, 2007)</i></center>
 Page Index:<br>
 1. <a href="#function">Functional command listing</a><br>
 2. <a href="#alphabet">Alphabetic command listing &amp; description</a><br>
@@ -77,8 +77,9 @@ and example commands are listed after each command description. </p>
 of data to be requested from the NmxpHost.
 The <font color="red">streamkey</font> is composed of a network, station and channel code
 separated by period. network is optional and it is used only for output.
+Station code can be &#42; that stands for all stations.
 Within channel code can appear character &#63; that stands for any characters.
-  <pre><br>Default:  none<br>Example:  Channel  ES.BOB.HH?<br>          Channel  MN.TIR.HH?<br>          Channel  SALO.BH?</pre>
+  <pre><br>Default:  none<br>Example:  Channel  ES.BOB.HH?<br>          Channel  *.HHZ<br>          Channel  MN.TIR.HH?<br>          Channel  SALO.BH?</pre>
 </blockquote>
 
 <hr><!-- ADD HERE: all commands; below is a sample command blank: --><!-- command name as anchor inside quotes -->
@@ -242,6 +243,7 @@ Channel              MDI.HH?
 Channel              DOI.HH?
 Channel              SALO.HH?
 Channel              MONC.HH?
+Channel              *.HHZ
 </pre>
 
 <hr>
