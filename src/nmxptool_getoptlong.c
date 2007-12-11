@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.43 2007-12-11 05:09:22 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.44 2007-12-11 10:39:07 mtheo Exp $
  *
  */
 
@@ -119,7 +119,7 @@ Usage: %s -H hostname   --listchannels | --listchannelsnaqs\n\
 #ifdef HAVE_EARTHWORMOBJS
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
        %s nmxptool.d\n\
-             Run as earthworm module receiving data from NaqServer by PDS.\n\
+             Run as earthworm module receiving data from NaqsServer by PDS.\n\
 \n", PACKAGE_NAME);
 #endif
 
