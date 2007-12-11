@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.42 2007-11-24 21:40:23 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.43 2007-12-11 05:09:22 mtheo Exp $
  *
  */
 
@@ -105,7 +105,7 @@ void nmxptool_usage(struct option long_options[])
 
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
 \n\
-Usage: %s -H hostname --listchannels |  --listchannelsnaqs\n\
+Usage: %s -H hostname   --listchannels | --listchannelsnaqs\n\
              Print list of available channels on DataServer or NaqsServer.\n\
 \n\
        %s -H hostname -C channellist -s DATE -e DATE [...]\n\
@@ -126,17 +126,19 @@ Usage: %s -H hostname --listchannels |  --listchannelsnaqs\n\
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
 Arguments:\n\
   -H, --hostname=HOST     Nanometrics hostname.\n\
-  -C, --channels=LIST     Channel list NET.STA.CHAN (NET. is optional)\n\
-                             N1.STA1.HH?,N2.STA2.??Z,STA3.?H?,...\n\
-                          NET is used only for output!\n\
+  -C, --channels=LIST     Sequence of NET.STA.CHAN separated by comma.\n\
+                          NET  is optional and used only for output.\n\
+                          STA  can be '*', stands for all stations.\n\
+                          CHAN can contain '?', stands for any character.\n\
+                          Example:  *.HH?,N1.STA2.??Z,STA3.?H?\n\
 \n");
 
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
 Other arguments:\n\
   -P, --portpds=PORT      NaqsServer port number (default %d).\n\
   -D, --portdap=PORT      DataServer port number (default %d).\n\
-  -N, --network=NET       Default Network code. (default '%s').\n\
-  -L, --location=LOC      Location code for writing file.\n\
+  -N, --network=NET       Default output Network code. (default '%s').\n\
+  -L, --location=LOC      Default output Location code. DISABLED!\n\
   -v, --verbose=level     Be verbose. level is a bitmap:\n\
                           %d Packet, %d Channel, %d Raw Stream,\n\
                           %d CRC32, %d Connection flow,\n\
@@ -380,7 +382,11 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 		    break;
 
 		case 'n':
-		    params->location = optarg;
+		    if(1) {
+			nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "Location is currently disabled!\n");
+		    } else {
+			params->location = optarg;
+		    }
 		    break;
 
 		case 'S':
