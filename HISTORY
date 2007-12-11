@@ -1,0 +1,23 @@
+#########################
+nmxptool Release History
+#########################
+
+* Release 1.1.7
+    - Added support for WindowsXP and Windows2000 (compiling under MinGW)
+    - Added support for recompiling earthworm sources when object files are missing
+    - Added possibility defining channel list pattern to match all stations
+    - Added documentation in README, earthworm/nmxptool_cmd.html, earthworm/nmxptool_ovr.html
+    - Fixed minor bugs
+
+* Release 1.1.6
+    - Added argument to option "-v" in order to configure level of verbosity
+    - Changed directory structure. Compilation now follows this order:
+    - Made source independent on MSG_WAITALL using a loop
+    - Added output of available channels on both NaqsServer and DataServer
+    - Fixed a major bug in connection management
+    - Fixed bug and improved log message management
+    - Fixed minor bugs
+
+* Release 1.1.5
+    - First public release.
+

@@ -21,17 +21,13 @@ The library offers APIs to:
     * manage Nanometrics data formats
     * request, receive and interpret online and offline data
 
-moreover, you can use them to develop software to:
+nmxptool allows you to:
     * analyze data in realtime (waveforms, triggers, ...)
     * retrieve and convert on the fly data
       into the mini-SEED records (optional)
     * feed SeedLink server (optional)
+    * feed Earthworm Server (optional)
 
-
-- DOCUMENTATION
-    * ./nmxptool -h
-    * Earthworm module: earthworm/nmxptool_cmd.html
-                                  nmxptool_ovr.html
 
 - DEPENDENCIES
   Optional libraries:
@@ -63,30 +59,40 @@ moreover, you can use them to develop software to:
      make
      make install
 
-    Optional Packages:
+  Before compiling nmxptool you need to compile libnmxp.
+
+  Optional Packages:
       --without-libmseed      disable support for libmseed
       --without-ew            disable support for earthworm
       --without-seedlink      disable support for seedlink
 
-    * libmseed, if available within includes and libraries path,
-                this library will enable Mini-SEED support.
+  * libmseed, if available within includes and libraries path,
+              this library will enable Mini-SEED support.
 
-    * ew, compiling depends on environment variables $EW_HOME, $EW_VERSION
-          `configure` look for necessary earthworm object files inside $EW_HOME/$EW_VERSION/lib
-           and link them to nmxptool in order to enable Earthworm support.
-           If some object file is missing then it will attempt to discover sources
-           dependents on your operating system and compile them before linking.
-
+  * ew, compiling depends on environment variables $EW_HOME, $EW_VERSION
+        `configure` look for necessary earthworm object files inside $EW_HOME/$EW_VERSION/lib
+         and link them to nmxptool in order to enable Earthworm support.
+         If some object file is missing then it will attempt to discover sources
+         dependents on your operating system and compile them before linking.
+         Install and configure nmxptool for Earthworm:
+           cp src/nmxptool $EW_HOME/$EW_VERSION/bin
            cp earthworm/nmxptool.d earthworm/nmxptool.desc ${EW_PARAMS}
            cp nmxptool_ovr.html $EW_HOME/$EW_VERSION/ewdoc/WEB_DOC/ovr/
 
-    * seedlink, inside the directory `src` has been copied files
-                `seedlink_plugin.c` and `seedlink_plugin.h` from `plugin.c` and `plugin.h`
-                 belonging to the SeisComP 2.x distribution
-
+  * seedlink, inside the directory `src` has been copied files
+              `seedlink_plugin.c` and `seedlink_plugin.h` from `plugin.c` and `plugin.h`
+               belonging to the SeisComP 2.x distribution
+               Install and configure nmxptool for SeedLink:
+                 cp src/nmxptool %SEISCOMP_ROOT%/acquisition/bin
                  cp -r seiscomp_templates/135_nmxptool \
                             /home/sysop/seiscomp/acquisition/templates/source/
                  seiscomp config
+
+
+- DOCUMENTATION
+    * ./nmxptool -h
+    * Earthworm module: earthworm/nmxptool_cmd.html
+                                  nmxptool_ovr.html
 
 
 - LICENSE
