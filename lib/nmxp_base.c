@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_base.c,v 1.45 2007-12-07 14:43:46 mtheo Exp $
+ * $Id: nmxp_base.c,v 1.46 2007-12-14 14:16:36 mtheo Exp $
  *
  */
 
@@ -210,7 +210,9 @@ int nmxp_recv_ctrl(int isock, void *buffer, int length, int timeoutsec, int *rec
       cc = recv(isock, buffer_char + recvCount, length - recvCount, 0);
       *recv_errno  = errno;
       if(cc <= 0) {
+	  /*
 	  nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CONNFLOW, "nmxp_recv_ctrl(): (cc=%d <= 0) errno=%d  recvCount=%d  length=%d\n", cc, *recv_errno, recvCount, length);
+	  */
       } else {
 	  recvCount += cc;
       }
@@ -238,28 +240,12 @@ int nmxp_recv_ctrl(int isock, void *buffer, int length, int timeoutsec, int *rec
 #else
       recv_errno_str = strerror(*recv_errno);
 #endif
-      /*
-	  switch(*recv_errno) {
-		  case EAGAIN : strcpy(recv_errno_str, "EAGAIN"); break;
-		  case EBADF : strcpy(recv_errno_str, "EBADF"); break;
-		  case ECONNREFUSED : strcpy(recv_errno_str, "ECONNREFUSED"); break;
-		  case EFAULT : strcpy(recv_errno_str, "EFAULT"); break;
-		  case EINTR : strcpy(recv_errno_str, "EINTR"); break;
-		  case EINVAL : strcpy(recv_errno_str, "EINVAL"); break;
-		  case ENOMEM : strcpy(recv_errno_str, "ENOMEM"); break;
-		  case ENOTCONN : strcpy(recv_errno_str, "ENOTCONN"); break;
-		  case ENOTSOCK : strcpy(recv_errno_str, "ENOTSOCK"); break;
-		  default:
-			  strcpy(recv_errno_str, "DEFAULT_NO_VALUE");
-			  break;
-	  }
-	  */
     nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CONNFLOW, "nmxp_recv_ctrl(): recvCount=%d  length=%d  (cc=%d) errno=%d (%s)\n", recvCount, length, cc, *recv_errno, recv_errno_str);
 	    
 #ifdef HAVE_WINDOWS_H
     if(recvCount != length) {
 #else
-    if(recvCount != length || *recv_errno != EAGAIN) {
+    if(recvCount != length || *recv_errno != EWOULDBLOCK) {
 #endif
 	return NMXP_SOCKET_ERROR;
     }
@@ -346,8 +332,8 @@ int nmxp_receiveMessage(int isock, NMXP_MSG_SERVER *type, void **buffer, int32_t
 
     if(*recv_errno != 0) {
 #ifndef HAVE_WINDOWS_H
-	if(*recv_errno == EAGAIN) {
-	    nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_CONNFLOW, "Timeout receveing in nmxp_receiveMessage()\n");
+	if(*recv_errno == EWOULDBLOCK) {
+	    nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_CONNFLOW, "Timeout receiving in nmxp_receiveMessage()\n");
 	} else {
 #endif
 	    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CONNFLOW, "Error in nmxp_receiveMessage()\n");
