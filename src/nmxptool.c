@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.95 2007-12-16 17:12:35 mtheo Exp $
+ * $Id: nmxptool.c,v 1.96 2007-12-16 18:25:17 mtheo Exp $
  *
  */
 
@@ -767,40 +767,41 @@ int main (int argc, char **argv) {
 } /* End MAIN */
 
 
-
-
 static void saving_channel_states() {
     int to_cur_chan;
     char last_time_str[30];
     char raw_last_sample_time_str[30];
     char state_line_str[1000];
 
-    FILE *fstatefile = fopen(params.statefile, "w");
-    if(fstatefile == NULL) {
-	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "Unable to write channel states into %s!\n", params.statefile);
-    }
-
-    /* Save state for each channel */
-    // if(params.stc == -1)
-    to_cur_chan = 0;
-    while(to_cur_chan < channelList_subset->number) {
-	nmxp_data_to_str(last_time_str, channelListSeq[to_cur_chan].last_time);
-	nmxp_data_to_str(raw_last_sample_time_str, channelListSeq[to_cur_chan].raw_stream_buffer.last_sample_time);
-	sprintf(state_line_str, "%-14s %16.4f %s %16.4f %s",
-		channelList_subset->channel[to_cur_chan].name,
-		channelListSeq[to_cur_chan].last_time, last_time_str,
-		channelListSeq[to_cur_chan].raw_stream_buffer.last_sample_time, raw_last_sample_time_str
-	       );
-	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CHANNEL, "%s\n", state_line_str);
-	if(fstatefile) {
-	    fprintf(fstatefile, "%s\n", state_line_str);
+    if(params.statefile) {
+	FILE *fstatefile = fopen(params.statefile, "w");
+	if(fstatefile == NULL) {
+	    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "Unable to write channel states into %s!\n", params.statefile);
 	}
-	to_cur_chan++;
-    }
-    if(fstatefile) {
-	fclose(fstatefile);
+
+	/* Save state for each channel */
+	// if(params.stc == -1)
+	to_cur_chan = 0;
+	while(to_cur_chan < channelList_subset->number) {
+	    nmxp_data_to_str(last_time_str, channelListSeq[to_cur_chan].last_time);
+	    nmxp_data_to_str(raw_last_sample_time_str, channelListSeq[to_cur_chan].raw_stream_buffer.last_sample_time);
+	    sprintf(state_line_str, "%-14s %16.4f %s %16.4f %s",
+		    channelList_subset->channel[to_cur_chan].name,
+		    channelListSeq[to_cur_chan].last_time, last_time_str,
+		    channelListSeq[to_cur_chan].raw_stream_buffer.last_sample_time, raw_last_sample_time_str
+		   );
+	    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CHANNEL, "%s\n", state_line_str);
+	    if(fstatefile) {
+		fprintf(fstatefile, "%s\n", state_line_str);
+	    }
+	    to_cur_chan++;
+	}
+	if(fstatefile) {
+	    fclose(fstatefile);
+	}
     }
 }
+
 
 static void flushing_raw_data_stream() {
     int to_cur_chan;
