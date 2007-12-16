@@ -7,13 +7,15 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_base.c,v 1.47 2007-12-16 14:05:05 mtheo Exp $
+ * $Id: nmxp_base.c,v 1.48 2007-12-16 21:08:32 mtheo Exp $
  *
  */
 
 #include "config.h"
 #include "nmxp_base.h"
+#ifdef HAVE_WINDOWS_H
 #include "nmxp_win.h"
+#endif
 
 #include <stdio.h>
 #include <stdlib.h>

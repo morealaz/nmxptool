@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_log.h,v 1.9 2007-11-22 11:10:40 mtheo Exp $
+ * $Id: nmxp_log.h,v 1.10 2007-12-16 21:08:16 mtheo Exp $
  *
  */
 
@@ -37,15 +37,15 @@
 /*! kind of log message */
 #define NMXP_LOG_D_NULL        0
 #define NMXP_LOG_D_PACKET      1
-#define NMXP_LOG_D_CHANNEL     2
-#define NMXP_LOG_D_RAWSTREAM   4
-#define NMXP_LOG_D_CRC         8
-#define NMXP_LOG_D_CONNFLOW   16
-#define NMXP_LOG_D_PACKETMAN  32
-#define NMXP_LOG_D_EXTRA      64
-#define NMXP_LOG_D_DATE      128
-#define NMXP_LOG_D_GAP       256
-#define NMXP_LOG_D_DOD       512
+#define NMXP_LOG_D_CHANNEL     NMXP_LOG_D_PACKET << 1
+#define NMXP_LOG_D_RAWSTREAM   NMXP_LOG_D_PACKET << 2
+#define NMXP_LOG_D_CRC         NMXP_LOG_D_PACKET << 3
+#define NMXP_LOG_D_CONNFLOW    NMXP_LOG_D_PACKET << 4
+#define NMXP_LOG_D_PACKETMAN   NMXP_LOG_D_PACKET << 5
+#define NMXP_LOG_D_EXTRA       NMXP_LOG_D_PACKET << 6
+#define NMXP_LOG_D_DATE        NMXP_LOG_D_PACKET << 7
+#define NMXP_LOG_D_GAP         NMXP_LOG_D_PACKET << 8
+#define NMXP_LOG_D_DOD         NMXP_LOG_D_PACKET << 9
 #define NMXP_LOG_D_ANY  \
 ( NMXP_LOG_D_PACKET | NMXP_LOG_D_CHANNEL | NMXP_LOG_D_RAWSTREAM | NMXP_LOG_D_CRC | NMXP_LOG_D_CONNFLOW | \
   NMXP_LOG_D_PACKETMAN | NMXP_LOG_D_EXTRA | NMXP_LOG_D_DATE | NMXP_LOG_D_GAP | NMXP_LOG_D_DOD )
