@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.45 2007-12-16 14:17:34 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.46 2007-12-16 17:11:39 mtheo Exp $
  *
  */
 
@@ -41,6 +41,7 @@ const NMXPTOOL_PARAMS NMXPTOOL_PARAMS_DEFAULT =
     DEFAULT_MAX_TOLERABLE_LATENCY,
     DEFAULT_TIMEOUTRECV,
     DEFAULT_VERBOSE_LEVEL,
+    NULL,
     NULL,
     0,
     0,
@@ -178,6 +179,11 @@ Other arguments:\n\
                           INTO THE FILE seedlink.in, THIS OPTION MUST BE\n\
                           THE LAST WITHOUT ADDING VALUE FOR plug_name!\n");
 #endif
+
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
+  -F, --statefile=FILE    Save/Restore time of last sample of each channel.\n\
+                          Allow data continuity between program restarts.\n");
+
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
   -V, --version           Print tool version.\n\
   -h, --help              Print this help.\n\
@@ -252,6 +258,13 @@ PDS arguments:\n\
 
 int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 {
+    int ret_errors = 0;
+
+    struct tm tmp_tm;
+    int i;
+    char one_time_option[255];
+    int c;
+
     struct option long_options[] =
     {
 	/* These options set a flag. */
@@ -290,18 +303,21 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 #ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
 	{"slink",        required_argument, 0, 'k'},
 #endif
+	{"statefile",    required_argument, 0, 'F'},
 	{"help",         no_argument,       0, 'h'},
 	{"version",      no_argument,       0, 'V'},
 	{0, 0, 0, 0}
     };
 
-    int ret_errors = 0;
+    char optstr[100] = "H:P:D:C:N:n:S:R:s:e:t:d:u:p:M:T:v:F:gblLiwhV";
 
-    struct tm tmp_tm;
-    int i;
-    char one_time_option[255];
+#ifdef HAVE_LIBMSEED
+    strcat(optstr, "m");
+#endif
 
-    int c;
+#ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
+    strcat(optstr, "k:");
+#endif
 
 
     /* getopt_long stores the option index here. */
@@ -315,16 +331,6 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 
     /* init params */
     memcpy(params, &NMXPTOOL_PARAMS_DEFAULT, sizeof(NMXPTOOL_PARAMS_DEFAULT));
-
-    char optstr[100] = "H:P:D:C:N:n:S:R:s:e:t:d:u:p:M:T:v:gblLiwhV";
-
-#ifdef HAVE_LIBMSEED
-    strcat(optstr, "m");
-#endif
-
-#ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
-    strcat(optstr, "k:");
-#endif
 
     /* Check number of command line arguments for earthworm */
     if (argc == 2)
@@ -453,6 +459,17 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 		    params->plugin_slink = optarg;
 		    break;
 #endif
+
+		case 'F':
+		    params->statefile = optarg;
+		    FILE *fstatefile = fopen(params->statefile, "a+");
+		    if(fstatefile) {
+			fclose(fstatefile);
+		    } else {
+			ret_errors++;
+			nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "File not found or unable to create %s!\n", params->statefile);
+		    }
+		    break;
 
 		case 'g':
 		    params->flag_logdata = 1;
