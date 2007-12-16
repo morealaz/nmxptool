@@ -100,6 +100,10 @@ AS_IF([test "x$with_ew" != xno],
       [
     AS_IF([test "x$EW_HOME" != x], 
 	  [
+	AC_CHECK_HEADERS([earthworm.h kom.h transport.h trace_buf.h],
+			 [AC_DEFINE([HAVE_EARTHWORMFILES_H], [1], [Define if you have earthworm header file])],
+			 AC_MSG_WARN([Earthworm header files not found!])
+			 )
 	EWLIB=$EW_HOME/$EW_VERSION/lib
 	EWOBJS="$EWLIB/kom.o $EWLIB/getutil.o $EWLIB/logit_mt.o $EWLIB/socket_ew_common.o $EWLIB/transport.o $EWLIB/sleep_ew.o $EWLIB/socket_ew.o $EWLIB/time_ew.o $EWLIB/threads_ew.o $EWLIB/sema_ew.o $EWLIB/swap.o $EWLIB/mem_circ_queue.o"
 	AC_CHECK_FILES([$EWLIB/kom.o $EWLIB/getutil.o $EWLIB/logit_mt.o $EWLIB/socket_ew_common.o $EWLIB/transport.o $EWLIB/sleep_ew.o $EWLIB/socket_ew.o $EWLIB/time_ew.o $EWLIB/threads_ew.o $EWLIB/sema_ew.o $EWLIB/swap.o $EWLIB/mem_circ_queue.o],
@@ -107,10 +111,6 @@ AS_IF([test "x$with_ew" != xno],
 		       [
 			AC_MSG_WARN(Earthworm object file is missing! Attempt to compile from source!)
 			EWOSOURCES=yes
-			AC_CHECK_HEADERS([earthworm.h kom.h transport.h trace_buf.h],
-					 [AC_DEFINE([HAVE_EARTHWORMFILES_H], [1], [Define if you have earthworm header file])],
-					 AC_MSG_WARN([Earthworm header files not found!])
-					 )
 			]
 		       )
 	AC_DEFINE([HAVE_EARTHWORMOBJS], [1], [Define if you have all earthworm object files])
