@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.93 2007-12-07 14:02:21 mtheo Exp $
+ * $Id: nmxptool.c,v 1.94 2007-12-16 16:02:49 mtheo Exp $
  *
  */
 
@@ -816,8 +816,11 @@ static void clientShutdown(int sig) {
     nmxp_closeSocket(naqssock);
 
 
-    if(channelList == NULL) {
+
+    /* Free the complete channel list */
+    if(channelList) {
 	free(channelList);
+	channelList = NULL;
     }
 
     int i_chan = 0;
