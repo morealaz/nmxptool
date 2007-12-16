@@ -50,6 +50,7 @@ Nanometrics server and connection parameters:<br>
 <a href="#NmxpPortDAP">NmxpPortDAP</a>		optional<br>
 <a href="#ForceTraceBuf1">ForceTraceBuf1</a>		optional<br>
 <a href="#MaxTolerableLatency">MaxTolerableLatency</a>	optional<br>
+<a href="#TimeoutRecv">TimeoutRecv</a>		optional<br>
 <a href="#DefaultNetworkCode">DefaultNetworkCode</a>	optional<br>
 <a href="#Channel">Channel</a>			required<br>
 <br>
@@ -179,6 +180,12 @@ memory region.
 </blockquote>
 
 <hr><!-- command name as anchor inside quotes -->
+<pre><a name="TimeoutRecv"><b>TimeoutRecv <font color="red">seconds</font>                                  ReadConfig              nmxptool parameters<br></b><!-- command args ... -->           <br></a></pre>
+<blockquote><!-- command description goes here --> Specifies time-out for flushing buffered packets for each channel. Useful for Data On Demand (i.e. channel HL).  Range is [10..300].
+  <pre><!-- Default and example go here   --><br>Default:  0  (No Time-out)<br>Example:  TimeoutRecv  15</pre>
+</blockquote>
+
+<hr><!-- command name as anchor inside quotes -->
 <pre><a name="Verbosity"><b>Verbosity  </b></a><b><font color="red">level</font></b><b>                             ReadConfig              Earthworm setup <br></b><!-- command args ... -->           <br></pre>
 <blockquote><!-- command description goes here --> Specifies the <b><font
 	    color="red">level</font></b> of logging verbosity.
@@ -230,6 +237,10 @@ NmxpPortDAP          28002                 # Port number of the DataServer serve
 
 MaxTolerableLatency  120                   # Max tolerable latency for each channel. (Default 600 sec.)
                                            # In general, do not use with parameter TimeoutRecv.
+
+#TimeoutRecv          30                    # Time-out in seconds for flushing queued data for each channel.
+                                           # Useful for Data On Demand (i.e. channel HL) (Default 0. No time-out)
+
 
 DefaultNetworkCode   IV                    # Default network code where in Channel is not declared
 

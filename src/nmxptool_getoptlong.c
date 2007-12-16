@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.44 2007-12-11 10:39:07 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.45 2007-12-16 14:17:34 mtheo Exp $
  *
  */
 
@@ -219,7 +219,7 @@ PDS arguments:\n\
   -b, --buffered          Request also recent packets into the past.\n\
   -L, --listchannelsnaqs  Print list of available channels on NaqsServer.\n\
   -M, --maxlatency=SECs   Max tolerable latency (default %d) [%d..%d].\n\
-  -T, --timeoutrecv=SECs  Time-out for flushing buffered packets. DISABLED!\n\
+  -T, --timeoutrecv=SECs  Time-out for flushing buffered packets.\n\
                           (default %d. No time-out.) [%d..%d].\n\
                           -T is useful for retrieving Data On Demand.\n\
                           -M, -T are usable only with Raw Stream --stc=-1.\n\
@@ -438,12 +438,8 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 		    break;
 
 		case 'T':
-		    if(1) {
-			nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "Time-out is currently disabled!\n");
-		    } else {
-			params->timeoutrecv = atoi(optarg);
-			nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "Time-out receiving %d\n", params->timeoutrecv);
-		    }
+		    params->timeoutrecv = atoi(optarg);
+		    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "Time-out receiving %d\n", params->timeoutrecv);
 		    break;
 
 		case 'v':
