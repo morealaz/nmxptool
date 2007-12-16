@@ -7,12 +7,13 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_base.c,v 1.46 2007-12-14 14:16:36 mtheo Exp $
+ * $Id: nmxp_base.c,v 1.47 2007-12-16 14:05:05 mtheo Exp $
  *
  */
 
 #include "config.h"
 #include "nmxp_base.h"
+#include "nmxp_win.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -33,26 +34,6 @@
 #endif
 
 #define MAX_OUTDATA 4096
-
-
-/* Private function for winsock2 initialization */
-#ifdef HAVE_WINDOWS_H
-void nmxp_initWinsock() {
-	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CONNFLOW, "WSAStartup\n");
-	WORD wVersionRequested = MAKEWORD(2, 2);
-	WSADATA wsaData;
-	/* Initialize Winsock */
-	int iResult = WSAStartup( wVersionRequested, &wsaData );
-	if( iResult != 0 ) {
-		nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CONNFLOW, "Error at WSAStartup\n");
-	}
-	if( LOBYTE(wsaData.wVersion) != 2 || HIBYTE(wsaData.wVersion != 2) ) {
-		nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CONNFLOW, "winsock library\n");
-		WSACleanup();
-		exit(1);
-	}
-}
-#endif
 
 
 int nmxp_openSocket(char *hostname, int portNum)
@@ -166,11 +147,15 @@ int nmxp_recv_ctrl(int isock, void *buffer, int length, int timeoutsec, int *rec
   int cc;
   char *buffer_char = buffer;
 
+#ifdef HAVE_WINDOWS_H
+  char *recv_errno_str;
+#else
 #ifdef HAVE_STRERROR_R
 #define MAXLEN_RECV_ERRNO_STR 200
   char recv_errno_str[MAXLEN_RECV_ERRNO_STR];
 #else
   char *recv_errno_str;
+#endif
 #endif
 
 #ifdef HAVE_WINDOWS_H
@@ -188,13 +173,12 @@ int nmxp_recv_ctrl(int isock, void *buffer, int length, int timeoutsec, int *rec
 
   if(timeoutsec > 0) {
 #ifdef HAVE_WINDOWS_H
-      timeos  = timeoutsec;
+      timeos  = timeoutsec * 1000;
       if (setsockopt(isock, SOL_SOCKET, SO_RCVTIMEO, (char *) &timeos, sizeof(timeos)) < 0)
       {
 	  perror("setsockopt SO_RCVTIMEO");
       }
 #else
-
       timeo.tv_sec  = timeoutsec;
       timeo.tv_usec = 0;
       if (setsockopt(isock, SOL_SOCKET, SO_RCVTIMEO, &timeo, sizeof(timeo)) < 0) {
@@ -208,7 +192,11 @@ int nmxp_recv_ctrl(int isock, void *buffer, int length, int timeoutsec, int *rec
   recvCount = 0;
   while(cc > 0 && *recv_errno == 0  && recvCount < length) {
       cc = recv(isock, buffer_char + recvCount, length - recvCount, 0);
+#ifdef HAVE_WINDOWS_H
+      *recv_errno  = WSAGetLastError();
+#else
       *recv_errno  = errno;
+#endif
       if(cc <= 0) {
 	  /*
 	  nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CONNFLOW, "nmxp_recv_ctrl(): (cc=%d <= 0) errno=%d  recvCount=%d  length=%d\n", cc, *recv_errno, recvCount, length);
@@ -235,15 +223,19 @@ int nmxp_recv_ctrl(int isock, void *buffer, int length, int timeoutsec, int *rec
   }
 
   if (recvCount != length  ||  *recv_errno != 0  ||  cc <= 0) {
+#ifdef HAVE_WINDOWS_H
+      recv_errno_str = WSAGetLastErrorMessage(*recv_errno);
+#else
 #ifdef HAVE_STRERROR_R
       strerror_r(*recv_errno, recv_errno_str, MAXLEN_RECV_ERRNO_STR);
 #else
       recv_errno_str = strerror(*recv_errno);
 #endif
+#endif
     nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CONNFLOW, "nmxp_recv_ctrl(): recvCount=%d  length=%d  (cc=%d) errno=%d (%s)\n", recvCount, length, cc, *recv_errno, recv_errno_str);
 	    
 #ifdef HAVE_WINDOWS_H
-    if(recvCount != length) {
+    if(recvCount != length || *recv_errno != WSAEWOULDBLOCK) {
 #else
     if(recvCount != length || *recv_errno != EWOULDBLOCK) {
 #endif
@@ -331,15 +323,15 @@ int nmxp_receiveMessage(int isock, NMXP_MSG_SERVER *type, void **buffer, int32_t
     }
 
     if(*recv_errno != 0) {
-#ifndef HAVE_WINDOWS_H
+#ifdef HAVE_WINDOWS_H
+	if(*recv_errno == WSAEWOULDBLOCK) {
+#else
 	if(*recv_errno == EWOULDBLOCK) {
+#endif
 	    nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_CONNFLOW, "Timeout receiving in nmxp_receiveMessage()\n");
 	} else {
-#endif
 	    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CONNFLOW, "Error in nmxp_receiveMessage()\n");
-#ifndef HAVE_WINDOWS_H
 	}
-#endif
     }
 
     return ret;
