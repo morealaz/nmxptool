@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.98 2007-12-17 08:38:03 mtheo Exp $
+ * $Id: nmxptool.c,v 1.99 2007-12-17 10:36:57 mtheo Exp $
  *
  */
 
@@ -593,6 +593,8 @@ int main (int argc, char **argv) {
 	}
 #endif
 
+	double after_start_time = params.buffered_time;
+	int skip_current_packet = 0;
 	
 	while(exitpdscondition) {
 
@@ -611,6 +613,29 @@ int main (int argc, char **argv) {
 	    if(params.flag_logdata) {
 		nmxp_data_log(pd);
 	    }
+
+	    skip_current_packet = 0;
+	    if(pd) {
+		if(pd->time + ((double) pd->nSamp / (double) pd->sampRate) >= after_start_time) {
+		    if(pd->time < after_start_time) {
+			int first_nsample_to_remove = (after_start_time - pd->time) * (double) pd->sampRate;
+			/* Remove the first sample in order avoiding overlap  */
+			first_nsample_to_remove++;
+			if(pd->nSamp > first_nsample_to_remove) {
+			    pd->nSamp -= first_nsample_to_remove;
+			    pd->time = after_start_time;
+			    pd->pDataPtr += first_nsample_to_remove;
+			    pd->x0 = pd->pDataPtr[0];
+			} else {
+			    skip_current_packet = 1;
+			}
+		    }
+		} else {
+		    skip_current_packet = 1;
+		}
+	    }
+
+	    if(!skip_current_packet) {
 
 	    if(pd) {
 		/* Set cur_chan */
@@ -678,17 +703,18 @@ int main (int argc, char **argv) {
 #endif
 	    }
 	    }
+	    } /* End skip_current_packet condition */
 
 	    if(pd) {
-	    /* Store x_1 */
-	    if(pd->nSamp > 0) {
-		channelListSeq[cur_chan].x_1 = pd->pDataPtr[pd->nSamp-1];
-	    }
-	    /* Free pd->buffer */
-	    if(pd->buffer) {
-		free(pd->buffer);
-		pd->buffer = NULL;
-	    }
+		/* Store x_1 */
+		if(pd->nSamp > 0) {
+		    channelListSeq[cur_chan].x_1 = pd->pDataPtr[pd->nSamp-1];
+		}
+		/* Free pd->buffer */
+		if(pd->buffer) {
+		    free(pd->buffer);
+		    pd->buffer = NULL;
+		}
 	    }
 
 #ifdef HAVE_EARTHWORMOBJS
@@ -706,7 +732,7 @@ int main (int argc, char **argv) {
 	    }
 #endif
 
-	}
+	} /* End main PDS loop */
 	
 	/* Flush raw data stream for each channel */
 	flushing_raw_data_stream();
@@ -794,7 +820,11 @@ static void save_channel_states() {
 		   );
 	    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CHANNEL, "%s\n", state_line_str);
 	    if(fstatefile) {
-		fprintf(fstatefile, "%s\n", state_line_str);
+		if( (channelListSeq[to_cur_chan].last_time != 0) || (channelListSeq[to_cur_chan].raw_stream_buffer.last_sample_time != -1.0) ) {
+		    fprintf(fstatefile, "%s\n", state_line_str);
+		} else {
+		    nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "%s\n", state_line_str);
+		}
 	    }
 	    to_cur_chan++;
 	}

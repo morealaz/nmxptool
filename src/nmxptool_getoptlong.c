@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.47 2007-12-17 07:37:10 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.48 2007-12-17 10:36:57 mtheo Exp $
  *
  */
 
@@ -43,6 +43,7 @@ const NMXPTOOL_PARAMS NMXPTOOL_PARAMS_DEFAULT =
     DEFAULT_VERBOSE_LEVEL,
     NULL,
     NULL,
+    0.0,
     0,
     0,
     0,
@@ -223,6 +224,8 @@ PDS arguments:\n\
                            0 for original sample rate and decompressed data.\n\
                           >0 for specified sample rate and decompressed data.\n\
   -b, --buffered          Request also recent packets into the past.\n\
+  -B, --buff_date=DATE    Request also recent packets into the past\n\
+                          but consider only samples after DATE.\n\
   -L, --listchannelsnaqs  Print list of available channels on NaqsServer.\n\
   -M, --maxlatency=SECs   Max tolerable latency (default %d) [%d..%d].\n\
   -T, --timeoutrecv=SECs  Time-out for flushing buffered packets.\n\
@@ -290,6 +293,7 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 	{"maxlatency",   required_argument, 0, 'M'},
 	{"timeoutrecv",  required_argument, 0, 'T'},
 	{"verbose",      required_argument, 0, 'v'},
+	{"bufferedt",    required_argument, 0, 'B'},
 	/* Following are flags */
 	{"logdata",      no_argument,       0, 'g'},
 	{"buffered",     no_argument,       0, 'b'},
@@ -309,7 +313,7 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 	{0, 0, 0, 0}
     };
 
-    char optstr[100] = "H:P:D:C:N:n:S:R:s:e:t:d:u:p:M:T:v:F:gblLiwhV";
+    char optstr[100] = "H:P:D:C:N:n:S:R:s:e:t:d:u:p:M:T:v:B:F:gblLiwhV";
 
 #ifdef HAVE_LIBMSEED
     strcat(optstr, "m");
@@ -450,6 +454,16 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 
 		case 'v':
 		    params->verbose_level = atoi(optarg);
+		    break;
+
+		case 'B':
+		    params->flag_buffered = 1;
+		    if(nmxp_data_parse_date(optarg, &tmp_tmt) == -1) {
+			// MESSAGE ERROR
+			ret_errors++;
+		    } else {
+			params->buffered_time = nmxp_data_tm_to_time(&tmp_tmt);
+		    }
 		    break;
 
 
