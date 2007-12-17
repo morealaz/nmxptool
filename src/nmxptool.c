@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.96 2007-12-16 18:25:17 mtheo Exp $
+ * $Id: nmxptool.c,v 1.97 2007-12-17 07:36:37 mtheo Exp $
  *
  */
 
@@ -260,12 +260,12 @@ int main (int argc, char **argv) {
     nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CONNFLOW, "Starting comunication.\n");
 
     /* TODO condition starting DAP or PDS */
-    if( (params.start_time != 0   &&   params.end_time != 0)
+    if( (params.start_time != 0.0   &&   params.end_time != 0.0)
 	    || params.delay > 0
 	    ) {
 
 	if(params.delay > 0) {
-	    params.start_time = ((time(NULL) - params.delay - span_interval) / 10) * 10;
+	    params.start_time = ((double) (time(NULL) - params.delay - span_interval) / 10.0) * 10.0;
 	    params.end_time = params.start_time + span_interval;
 	}
 
@@ -302,7 +302,7 @@ int main (int argc, char **argv) {
 
 	while(exitdapcondition) {
 
-	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_EXTRA, "start_time = %d - end_time = %d\n", params.start_time, params.end_time);
+	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_EXTRA, "start_time = %.4f - end_time = %.4f\n", params.start_time, params.end_time);
 
 	/* Start loop for sending requests */
 	i_chan=0;
@@ -311,7 +311,7 @@ int main (int argc, char **argv) {
 	while(request_SOCKET_OK == NMXP_SOCKET_OK  &&  i_chan < channelList_subset->number) {
 
 	    /* DAP Step 5: Send Data Request */
-	    request_SOCKET_OK = nmxp_sendDataRequest(naqssock, channelList_subset->channel[i_chan].key, (double) params.start_time, (double) params.end_time);
+	    request_SOCKET_OK = nmxp_sendDataRequest(naqssock, channelList_subset->channel[i_chan].key, (int32_t) params.start_time, (int32_t) (params.end_time + 1.0));
 
 	    if(request_SOCKET_OK == NMXP_SOCKET_OK) {
 
@@ -403,7 +403,7 @@ int main (int argc, char **argv) {
 		    if(!channelListSeq[cur_chan].significant && pd->nSamp > 0) {
 			channelListSeq[cur_chan].significant = 1;
 		    } else {
-			if(channelListSeq[cur_chan].significant) {
+			if(channelListSeq[cur_chan].significant && pd->nSamp > 0) {
 			    if(nmxptool_check_and_log_gap(pd->time, channelListSeq[cur_chan].last_time, GAP_TOLLERANCE, pd->station, pd->channel)) {
 				channelListSeq[cur_chan].x_1 = 0;
 				nmxp_data_to_str(str_pd_time, pd->time);
@@ -650,7 +650,7 @@ int main (int argc, char **argv) {
 		if(!channelListSeq[cur_chan].significant && pd->nSamp > 0) {
 		    channelListSeq[cur_chan].significant = 1;
 		} else {
-		    if(channelListSeq[cur_chan].significant) {
+		    if(channelListSeq[cur_chan].significant && pd->nSamp > 0) {
 			if(nmxptool_check_and_log_gap(pd->time, channelListSeq[cur_chan].last_time, GAP_TOLLERANCE, pd->station, pd->channel)) {
 			    channelListSeq[cur_chan].x_1 = 0;
 			    nmxp_data_to_str(str_pd_time, pd->time);
