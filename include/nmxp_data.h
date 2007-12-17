@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_data.h,v 1.25 2007-10-07 18:13:18 mtheo Exp $
+ * $Id: nmxp_data.h,v 1.26 2007-12-17 07:20:15 mtheo Exp $
  *
  */
 
@@ -17,6 +17,14 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <time.h>
+
+
+/*! \brief struct tm plus ten thousandth second field */
+typedef struct {
+    struct tm t;
+    uint32_t d;
+} NMXP_TM_T;
+
 
 
 /*! First 4 bytes of all messages. */
@@ -203,14 +211,14 @@ int nmxp_data_log(NMXP_DATA_PROCESS *pd);
  *
  *
  */
-int nmxp_data_parse_date(const char *pstr_date, struct tm *ret_tm);
+int nmxp_data_parse_date(const char *pstr_date, NMXP_TM_T *ret_tmt);
 
 
 /*! \brief Wrapper for timegm
  *
  *
  */
-time_t nmxp_data_tm_to_time(struct tm *tm);
+double nmxp_data_tm_to_time(NMXP_TM_T *tmt);
 
 
 /*! \brief Initialize a structure NMXP_DATA_SEED

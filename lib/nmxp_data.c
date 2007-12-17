@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_data.c,v 1.41 2007-12-07 13:49:28 mtheo Exp $
+ * $Id: nmxp_data.c,v 1.42 2007-12-17 07:20:15 mtheo Exp $
  *
  */
 
@@ -183,7 +183,7 @@ int nmxp_data_trim(NMXP_DATA_PROCESS *pd, double trim_start_time, double trim_en
 
 
     if(pd) {
-	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN, "nmxp_data_trim(..., %.4f, %.4f, %d!\n", trim_start_time, trim_end_time, exclude_bitmap);
+	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN, "nmxp_data_trim(pd, %.4f, %.4f, %d)\n", trim_start_time, trim_end_time, exclude_bitmap);
 	first_time = pd->time;
 	last_time = pd->time + ((double) pd->nSamp / (double) pd->sampRate);
 	if(first_time <= trim_start_time &&  trim_start_time <= last_time) {
@@ -199,6 +199,12 @@ int nmxp_data_trim(NMXP_DATA_PROCESS *pd, double trim_start_time, double trim_en
 		last_nsamples_to_remove++;
 		nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN, "Excluded the last sample!\n");
 	    }
+	}
+
+	if( (first_time < trim_start_time  &&  last_time < trim_start_time) ||
+		(first_time > trim_end_time  &&  last_time > trim_end_time) ) {
+	    first_nsamples_to_remove = pd->nSamp;
+	    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN, "Excluded all samples!\n");
 	}
 
 	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN, "first_time=%.2f last_time=%.2f trim_start_time=%.2f trim_end_time=%.2f\n",
@@ -262,9 +268,12 @@ int nmxp_data_trim(NMXP_DATA_PROCESS *pd, double trim_start_time, double trim_en
 time_t nmxp_data_gmtime_now() {
     time_t time_now;
     struct tm *tm_now;
+    NMXP_TM_T tmt_now;
     time(&time_now);
     tm_now = gmtime(&time_now);
-    time_now = nmxp_data_tm_to_time(tm_now);
+    memcpy(&(tmt_now.t), tm_now, sizeof(struct tm));
+    tmt_now.d = 0;
+    time_now = nmxp_data_tm_to_time(&tmt_now);
 
     return time_now;
 }
@@ -334,7 +343,7 @@ int nmxp_data_log(NMXP_DATA_PROCESS *pd) {
 }
 
 
-int nmxp_data_parse_date(const char *pstr_date, struct tm *ret_tm) {
+int nmxp_data_parse_date(const char *pstr_date, NMXP_TM_T *ret_tmt) {
 /* Input formats: 
  *     <date>,<time> | <date>
  *
@@ -352,6 +361,9 @@ int nmxp_data_parse_date(const char *pstr_date, struct tm *ret_tm) {
  */
 
     int ret = 0;
+
+    char str_tt[20];
+    int k;
 
 #define MAX_LENGTH_STR_MESSAGE 30
     char str_date[MAX_LENGTH_STR_MESSAGE] = "NO DATE";
@@ -382,24 +394,25 @@ int nmxp_data_parse_date(const char *pstr_date, struct tm *ret_tm) {
 	ret = -1;
     }
 
-    /* initialize ret_tm */
+    /* initialize ret_tmt */
     time_t time_now;
     struct tm *tm_now;
     time(&time_now);
     tm_now = gmtime(&time_now);
 
-    ret_tm->tm_sec = 0 ;
-    ret_tm->tm_min = 0;
-    ret_tm->tm_hour = 0;
-    ret_tm->tm_mday = tm_now->tm_mday;
-    ret_tm->tm_mon = tm_now->tm_mon;
-    ret_tm->tm_year = tm_now->tm_year;
-    ret_tm->tm_wday = tm_now->tm_wday;
-    ret_tm->tm_yday = tm_now->tm_yday;
-    ret_tm->tm_isdst = tm_now->tm_isdst;
+    ret_tmt->t.tm_sec = 0 ;
+    ret_tmt->t.tm_min = 0;
+    ret_tmt->t.tm_hour = 0;
+    ret_tmt->t.tm_mday = tm_now->tm_mday;
+    ret_tmt->t.tm_mon = tm_now->tm_mon;
+    ret_tmt->t.tm_year = tm_now->tm_year;
+    ret_tmt->t.tm_wday = tm_now->tm_wday;
+    ret_tmt->t.tm_yday = tm_now->tm_yday;
+    ret_tmt->t.tm_isdst = tm_now->tm_isdst;
 #ifdef HAVE_STRUCT_TM_TM_GMTOFF
-    ret_tm->tm_gmtoff = tm_now->tm_gmtoff;
+    ret_tmt->t.tm_gmtoff = tm_now->tm_gmtoff;
 #endif
+    ret_tmt->d = 0;
 
     
     /* loop for parsing by a finite state machine */
@@ -415,7 +428,7 @@ int nmxp_data_parse_date(const char *pstr_date, struct tm *ret_tm) {
 	/* switch on state */
 	switch(state) {
 	    case 0: /* Parse year */
-		ret_tm->tm_year = app - 1900;
+		ret_tmt->t.tm_year = app - 1900;
 		if(pEnd[0] == '/') {
 		    state = 1; /* Month */
 		} else if(pEnd[0] == '.') {
@@ -427,7 +440,7 @@ int nmxp_data_parse_date(const char *pstr_date, struct tm *ret_tm) {
 		break;
 
 	    case 1: /* Parse month */
-		ret_tm->tm_mon = app - 1;
+		ret_tmt->t.tm_mon = app - 1;
 		if(pEnd[0] == '/')
 		    state = 2; /* Day of month */
 		else {
@@ -437,7 +450,7 @@ int nmxp_data_parse_date(const char *pstr_date, struct tm *ret_tm) {
 		break;
 
 	    case 2: /* Parse day of month */
-		ret_tm->tm_mday = app;
+		ret_tmt->t.tm_mday = app;
 		if(pEnd[0] == 0) {
 		    flag_finished = 1;
 		} else if(pEnd[0] == ',') {
@@ -449,12 +462,12 @@ int nmxp_data_parse_date(const char *pstr_date, struct tm *ret_tm) {
 		break;
 
 	    case 3: /* Parse Julian Day */
-		ret_tm->tm_yday = app - 1;
+		ret_tmt->t.tm_yday = app - 1;
 
 		int month_days[12] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 		int m, d, day_sum, jday=app;
 
-		if(NMXP_DATA_IS_LEAP(ret_tm->tm_year)) {
+		if(NMXP_DATA_IS_LEAP(ret_tmt->t.tm_year)) {
 		    month_days[1]++;
 		}
 
@@ -465,8 +478,8 @@ int nmxp_data_parse_date(const char *pstr_date, struct tm *ret_tm) {
 		}
 		d = jday-day_sum;
 
-		ret_tm->tm_mon = m;
-		ret_tm->tm_mday = d;
+		ret_tmt->t.tm_mon = m;
+		ret_tmt->t.tm_mday = d;
 
 		nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_DATE, "Month %d Day %d\n", m, d);
 
@@ -481,7 +494,7 @@ int nmxp_data_parse_date(const char *pstr_date, struct tm *ret_tm) {
 		break;
 
 	    case 4: /* Parse hour */
-		ret_tm->tm_hour = app;
+		ret_tmt->t.tm_hour = app;
 		if(pEnd[0] == ':') {
 		    state = 5; /* Minute */
 		} else {
@@ -491,7 +504,7 @@ int nmxp_data_parse_date(const char *pstr_date, struct tm *ret_tm) {
 		break;
 
 	    case 5: /* Parse minute */
-		ret_tm->tm_min = app;
+		ret_tmt->t.tm_min = app;
 		if(pEnd[0] == 0) {
 		    flag_finished = 1;
 		} else if(pEnd[0] == ':') {
@@ -503,11 +516,23 @@ int nmxp_data_parse_date(const char *pstr_date, struct tm *ret_tm) {
 		break;
 
 	    case 6: /* Parse second */
-		ret_tm->tm_sec = app;
+		ret_tmt->t.tm_sec = app;
+		if(pEnd[0] == 0) {
+		    flag_finished = 1;
+		} else if(pEnd[0] == '.') {
+		    state = 7; /* ten thousandth of second */
+		} else {
+		    strncpy(err_message, "Error parsing after second!", MAX_LENGTH_ERR_MESSAGE);
+		    ret = -1;
+		}
+		break;
+
+	    case 7: /* Parse ten thousandth of second */
+		ret_tmt->d = app;
 		if(pEnd[0] == 0) {
 		    flag_finished = 1;
 		} else {
-		    strncpy(err_message, "Error parsing after second!", MAX_LENGTH_ERR_MESSAGE);
+		    strncpy(err_message, "Error parsing after ten thousandth of second!", MAX_LENGTH_ERR_MESSAGE);
 		    ret = -1;
 		}
 		break;
@@ -519,7 +544,28 @@ int nmxp_data_parse_date(const char *pstr_date, struct tm *ret_tm) {
 	}
 	if(pEnd[0] != 0  && !flag_finished  &&  ret == 0) {
 	    pEnd[0] = ' '; /* overwrite separator with space */
-	    app = strtol(pEnd, &pEnd, 10);
+	    if(state != 7) {
+		app = strtol(pEnd, &pEnd, 10);
+	    } else {
+		pEnd++;
+		str_tt[0] = '1';
+		str_tt[1] = 0;
+		if(pEnd[0] == 0 || strlen(pEnd) > 4) {
+		    strncpy(err_message, "Error parsing ten thousandth of second!", MAX_LENGTH_ERR_MESSAGE);
+		    ret = -1;
+		} else {
+		    strncat(str_tt, pEnd, 20);
+		    k=0;
+		    while(k<5) {
+			if(str_tt[k] == 0) {
+			    str_tt[k] = '0';
+			}
+			k++;
+		    }
+		    app = strtol(str_tt, &pEnd, 10);
+		    app -= 10000;
+		}
+	    }
 	    if(  errno == EINVAL ||  errno == ERANGE ) {
 		nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_DATE, "%s\n", strerror(errno));
 		ret = -1;
@@ -537,31 +583,35 @@ int nmxp_data_parse_date(const char *pstr_date, struct tm *ret_tm) {
     if(ret == -1) {
 	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_DATE, "in date '%s' %s\n", pstr_date, err_message);
     } else {
-	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_DATE, "Date '%s' has been validate! %04d/%02d/%02d %02d:%02d:%02d\n",
+	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_DATE, "Date '%s' has been validate! %04d/%02d/%02d %02d:%02d:%02d.%04d\n",
 		pstr_date,
-		ret_tm->tm_year,
-		ret_tm->tm_mon,
-		ret_tm->tm_mday,
-		ret_tm->tm_hour,
-		ret_tm->tm_min,
-		ret_tm->tm_sec
+		ret_tmt->t.tm_year,
+		ret_tmt->t.tm_mon,
+		ret_tmt->t.tm_mday,
+		ret_tmt->t.tm_hour,
+		ret_tmt->t.tm_min,
+		ret_tmt->t.tm_sec,
+		ret_tmt->d
 		);
     }
 
     return ret;
 }
 
-time_t nmxp_data_tm_to_time(struct tm *tm) {
-    time_t ret_t = 0;
+double nmxp_data_tm_to_time(NMXP_TM_T *tmt) {
+    double ret_d = 0.0;
     
 #ifdef HAVE_TIMEGM
-    ret_t = timegm(tm);
+    ret_d = timegm(&(tmt->t));
 #else
-    ret_t = my_timegm(tm);
+    ret_d = my_timegm(&(tmt->t));
 #endif
 
-    return ret_t;
+    ret_d += ((double) tmt->d / 10000.0 );
+
+    return ret_d;
 }
+
 int nmxp_data_seed_init(NMXP_DATA_SEED *data_seed) {
     data_seed->srcname[0] = 0;
     data_seed->outfile_mseed = NULL;
