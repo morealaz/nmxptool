@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_data.c,v 1.42 2007-12-17 07:20:15 mtheo Exp $
+ * $Id: nmxp_data.c,v 1.43 2007-12-17 08:14:12 mtheo Exp $
  *
  */
 
@@ -544,9 +544,7 @@ int nmxp_data_parse_date(const char *pstr_date, NMXP_TM_T *ret_tmt) {
 	}
 	if(pEnd[0] != 0  && !flag_finished  &&  ret == 0) {
 	    pEnd[0] = ' '; /* overwrite separator with space */
-	    if(state != 7) {
-		app = strtol(pEnd, &pEnd, 10);
-	    } else {
+	    if(state == 7) {
 		pEnd++;
 		str_tt[0] = '1';
 		str_tt[1] = 0;
@@ -562,9 +560,13 @@ int nmxp_data_parse_date(const char *pstr_date, NMXP_TM_T *ret_tmt) {
 			}
 			k++;
 		    }
-		    app = strtol(str_tt, &pEnd, 10);
-		    app -= 10000;
+		    str_tt[k] = 0;
+		    pEnd = str_tt;
 		}
+	    }
+	    app = strtol(pEnd, &pEnd, 10);
+	    if(state == 7) {
+		    app -= 10000;
 	    }
 	    if(  errno == EINVAL ||  errno == ERANGE ) {
 		nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_DATE, "%s\n", strerror(errno));
