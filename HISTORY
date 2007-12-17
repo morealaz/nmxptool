@@ -6,6 +6,7 @@ nmxptool Release History
     - Added support for retrieving Data on Demand
     - Added ten thousandth of second in date format
     - Added save of channel states
+    - Added option "buffered time"
 
 * Release 1.1.7
     - Added support for WindowsXP and Windows2000 (compilation under MinGW)
