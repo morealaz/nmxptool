@@ -2,6 +2,9 @@
 nmxptool Release History
 #########################
 
+* Release 1.1.8-beta
+    - Added support for retrieving Data on Demand
+
 * Release 1.1.7
     - Added support for WindowsXP and Windows2000 (compilation under MinGW)
     - Added support for recompiling earthworm sources when object files are missing
