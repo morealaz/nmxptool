@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.97 2007-12-17 07:36:37 mtheo Exp $
+ * $Id: nmxptool.c,v 1.98 2007-12-17 08:38:03 mtheo Exp $
  *
  */
 
@@ -61,7 +61,7 @@ static void clientShutdown(int sig);
 static void clientDummyHandler(int sig);
 #endif
 
-static void saving_channel_states();
+static void save_channel_states();
 static void flushing_raw_data_stream();
 
 #ifdef HAVE_LIBMSEED
@@ -710,7 +710,7 @@ int main (int argc, char **argv) {
 	
 	/* Flush raw data stream for each channel */
 	flushing_raw_data_stream();
-	saving_channel_states();
+	save_channel_states();
 
 #ifdef HAVE_EARTHWORMOBJS
 	if(params.ew_configuration_file) {
@@ -767,7 +767,7 @@ int main (int argc, char **argv) {
 } /* End MAIN */
 
 
-static void saving_channel_states() {
+static void save_channel_states() {
     int to_cur_chan;
     char last_time_str[30];
     char raw_last_sample_time_str[30];
@@ -776,7 +776,9 @@ static void saving_channel_states() {
     if(params.statefile) {
 	FILE *fstatefile = fopen(params.statefile, "w");
 	if(fstatefile == NULL) {
-	    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "Unable to write channel states into %s!\n", params.statefile);
+	    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY, "Unable to write channel states into %s!\n", params.statefile);
+	} else {
+	    nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "Writing channel states into %s!\n", params.statefile);
 	}
 
 	/* Save state for each channel */
@@ -825,7 +827,7 @@ static void clientShutdown(int sig) {
     nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "Program interrupted!\n");
 
     flushing_raw_data_stream();
-    saving_channel_states();
+    save_channel_states();
 
     if(params.flag_writefile  &&  outfile) {
 	/* Close output file */
