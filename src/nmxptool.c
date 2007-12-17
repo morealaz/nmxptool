@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.99 2007-12-17 10:36:57 mtheo Exp $
+ * $Id: nmxptool.c,v 1.100 2007-12-17 11:05:32 mtheo Exp $
  *
  */
 
@@ -52,6 +52,7 @@ typedef struct {
     double last_time;
     time_t last_time_call_raw_stream;
     int32_t x_1;
+    double after_start_time;
     NMXP_RAW_STREAM_DATA raw_stream_buffer;
 } NMXPTOOL_CHAN_SEQ;
 
@@ -216,6 +217,7 @@ int main (int argc, char **argv) {
 	    channelListSeq[i_chan].last_time = 0.0;
 	    channelListSeq[i_chan].last_time_call_raw_stream = 0;
 	    channelListSeq[i_chan].x_1 = 0;
+	    channelListSeq[i_chan].after_start_time = 0.0;
 	    nmxp_raw_stream_init(&(channelListSeq[i_chan].raw_stream_buffer), params.max_tolerable_latency, params.timeoutrecv);
 	}
 
@@ -609,6 +611,11 @@ int main (int argc, char **argv) {
 		exitpdscondition = 0;
 	    }
 
+	    if(pd) {
+		/* Set cur_chan */
+		cur_chan = nmxp_chan_lookupKeyIndex(pd->key, channelList_subset);
+	    }
+
 	    /* Log contents of last packet */
 	    if(params.flag_logdata) {
 		nmxp_data_log(pd);
@@ -636,11 +643,6 @@ int main (int argc, char **argv) {
 	    }
 
 	    if(!skip_current_packet) {
-
-	    if(pd) {
-		/* Set cur_chan */
-		cur_chan = nmxp_chan_lookupKeyIndex(pd->key, channelList_subset);
-	    }
 
 	    /* Manage Raw Stream */
 	    if(params.stc == -1) {
