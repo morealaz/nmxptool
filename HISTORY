@@ -2,20 +2,21 @@
 nmxptool Release History
 #########################
 
-* Release 1.1.8-beta2
+* Release 1.1.8-beta2     (2007/12/17)
     - Added support for retrieving Data on Demand
     - Added ten thousandth of second in date format
     - Added save of channel states
     - Added option "buffered time"
+    - Fixed minor bugs
 
-* Release 1.1.7
+* Release 1.1.7     (2007/12/11)
     - Added support for WindowsXP and Windows2000 (compilation under MinGW)
     - Added support for recompiling earthworm sources when object files are missing
     - Added possibility defining channel list pattern to match all stations
     - Added documentation in README, earthworm/nmxptool_cmd.html, earthworm/nmxptool_ovr.html
     - Fixed minor bugs
 
-* Release 1.1.6
+* Release 1.1.6     (2007/12/03)
     - Added argument to option "-v" in order to configure level of verbosity
     - Changed directory structure. Compilation now follows this order:
     - Made source independent on MSG_WAITALL using a loop
@@ -24,6 +25,6 @@ nmxptool Release History
     - Fixed bug and improved log message management
     - Fixed minor bugs
 
-* Release 1.1.5
+* Release 1.1.5     (2007/10/07)
     - First public release.
 
