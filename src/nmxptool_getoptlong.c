@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.46 2007-12-16 17:11:39 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.47 2007-12-17 07:37:10 mtheo Exp $
  *
  */
 
@@ -29,8 +29,8 @@ const NMXPTOOL_PARAMS NMXPTOOL_PARAMS_DEFAULT =
     NULL,
     NULL,
     NULL,
-    0,
-    0,
+    0.0,
+    0.0,
     0,
     NULL,
     NULL,
@@ -197,7 +197,7 @@ DAP Arguments:\n\
                               <date>,<time> | <date>\n\
                           where:\n\
                               <date> = yyyy/mm/dd | yyy.jjj\n\
-                              <time> = hh:mm:ss | hh:mm\n\
+                              <time> = hh:mm:ss | hh:mm:ss.dddd | hh:mm\n\
   -t, --interval=SECs     Time interval from start_time.\n\
   -d, --delay=SECs        Receive continuosly data with delay [%d..%d].\n\
   -u, --username=USER     DataServer username.\n\
@@ -260,7 +260,7 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 {
     int ret_errors = 0;
 
-    struct tm tmp_tm;
+    NMXP_TM_T tmp_tmt;
     int i;
     char one_time_option[255];
     int c;
@@ -405,20 +405,20 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 		    break;
 
 		case 's':
-		    if(nmxp_data_parse_date(optarg, &tmp_tm) == -1) {
+		    if(nmxp_data_parse_date(optarg, &tmp_tmt) == -1) {
 			// MESSAGE ERROR
 			ret_errors++;
 		    } else {
-			params->start_time = nmxp_data_tm_to_time(&tmp_tm);
+			params->start_time = nmxp_data_tm_to_time(&tmp_tmt);
 		    }
 		    break;
 
 		case 'e':
-		    if(nmxp_data_parse_date(optarg, &tmp_tm) == -1) {
+		    if(nmxp_data_parse_date(optarg, &tmp_tmt) == -1) {
 			// MESSAGE ERROR
 			ret_errors++;
 		    } else {
-			params->end_time = nmxp_data_tm_to_time(&tmp_tm);
+			params->end_time = nmxp_data_tm_to_time(&tmp_tmt);
 		    }
 		    break;
 
@@ -542,7 +542,7 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 int nmxptool_check_params(NMXPTOOL_PARAMS *params) {
     int ret = 0;
 
-    if(params->start_time != 0 && params->interval != 0   &&   params->end_time == 0) {
+    if(params->start_time != 0.0 && params->interval != 0   &&   params->end_time == 0.0) {
 	params->end_time = params->start_time + params->interval;
 	params->interval = 0;
     }
@@ -565,16 +565,16 @@ int nmxptool_check_params(NMXPTOOL_PARAMS *params) {
     } else if(params->channels == NULL) {
 	ret = -1;
 	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "<STA.CHAN> is required!\n");
-    } else if(params->start_time == 0 &&  params->end_time != 0) {
+    } else if(params->start_time == 0.0 &&  params->end_time != 0.0) {
 	ret = -1;
 	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "<end_time> has to be used with <start_time>!\n");
-    } else if(params->start_time != 0 &&  params->end_time == 0) {
+    } else if(params->start_time != 0.0 &&  params->end_time == 0.0) {
 	ret = -1;
 	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "<start_time> has to be used with <end_time> or <interval>!\n");
-    } else if(params->start_time != 0 && params->interval != 0   &&   params->end_time != 0) {
+    } else if(params->start_time != 0.0 && params->interval != 0   &&   params->end_time != 0.0) {
 	ret = -1;
 	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "<end_time> and <interval> can not be used together!\n");
-    } else if(params->start_time != 0   &&   params->end_time != 0
+    } else if(params->start_time != 0.0   &&   params->end_time != 0.0
 	    && params->start_time >= params->end_time) {
 	ret = -1;
 	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "<start_time> is less than <end_time>!\n");
@@ -585,7 +585,7 @@ int nmxptool_check_params(NMXPTOOL_PARAMS *params) {
     } else if(params->stc == -1   &&   params->rate != DEFAULT_RATE) {
 	ret = -1;
 	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "<rate> has to be equal to -1 when <stc> is equal to -1 (Raw Stream).\n");
-    } else if(params->delay > 0 && params->start_time != 0   &&   params->end_time != 0) {
+    } else if(params->delay > 0 && params->start_time != 0.0   &&   params->end_time != 0.0) {
 	ret = -1;
 	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "<delay> can not be used with options <start_time> and <end_time>.\n");
     } else if( params->delay != DEFAULT_DELAY &&
@@ -601,10 +601,10 @@ int nmxptool_check_params(NMXPTOOL_PARAMS *params) {
 	ret = -1;
 	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "<rate> has to be in the interval [%d..%d].\n",
 		DEFAULT_RATE_MINIMUM, DEFAULT_RATE_MAXIMUM);
-    } else if(params->rate != -1 && params->start_time != 0   &&   params->end_time != 0) {
+    } else if(params->rate != -1 && params->start_time != 0.0   &&   params->end_time != 0.0) {
 	ret = -1;
 	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "<rate> can not be used with options <start_time> and <end_time>.\n");
-    } else if(params->flag_buffered != 0 && params->start_time != 0   &&   params->end_time != 0) {
+    } else if(params->flag_buffered != 0 && params->start_time != 0.0   &&   params->end_time != 0.0) {
 	ret = -1;
 	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "<buffered> can not be used with options <start_time> and <end_time>.\n");
     } else if( params->stc == -1
