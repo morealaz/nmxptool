@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.h,v 1.39 2007-12-17 10:42:07 mtheo Exp $
+ * $Id: nmxptool_getoptlong.h,v 1.40 2007-12-19 14:14:37 mtheo Exp $
  *
  */
 
@@ -48,6 +48,7 @@
 #define DEFAULT_VERBOSE_LEVEL_MINIMUM		NMXP_LOG_D_NULL
 #define DEFAULT_VERBOSE_LEVEL_MAXIMUM		NMXP_LOG_D_ANY
 
+#define DEFAULT_BUFFERED_TIME			-1.0
 
 /*! \brief Struct that stores information about parameter of the program */
 typedef struct {
@@ -94,6 +95,14 @@ void nmxptool_supports();
 /*! \brief Print the usage of paramters */
 void nmxptool_usage(struct option long_options[]);
 
+
+/*! \brief Read channel states from file
+ *
+ * \param filename File name of state file
+ *
+ * \retval Argument string for -C
+ * */
+char *get_channel_list_argument_from_state_file(const char *filename);
 
 /*! \brief Calls getopt_long and set struct NMXPTOOL_PARAMS
  *

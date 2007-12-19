@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.48 2007-12-17 10:36:57 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.49 2007-12-19 14:14:37 mtheo Exp $
  *
  */
 
@@ -43,7 +43,7 @@ const NMXPTOOL_PARAMS NMXPTOOL_PARAMS_DEFAULT =
     DEFAULT_VERBOSE_LEVEL,
     NULL,
     NULL,
-    0.0,
+    DEFAULT_BUFFERED_TIME,
     0,
     0,
     0,
@@ -110,13 +110,14 @@ void nmxptool_usage(struct option long_options[])
 Usage: %s -H hostname   --listchannels | --listchannelsnaqs\n\
              Print list of available channels on DataServer or NaqsServer.\n\
 \n\
+       %s -H hostname -C channellist [...]\n\
+       %s -H hostname -F statefile [...]\n\
+             Receive data from NaqsServer by PDS.\n\
+\n\
        %s -H hostname -C channellist -s DATE -e DATE [...]\n\
        %s -H hostname -C channellist -s DATE -t SECs [...]\n\
              Receive data from DataServer by DAP.\n\
-\n\
-       %s -H hostname -C channellist [...]\n\
-             Receive data from NaqsServer by PDS.\n\
-\n", PACKAGE_NAME, PACKAGE_NAME, PACKAGE_NAME, PACKAGE_NAME);
+\n", PACKAGE_NAME, PACKAGE_NAME, PACKAGE_NAME, PACKAGE_NAME, PACKAGE_NAME);
 
 #ifdef HAVE_EARTHWORMOBJS
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
@@ -132,8 +133,66 @@ Arguments:\n\
                           NET  is optional and used only for output.\n\
                           STA  can be '*', stands for all stations.\n\
                           CHAN can contain '?', stands for any character.\n\
-                          Example:  *.HH?,N1.STA2.??Z,STA3.?H?\n\
-\n");
+                          Example:  *.HH?,N1.STA2.??Z,STA3.?H?\n");
+
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
+PDS arguments:\n\
+  -F, --statefile=FILE    Load/Save time of last sample of each channel.\n\
+                          Allow data continuity between program restarts\n\
+                          and within data buffered by the NaqsServer.\n\
+                          Enable option -b. Do not use with -C.\n\
+  -S, --stc=SECs          Short-term-completion (default %d).\n\
+                          -1 is for Raw Stream, no short-term completion.\n\
+                           0 chronological order without waiting\n\
+                             for missing data.\n\
+                          [1..300] chronological order waiting a period\n\
+                             for missing data.\n\
+                          Raw Stream is usable only with --rate=-1.\n\
+  -R, --rate=Hz           Receive data with specified sample rate (default %d).\n\
+                          -1 for original sample rate and compressed data.\n\
+                           0 for original sample rate and decompressed data.\n\
+                          >0 for specified sample rate and decompressed data.\n\
+  -b, --buffered          Request also recent packets into the past.\n\
+  -B, --buff_date=DATE    Request also recent packets into the past\n\
+                          but consider only samples after DATE.\n\
+  -L, --listchannelsnaqs  Print list of available channels on NaqsServer.\n\
+  -M, --maxlatency=SECs   Max tolerable latency (default %d) [%d..%d].\n\
+  -T, --timeoutrecv=SECs  Time-out for flushing buffered packets.\n\
+                          (default %d. No time-out.) [%d..%d].\n\
+                          -T is useful for retrieving Data On Demand.\n\
+                          -M, -T are usable only with Raw Stream --stc=-1.\n\
+                          In general, -M and -T are not used together.\n\
+\n\
+",
+	    DEFAULT_STC,
+	    DEFAULT_RATE,
+	    DEFAULT_MAX_TOLERABLE_LATENCY,
+	    DEFAULT_MAX_TOLERABLE_LATENCY_MINIMUM,
+	    DEFAULT_MAX_TOLERABLE_LATENCY_MAXIMUM,
+	    DEFAULT_TIMEOUTRECV,
+	    DEFAULT_TIMEOUTRECV_MINIMUM,
+	    DEFAULT_TIMEOUTRECV_MAXIMUM
+	  );
+
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
+DAP Arguments:\n\
+  -s, --start_time=DATE   Start time in date format.\n\
+  -e, --end_time=DATE     End time in date format.\n\
+                          DATE can be in formats:\n\
+                              <date>,<time> | <date>\n\
+                          where:\n\
+                              <date> = yyyy/mm/dd | yyy.jjj\n\
+                              <time> = hh:mm:ss | hh:mm:ss.dddd | hh:mm\n\
+  -t, --interval=SECs     Time interval from start_time.\n\
+  -d, --delay=SECs        Receive continuosly data with delay [%d..%d].\n\
+  -u, --username=USER     DataServer username.\n\
+  -p, --password=PASS     DataServer password.\n\
+  -l, --listchannels      Print list of available channels on DataServer.\n\
+  -i, --channelinfo       Print list of available channels and channelinfo.\n\
+\n\
+",
+DEFAULT_DELAY_MINIMUM,
+DEFAULT_DELAY_MAXIMUM);
 
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
 Other arguments:\n\
@@ -182,68 +241,9 @@ Other arguments:\n\
 #endif
 
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
-  -F, --statefile=FILE    Save/Restore time of last sample of each channel.\n\
-                          Allow data continuity between program restarts.\n");
-
-    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
   -V, --version           Print tool version.\n\
   -h, --help              Print this help.\n\
 \n");
-
-    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
-DAP Arguments:\n\
-  -s, --start_time=DATE   Start time in date format.\n\
-  -e, --end_time=DATE     End time in date format.\n\
-                          DATE can be in formats:\n\
-                              <date>,<time> | <date>\n\
-                          where:\n\
-                              <date> = yyyy/mm/dd | yyy.jjj\n\
-                              <time> = hh:mm:ss | hh:mm:ss.dddd | hh:mm\n\
-  -t, --interval=SECs     Time interval from start_time.\n\
-  -d, --delay=SECs        Receive continuosly data with delay [%d..%d].\n\
-  -u, --username=USER     DataServer username.\n\
-  -p, --password=PASS     DataServer password.\n\
-  -l, --listchannels      Print list of available channels on DataServer.\n\
-  -i, --channelinfo       Print list of available channels and channelinfo.\n\
-\n\
-",
-DEFAULT_DELAY_MINIMUM,
-DEFAULT_DELAY_MAXIMUM);
-
-    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
-PDS arguments:\n\
-  -S, --stc=SECs          Short-term-completion (default %d).\n\
-                          -1 is for Raw Stream, no short-term completion.\n\
-                           0 chronological order without waiting\n\
-                             for missing data.\n\
-                          [1..300] chronological order waiting a period\n\
-                             for missing data.\n\
-                          Raw Stream is usable only with --rate=-1.\n\
-  -R, --rate=Hz           Receive data with specified sample rate (default %d).\n\
-                          -1 for original sample rate and compressed data.\n\
-                           0 for original sample rate and decompressed data.\n\
-                          >0 for specified sample rate and decompressed data.\n\
-  -b, --buffered          Request also recent packets into the past.\n\
-  -B, --buff_date=DATE    Request also recent packets into the past\n\
-                          but consider only samples after DATE.\n\
-  -L, --listchannelsnaqs  Print list of available channels on NaqsServer.\n\
-  -M, --maxlatency=SECs   Max tolerable latency (default %d) [%d..%d].\n\
-  -T, --timeoutrecv=SECs  Time-out for flushing buffered packets.\n\
-                          (default %d. No time-out.) [%d..%d].\n\
-                          -T is useful for retrieving Data On Demand.\n\
-                          -M, -T are usable only with Raw Stream --stc=-1.\n\
-                          In general, -M and -T are not used together.\n\
-\n\
-",
-	    DEFAULT_STC,
-	    DEFAULT_RATE,
-	    DEFAULT_MAX_TOLERABLE_LATENCY,
-	    DEFAULT_MAX_TOLERABLE_LATENCY_MINIMUM,
-	    DEFAULT_MAX_TOLERABLE_LATENCY_MAXIMUM,
-	    DEFAULT_TIMEOUTRECV,
-	    DEFAULT_TIMEOUTRECV_MINIMUM,
-	    DEFAULT_TIMEOUTRECV_MAXIMUM
-	  );
 
     nmxptool_author_support();
 
@@ -258,6 +258,46 @@ PDS arguments:\n\
     */
 }
 
+
+#define MAXSIZE_LINE_CHAN_STATE 2048
+#define MAXSIZECHANNELSTRINGARGUMENT 8000
+#define MAXSIZE_CHANNEL_STRING 64
+
+char *get_channel_list_argument_from_state_file(const char *filename) {
+    char *ret_channel_string = NULL;
+    char line[MAXSIZE_LINE_CHAN_STATE];
+    char str_chan[MAXSIZE_CHANNEL_STRING];
+    int k;
+    FILE *fstatefile = NULL;
+
+    fstatefile = fopen(filename, "r");
+
+    /* Read only channel names from state file */
+    if(fstatefile) {
+	ret_channel_string = (char *) malloc (MAXSIZECHANNELSTRINGARGUMENT);
+	ret_channel_string[0] = 0;
+	while(fgets(line, MAXSIZE_LINE_CHAN_STATE, fstatefile) != NULL) {
+	    k = 0;
+	    while(line[k] != 0
+		    &&  line[k] != ' '
+		    &&  line[k] != 10
+		    &&  line[k] != 13
+		    &&  k < MAXSIZE_CHANNEL_STRING) {
+		str_chan[k] = line[k];
+		k++;
+	    }
+	    str_chan[k] = 0;
+	    if(ret_channel_string[0] == 0) {
+		strncpy(ret_channel_string, str_chan, MAXSIZECHANNELSTRINGARGUMENT);
+	    } else {
+		strncat(ret_channel_string, ",", MAXSIZECHANNELSTRINGARGUMENT);
+		strncat(ret_channel_string, str_chan, MAXSIZECHANNELSTRINGARGUMENT);
+	    }
+	}
+	fclose(fstatefile);
+    }
+    return ret_channel_string;
+}
 
 int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 {
@@ -384,7 +424,12 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 		    break;
 
 		case 'C':
-		    params->channels = optarg;
+		    if(params->channels) {
+			nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY, "Channels have been already defined by State File (option -F)!\n");
+			ret_errors++;
+		    } else {
+			params->channels = optarg;
+		    }
 		    break;
 
 		case 'N':
@@ -475,13 +520,19 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 #endif
 
 		case 'F':
+		    params->flag_buffered = 1;
 		    params->statefile = optarg;
-		    FILE *fstatefile = fopen(params->statefile, "a+");
-		    if(fstatefile) {
-			fclose(fstatefile);
+		    if(params->channels == NULL) {
+			params->channels = get_channel_list_argument_from_state_file(params->statefile);
+			if(params->channels) {
+			    /* Do nothing */
+			} else {
+			    ret_errors++;
+			    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "State file %s not found or unable to read!\n", params->statefile);
+			}
 		    } else {
 			ret_errors++;
-			nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "File not found or unable to create %s!\n", params->statefile);
+			nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY, "Channels have been already defined by option -C!\n");
 		    }
 		    break;
 
