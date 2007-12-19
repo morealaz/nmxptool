@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.101 2007-12-19 14:13:59 mtheo Exp $
+ * $Id: nmxptool.c,v 1.102 2007-12-19 14:31:39 mtheo Exp $
  *
  */
 
@@ -124,6 +124,7 @@ int main (int argc, char **argv) {
     char filename[500];
     char station_code[20], channel_code[20], network_code[20];
 
+    char cur_after_start_time_str[1024];
     double cur_after_start_time = DEFAULT_BUFFERED_TIME;
     int skip_current_packet = 0;
 	
@@ -640,7 +641,6 @@ int main (int argc, char **argv) {
 		} else {
 		    cur_after_start_time = DEFAULT_BUFFERED_TIME;
 		}
-		char cur_after_start_time_str[1024];
 		nmxp_data_to_str(cur_after_start_time_str, cur_after_start_time);
 		nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_PACKETMAN, "cur_chan %d, cur_after_start_time %f, cur_after_start_time_str %s\n", cur_chan, cur_after_start_time, cur_after_start_time_str);
 		if(pd->time + ((double) pd->nSamp / (double) pd->sampRate) >= cur_after_start_time) {
