@@ -35,6 +35,12 @@ DefaultNetworkCode   IV                    # Default network code where in Chann
                                            # STA  can be '*', stands for all stations.
                                            # CHAN can contain '?', stands for any character.
                                            # Example:  *.HH?,N1.STA2.??Z,STA3.?H?
+
+# ChannelFile   /home/ew/naqs1a.list.txt  # State Channel file (It will be updated)
+                                          # Allow data continuity between program restarts
+                                          # and within available data buffered on NaqsServer.
+                                          # Do not use with Channel parameter below.
+
 Channel              ES.BOB.HH?
 Channel              MN.TIR.HH?
 Channel              MDI.HH?

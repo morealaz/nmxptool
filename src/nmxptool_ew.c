@@ -403,6 +403,10 @@ int nmxptool_ew_proc_configfile (char * configfile, NMXPTOOL_PARAMS *params) {
 
 	    else if (k_its ("Channel")) {
 		if ( (str = k_str ()) ) {
+		    if(params->statefile) {
+			nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY, "Channels have been already defined inside channel state file!\n");
+			return EW_FAILURE;
+		    }
 		    if(!params->channels) {
 #define MAXSIZECHANNELSTRING 8000
 			params->channels = (char *) malloc (MAXSIZECHANNELSTRING);
@@ -413,6 +417,28 @@ int nmxptool_ew_proc_configfile (char * configfile, NMXPTOOL_PARAMS *params) {
 		    }
 		}
 	    }
+
+
+	    else if (k_its ("ChannelFile")) {
+		if ( (str = k_str ()) ) {
+		    params->flag_buffered = 1;
+		    params->statefile = (char *) malloc(512 * sizeof(char));
+		    strncpy(params->statefile, str, 512);
+		    if(params->channels == NULL) {
+			params->channels = get_channel_list_argument_from_state_file(params->statefile);
+			if(params->channels) {
+			    /* Do nothing */
+			} else {
+			    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "State file %s not found or unable to read!\n", params->statefile);
+			    return EW_FAILURE;
+			}
+		    } else {
+			nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY, "Channels have been already defined inside main configuration file!\n");
+			return EW_FAILURE;
+		    }
+		}
+	    }
+
 
 
 	    /* Unknown command */ 
