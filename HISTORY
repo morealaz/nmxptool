@@ -2,11 +2,12 @@
 nmxptool Release History
 #########################
 
-* Release 1.1.8-beta2     (2007/12/17)
+* Release 1.1.8-beta4     (2007/12/19)
     - Added support for retrieving Data on Demand
+    - Added management of channel sample sequence between program restarts.
+          Allow data continuity only for data buffered by the NaqsServer.
     - Added ten thousandth of second in date format
-    - Added save of channel states
-    - Added option "buffered time"
+    - Added option "buffered time" for a single channel
     - Fixed minor bugs
 
 * Release 1.1.7     (2007/12/11)
