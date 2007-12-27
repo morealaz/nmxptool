@@ -1,0 +1,167 @@
+#LyX 1.5.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 276
+\begin_document
+\begin_header
+\textclass elsart
+\begin_preamble
+\journal{Computers \& Geosciences}
+\end_preamble
+\language english
+\inputencoding auto
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+\graphics default
+\paperfontsize default
+\spacing single
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\cite_engine basic
+\use_bibtopic false
+\paperorientation portrait
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\author "" 
+\author "" 
+\end_header
+
+\begin_body
+
+\begin_layout Title
+nmxptool: open-source and cross-platform software for Nanometrics seismic
+ data acquisition
+\end_layout
+
+\begin_layout Abstract
+Nanometrics offers, is,...
+\end_layout
+
+\begin_layout Abstract
+Author developed a software that implements the Nanometrics subscription
+ protocols.
+ A library called libnmxp exposes a set of well-documented API that allow
+ you to interact with the two Nanometrics server: NaqsServer .....
+ and DataServer......
+ A tool, called nmxptool and based on libnmxp, allows you to retrieve data
+ in real-time and off-line, save retrieved data in mini-SEED records, redirect
+ data into the Earthworm system or feed a SeedLink server.
+ Main contribute, as regards other similar software, is the capability to
+ manage Raw Stream connection with buffering and sorting of retransmitted
+ packets.
+ nmxptool can guarantee a good comprimise beetween data continuity and low
+ latency.
+ The library and the tool are open-source software and released under GNU
+ Library General Public License.
+ They have been written in C language, using the GNU Build Tools (automake,
+ autoconf and configure script) and taking in account the Cross-Platform
+ aspects.
+\end_layout
+
+\begin_layout Keywords
+nanometrics software seismic acquisition
+\end_layout
+
+\begin_layout Author
+Matteo Quintiliani
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+corauthref{cor}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Author Address
+Istituto Nazionale di Geofisica e Vulcanologia, Via di Vigna Murata 605,
+ 00143 Roma, Italy
+\end_layout
+
+\begin_layout Author Email
+quintiliani@ingv.it
+\end_layout
+
+\begin_layout Section
+Introduction
+\end_layout
+
+\begin_layout Standard
+asdfasdf asdf asdf asdf asdf 
+\end_layout
+
+\begin_layout Subsection
+Nanometrics protocols
+\end_layout
+
+\begin_layout Section
+Software
+\end_layout
+
+\begin_layout Subsection
+Library
+\end_layout
+
+\begin_layout Subsection
+Tool
+\end_layout
+
+\begin_layout Subsection
+Installation
+\end_layout
+
+\begin_layout Subsection
+Usage
+\end_layout
+
+\begin_layout Subsubsection
+Earthworm
+\end_layout
+
+\begin_layout Subsubsection
+SeisComP
+\end_layout
+
+\begin_layout Section
+Conclusion
+\end_layout
+
+\begin_layout Standard
+asdfasdf asdfas asdf asdfa sdfa sdf
+\end_layout
+
+\begin_layout Acknowledgement
+I would like to ...
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset LatexCommand bibitem
+key "key-1"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
