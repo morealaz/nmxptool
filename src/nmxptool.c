@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.102 2007-12-19 14:31:39 mtheo Exp $
+ * $Id: nmxptool.c,v 1.103 2007-12-28 10:40:03 mtheo Exp $
  *
  */
 
@@ -188,7 +188,8 @@ int main (int argc, char **argv) {
 	/* List available channels on server */
 	if(params.flag_listchannels) {
 
-	    nmxp_getMetaChannelList(params.hostname, params.portnumberdap, NMXP_DATA_TIMESERIES, params.flag_request_channelinfo);
+	    nmxp_meta_chan_print(nmxp_getMetaChannelList(params.hostname, params.portnumberdap, NMXP_DATA_TIMESERIES, params.flag_request_channelinfo, params.datas_username, params.datas_password, &channelList));
+
 	    return 1;
 
 	} else if(params.flag_listchannelsnaqs) {
@@ -204,7 +205,14 @@ int main (int argc, char **argv) {
     nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "verbose_level %d\n", params.verbose_level);
 
     /* Get list of available channels and get a subset list of params.channels */
-    channelList = nmxp_getAvailableChannelList(params.hostname, params.portnumberpds, NMXP_DATA_TIMESERIES);
+    if(params.start_time != 0.0  &&  params.end_time != 0.0) {
+	/* From DataServer */
+	nmxp_getMetaChannelList(params.hostname, params.portnumberdap, NMXP_DATA_TIMESERIES, params.flag_request_channelinfo, params.datas_username, params.datas_password, &channelList);
+    } else {
+	/* From NaqsServer */
+	channelList = nmxp_getAvailableChannelList(params.hostname, params.portnumberpds, NMXP_DATA_TIMESERIES);
+    }
+
     channelList_subset = nmxp_chan_subset(channelList, NMXP_DATA_TIMESERIES, params.channels, CURRENT_NETWORK);
 
     /* Check if some channel already exists */
