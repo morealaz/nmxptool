@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp.c,v 1.55 2007-12-07 13:45:44 mtheo Exp $
+ * $Id: nmxp.c,v 1.56 2007-12-28 10:37:28 mtheo Exp $
  *
  */
 
@@ -133,37 +133,81 @@ NMXP_DATA_PROCESS *nmxp_receiveData(int isock, NMXP_CHAN_LIST_NET *channelList, 
 
 int nmxp_sendConnectRequest(int isock, char *naqs_username, char *naqs_password, int32_t connection_time) {
     int ret;
+    int i;
     char crc32buf[100];
+    char *pcrc32buf = crc32buf;
+    int crc32buf_length = 0;
     NMXP_CONNECT_REQUEST connectRequest;
     int naqs_username_length, naqs_password_length;
+    int32_t protocol_version = 0;
+
+    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CRC, "%s - %s\n", naqs_username, naqs_password);
 
     naqs_username_length = (naqs_username)? strlen(naqs_username) : 0;
     naqs_password_length = (naqs_password)? strlen(naqs_password) : 0;
 
-    if(naqs_username_length == 0) {
-	connectRequest.username[0] = 0;
-    } else {
+    for(i=0; i < 100; i++) {
+	crc32buf[i] = 0;
+    }
+
+    for(i=0; i<12; i++) {
+	connectRequest.username[i] = 0;
+    }
+    if(naqs_username_length != 0) {
 	strcpy(connectRequest.username, naqs_username);
     }
-    connectRequest.version = htonl(0);
-    connectRequest.connection_time = htonl(connection_time);
+
+    connectRequest.version = protocol_version;
+    connectRequest.connection_time = connection_time;
+
+    nmxp_data_swap_4b ((int32_t *)&connection_time);
 
     if(naqs_username_length == 0  &&  naqs_password_length == 0 ) {
-	sprintf(crc32buf, "%d%d", connectRequest.version, connection_time);
+	/* sprintf(crc32buf, "%d%d", protocol_version, connection_time); */
+	/* TODO */
     } else if(naqs_username_length != 0  &&  naqs_password_length != 0 ) {
-	sprintf(crc32buf, "%s%d%d%s", naqs_username, connectRequest.version,
-		connection_time, naqs_password);
+	/* sprintf(crc32buf, "%s%d%d%s", naqs_username, protocol_version,
+		connection_time, naqs_password); */
+
+	memcpy(pcrc32buf, naqs_username, naqs_username_length);
+	crc32buf_length += naqs_username_length;
+	pcrc32buf = crc32buf + crc32buf_length;
+
+	memcpy(pcrc32buf, &(protocol_version), sizeof(protocol_version));
+	crc32buf_length += sizeof(protocol_version);
+	pcrc32buf = crc32buf + crc32buf_length;
+
+	memcpy(pcrc32buf, &(connection_time), sizeof(connection_time));
+	crc32buf_length += sizeof(connection_time);
+	pcrc32buf = crc32buf + crc32buf_length;
+
+	memcpy(pcrc32buf, naqs_password, naqs_password_length);
+	crc32buf_length += naqs_password_length;
+	pcrc32buf = crc32buf + crc32buf_length;
+
     } else if(naqs_username_length != 0 ) {
-	sprintf(crc32buf, "%s%d%d", naqs_username, connectRequest.version, connection_time);
+	/* sprintf(crc32buf, "%s%d%d", naqs_username, protocol_version, connection_time); */
+	/* TODO */
     } else if(naqs_password_length != 0 ) {
-	sprintf(crc32buf, "%d%d%s", connectRequest.version, connection_time, naqs_password);
+	/* sprintf(crc32buf, "%d%d%s", protocol_version, connection_time, naqs_password); */
+	/* TODO */
     }
-    connectRequest.crc32 = htonl(crc32((unsigned char *) crc32buf, strlen(crc32buf)));
+    connectRequest.version = htonl(connectRequest.version);
+    connectRequest.connection_time = htonl(connectRequest.connection_time);
+    connectRequest.crc32 = htonl(crc32(0L, crc32buf, crc32buf_length));
 
     ret = nmxp_sendMessage(isock, NMXP_MSG_CONNECTREQUEST, &connectRequest, sizeof(NMXP_CONNECT_REQUEST));
 
     if(ret == NMXP_SOCKET_OK) {
-	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CRC, "Send a ConnectRequest crc32buf = (%s), crc32 = %d\n", crc32buf, connectRequest.crc32);
+	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CRC, "Send a ConnectRequest crc32buf length %d, crc32 = %d\n", crc32buf_length, connectRequest.crc32);
+	for(i=0; i < crc32buf_length; i++) {
+	    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_CRC, "%d ", crc32buf[i]);
+	}
+	char *pp = (char *) &connectRequest.crc32;
+	for(i=0; i < sizeof(connectRequest.crc32); i++) {
+	    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_CRC, "%d ", pp[i]);
+	}
+	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_CRC, "\n");
     } else {
 	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CRC, "Send a ConnectRequest.\n");
     }
@@ -230,7 +274,22 @@ int nmxp_waitReady(int isock) {
 	    if(rc != NMXP_SOCKET_OK) return rc;
 	    length = ntohl(length);
 	    if(length > 0) {
-		if(length == 4) {
+		if(type == NMXP_MSG_TERMINATESUBSCRIPTION) {
+		    char *str_msg = NULL;
+		    char *buf_app = (char *) malloc(sizeof(char) * length);
+		    int32_t reason;
+		    memcpy(&reason, buf_app, sizeof(reason));
+		    reason = ntohl(reason);
+		    str_msg = buf_app + sizeof(reason);
+		    rc = nmxp_recv_ctrl(isock, buf_app, length, 0, &recv_errno);
+		    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY, "%d %s shutdown: %s\n",
+			    reason,
+			    (reason == 0)? "Normal" : (reason == 1)? "Error" : (reason == 2)? "Timeout" : "Unknown",
+			    str_msg);
+		    if(buf_app) {
+			free(buf_app);
+		    }
+		} else if(length == 4) {
 		    int32_t app;
 		    rc = nmxp_recv_ctrl(isock, &app, length, 0, &recv_errno);
 		    if(rc != NMXP_SOCKET_OK) return rc;
@@ -338,7 +397,7 @@ NMXP_CHAN_LIST *nmxp_getAvailableChannelList(char * hostname, int portnum, NMXP_
 }
 
 
-NMXP_META_CHAN_LIST *nmxp_getMetaChannelList(char * hostname, int portnum, NMXP_DATATYPE datatype, int flag_request_channelinfo) {
+NMXP_META_CHAN_LIST *nmxp_getMetaChannelList(char * hostname, int portnum, NMXP_DATATYPE datatype, int flag_request_channelinfo, char *datas_username, char *datas_password, NMXP_CHAN_LIST **pchannelList) {
     int naqssock;
     NMXP_CHAN_PRECISLIST *precisChannelList = NULL;
     NMXP_CHAN_LIST *channelList = NULL;
@@ -346,10 +405,8 @@ NMXP_META_CHAN_LIST *nmxp_getMetaChannelList(char * hostname, int portnum, NMXP_
     NMXP_META_CHAN_LIST *iter = NULL;
     int i = 0;
     int32_t connection_time;
-    char *datas_username = NULL, *datas_password = NULL;
     int ret_sock;
     int recv_errno;
-
     
     NMXP_MSG_SERVER type;
     void *buffer = NULL;
@@ -362,7 +419,6 @@ NMXP_META_CHAN_LIST *nmxp_getMetaChannelList(char * hostname, int portnum, NMXP_
     str_start[0] = 0;
     str_end[0] = 0;
     
-
     /* DAP Step 1: Open a socket */
     if( (naqssock = nmxp_openSocket(hostname, portnum)) == NMXP_SOCKET_ERROR) {
 	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CONNFLOW, "Error opening socket!\n");
@@ -413,6 +469,7 @@ NMXP_META_CHAN_LIST *nmxp_getMetaChannelList(char * hostname, int portnum, NMXP_
 	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_EXTRA, "ret_sock = %d, type = %d, length = %d\n", ret_sock, type, length);
     }
 
+    *pchannelList = channelList;
 
     /* DAP Step 5: Send Data Request */
     precisListRequestBody.instr_id = htonl(-1);
@@ -492,8 +549,6 @@ NMXP_META_CHAN_LIST *nmxp_getMetaChannelList(char * hostname, int portnum, NMXP_
 
     /* DAP Step 9: Close the socket */
     nmxp_closeSocket(naqssock);
-
-    nmxp_meta_chan_print(chan_list);
 
     return chan_list;
 }

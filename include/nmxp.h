@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp.h,v 1.43 2007-10-07 19:25:30 mtheo Exp $
+ * $Id: nmxp.h,v 1.44 2007-12-28 10:37:28 mtheo Exp $
  *
  */
 
@@ -1167,13 +1167,14 @@ NMXP_CHAN_LIST *nmxp_getAvailableChannelList(char * hostname, int portnum, NMXP_
  * \param portnum port number
  * \param datatype Type of data contained in the channel.
  * \param flag_request_channelinfo Request information about Network.
+ * \param[out] channelList pointer to channel list
  *
  * \return Channel list. It will need to be freed.
  *
  * \warning Returned value will need to be freed.
  * 
  */
-NMXP_META_CHAN_LIST *nmxp_getMetaChannelList(char * hostname, int portnum, NMXP_DATATYPE datatype, int flag_request_channelinfo);
+NMXP_META_CHAN_LIST *nmxp_getMetaChannelList(char * hostname, int portnum, NMXP_DATATYPE datatype, int flag_request_channelinfo, char *datas_username, char *datas_password, NMXP_CHAN_LIST **pchannelList);
 
 
 /*! \brief Base function for qsort() in order to sort an array of pointers to pointers to NMXP_DATA_PROCESS
