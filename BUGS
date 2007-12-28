@@ -2,7 +2,4 @@
 KNOWN BUGS:
 ###########
 
-* DAP authentication does not work
-  Presently you can not connect to the DataServer if authentication is required.
-  It works only if DataServer.ini contains user "any" with password "none".
 

@@ -2,12 +2,14 @@
 nmxptool Release History
 #########################
 
-* Release 1.1.8-beta4     (2007/12/19)
-    - Added support for retrieving Data on Demand
-    - Added management of channel sample sequence between program restarts.
-          Allow data continuity only for data buffered by the NaqsServer.
-    - Added ten thousandth of second in date format
-    - Added option "buffered time" for a single channel
+* Release 1.1.8-beta6     (2007/12/28)
+    - Fixed major bug in DAP authentication (option -u and -p)
+    - Added support for retrieving Data on Demand (option -T)
+    - Added management of channel sample sequence.
+          Allow data continuity between program restarts,
+          only for data buffered by the NaqsServer. (option -F)
+    - Added ten thousandth of second in date format (option -s, -e)
+    - Added option "buffered time" for a single channel (option -B)
     - Fixed minor bugs
 
 * Release 1.1.7     (2007/12/11)
