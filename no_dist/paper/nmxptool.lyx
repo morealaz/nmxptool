@@ -70,12 +70,12 @@ Author developed a software that implements the Nanometrics subscription
  The library and the tool are open-source software and released under GNU
  Library General Public License.
  They have been written in C language, using the GNU Build Tools (automake,
- autoconf and configure script) and taking in account the Cross-Platform
+ autoconf and configure script) and taking in account the cross-platform
  aspects.
 \end_layout
 
 \begin_layout Keywords
-nanometrics software seismic acquisition
+software seismic data acquisition
 \end_layout
 
 \begin_layout Author
@@ -109,30 +109,241 @@ Introduction
 \end_layout
 
 \begin_layout Standard
-asdfasdf asdf asdf asdf asdf figure 
+Figure 
 \begin_inset LatexCommand ref
 reference "fig:stationclients"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Enumerate
+
+\series bold
+\emph on
+Seismic Station - Nanometrics Server
+\series default
+\emph default
+: seismic data are stored in 
+\emph on
+NMXP
+\emph default
+ format and sent into UDP packets to the Nanometrics Servers.
+\end_layout
+
+\begin_layout Enumerate
+
+\series bold
+\emph on
+Nanometrics Server - Client
+\series default
+\emph default
+ : software client connect to the Nanometrics Servers for retrieving real-time
+ and off-line data, instrument state-of-health, trigger, events information.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename /Users/mtheo/Desktop/cvswork/nmxptool/no_dist/paper/images/nanometrics_station_client.eps.gz
+	width 10cm
 
 \end_inset
 
 
 \end_layout
 
-\begin_layout Itemize
+\begin_layout Standard
+\align center
+\begin_inset Caption
+
+\begin_layout Standard
 
 \shape italic
-Private Data Stream versione 1.4
+Typical main data flow from seismic station to the software clients.
+\end_layout
+
+\end_inset
+
+
+\begin_inset LatexCommand label
+name "fig:stationclients"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Developed software implements the following subscrition protocols:
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+\shape italic
+Private Data Stream
+\series default
+ version 1.4
 \shape default
 , subscription protocol to interact with a NaqsServer.
 \end_layout
 
 \begin_layout Itemize
 
+\series bold
 \shape italic
-Data Access Protocol versione 1.0
+Data Access Protocol
+\series default
+ version 1.0
 \shape default
 , subscription protocol to interact with a DataServer.
  
+\end_layout
+
+\begin_layout Standard
+ssssssssssss
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+NaqsServer
+\series default
+ (
+\shape italic
+Private Data Stream 1.4
+\shape default
+)
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Buffered Stream: short-term complete data stream.
+ Packets are in chronological order but small gap whenever a retransmission
+ occurs.
+\end_layout
+
+\begin_layout Itemize
+Raw Stream: packets are forwarded in the original order.
+ Packets may be missing, duplicated, or out of order, but minimal delay.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\series bold
+DataServer
+\series default
+ (
+\shape italic
+Data Access Protocol 1.0
+\shape default
+)
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Data may be requested by channel, start time and end time.
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+Why a new software? Problems: Short-term data stream: gap for each retransmitted
+ packet.
+ Raw stream: both naqs_plugin and naqs2ew are not able to reorder retransmitted
+ packets.
+\end_layout
+
+\begin_layout Standard
+nmxptool is capable to manage a buffer of packets and order them chronologically
+ when is needed, that is when a retransmission occurs.
+ 
+\end_layout
+
+\begin_layout Standard
+Main parameter to set for Raw Stream is the max tolerable latency you can
+ accept, a sort of short-term-completion but managed by the client and not
+ by the server.
+ Figure 
+\begin_inset LatexCommand ref
+reference "fig:maxtolerablelatency"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename images/nanometrics_gaps.eps.gz
+	width 10cm
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Caption
+
+\begin_layout Standard
+
+\shape italic
+Raw stream management.
+ Max tolerable latency.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset LatexCommand label
+name "fig:maxtolerablelatency"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Software
+\end_layout
+
+\begin_layout Standard
+Dependencies: libmseed - http://www.iris.edu/manuals/ plugin.h and plugin.c
+ from SeisComp distribution Several object files inside the Earthworm library
+ directory $EW_HOME/$EW_VERSION/lib 
 \end_layout
 
 \begin_layout Standard
@@ -151,7 +362,7 @@ status collapsed
 <column alignment="center" valignment="top" leftline="true" width="0">
 <column alignment="center" valignment="top" leftline="true" width="0">
 <column alignment="center" valignment="top" leftline="true" rightline="true" width="0">
-<row topline="true" bottomline="true">
+<row topline="true">
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
@@ -263,7 +474,8 @@ PowerPC
 
 \begin_layout Standard
 
-\emph on
+\series bold
+\shape italic
 Linux
 \end_layout
 
@@ -312,7 +524,8 @@ X
 
 \begin_layout Standard
 
-\emph on
+\series bold
+\shape italic
 Solaris
 \end_layout
 
@@ -361,7 +574,8 @@ X
 
 \begin_layout Standard
 
-\emph on
+\series bold
+\shape italic
 Mac OS X
 \end_layout
 
@@ -410,7 +624,8 @@ X
 
 \begin_layout Standard
 
-\emph on
+\series bold
+\shape italic
 FreeBSD
 \end_layout
 
@@ -458,6 +673,9 @@ X
 \begin_inset Text
 
 \begin_layout Standard
+
+\series bold
+\shape italic
 Windows-MinGW
 \end_layout
 
@@ -528,52 +746,20 @@ Operating systems and architectures where nmxptool has been compiled with
 
 \end_layout
 
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status collapsed
-
-\begin_layout Standard
-\align center
-\begin_inset Graphics
-	filename /Users/mtheo/Desktop/cvswork/nmxptool/no_dist/paper/images/nanometrics_station_client.eps.gz
-	width 10cm
-
-\end_inset
-
-
+\begin_layout Subsection
+Library
 \end_layout
 
-\begin_layout Standard
-\align center
-\begin_inset Caption
-
-\begin_layout Standard
-
-\shape italic
-Main data flow from seismic station to the software clients.
+\begin_layout Subsection
+Tool
 \end_layout
 
-\end_inset
-
-
-\begin_inset LatexCommand label
-name "fig:stationclients"
-
-\end_inset
-
-
+\begin_layout Subsection
+Installation
 \end_layout
 
-\begin_layout Standard
-\align center
-
-\end_layout
-
-\end_inset
-
-
+\begin_layout Subsection
+Usage
 \end_layout
 
 \begin_layout Standard
@@ -585,60 +771,7 @@ status collapsed
 \begin_layout Standard
 \align center
 \begin_inset Graphics
-	filename images/nanometrics_gaps.eps.gz
-	width 10cm
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\align center
-\begin_inset Caption
-
-\begin_layout Standard
-
-\shape italic
-Raw stream management.
- Max tolerable latency.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\align center
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
-Software
-\end_layout
-
-\begin_layout Standard
-Dependencies: libmseed - http://www.iris.edu/manuals/ plugin.h and plugin.c
- from SeisComp distribution Several object files inside the Earthworm library
- directory $EW_HOME/$EW_VERSION/lib 
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status collapsed
-
-\begin_layout Standard
-\align center
-\begin_inset Graphics
-	filename images/nanometrics_nmxptool_usages.eps.gz
+	filename /Users/mtheo/Desktop/cvswork/nmxptool/no_dist/paper/images/nanometrics_nmxptool_usages.eps.gz
 	width 10cm
 
 \end_inset
@@ -676,20 +809,10 @@ name "fig:nmxptoolusages"
 
 \end_layout
 
-\begin_layout Subsection
-Library
-\end_layout
-
-\begin_layout Subsection
-Tool
-\end_layout
-
-\begin_layout Subsection
-Installation
-\end_layout
-
-\begin_layout Subsection
-Usage
+\begin_layout Standard
+Test.
+ Almost all packets are retrievied within 60 seconds.
+ 
 \end_layout
 
 \begin_layout Subsubsection
@@ -706,6 +829,14 @@ Conclusion
 
 \begin_layout Standard
 asdfasdf asdfas asdf asdfa sdfa sdf
+\end_layout
+
+\begin_layout Standard
+Future.
+ Maintenance, improvements, bug fixes Manage information about state-of-health,
+ triggers and events Data on Demand Requesting and retrieving data “on-the-fly”
+ (i.e.
+ acceloremetric data, HL channel) .
 \end_layout
 
 \begin_layout Acknowledgement
