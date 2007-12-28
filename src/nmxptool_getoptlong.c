@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.49 2007-12-19 14:14:37 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.50 2007-12-28 10:39:02 mtheo Exp $
  *
  */
 
@@ -31,7 +31,7 @@ const NMXPTOOL_PARAMS NMXPTOOL_PARAMS_DEFAULT =
     NULL,
     0.0,
     0.0,
-    0,
+    DEFAULT_INTERVAL,
     NULL,
     NULL,
     DEFAULT_STC,
@@ -629,10 +629,10 @@ int nmxptool_check_params(NMXPTOOL_PARAMS *params) {
 	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "<hostname> is required!\n");
     } else if(params->channels == NULL) {
 	ret = -1;
-	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "<STA.CHAN> is required!\n");
+	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "Channel list is required!\n");
     } else if(params->start_time == 0.0 &&  params->end_time != 0.0) {
 	ret = -1;
-	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "<end_time> has to be used with <start_time>!\n");
+	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "<end_time> is required when declaring <start_time>!\n");
     } else if(params->start_time != 0.0 &&  params->end_time == 0.0) {
 	ret = -1;
 	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "<start_time> has to be used with <end_time> or <interval>!\n");
