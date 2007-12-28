@@ -2,7 +2,7 @@
  *
  * \brief Computing a 32 bit CRC.
  *
- * $Id: nmxp_crc32.c,v 1.3 2007-09-07 07:08:30 mtheo Exp $
+ * $Id: nmxp_crc32.c,v 1.4 2007-12-28 10:36:07 mtheo Exp $
  *
  * author: tatu ylonen <ylo@cs.hut.fi>
  *
@@ -20,6 +20,7 @@
 
 #include "nmxp_crc32.h"
 
+/*
 static uint32_t crc32_tab[] = {
 	0x00000000L, 0x77073096L, 0xee0e612cL, 0x990951baL, 0x076dc419L,
 	0x706af48fL, 0xe963a535L, 0x9e6495a3L, 0x0edb8832L, 0x79dcb8a4L,
@@ -74,20 +75,36 @@ static uint32_t crc32_tab[] = {
 	0x5d681b02L, 0x2a6f2b94L, 0xb40bbe37L, 0xc30c8ea1L, 0x5a05df1bL,
 	0x2d02ef8dL
 };
+*/
 
+#define POLYNOMIAL (uint32_t)0xedb88320
+static uint32_t crc32_tab[256];
 
-uint32_t crc32(const unsigned char *s, unsigned int len)
-{
-	unsigned int i;
-	uint32_t crc32val;
-
-	crc32val = 0;
-	for (i = 0;  i < len;  i ++)
-	{
-		crc32val =
-			crc32_tab[(crc32val ^ s[i]) & 0xff] ^
-			(crc32val >> 8);
+void crc32_init_table () {
+    unsigned int i, j;
+    uint32_t h = 1;
+    crc32_tab[0] = 0;
+    for (i = 128; i; i >>= 1) {
+	h = (h >> 1) ^ ((h & 1) ? POLYNOMIAL : 0);
+	// h is now crc_table[i]
+	for (j = 0; j < 256; j += 2 * i) {
+	    crc32_tab[i + j] = crc32_tab[j] ^ h;
 	}
-	return crc32val;
+    }
+}
+
+uint32_t crc32(uint32_t crc32val, const char *s, uint32_t len)
+{
+	uint32_t i;
+	// uint32_t crc32val;
+
+	crc32_init_table();
+
+	crc32val ^= 0xffffffff;
+	for (i = 0;  i < len;  i ++) {
+		crc32val = crc32_tab[(crc32val ^ s[i]) & 0xff] ^ (crc32val >> 8);
+	}
+	// return crc32val;
+	return crc32val ^ 0xffffffff;
 }
 

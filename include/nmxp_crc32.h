@@ -2,7 +2,7 @@
  *
  * \brief Computing a 32 bit CRC.
  *
- * $Id: nmxp_crc32.h,v 1.4 2007-09-07 07:08:30 mtheo Exp $
+ * $Id: nmxp_crc32.h,v 1.5 2007-12-28 10:36:07 mtheo Exp $
  *
  * author: tatu ylonen <ylo@cs.hut.fi>
  *
@@ -69,7 +69,7 @@
 
 /*! \brief Computes a 32 bit crc of the data in the buffer,
  * and returns the crc.  the polynomial used is 0xedb88320. */
-uint32_t crc32(const unsigned char *buf, unsigned int len);
+uint32_t crc32(uint32_t crc32val, const char *buf, uint32_t len);
 
 #endif /* CRC32_H */
 
