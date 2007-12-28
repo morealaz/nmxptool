@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp.c,v 1.56 2007-12-28 10:37:28 mtheo Exp $
+ * $Id: nmxp.c,v 1.57 2007-12-28 10:55:45 mtheo Exp $
  *
  */
 
@@ -160,7 +160,9 @@ int nmxp_sendConnectRequest(int isock, char *naqs_username, char *naqs_password,
     connectRequest.version = protocol_version;
     connectRequest.connection_time = connection_time;
 
-    nmxp_data_swap_4b ((int32_t *)&connection_time);
+    if(!nmxp_data_bigendianhost()) {
+	nmxp_data_swap_4b ((int32_t *)&connection_time);
+    }
 
     if(naqs_username_length == 0  &&  naqs_password_length == 0 ) {
 	/* sprintf(crc32buf, "%d%d", protocol_version, connection_time); */
