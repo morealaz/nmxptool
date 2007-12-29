@@ -45,6 +45,19 @@
 \begin_layout Title
 nmxptool: open-source and cross-platform software for Nanometrics seismic
  data acquisition
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+thanksref{sourcesite}
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Abstract
@@ -75,7 +88,8 @@ Author developed a software that implements the Nanometrics subscription
 \end_layout
 
 \begin_layout Keywords
-software seismic data acquisition
+Software.
+ Seismic data acquisition.
 \end_layout
 
 \begin_layout Author
@@ -102,6 +116,31 @@ Istituto Nazionale di Geofisica e Vulcanologia, Via di Vigna Murata 605,
 
 \begin_layout Author Email
 quintiliani@ingv.it
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+corauth[cor]{Tel.: +39-06-51860671}
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+thanks[sourcesite]{Source code is available from server at 
+\backslash
+emph{http://mednet.rm.ingv.it/nmxptool.php}}
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
