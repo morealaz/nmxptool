@@ -5,6 +5,10 @@
 \textclass elsart
 \begin_preamble
 \journal{Computers \& Geosciences}
+
+
+\corauth[cor]{Tel.: +39-06-51860671}
+\thanks[sourcesite]{Source code is available from server at \emph{http://mednet.rm.ingv.it/nmxptool.php}}
 \end_preamble
 \language english
 \inputencoding auto
@@ -61,15 +65,16 @@ thanksref{sourcesite}
 \end_layout
 
 \begin_layout Abstract
-Nanometrics offers, is,...
+Nanometrics servers provide [spread] seismic data...
+ ...NaqsServer for real-time data and DataServer for off-line.
 \end_layout
 
 \begin_layout Abstract
 Author developed a software that implements the Nanometrics subscription
  protocols.
  A library called libnmxp provides a set of documented APIs which allow
- to develop software capable of interacting with Nanometrics Servers: NaqsServer
- for real-time data and DataServer for off-line.
+ to develop software capable of interacting with Nanometrics servers: NaqsServer
+ and DataServer.
  A tool, called nmxptool and based on libnmxp, allows to retrieve or monitor
  data in real-time and off-line.
  It can be used stand-alone to save retrieved data in mini-SEED records,
@@ -78,7 +83,7 @@ Author developed a software that implements the Nanometrics subscription
  The main contribute, as regards other similar software, is the capability
  to manage Raw Stream connection by buffering and sorting of the retransmitted
  packets.
- nmxptool can guarantee a good comprimise beetween data continuity and low
+ nmxptool can guarantee a good compromise between data continuity and low
  latency.
  The library and the tool are open-source software and released under GNU
  Library General Public License.
@@ -118,44 +123,21 @@ Istituto Nazionale di Geofisica e Vulcanologia, Via di Vigna Murata 605,
 quintiliani@ingv.it
 \end_layout
 
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-corauth[cor]{Tel.: +39-06-51860671}
-\end_layout
-
-\begin_layout Standard
-
-
-\backslash
-thanks[sourcesite]{Source code is available from server at 
-\backslash
-emph{http://mednet.rm.ingv.it/nmxptool.php}}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout Section
 Introduction
 \end_layout
 
 \begin_layout Standard
-Figure 
+A typical configuration of the seismic data flow from the seismic station,
+ through Nanometrics servers, as far as the software clients is shown in
+ figure 
 \begin_inset LatexCommand ref
 reference "fig:stationclients"
 
 \end_inset
 
 .
- 
+ This flow can be split in two logical parts:
 \end_layout
 
 \begin_layout Enumerate
@@ -165,7 +147,7 @@ reference "fig:stationclients"
 Seismic Station - Nanometrics Server
 \series default
 \emph default
-: seismic data are stored in 
+: seismic data are converted in 
 \emph on
 NMXP
 \emph default
@@ -187,7 +169,7 @@ Nanometrics Server - Client
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Standard
 \align center
@@ -207,7 +189,8 @@ status collapsed
 \begin_layout Standard
 
 \shape italic
-Typical main data flow from seismic station to the software clients.
+Typical configuration of the seismic data flow from seismic stations, through
+ Nanometrics Servers, as far as the software clients.
 \end_layout
 
 \end_inset
@@ -227,7 +210,82 @@ name "fig:stationclients"
 \end_layout
 
 \begin_layout Standard
-Developed software implements the following subscrition protocols:
+We are considering more the second part, especially the software implementation
+ aspects in the interaction from a software client with both NaqsServer
+ and DataServer as well-documented into the Nanometrics manuals 
+\begin_inset LatexCommand cite
+key "nanometrics"
+
+\end_inset
+
+.
+ The most important difference between a NaqsServer and a DataServer is
+ that the first one provides real-time data whereas DataServer spreads archived
+ data into the past.
+ The kinds of connection and the related behaviours can be briefly schematized:
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+NaqsServer
+\series default
+ (
+\shape italic
+Private Data Stream 1.4
+\shape default
+)
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Data may be requested by channel.
+ Real-time data can be retrieved in two diffent ways by the following streams:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\shape italic
+Buffered Stream
+\shape default
+: short-term complete data stream.
+ Packets are in chronological order but small gaps whenever a retransmission
+ occurs.
+\end_layout
+
+\begin_layout Itemize
+
+\shape italic
+Raw Stream
+\shape default
+: packets are forwarded in the original order.
+ Packets may be missing, duplicated, or out of order, but minimal delay.
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout Itemize
+
+\series bold
+DataServer
+\series default
+ (
+\shape italic
+Data Access Protocol 1.0
+\shape default
+)
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Data may be requested by channel, start time and end time.
+ Archived data are retrived chronologically for each channel.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+Developed software implements the following subscription protocols:
 \end_layout
 
 \begin_layout Itemize
@@ -253,54 +311,6 @@ Data Access Protocol
  
 \end_layout
 
-\begin_layout Standard
-ssssssssssss
-\end_layout
-
-\begin_layout Itemize
-
-\series bold
-NaqsServer
-\series default
- (
-\shape italic
-Private Data Stream 1.4
-\shape default
-)
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-Buffered Stream: short-term complete data stream.
- Packets are in chronological order but small gap whenever a retransmission
- occurs.
-\end_layout
-
-\begin_layout Itemize
-Raw Stream: packets are forwarded in the original order.
- Packets may be missing, duplicated, or out of order, but minimal delay.
-\end_layout
-
-\end_deeper
-\begin_layout Itemize
-
-\series bold
-DataServer
-\series default
- (
-\shape italic
-Data Access Protocol 1.0
-\shape default
-)
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-Data may be requested by channel, start time and end time.
- 
-\end_layout
-
-\end_deeper
 \begin_layout Standard
 Why a new software? Problems: Short-term data stream: gap for each retransmitted
  packet.
@@ -380,7 +390,7 @@ Software
 \end_layout
 
 \begin_layout Standard
-Dependencies: libmseed - http://www.iris.edu/manuals/ plugin.h and plugin.c
+Dependencies: libmseed - http://www.iris.edu/manuals/ plug-in.h and plug-in.c
  from SeisComp distribution Several object files inside the Earthworm library
  directory $EW_HOME/$EW_VERSION/lib 
 \end_layout
@@ -850,7 +860,7 @@ name "fig:nmxptoolusages"
 
 \begin_layout Standard
 Test.
- Almost all packets are retrievied within 60 seconds.
+ Almost all packets are retrieved within 60 seconds.
  
 \end_layout
 
@@ -867,10 +877,6 @@ Conclusion
 \end_layout
 
 \begin_layout Standard
-asdfasdf asdfas asdf asdfa sdfa sdf
-\end_layout
-
-\begin_layout Standard
 Future.
  Maintenance, improvements, bug fixes Manage information about state-of-health,
  triggers and events Data on Demand Requesting and retrieving data “on-the-fly”
@@ -882,9 +888,10 @@ Future.
 I would like to ...
 \end_layout
 
-\begin_layout Bibliography
-\begin_inset LatexCommand bibitem
-key "key-1"
+\begin_layout Standard
+\begin_inset LatexCommand bibtex
+options "elsart-harv"
+bibfiles "references"
 
 \end_inset
 
