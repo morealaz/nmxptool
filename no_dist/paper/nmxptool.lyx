@@ -65,31 +65,32 @@ thanksref{sourcesite}
 \end_layout
 
 \begin_layout Abstract
-Nanometrics servers provide [spread] seismic data...
- ...NaqsServer for real-time data and DataServer for off-line.
-\end_layout
-
-\begin_layout Abstract
-Author developed a software that implements the Nanometrics subscription
+Nanometrics servers provide online access to time-series, serial data, triggers,
+ and state-of-health data via TCP subscription.
+ They accept connections and data requests from client programs and forward
+ the requested data to each client program in near-realtime by NaqsServer
+ or for data of the past by DataServer.
+ Author developed a software that implements the Nanometrics subscription
  protocols.
  A library called libnmxp provides a set of documented APIs which allow
- to develop software capable of interacting with Nanometrics servers: NaqsServer
- and DataServer.
+ to develop software capable of interacting with NaqsServer and DataServer.
  A tool, called nmxptool and based on libnmxp, allows to retrieve or monitor
- data in real-time and off-line.
- It can be used stand-alone to save retrieved data in mini-SEED records,
- like a module to redirect data into the Earthworm system or like a plug-in
- to feed a SeedLink server.
+ data in near-realtime and off-line.
+ nmxptool can be used stand-alone to monitor data or save retrieved data
+ in mini-SEED records, like a module to redirect data into the Earthworm
+ system or like a plug-in to feed a SeedLink server.
  The main contribute, as regards other similar software, is the capability
- to manage Raw Stream connection by buffering and sorting of the retransmitted
- packets.
- nmxptool can guarantee a good compromise between data continuity and low
- latency.
+ to manage Raw Stream connections by buffering and sorting all received
+ packets, included the retransmitted packets, guaranteeing a good compromise
+ between data continuity and low latency.
+ Besides, it is also possible to retrieve Data-On-Demand with minimum delay
+ after request.
  The library and the tool are open-source software and released under GNU
  Library General Public License.
  They have been written in C language, using the GNU Build Tools (automake,
  autoconf and configure script) and taking in account the cross-platform
- aspects.
+ compilation aspects, like 32-bit and 64-bit architectures, Unix-like operating
+ systems, Mac OS X and Windows.
 \end_layout
 
 \begin_layout Keywords
@@ -162,7 +163,7 @@ Nanometrics Server - Client
 \series default
 \emph default
  : software client connect to the Nanometrics Servers for retrieving real-time
- and off-line data, instrument state-of-health, trigger, events information.
+ and off-line data, instrument state-of-health and triggers.
 \end_layout
 
 \begin_layout Standard
@@ -190,7 +191,9 @@ status open
 
 \shape italic
 Typical configuration of the seismic data flow from seismic stations, through
- Nanometrics Servers, as far as the software clients.
+ Nanometrics Servers, as far as the software clients which must implement
+ the subscription protocols Private Data Stream and Data Access Protocol
+ in order to interact with NaqsServer and DataServer respectively.
 \end_layout
 
 \end_inset
@@ -220,8 +223,8 @@ key "nanometrics"
 
 .
  The most important difference between a NaqsServer and a DataServer is
- that the first one provides real-time data whereas DataServer spreads archived
- data into the past.
+ that the first one provides data in near-realtime whereas DataServer spreads
+ archived data into the past.
  The kinds of connection and the related behaviours can be briefly schematized:
 \end_layout
 
@@ -229,12 +232,6 @@ key "nanometrics"
 
 \series bold
 NaqsServer
-\series default
- (
-\shape italic
-Private Data Stream 1.4
-\shape default
-)
 \end_layout
 
 \begin_deeper
@@ -244,7 +241,7 @@ Data may be requested by channel.
 \end_layout
 
 \begin_deeper
-\begin_layout Itemize
+\begin_layout Enumerate
 
 \shape italic
 Buffered Stream
@@ -254,7 +251,7 @@ Buffered Stream
  occurs.
 \end_layout
 
-\begin_layout Itemize
+\begin_layout Enumerate
 
 \shape italic
 Raw Stream
@@ -269,12 +266,6 @@ Raw Stream
 
 \series bold
 DataServer
-\series default
- (
-\shape italic
-Data Access Protocol 1.0
-\shape default
-)
 \end_layout
 
 \begin_deeper
@@ -285,7 +276,9 @@ Data may be requested by channel, start time and end time.
 
 \end_deeper
 \begin_layout Standard
-Developed software implements the following subscription protocols:
+Every client program that needs to communicate with NaqsServer or DataServer,
+ as the software developed by the author, must implement the following subscript
+ion protocols:
 \end_layout
 
 \begin_layout Itemize
@@ -334,7 +327,9 @@ reference "fig:maxtolerablelatency"
 
 \end_inset
 
-
+.
+ Moreover, for retrieving data-on-demand....
+ Timeoutrecv....
 \end_layout
 
 \begin_layout Standard
@@ -890,7 +885,7 @@ I would like to ...
 
 \begin_layout Standard
 \begin_inset LatexCommand bibtex
-options "elsart-harv"
+options "apalike"
 bibfiles "references"
 
 \end_inset
