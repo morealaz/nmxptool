@@ -66,13 +66,13 @@ thanksref{sourcesite}
 
 \begin_layout Abstract
 \begin_inset ERT
-status collapsed
+status open
 
 \begin_layout Standard
 
 
 \backslash
-footnote{$Id $}
+footnote{$ $Id: nmxptool.lyx,v 1.9 2008-01-07 11:16:25 mtheo Exp $ $}
 \end_layout
 
 \end_inset
