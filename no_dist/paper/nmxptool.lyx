@@ -62,7 +62,7 @@ status collapsed
 \backslash
 small 
 \backslash
-itshape $ $Revision: 1.11 $ $ $ $Date: 2008-01-07 14:20:56 $ $}
+itshape $ $Revision: 1.12 $ $ $ $Date: 2008-01-07 14:45:39 $ $}
 \end_layout
 
 \end_inset
@@ -71,10 +71,9 @@ itshape $ $Revision: 1.11 $ $ $ $Date: 2008-01-07 14:20:56 $ $}
 \end_layout
 
 \begin_layout Abstract
-Nanometrics servers provide on-line access to serial, seismic and state-of-healt
-h data via TCP/IP subscription.
- They accept connections from client programs and forward the requested
- data to each client program.
+The Nanometrics servers NaqsServer and DataServer accept TCP/IP connections
+ and forward the requested data to each client program, they can provide
+ on-line access to seismic data and state-of-health information.
  NaqsServer collates and stores in near-real-time incoming data in ringbuffers
  and DataServer provides data of the past stored in NaqsServer ringbuffers.
  Author developed a software that implements the Nanometrics subscription
