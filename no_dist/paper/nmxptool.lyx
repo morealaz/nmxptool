@@ -49,19 +49,6 @@
 \begin_layout Title
 nmxptool: open-source and cross-platform software for Nanometrics seismic
  data acquisition
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-thanksref{sourcesite}
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Abstract
@@ -70,15 +57,17 @@ status open
 
 \begin_layout Standard
 
-
-\backslash
-footnote{$ $Id: nmxptool.lyx,v 1.9 2008-01-07 11:16:25 mtheo Exp $ $}
+$ $Revision: 1.10 $ $ $ $Date: 2008-01-07 11:25:46 $ $
 \end_layout
 
 \end_inset
 
- Nanometrics servers provide on-line access to serial, seismic and state-of-heal
-th data via TCP/IP subscription.
+
+\end_layout
+
+\begin_layout Abstract
+Nanometrics servers provide on-line access to serial, seismic and state-of-healt
+h data via TCP/IP subscription.
  They accept connections from client programs and forward the requested
  data to each client program.
  NaqsServer collates and stores in near-real-time incoming data in ringbuffers
@@ -789,7 +778,7 @@ reference "fig:maxtolerablelatency"
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Standard
 \align center
@@ -869,7 +858,7 @@ Test
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Standard
 \align center
