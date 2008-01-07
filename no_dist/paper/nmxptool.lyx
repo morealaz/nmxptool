@@ -65,37 +65,38 @@ thanksref{sourcesite}
 \end_layout
 
 \begin_layout Abstract
-Nanometrics servers provide online access to time-series, serial data, triggers,
- and state-of-health data via TCP subscription.
- They accept connections and data requests from client programs and forward
- the requested data to each client program in near-realtime by NaqsServer
- or for data of the past by DataServer.
+Nanometrics servers provide on-line access to serial, seismic and state-of-healt
+h data via TCP/IP subscription.
+ They accept connections from client programs and forward the requested
+ data to each client program.
+ NaqsServer collates and stores in near-real-time incoming data in ringbuffers
+ and DataServer provides data of the past stored in NaqsServer ringbuffers.
  Author developed a software that implements the Nanometrics subscription
  protocols.
- A library called libnmxp provides a set of documented APIs which allow
+ A library called libnmxp, exposes a set of documented APIs which allow
  to develop software capable of interacting with NaqsServer and DataServer.
- A tool, called nmxptool and based on libnmxp, allows to retrieve or monitor
- data in near-realtime and off-line.
- nmxptool can be used stand-alone to monitor data or save retrieved data
- in mini-SEED records, like a module to redirect data into the Earthworm
- system or like a plug-in to feed a SeedLink server.
+ A tool called nmxptool, and based on libnmxp, allows to retrieve or monitor
+ real-time data and data of the past.
+ nmxptool can be used in three different ways: stand-alone to monitor data
+ or save retrieved data in mini-SEED records, launched as an Earthworm module
+ to redirect data into the rings or like a Seed-Link plug-in to feed the
+ server.
  The main contribute, as regards other similar software, is the capability
  to manage Raw Stream connections by buffering and sorting all received
  packets, included the retransmitted packets, guaranteeing a good compromise
  between data continuity and low latency.
- Besides, it is also possible to retrieve Data-On-Demand with minimum delay
+ Besides, nmxptool allows to retrieve Data-On-Demand with minimum delay
  after request.
- The library and the tool are open-source software and released under GNU
- Library General Public License.
- They have been written in C language, using the GNU Build Tools (automake,
+ Software is open-source software and released under GNU Library General
+ Public License.
+ It has been written in C language using the GNU Build Tools (automake,
  autoconf and configure script) and taking in account the cross-platform
- compilation aspects, like 32-bit and 64-bit architectures, Unix-like operating
- systems, Mac OS X and Windows.
+ compilation aspects, in fact, it can run on almost all the Unix-like operating
+ systems, Mac OS X, Windows and either 32-bit or 64-bit architectures.
 \end_layout
 
 \begin_layout Keywords
-Software.
- Seismic data acquisition.
+Seismic data acquisition; software.
 \end_layout
 
 \begin_layout Author
@@ -223,7 +224,7 @@ key "nanometrics"
 
 .
  The most important difference between a NaqsServer and a DataServer is
- that the first one provides data in near-realtime whereas DataServer spreads
+ that the first one provides data in near-real-time whereas DataServer spreads
  archived data into the past.
  The kinds of connection and the related behaviours can be briefly schematized:
 \end_layout
@@ -237,7 +238,8 @@ NaqsServer
 \begin_deeper
 \begin_layout Itemize
 Data may be requested by channel.
- Real-time data can be retrieved in two diffent ways by the following streams:
+ Real-time data can be retrieved in two different ways by the following
+ streams:
 \end_layout
 
 \begin_deeper
@@ -271,7 +273,7 @@ DataServer
 \begin_deeper
 \begin_layout Itemize
 Data may be requested by channel, start time and end time.
- Archived data are retrived chronologically for each channel.
+ Archived data are retrieved chronologically for each channel.
 \end_layout
 
 \end_deeper
@@ -317,71 +319,8 @@ nmxptool is capable to manage a buffer of packets and order them chronologically
  
 \end_layout
 
-\begin_layout Standard
-Main parameter to set for Raw Stream is the max tolerable latency you can
- accept, a sort of short-term-completion but managed by the client and not
- by the server.
- Figure 
-\begin_inset LatexCommand ref
-reference "fig:maxtolerablelatency"
-
-\end_inset
-
-.
- Moreover, for retrieving data-on-demand....
- Timeoutrecv....
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status collapsed
-
-\begin_layout Standard
-\align center
-\begin_inset Graphics
-	filename images/nanometrics_gaps.eps.gz
-	width 10cm
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\align center
-\begin_inset Caption
-
-\begin_layout Standard
-
-\shape italic
-Raw stream management.
- Max tolerable latency.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\align center
-\begin_inset LatexCommand label
-name "fig:maxtolerablelatency"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout Section
-Software
+Development
 \end_layout
 
 \begin_layout Standard
@@ -394,7 +333,7 @@ Dependencies: libmseed - http://www.iris.edu/manuals/ plug-in.h and plug-in.c
 \begin_inset Float table
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Standard
 \align center
@@ -422,6 +361,7 @@ status collapsed
 \begin_layout Standard
 
 \shape italic
+\size scriptsize
 Little Endian
 \end_layout
 
@@ -442,6 +382,7 @@ Little Endian
 \begin_layout Standard
 
 \shape italic
+\size scriptsize
 Big Endian
 \end_layout
 
@@ -473,7 +414,8 @@ Big Endian
 \begin_layout Standard
 
 \series bold
-Intel 32-bit
+\size scriptsize
+32-bit
 \end_layout
 
 \end_inset
@@ -484,7 +426,8 @@ Intel 32-bit
 \begin_layout Standard
 
 \series bold
-Intel 64-bit
+\size scriptsize
+64-bit
 \end_layout
 
 \end_inset
@@ -495,7 +438,8 @@ Intel 64-bit
 \begin_layout Standard
 
 \series bold
-SPARC 64bit
+\size scriptsize
+32-bit
 \end_layout
 
 \end_inset
@@ -506,13 +450,14 @@ SPARC 64bit
 \begin_layout Standard
 
 \series bold
-PowerPC
+\size scriptsize
+64-bit
 \end_layout
 
 \end_inset
 </cell>
 </row>
-<row topline="true">
+<row>
 <cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
@@ -520,6 +465,7 @@ PowerPC
 
 \series bold
 \shape italic
+\size scriptsize
 Linux
 \end_layout
 
@@ -529,6 +475,8 @@ Linux
 \begin_inset Text
 
 \begin_layout Standard
+
+\size scriptsize
 X
 \end_layout
 
@@ -538,6 +486,8 @@ X
 \begin_inset Text
 
 \begin_layout Standard
+
+\size scriptsize
 X
 \end_layout
 
@@ -570,6 +520,7 @@ X
 
 \series bold
 \shape italic
+\size scriptsize
 Solaris
 \end_layout
 
@@ -579,6 +530,8 @@ Solaris
 \begin_inset Text
 
 \begin_layout Standard
+
+\size scriptsize
 X
 \end_layout
 
@@ -597,7 +550,7 @@ X
 \begin_inset Text
 
 \begin_layout Standard
-X
+
 \end_layout
 
 \end_inset
@@ -607,6 +560,8 @@ X
 
 \begin_layout Standard
 
+\size scriptsize
+X
 \end_layout
 
 \end_inset
@@ -620,6 +575,7 @@ X
 
 \series bold
 \shape italic
+\size scriptsize
 Mac OS X
 \end_layout
 
@@ -638,6 +594,8 @@ Mac OS X
 \begin_inset Text
 
 \begin_layout Standard
+
+\size scriptsize
 X
 \end_layout
 
@@ -648,6 +606,8 @@ X
 
 \begin_layout Standard
 
+\size scriptsize
+X
 \end_layout
 
 \end_inset
@@ -656,7 +616,7 @@ X
 \begin_inset Text
 
 \begin_layout Standard
-X
+
 \end_layout
 
 \end_inset
@@ -670,7 +630,8 @@ X
 
 \series bold
 \shape italic
-FreeBSD
+\size scriptsize
+Free BSD
 \end_layout
 
 \end_inset
@@ -679,6 +640,8 @@ FreeBSD
 \begin_inset Text
 
 \begin_layout Standard
+
+\size scriptsize
 X
 \end_layout
 
@@ -688,6 +651,8 @@ X
 \begin_inset Text
 
 \begin_layout Standard
+
+\size scriptsize
 X
 \end_layout
 
@@ -720,6 +685,7 @@ X
 
 \series bold
 \shape italic
+\size scriptsize
 Windows-MinGW
 \end_layout
 
@@ -729,6 +695,8 @@ Windows-MinGW
 \begin_inset Text
 
 \begin_layout Standard
+
+\size scriptsize
 X
 \end_layout
 
@@ -790,6 +758,69 @@ Operating systems and architectures where nmxptool has been compiled with
 
 \end_layout
 
+\begin_layout Standard
+Main parameter to set for Raw Stream is the max tolerable latency you can
+ accept, a sort of short-term-completion but managed by the client and not
+ by the server.
+ Figure 
+\begin_inset LatexCommand ref
+reference "fig:maxtolerablelatency"
+
+\end_inset
+
+.
+ Moreover, for retrieving data-on-demand....
+ Timeoutrecv....
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename /Users/mtheo/Desktop/cvswork/nmxptool/no_dist/paper/images/nanometrics_gaps.eps.gz
+	width 10cm
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Caption
+
+\begin_layout Standard
+
+\shape italic
+Raw stream management.
+ Max tolerable latency.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset LatexCommand label
+name "fig:maxtolerablelatency"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsection
 Library
 \end_layout
@@ -802,8 +833,24 @@ Tool
 Installation
 \end_layout
 
+\begin_layout Section
+nmxptool
+\end_layout
+
 \begin_layout Subsection
-Usage
+Stand-alone
+\end_layout
+
+\begin_layout Subsection
+Earthworm
+\end_layout
+
+\begin_layout Subsection
+SeisComP
+\end_layout
+
+\begin_layout Section
+Test
 \end_layout
 
 \begin_layout Standard
@@ -859,26 +906,24 @@ Test.
  
 \end_layout
 
-\begin_layout Subsubsection
-Earthworm
-\end_layout
-
-\begin_layout Subsubsection
-SeisComP
-\end_layout
-
 \begin_layout Section
 Conclusion
 \end_layout
 
-\begin_layout Standard
+\begin_layout Itemize
 Future.
- Maintenance, improvements, bug fixes Manage information about state-of-health,
- triggers and events Data on Demand Requesting and retrieving data “on-the-fly”
- (i.e.
- acceloremetric data, HL channel) .
 \end_layout
 
+\begin_deeper
+\begin_layout Itemize
+Maintenance, improvements, bug fixes
+\end_layout
+
+\begin_layout Itemize
+Manage information about state-of-health, triggers and events.
+\end_layout
+
+\end_deeper
 \begin_layout Acknowledgement
 I would like to ...
 \end_layout
