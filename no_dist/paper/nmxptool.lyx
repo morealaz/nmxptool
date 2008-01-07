@@ -62,7 +62,7 @@ status collapsed
 \backslash
 small 
 \backslash
-itshape $ $Revision: 1.13 $ $ $ $Date: 2008-01-07 14:52:02 $ $}
+itshape $ $Revision: 1.14 $ $ $ $Date: 2008-01-07 15:00:21 $ $}
 \end_layout
 
 \end_inset
@@ -148,7 +148,7 @@ reference "fig:stationclients"
 \end_inset
 
 .
- This flow can be split in two logical parts:
+ The flow can be split in two logical parts:
 \end_layout
 
 \begin_layout Enumerate
