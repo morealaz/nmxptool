@@ -62,7 +62,7 @@ status collapsed
 \backslash
 small 
 \backslash
-itshape $ $Revision: 1.12 $ $ $ $Date: 2008-01-07 14:45:39 $ $}
+itshape $ $Revision: 1.13 $ $ $ $Date: 2008-01-07 14:52:02 $ $}
 \end_layout
 
 \end_inset
@@ -128,6 +128,10 @@ Istituto Nazionale di Geofisica e Vulcanologia, Via di Vigna Murata 605,
 
 \begin_layout Author Email
 quintiliani@ingv.it
+\end_layout
+
+\begin_layout Author URL
+http://mednet.rm.ingv.it/nmxptool.php
 \end_layout
 
 \begin_layout Section
