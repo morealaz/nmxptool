@@ -27,7 +27,7 @@
 \use_geometry false
 \use_amsmath 1
 \use_esint 1
-\cite_engine basic
+\cite_engine natbib_authoryear
 \use_bibtopic false
 \paperorientation portrait
 \secnumdepth 3
@@ -49,15 +49,20 @@
 \begin_layout Title
 nmxptool: open-source and cross-platform software for Nanometrics seismic
  data acquisition
-\end_layout
-
-\begin_layout Abstract
 \begin_inset ERT
-status open
+status collapsed
 
 \begin_layout Standard
 
-$ $Revision: 1.10 $ $ $ $Date: 2008-01-07 11:25:46 $ $
+
+\backslash
+
+\backslash
+ {
+\backslash
+small 
+\backslash
+itshape $ $Revision: 1.11 $ $ $ $Date: 2008-01-07 14:20:56 $ $}
 \end_layout
 
 \end_inset
@@ -103,7 +108,7 @@ Seismic data acquisition; software.
 \begin_layout Author
 Matteo Quintiliani
 \begin_inset ERT
-status open
+status collapsed
 
 \begin_layout Standard
 
@@ -172,7 +177,7 @@ Nanometrics Server - Client
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Standard
 \align center
@@ -334,7 +339,7 @@ Dependencies: libmseed - http://www.iris.edu/manuals/ plug-in.h and plug-in.c
 \begin_inset Float table
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Standard
 \align center
@@ -778,7 +783,7 @@ reference "fig:maxtolerablelatency"
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Standard
 \align center
@@ -830,6 +835,22 @@ Library
 Tool
 \end_layout
 
+\begin_layout Algorithm
+Source code skeleton.
+\end_layout
+
+\begin_layout Algorithm
+for i = 1 to 10; do
+\end_layout
+
+\begin_layout Algorithm
+echo i
+\end_layout
+
+\begin_layout Algorithm
+done
+\end_layout
+
 \begin_layout Subsection
 Installation
 \end_layout
@@ -858,7 +879,7 @@ Test
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Standard
 \align center
@@ -931,7 +952,7 @@ I would like to ...
 
 \begin_layout Standard
 \begin_inset LatexCommand bibtex
-options "apalike"
+options "elsart-harv"
 bibfiles "references"
 
 \end_inset
