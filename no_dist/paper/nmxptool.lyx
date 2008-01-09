@@ -62,7 +62,7 @@ status collapsed
 \backslash
 small 
 \backslash
-itshape $ $Revision: 1.14 $ $ $ $Date: 2008-01-07 15:00:21 $ $}
+itshape $ $Revision: 1.15 $ $ $ $Date: 2008-01-09 15:28:09 $ $}
 \end_layout
 
 \end_inset
@@ -71,29 +71,29 @@ itshape $ $Revision: 1.14 $ $ $ $Date: 2008-01-07 15:00:21 $ $}
 \end_layout
 
 \begin_layout Abstract
-The Nanometrics servers NaqsServer and DataServer accept TCP/IP connections
- and forward the requested data to each client program, they can provide
- on-line access to seismic data and state-of-health information.
+The Nanometrics servers NaqsServer and DataServer can provide on-line access
+ to seismic data and state-of-health information accepting TCP/IP connections
+ and forwarding the requested data to each client program.
  NaqsServer collates and stores in near-real-time incoming data in ringbuffers
- and DataServer provides data of the past stored in NaqsServer ringbuffers.
- Author developed a software that implements the Nanometrics subscription
- protocols.
- A library called libnmxp, exposes a set of documented APIs which allow
- to develop software capable of interacting with NaqsServer and DataServer.
- A tool called nmxptool, and based on libnmxp, allows to retrieve or monitor
- real-time data and data of the past.
- nmxptool can be used in three different ways: stand-alone to monitor data
- or save retrieved data in mini-SEED records, launched as an Earthworm module
- to redirect data into the rings or like a Seed-Link plug-in to feed the
- server.
+ whereas DataServer provides data of the past stored in NaqsServer ringbuffers.
+ In order to implement the Nanometrics subscription protocols, the author
+ developed a software consisting of a library called libnmxp and a tool
+ called nmxptool.
+ The library exposes a set of documented APIs which allow to communicate
+ with the Nanometrics servers.
+ The tool, based on libnmxp, allows to retrieve or monitor real-time data
+ and data of the past.
+ It can be used in three different ways: stand-alone to monitor data or
+ save retrieved data in mini-seed records, launched as an Earthworm module
+ to redirect data into the EW-rings or like a Seed-Link plug-in to feed
+ the SL-server.
  The main contribute, as regards other similar software, is the capability
  to manage Raw Stream connections by buffering and sorting all received
- packets, included the retransmitted packets, guaranteeing a good compromise
+ packets, included the retransmitted ones, guaranteeing a good compromise
  between data continuity and low latency.
  Besides, nmxptool allows to retrieve Data-On-Demand with minimum delay
  after request.
- Software is open-source software and released under GNU Library General
- Public License.
+ Software is open-source and released under GNU Library General Public License.
  It has been written in C language using the GNU Build Tools (automake,
  autoconf and configure script) and taking in account the cross-platform
  compilation aspects, in fact, it can run on almost all the Unix-like operating
