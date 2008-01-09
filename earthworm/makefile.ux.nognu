@@ -1,0 +1,42 @@
+#############################################################################
+# WARNING: this file is a meta-makefile written to adapt the compilation of
+# nmxptool when you are compiling it under Earthworm system. This file should
+# work for all operating systems using almost any 'make' program.
+# For Windows-XP and Windows-2000 compile under MinGW.
+#
+# CFLAGS and LDFLAGS variables will be overrided. 
+#
+# make -f makefile.ux.nognu 
+# make -f makefile.ux.nognu clean
+# make -f makefile.ux.nognu distclean
+# make -f makefile.ux.nognu clean_bin
+#
+# Author: Matteo Quintiliani - I.N.G.V. - quintiliani@ingv.it
+#############################################################################
+
+CFLAGS = $(GLOBALFLAGS) -I$(EW_HOME)/$(EW_VERSION)/src/libsrc/util/libmseed
+LDFLAGS = -L$(EW_HOME)/$(EW_VERSION)/src/libsrc/util/libmseed
+
+B = $(EW_HOME)/$(EW_VERSION)/bin
+
+LIBNMXPSRC=libnmxp
+
+PROGS = nmxptool
+
+all:
+	cd $(LIBNMXPSRC) && ./configure && make
+	./configure && make && cp src/$(PROGS) $B/
+
+# Clean rules
+clean:
+	test -f $(LIBNMXPSRC)/Makefile && cd $(LIBNMXPSRC) && make clean
+	test -f Makefile && make clean
+
+distclean:
+	test -f $(LIBNMXPSRC)/Makefile && cd $(LIBNMXPSRC) && make distclean
+	test -f Makefile && make distclean
+
+# Clean nmxptool binary from Earthworm system
+clean_bin:
+	rm -f $B/$(PROGS)
+
