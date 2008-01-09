@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.50 2007-12-28 10:39:02 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.51 2008-01-09 15:27:30 mtheo Exp $
  *
  */
 
@@ -603,6 +603,70 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
     return ret_errors;
 }
 
+
+void nmxptool_log_params(NMXPTOOL_PARAMS *params) {
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_EXTRA, "\
+    char *hostname: %s\n\
+    int portnumberdap: %d\n\
+    int portnumberpds: %d\n\
+    char *channels: %s\n\
+    char *network: %s\n\
+    char *location: %s\n\
+    double start_time: %f\n\
+    double end_time: %f\n\
+    int32_t interval: %d\n\
+    char *datas_username: %s\n\
+    char *datas_password: %s\n\
+    int32_t stc: %d\n\
+    int32_t rate: %d\n\
+    char *plugin_slink: %s\n\
+    int32_t delay: %d\n\
+    int32_t max_tolerable_latency: %d\n\
+    int32_t timeoutrecv: %d\n\
+    int32_t verbose_level: %d\n\
+    char *ew_configuration_file: %s\n\
+    char *statefile: %s\n\
+    double buffered_time: %f\n\
+    int flag_writeseed: %d\n\
+    int flag_listchannels: %d\n\
+    int flag_listchannelsnaqs: %d\n\
+    int flag_request_channelinfo: %d\n\
+    int flag_writefile: %d\n\
+    int flag_slink: %d\n\
+    int flag_buffered: %d\n\
+    int flag_logdata: %d\n\
+",
+    params->hostname,
+    params->portnumberdap,
+    params->portnumberpds,
+    params->channels,
+    params->network,
+    params->location,
+    params->start_time,
+    params->end_time,
+    params->interval,
+    params->datas_username,
+    params->datas_password,
+    params->stc,
+    params->rate,
+    params->plugin_slink,
+    params->delay,
+    params->max_tolerable_latency,
+    params->timeoutrecv,
+    params->verbose_level,
+    params->ew_configuration_file,
+    params->statefile,
+    params->buffered_time,
+    params->flag_writeseed,
+    params->flag_listchannels,
+    params->flag_listchannelsnaqs,
+    params->flag_request_channelinfo,
+    params->flag_writefile,
+    params->flag_slink,
+    params->flag_buffered,
+    params->flag_logdata
+    );
+}
 
 int nmxptool_check_params(NMXPTOOL_PARAMS *params) {
     int ret = 0;

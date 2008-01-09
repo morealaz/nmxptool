@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.h,v 1.46 2008-01-03 08:44:15 mtheo Exp $
+ * $Id: nmxptool_getoptlong.h,v 1.47 2008-01-09 15:27:30 mtheo Exp $
  *
  */
 
@@ -119,6 +119,13 @@ char *get_channel_list_argument_from_state_file(const char *filename);
  */
 int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params);
 
+
+/*! \brief Print value of NMXPTOOL_PARAMS
+ *
+ * \param params Struct to validate.
+ *
+ */
+void nmxptool_log_params(NMXPTOOL_PARAMS *params);
 
 /*! \brief Check semantyc of values in struct NMXPTOOL_PARAMS
  *
