@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.52 2008-01-09 16:14:11 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.53 2008-01-09 17:16:30 mtheo Exp $
  *
  */
 
@@ -629,8 +629,24 @@ void nmxptool_log_params(NMXPTOOL_PARAMS *params) {
     double start_time: %f\n\
     double end_time: %f\n\
     int32_t interval: %d\n\
+",
+    RETURN_STR(params->network),
+    RETURN_STR(params->location),
+    params->start_time,
+    params->end_time,
+    params->interval
+);
+
+
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_EXTRA, "\
     char *datas_username: %s\n\
     char *datas_password: %s\n\
+",
+    RETURN_STR(params->datas_username),
+    RETURN_STR(params->datas_password)
+);
+
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_EXTRA, "\
     int32_t stc: %d\n\
     int32_t rate: %d\n\
     char *plugin_slink: %s\n\
@@ -638,8 +654,25 @@ void nmxptool_log_params(NMXPTOOL_PARAMS *params) {
     int32_t max_tolerable_latency: %d\n\
     int32_t timeoutrecv: %d\n\
     int32_t verbose_level: %d\n\
+",
+    params->stc,
+    params->rate,
+    RETURN_STR(params->plugin_slink),
+    params->delay,
+    params->max_tolerable_latency,
+    params->timeoutrecv,
+    params->verbose_level
+);
+
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_EXTRA, "\
     char *ew_configuration_file: %s\n\
     char *statefile: %s\n\
+",
+    RETURN_STR(params->ew_configuration_file),
+    RETURN_STR(params->statefile)
+);
+
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_EXTRA, "\
     double buffered_time: %f\n\
     int flag_writeseed: %d\n\
     int flag_listchannels: %d\n\
@@ -650,22 +683,6 @@ void nmxptool_log_params(NMXPTOOL_PARAMS *params) {
     int flag_buffered: %d\n\
     int flag_logdata: %d\n\
 ",
-    RETURN_STR(params->network),
-    RETURN_STR(params->location),
-    params->start_time,
-    params->end_time,
-    params->interval,
-    RETURN_STR(params->datas_username),
-    RETURN_STR(params->datas_password),
-    params->stc,
-    params->rate,
-    RETURN_STR(params->plugin_slink),
-    params->delay,
-    params->max_tolerable_latency,
-    params->timeoutrecv,
-    params->verbose_level,
-    RETURN_STR(params->ew_configuration_file),
-    RETURN_STR(params->statefile),
     params->buffered_time,
     params->flag_writeseed,
     params->flag_listchannels,
