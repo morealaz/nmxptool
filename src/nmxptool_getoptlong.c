@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.51 2008-01-09 15:27:30 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.52 2008-01-09 16:14:11 mtheo Exp $
  *
  */
 
@@ -604,12 +604,26 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 }
 
 
+#define RETURN_STR(s) (s == NULL)? "<null>" : s
+
 void nmxptool_log_params(NMXPTOOL_PARAMS *params) {
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_EXTRA, "\
     char *hostname: %s\n\
     int portnumberdap: %d\n\
     int portnumberpds: %d\n\
+",
+    RETURN_STR(params->hostname),
+    params->portnumberdap,
+    params->portnumberpds
+);
+
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_EXTRA, "\
     char *channels: %s\n\
+",
+    RETURN_STR(params->channels)
+);
+
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_EXTRA, "\
     char *network: %s\n\
     char *location: %s\n\
     double start_time: %f\n\
@@ -636,26 +650,22 @@ void nmxptool_log_params(NMXPTOOL_PARAMS *params) {
     int flag_buffered: %d\n\
     int flag_logdata: %d\n\
 ",
-    params->hostname,
-    params->portnumberdap,
-    params->portnumberpds,
-    params->channels,
-    params->network,
-    params->location,
+    RETURN_STR(params->network),
+    RETURN_STR(params->location),
     params->start_time,
     params->end_time,
     params->interval,
-    params->datas_username,
-    params->datas_password,
+    RETURN_STR(params->datas_username),
+    RETURN_STR(params->datas_password),
     params->stc,
     params->rate,
-    params->plugin_slink,
+    RETURN_STR(params->plugin_slink),
     params->delay,
     params->max_tolerable_latency,
     params->timeoutrecv,
     params->verbose_level,
-    params->ew_configuration_file,
-    params->statefile,
+    RETURN_STR(params->ew_configuration_file),
+    RETURN_STR(params->statefile),
     params->buffered_time,
     params->flag_writeseed,
     params->flag_listchannels,
@@ -667,6 +677,8 @@ void nmxptool_log_params(NMXPTOOL_PARAMS *params) {
     params->flag_logdata
     );
 }
+
+
 
 int nmxptool_check_params(NMXPTOOL_PARAMS *params) {
     int ret = 0;
