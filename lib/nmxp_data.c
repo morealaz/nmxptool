@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_data.c,v 1.45 2008-01-10 08:46:44 mtheo Exp $
+ * $Id: nmxp_data.c,v 1.46 2008-01-10 10:48:32 mtheo Exp $
  *
  */
 
@@ -34,7 +34,7 @@ UTC, call mktime() and restore the value of TZ.  Something like
 
 time_t my_timegm (struct tm *tm) {
     time_t ret;
-#ifdef HAVE_GETENV
+#ifdef HAVE_SETENV
     char *tz;
 
     tz = getenv("TZ");
@@ -44,7 +44,7 @@ time_t my_timegm (struct tm *tm) {
 #warning Computation of packet latencies could be wrong if local time is not equal to UTC.
 #endif
     ret = mktime(tm);
-#ifdef HAVE_GETENV
+#ifdef HAVE_SETENV
     if (tz)
 	setenv("TZ", tz, 1);
     else
