@@ -62,7 +62,7 @@ status collapsed
 \backslash
 small 
 \backslash
-itshape $ $Revision: 1.15 $ $ $ $Date: 2008-01-09 15:28:09 $ $}
+itshape $ $Revision: 1.16 $ $ $ $Date: 2008-01-10 14:58:20 $ $}
 \end_layout
 
 \end_inset
@@ -83,8 +83,8 @@ The Nanometrics servers NaqsServer and DataServer can provide on-line access
  with the Nanometrics servers.
  The tool, based on libnmxp, allows to retrieve or monitor real-time data
  and data of the past.
- It can be used in three different ways: stand-alone to monitor data or
- save retrieved data in mini-seed records, launched as an Earthworm module
+ nmxptool can be used in three different ways: stand-alone to monitor data
+ or save retrieved data in mini-seed records, launched as an Earthworm module
  to redirect data into the EW-rings or like a Seed-Link plug-in to feed
  the SL-server.
  The main contribute, as regards other similar software, is the capability
@@ -139,7 +139,7 @@ Introduction
 \end_layout
 
 \begin_layout Standard
-A typical configuration of the seismic data flow from the seismic station,
+A typical configuration of a seismic data flow from the seismic station,
  through Nanometrics servers, as far as the software clients is shown in
  figure 
 \begin_inset LatexCommand ref
@@ -180,7 +180,7 @@ Nanometrics Server - Client
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Standard
 \align center
@@ -200,8 +200,8 @@ status collapsed
 \begin_layout Standard
 
 \shape italic
-Typical configuration of the seismic data flow from seismic stations, through
- Nanometrics Servers, as far as the software clients which must implement
+Typical configuration of a seismic data flow from seismic stations, through
+ Nanometrics Servers, as far as the client programs which must implement
  the subscription protocols Private Data Stream and Data Access Protocol
  in order to interact with NaqsServer and DataServer respectively.
 \end_layout
