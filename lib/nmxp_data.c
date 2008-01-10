@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_data.c,v 1.44 2007-12-19 14:32:05 mtheo Exp $
+ * $Id: nmxp_data.c,v 1.45 2008-01-10 08:46:44 mtheo Exp $
  *
  */
 
@@ -26,23 +26,25 @@
 #endif
 
 
-#ifndef HAVE_TIMEGM
 /*
 For a portable version of timegm(), set the TZ environment variable  to
 UTC, call mktime() and restore the value of TZ.  Something like
 */
+#ifndef HAVE_TIMEGM
 
 time_t my_timegm (struct tm *tm) {
     time_t ret;
-#ifdef HAVE_WINDOWS_H
-        ret = mktime(tm);
-#else
+#ifdef HAVE_GETENV
     char *tz;
 
     tz = getenv("TZ");
     setenv("TZ", "", 1);
     tzset();
+#else
+#warning Computation of packet latencies could be wrong if local time is not equal to UTC.
+#endif
     ret = mktime(tm);
+#ifdef HAVE_GETENV
     if (tz)
 	setenv("TZ", tz, 1);
     else
