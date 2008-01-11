@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.104 2008-01-09 15:27:30 mtheo Exp $
+ * $Id: nmxptool.c,v 1.105 2008-01-11 14:31:50 mtheo Exp $
  *
  */
 
@@ -627,6 +627,11 @@ int main (int argc, char **argv) {
 		exitpdscondition = 1;
 	    } else {
 		nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CONNFLOW, "Error receiving data. pd=%p recv_errno=%d\n", pd, recv_errno);
+
+#ifdef HAVE_EARTHWORMOBJS
+		nmxptool_ew_send_error(NMXPTOOL_EW_ERR_RECVDATA);
+#endif
+
 		exitpdscondition = 0;
 	    }
 

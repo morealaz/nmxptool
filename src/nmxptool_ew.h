@@ -22,6 +22,11 @@
 #include <transport.h>
 #include <trace_buf.h>
 
+#define NMXPTOOL_EW_ERR_NULL 0
+#define NMXPTOOL_EW_ERR_RECVDATA 1
+/* TODO */
+#define NMXPTOOL_EW_ERR_MAXVALUE 1
+
 void nmxptool_ew_attach();
 void nmxptool_ew_detach();
 
@@ -37,6 +42,7 @@ void nmxptool_ew_report_status ( MSG_LOGO *pLogo, short code, char * message );
 
 int nmxptool_ew_check_flag_terminate();
 void nmxptool_ew_send_heartbeat_if_needed();
+void nmxptool_ew_send_error(short ierr);
 
 int nmxptool_ew_logit_msg ( char *msg );
 int nmxptool_ew_logit_err (  char *msg );

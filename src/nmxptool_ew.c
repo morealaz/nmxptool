@@ -28,6 +28,11 @@
 
 #include "nmxptool_ew.h"
 
+char *NMXPTOOL_EW_ERR_MSG[NMXPTOOL_EW_ERR_MAXVALUE + 1] = {
+    "",
+    "Error receiving data."
+};
+
 
 #define MAXMESSAGELEN   160     /* Maximum length of a status or error  */
 /*   message.                           */
@@ -545,6 +550,15 @@ void nmxptool_ew_send_heartbeat_if_needed() {
 	timeLastBeat = timeNow;
 	nmxptool_ew_report_status ( &hrtLogo, 0, "" ); 
     }
+}
+
+void nmxptool_ew_send_error(short ierr) {
+    if(ierr >= 0  &&  ierr <= NMXPTOOL_EW_ERR_MAXVALUE) {
+	nmxptool_ew_report_status ( &errLogo, ierr, NMXPTOOL_EW_ERR_MSG[ierr] ); 
+    } else {
+	/* TODO */
+    }
+
 }
 
 /***************************************************************************
