@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_base.c,v 1.49 2008-01-10 10:06:01 mtheo Exp $
+ * $Id: nmxp_base.c,v 1.50 2008-01-11 10:57:58 mtheo Exp $
  *
  */
 
@@ -236,10 +236,17 @@ int nmxp_recv_ctrl(int isock, void *buffer, int length, int timeoutsec, int *rec
 #endif
     nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CONNFLOW, "nmxp_recv_ctrl(): recvCount=%d  length=%d  (cc=%d) errno=%d (%s)\n", recvCount, length, cc, *recv_errno, recv_errno_str);
 	    
+    /* TO IMPROVE 
+     * Fixed bug receiving zero byte from recv() 'TCP FIN or EOF received'
+     * */
+    if(cc == 0  &&  *recv_errno == 0) {
+	*recv_errno = -100;
+    }
+
 #ifdef HAVE_WINDOWS_H
-    if(recvCount != length || *recv_errno != WSAEWOULDBLOCK || cc == 0) {
+    if(recvCount != length || *recv_errno != WSAEWOULDBLOCK) {
 #else
-    if(recvCount != length || *recv_errno != EWOULDBLOCK || cc == 0) {
+    if(recvCount != length || *recv_errno != EWOULDBLOCK) {
 #endif
 	return NMXP_SOCKET_ERROR;
     }
