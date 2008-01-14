@@ -23,10 +23,11 @@
 #include <trace_buf.h>
 
 /* TODO is number of different kinds of error */
-#define NMXPTOOL_EW_ERR_MAXVALUE 2
+#define NMXPTOOL_EW_ERR_MAXVALUE 3
 
-#define NMXPTOOL_EW_ERR_NULL 0
-#define NMXPTOOL_EW_ERR_RECVDATA 1
+#define NMXPTOOL_EW_ERR_NULL		0
+#define NMXPTOOL_EW_ERR_RECVDATA	1
+#define NMXPTOOL_EW_ERR_TERMREQ		2
 
 typedef struct {
     unsigned int error;

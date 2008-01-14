@@ -30,7 +30,8 @@
 
 NMXPTOOL_EW_ERR_MSG nmxptool_ew_err_msg[NMXPTOOL_EW_ERR_MAXVALUE] = {
     { NMXPTOOL_EW_ERR_NULL, ""} ,
-    { NMXPTOOL_EW_ERR_RECVDATA, "Error receiving data." }
+    { NMXPTOOL_EW_ERR_RECVDATA, "Error receiving data." },
+    { NMXPTOOL_EW_ERR_TERMREQ, "Terminating on request." }
 };
 
 
