@@ -65,3 +65,10 @@ restartMe
 #    blanks.
 #    Each module may also issue a text string for an error.
 #
+err: 0  nerr: 1  tsec: 0  page: 0  mail: 99
+text: "Missed message"
+#
+err: 1  nerr: 1  tsec: 0  page: 0  mail: 99
+text: "Error receiving data (in desc)"
+#
+

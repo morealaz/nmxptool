@@ -28,9 +28,9 @@
 
 #include "nmxptool_ew.h"
 
-char *NMXPTOOL_EW_ERR_MSG[NMXPTOOL_EW_ERR_MAXVALUE + 1] = {
-    "",
-    "Error receiving data."
+NMXPTOOL_EW_ERR_MSG nmxptool_ew_err_msg[NMXPTOOL_EW_ERR_MAXVALUE] = {
+    { NMXPTOOL_EW_ERR_NULL, ""} ,
+    { NMXPTOOL_EW_ERR_RECVDATA, "Error receiving data." }
 };
 
 
@@ -552,11 +552,17 @@ void nmxptool_ew_send_heartbeat_if_needed() {
     }
 }
 
-void nmxptool_ew_send_error(short ierr) {
-    if(ierr >= 0  &&  ierr <= NMXPTOOL_EW_ERR_MAXVALUE) {
-	nmxptool_ew_report_status ( &errLogo, ierr, NMXPTOOL_EW_ERR_MSG[ierr] ); 
+void nmxptool_ew_send_error(unsigned int ierr) {
+    int i;
+
+    i=0;
+    while(i < NMXPTOOL_EW_ERR_MAXVALUE && nmxptool_ew_err_msg[i].error != ierr) {
+	i++;
+    }
+    if(i < NMXPTOOL_EW_ERR_MAXVALUE) {
+	nmxptool_ew_report_status ( &errLogo, nmxptool_ew_err_msg[i].error, nmxptool_ew_err_msg[i].message); 
     } else {
-	/* TODO */
+	nmxptool_ew_report_status ( &errLogo, 0, "Unknown error"); 
     }
 
 }

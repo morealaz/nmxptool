@@ -22,10 +22,16 @@
 #include <transport.h>
 #include <trace_buf.h>
 
+/* TODO is number of different kinds of error */
+#define NMXPTOOL_EW_ERR_MAXVALUE 2
+
 #define NMXPTOOL_EW_ERR_NULL 0
 #define NMXPTOOL_EW_ERR_RECVDATA 1
-/* TODO */
-#define NMXPTOOL_EW_ERR_MAXVALUE 1
+
+typedef struct {
+    unsigned int error;
+    char message[1024];
+} NMXPTOOL_EW_ERR_MSG;
 
 void nmxptool_ew_attach();
 void nmxptool_ew_detach();
@@ -42,7 +48,7 @@ void nmxptool_ew_report_status ( MSG_LOGO *pLogo, short code, char * message );
 
 int nmxptool_ew_check_flag_terminate();
 void nmxptool_ew_send_heartbeat_if_needed();
-void nmxptool_ew_send_error(short ierr);
+void nmxptool_ew_send_error(unsigned int ierr);
 
 int nmxptool_ew_logit_msg ( char *msg );
 int nmxptool_ew_logit_err (  char *msg );
