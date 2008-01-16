@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.106 2008-01-14 09:16:22 mtheo Exp $
+ * $Id: nmxptool.c,v 1.107 2008-01-16 10:14:59 mtheo Exp $
  *
  */
 
@@ -127,7 +127,7 @@ int main (int argc, char **argv) {
     char cur_after_start_time_str[1024];
     double cur_after_start_time = DEFAULT_BUFFERED_TIME;
     int skip_current_packet = 0;
-	
+
 
     NMXP_DATA_PROCESS *pd;
 
@@ -284,7 +284,7 @@ int main (int argc, char **argv) {
     /* TODO condition starting DAP or PDS */
     if( (params.start_time != 0.0   &&   params.end_time != 0.0)
 	    || params.delay > 0
-	    ) {
+      ) {
 
 	if(params.delay > 0) {
 	    params.start_time = ((double) (time(NULL) - params.delay - span_interval) / 10.0) * 10.0;
@@ -324,193 +324,193 @@ int main (int argc, char **argv) {
 
 	while(exitdapcondition) {
 
-	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_EXTRA, "start_time = %.4f - end_time = %.4f\n", params.start_time, params.end_time);
+	    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_EXTRA, "start_time = %.4f - end_time = %.4f\n", params.start_time, params.end_time);
 
-	/* Start loop for sending requests */
-	i_chan=0;
-	request_SOCKET_OK = NMXP_SOCKET_OK;
+	    /* Start loop for sending requests */
+	    i_chan=0;
+	    request_SOCKET_OK = NMXP_SOCKET_OK;
 
-	while(request_SOCKET_OK == NMXP_SOCKET_OK  &&  i_chan < channelList_subset->number) {
+	    while(request_SOCKET_OK == NMXP_SOCKET_OK  &&  i_chan < channelList_subset->number) {
 
-	    /* DAP Step 5: Send Data Request */
-	    request_SOCKET_OK = nmxp_sendDataRequest(naqssock, channelList_subset->channel[i_chan].key, (int32_t) params.start_time, (int32_t) (params.end_time + 1.0));
+		/* DAP Step 5: Send Data Request */
+		request_SOCKET_OK = nmxp_sendDataRequest(naqssock, channelList_subset->channel[i_chan].key, (int32_t) params.start_time, (int32_t) (params.end_time + 1.0));
 
-	    if(request_SOCKET_OK == NMXP_SOCKET_OK) {
+		if(request_SOCKET_OK == NMXP_SOCKET_OK) {
 
-		nmxp_data_to_str(str_start_time, params.start_time);
-		nmxp_data_to_str(str_end_time, params.end_time);
-		nmxptool_str_time_to_filename(str_start_time);
-		nmxptool_str_time_to_filename(str_end_time);
+		    nmxp_data_to_str(str_start_time, params.start_time);
+		    nmxp_data_to_str(str_end_time, params.end_time);
+		    nmxptool_str_time_to_filename(str_start_time);
+		    nmxptool_str_time_to_filename(str_end_time);
 
-		if(params.flag_writefile) {
-		    /* Open output file */
-		    if(nmxp_chan_cpy_sta_chan(channelList_subset->channel[i_chan].name, station_code, channel_code, network_code)) {
-			sprintf(filename, "%s.%s.%s_%s_%s.nmx",
-				NETCODE_OR_CURRENT_NETWORK,
-				station_code,
-				channel_code,
-				str_start_time,
-				str_end_time);
-		    } else {
-			sprintf(filename, "%s_%s_%s.nmx",
-				channelList_subset->channel[i_chan].name,
-				str_start_time,
-				str_end_time);
-		    }
+		    if(params.flag_writefile) {
+			/* Open output file */
+			if(nmxp_chan_cpy_sta_chan(channelList_subset->channel[i_chan].name, station_code, channel_code, network_code)) {
+			    sprintf(filename, "%s.%s.%s_%s_%s.nmx",
+				    NETCODE_OR_CURRENT_NETWORK,
+				    station_code,
+				    channel_code,
+				    str_start_time,
+				    str_end_time);
+			} else {
+			    sprintf(filename, "%s_%s_%s.nmx",
+				    channelList_subset->channel[i_chan].name,
+				    str_start_time,
+				    str_end_time);
+			}
 
-		    outfile = fopen(filename, "w");
-		    if(!outfile) {
-			nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_EXTRA, "Can not to open file %s!", filename);
-		    }
-		}
-
-#ifdef HAVE_LIBMSEED
-		if(params.flag_writeseed) {
-		    /* Open output Mini-SEED file */
-		    if(nmxp_chan_cpy_sta_chan(channelList_subset->channel[i_chan].name, station_code, channel_code, network_code)) {
-			sprintf(data_seed.filename_mseed, "%s.%s.%s_%s_%s.miniseed",
-				NETCODE_OR_CURRENT_NETWORK,
-				station_code,
-				channel_code,
-				str_start_time,
-				str_end_time);
-		    } else {
-			sprintf(filename, "%s_%s_%s.miniseed",
-				channelList_subset->channel[i_chan].name,
-				str_start_time,
-				str_end_time);
-		    }
-
-		    data_seed.outfile_mseed = fopen(data_seed.filename_mseed, "w");
-		    if(!data_seed.outfile_mseed) {
-			nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_EXTRA, "Can not to open file %s!", data_seed.filename_mseed);
-		    }
-		}
-#endif
-
-		if(params.flag_writefile  &&  outfile) {
-		    /* Compute SNCL line */
-
-		    /* Separate station_code_old_way and channel_code_old_way */
-		    if(nmxp_chan_cpy_sta_chan(channelList_subset->channel[i_chan].name, station_code, channel_code, network_code)) {
-			/* Write SNCL line */
-			fprintf(outfile, "%s.%s.%s.%s\n",
-				station_code,
-				NETCODE_OR_CURRENT_NETWORK,
-				channel_code,
-				(params.location)? params.location : "");
-		    }
-
-		}
-
-		/* DAP Step 6: Receive Data until receiving a Ready message */
-		ret = nmxp_receiveMessage(naqssock, &type, &buffer, &length, 0, &recv_errno);
-		nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CONNFLOW, "ret = %d, type = %d\n", ret, type);
-
-		while(ret == NMXP_SOCKET_OK   &&    type != NMXP_MSG_READY) {
-
-		    /* Process a packet and return value in NMXP_DATA_PROCESS structure */
-		    pd = nmxp_processCompressedData(buffer, length, channelList_subset, NETCODE_OR_CURRENT_NETWORK);
-		    nmxp_data_trim(pd, params.start_time, params.end_time, 0);
-
-		    /* Log contents of last packet */
-		    if(params.flag_logdata) {
-			nmxp_data_log(pd);
-		    }
-
-		    /* Set cur_chan */
-		    cur_chan = nmxp_chan_lookupKeyIndex(pd->key, channelList_subset);
-
-		    /* Management of gaps */
-		    if(!channelListSeq[cur_chan].significant && pd->nSamp > 0) {
-			channelListSeq[cur_chan].significant = 1;
-		    } else {
-			if(channelListSeq[cur_chan].significant && pd->nSamp > 0) {
-			    if(nmxptool_check_and_log_gap(pd->time, channelListSeq[cur_chan].last_time, GAP_TOLLERANCE, pd->station, pd->channel)) {
-				channelListSeq[cur_chan].x_1 = 0;
-				nmxp_data_to_str(str_pd_time, pd->time);
-				nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_EXTRA, "%s.%s x0 set to zero at %s!\n", pd->station, pd->channel, str_pd_time);
-			    }
+			outfile = fopen(filename, "w");
+			if(!outfile) {
+			    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_EXTRA, "Can not to open file %s!", filename);
 			}
 		    }
-		    if(channelListSeq[cur_chan].significant && pd->nSamp > 0) {
-			channelListSeq[cur_chan].last_time = pd->time + ((double) pd->nSamp / (double) pd->sampRate);
-		    }
 
 #ifdef HAVE_LIBMSEED
-		    /* Write Mini-SEED record */
 		    if(params.flag_writeseed) {
-			nmxptool_write_miniseed(pd);
-		    }
-#endif
+			/* Open output Mini-SEED file */
+			if(nmxp_chan_cpy_sta_chan(channelList_subset->channel[i_chan].name, station_code, channel_code, network_code)) {
+			    sprintf(data_seed.filename_mseed, "%s.%s.%s_%s_%s.miniseed",
+				    NETCODE_OR_CURRENT_NETWORK,
+				    station_code,
+				    channel_code,
+				    str_start_time,
+				    str_end_time);
+			} else {
+			    sprintf(filename, "%s_%s_%s.miniseed",
+				    channelList_subset->channel[i_chan].name,
+				    str_start_time,
+				    str_end_time);
+			}
 
-#ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
-		    /* Send data to SeedLink Server */
-		    if(params.flag_slink) {
-			nmxptool_send_raw_depoch(pd);
+			data_seed.outfile_mseed = fopen(data_seed.filename_mseed, "w");
+			if(!data_seed.outfile_mseed) {
+			    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_EXTRA, "Can not to open file %s!", data_seed.filename_mseed);
+			}
 		    }
 #endif
 
 		    if(params.flag_writefile  &&  outfile) {
-			/* Write buffer to the output file */
-			if(outfile && buffer && length > 0) {
-			    int32_t length_int = length;
-			    nmxp_data_swap_4b((int32_t *) &length_int);
-			    fwrite(&length_int, sizeof(length_int), 1, outfile);
-			    fwrite(buffer, length, 1, outfile);
+			/* Compute SNCL line */
+
+			/* Separate station_code_old_way and channel_code_old_way */
+			if(nmxp_chan_cpy_sta_chan(channelList_subset->channel[i_chan].name, station_code, channel_code, network_code)) {
+			    /* Write SNCL line */
+			    fprintf(outfile, "%s.%s.%s.%s\n",
+				    station_code,
+				    NETCODE_OR_CURRENT_NETWORK,
+				    channel_code,
+				    (params.location)? params.location : "");
 			}
+
 		    }
 
-		    /* Store x_1 */
-		    if(pd->nSamp > 0) {
-			channelListSeq[cur_chan].x_1 = pd->pDataPtr[pd->nSamp-1];
-		    }
-		    /* Free pd->buffer */
-		    if(pd->buffer) {
-			free(pd->buffer);
-			pd->buffer = NULL;
-		    }
-
-		    /* Receive Data */
+		    /* DAP Step 6: Receive Data until receiving a Ready message */
 		    ret = nmxp_receiveMessage(naqssock, &type, &buffer, &length, 0, &recv_errno);
 		    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CONNFLOW, "ret = %d, type = %d\n", ret, type);
-		}
 
-		if(params.flag_writefile  &&  outfile) {
-		    /* Close output file */
-		    fclose(outfile);
-		    outfile = NULL;
-		}
+		    while(ret == NMXP_SOCKET_OK   &&    type != NMXP_MSG_READY) {
+
+			/* Process a packet and return value in NMXP_DATA_PROCESS structure */
+			pd = nmxp_processCompressedData(buffer, length, channelList_subset, NETCODE_OR_CURRENT_NETWORK);
+			nmxp_data_trim(pd, params.start_time, params.end_time, 0);
+
+			/* Log contents of last packet */
+			if(params.flag_logdata) {
+			    nmxp_data_log(pd);
+			}
+
+			/* Set cur_chan */
+			cur_chan = nmxp_chan_lookupKeyIndex(pd->key, channelList_subset);
+
+			/* Management of gaps */
+			if(!channelListSeq[cur_chan].significant && pd->nSamp > 0) {
+			    channelListSeq[cur_chan].significant = 1;
+			} else {
+			    if(channelListSeq[cur_chan].significant && pd->nSamp > 0) {
+				if(nmxptool_check_and_log_gap(pd->time, channelListSeq[cur_chan].last_time, GAP_TOLLERANCE, pd->station, pd->channel)) {
+				    channelListSeq[cur_chan].x_1 = 0;
+				    nmxp_data_to_str(str_pd_time, pd->time);
+				    nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_EXTRA, "%s.%s x0 set to zero at %s!\n", pd->station, pd->channel, str_pd_time);
+				}
+			    }
+			}
+			if(channelListSeq[cur_chan].significant && pd->nSamp > 0) {
+			    channelListSeq[cur_chan].last_time = pd->time + ((double) pd->nSamp / (double) pd->sampRate);
+			}
 
 #ifdef HAVE_LIBMSEED
-		if(params.flag_writeseed  &&  data_seed.outfile_mseed) {
-		    /* Close output Mini-SEED file */
-		    fclose(data_seed.outfile_mseed);
-		    data_seed.outfile_mseed = NULL;
-		}
+			/* Write Mini-SEED record */
+			if(params.flag_writeseed) {
+			    nmxptool_write_miniseed(pd);
+			}
 #endif
 
-	    }
-	    i_chan++;
-	}
-	/* DAP Step 7: Repeat steps 5 and 6 for each data request */
+#ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
+			/* Send data to SeedLink Server */
+			if(params.flag_slink) {
+			    nmxptool_send_raw_depoch(pd);
+			}
+#endif
 
-	if(params.delay > 0) {
-	    time_to_sleep = (params.end_time - params.start_time) - (time(NULL) - (params.start_time + params.delay + span_interval));
-	    if(time_to_sleep >= 0) {
-		nmxp_sleep(time_to_sleep);
+			if(params.flag_writefile  &&  outfile) {
+			    /* Write buffer to the output file */
+			    if(outfile && buffer && length > 0) {
+				int32_t length_int = length;
+				nmxp_data_swap_4b((int32_t *) &length_int);
+				fwrite(&length_int, sizeof(length_int), 1, outfile);
+				fwrite(buffer, length, 1, outfile);
+			    }
+			}
+
+			/* Store x_1 */
+			if(pd->nSamp > 0) {
+			    channelListSeq[cur_chan].x_1 = pd->pDataPtr[pd->nSamp-1];
+			}
+			/* Free pd->buffer */
+			if(pd->buffer) {
+			    free(pd->buffer);
+			    pd->buffer = NULL;
+			}
+
+			/* Receive Data */
+			ret = nmxp_receiveMessage(naqssock, &type, &buffer, &length, 0, &recv_errno);
+			nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CONNFLOW, "ret = %d, type = %d\n", ret, type);
+		    }
+
+		    if(params.flag_writefile  &&  outfile) {
+			/* Close output file */
+			fclose(outfile);
+			outfile = NULL;
+		    }
+
+#ifdef HAVE_LIBMSEED
+		    if(params.flag_writeseed  &&  data_seed.outfile_mseed) {
+			/* Close output Mini-SEED file */
+			fclose(data_seed.outfile_mseed);
+			data_seed.outfile_mseed = NULL;
+		    }
+#endif
+
+		}
+		i_chan++;
+	    }
+	    /* DAP Step 7: Repeat steps 5 and 6 for each data request */
+
+	    if(params.delay > 0) {
+		time_to_sleep = (params.end_time - params.start_time) - (time(NULL) - (params.start_time + params.delay + span_interval));
+		if(time_to_sleep >= 0) {
+		    nmxp_sleep(time_to_sleep);
+		} else {
+		    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CONNFLOW, "time to sleep %d sec.\n", time_to_sleep);
+		    nmxp_sleep(3);
+		}
+		params.start_time = params.end_time;
+		params.end_time = params.start_time + span_interval;
 	    } else {
-		nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CONNFLOW, "time to sleep %d sec.\n", time_to_sleep);
-		nmxp_sleep(3);
+		exitdapcondition = 0;
 	    }
-	    params.start_time = params.end_time;
-	    params.end_time = params.start_time + span_interval;
-	} else {
-	    exitdapcondition = 0;
-	}
 
 
-    } /* END while(exitdapcondition) */
+	} /* END while(exitdapcondition) */
 
 	/* DAP Step 8: Send a Terminate message (optional) */
 	nmxp_sendTerminateSubscription(naqssock, NMXP_SHUTDOWN_NORMAL, "Bye!");
@@ -616,7 +616,7 @@ int main (int argc, char **argv) {
 #endif
 
 	skip_current_packet = 0;
-	
+
 	while(exitpdscondition) {
 
 	    /* Process Compressed or Decompressed Data */
@@ -647,7 +647,7 @@ int main (int argc, char **argv) {
 
 	    skip_current_packet = 0;
 	    if(pd &&
-		(params.statefile  ||  params.buffered_time)
+		    (params.statefile  ||  params.buffered_time)
 	      )	{
 		if(params.statefile && channelListSeq[cur_chan].after_start_time > 0.0) {
 		    cur_after_start_time = channelListSeq[cur_chan].after_start_time;
@@ -679,67 +679,67 @@ int main (int argc, char **argv) {
 
 	    if(!skip_current_packet) {
 
-	    /* Manage Raw Stream */
-	    if(params.stc == -1) {
+		/* Manage Raw Stream */
+		if(params.stc == -1) {
 
-		/* cur_char is computed only for pd != NULL */
-		if(pd) {
-		    nmxp_raw_stream_manage(&(channelListSeq[cur_chan].raw_stream_buffer), pd, p_func_pd, n_func_pd);
-		    channelListSeq[cur_chan].last_time_call_raw_stream = nmxp_data_gmtime_now();
-		}
-
-		/* Check timeout for other channels */
-		if(params.timeoutrecv > 0) {
-		    exitpdscondition = 1;
-		    to_cur_chan = 0;
-		    while(to_cur_chan < channelList_subset->number) {
-			timeout_for_channel = nmxp_data_gmtime_now() - channelListSeq[to_cur_chan].last_time_call_raw_stream;
-			if(channelListSeq[to_cur_chan].last_time_call_raw_stream != 0
-				&& timeout_for_channel >= params.timeoutrecv) {
-			    nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_DOD, "Timeout for channel %s (%d sec.)\n",
-				    channelList_subset->channel[to_cur_chan].name, timeout_for_channel);
-			    nmxp_raw_stream_manage(&(channelListSeq[to_cur_chan].raw_stream_buffer), NULL, p_func_pd, n_func_pd);
-			    channelListSeq[to_cur_chan].last_time_call_raw_stream = nmxp_data_gmtime_now();
-			}
-			to_cur_chan++;
+		    /* cur_char is computed only for pd != NULL */
+		    if(pd) {
+			nmxp_raw_stream_manage(&(channelListSeq[cur_chan].raw_stream_buffer), pd, p_func_pd, n_func_pd);
+			channelListSeq[cur_chan].last_time_call_raw_stream = nmxp_data_gmtime_now();
 		    }
-		}
 
-	    } else {
+		    /* Check timeout for other channels */
+		    if(params.timeoutrecv > 0) {
+			exitpdscondition = 1;
+			to_cur_chan = 0;
+			while(to_cur_chan < channelList_subset->number) {
+			    timeout_for_channel = nmxp_data_gmtime_now() - channelListSeq[to_cur_chan].last_time_call_raw_stream;
+			    if(channelListSeq[to_cur_chan].last_time_call_raw_stream != 0
+				    && timeout_for_channel >= params.timeoutrecv) {
+				nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_DOD, "Timeout for channel %s (%d sec.)\n",
+					channelList_subset->channel[to_cur_chan].name, timeout_for_channel);
+				nmxp_raw_stream_manage(&(channelListSeq[to_cur_chan].raw_stream_buffer), NULL, p_func_pd, n_func_pd);
+				channelListSeq[to_cur_chan].last_time_call_raw_stream = nmxp_data_gmtime_now();
+			    }
+			    to_cur_chan++;
+			}
+		    }
 
-	    if(pd) {
-		/* Management of gaps */
-		if(!channelListSeq[cur_chan].significant && pd->nSamp > 0) {
-		    channelListSeq[cur_chan].significant = 1;
 		} else {
-		    if(channelListSeq[cur_chan].significant && pd->nSamp > 0) {
-			if(nmxptool_check_and_log_gap(pd->time, channelListSeq[cur_chan].last_time, GAP_TOLLERANCE, pd->station, pd->channel)) {
-			    channelListSeq[cur_chan].x_1 = 0;
-			    nmxp_data_to_str(str_pd_time, pd->time);
-			    nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_EXTRA, "%s.%s x0 set to zero at %s!\n", pd->station, pd->channel, str_pd_time);
+
+		    if(pd) {
+			/* Management of gaps */
+			if(!channelListSeq[cur_chan].significant && pd->nSamp > 0) {
+			    channelListSeq[cur_chan].significant = 1;
+			} else {
+			    if(channelListSeq[cur_chan].significant && pd->nSamp > 0) {
+				if(nmxptool_check_and_log_gap(pd->time, channelListSeq[cur_chan].last_time, GAP_TOLLERANCE, pd->station, pd->channel)) {
+				    channelListSeq[cur_chan].x_1 = 0;
+				    nmxp_data_to_str(str_pd_time, pd->time);
+				    nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_EXTRA, "%s.%s x0 set to zero at %s!\n", pd->station, pd->channel, str_pd_time);
+				}
+			    }
 			}
-		    }
-		}
-		if(channelListSeq[cur_chan].significant && pd->nSamp > 0) {
-		    channelListSeq[cur_chan].last_time = pd->time + ((double) pd->nSamp / (double) pd->sampRate);
-		}
+			if(channelListSeq[cur_chan].significant && pd->nSamp > 0) {
+			    channelListSeq[cur_chan].last_time = pd->time + ((double) pd->nSamp / (double) pd->sampRate);
+			}
 
 
 #ifdef HAVE_LIBMSEED
-		/* Write Mini-SEED record */
-		if(params.flag_writeseed) {
-		    nmxptool_write_miniseed(pd);
-		}
+			/* Write Mini-SEED record */
+			if(params.flag_writeseed) {
+			    nmxptool_write_miniseed(pd);
+			}
 #endif
 
 #ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
-		/* Send data to SeedLink Server */
-		if(params.flag_slink) {
-		    nmxptool_send_raw_depoch(pd);
-		}
+			/* Send data to SeedLink Server */
+			if(params.flag_slink) {
+			    nmxptool_send_raw_depoch(pd);
+			}
 #endif
-	    }
-	    }
+		    }
+		}
 	    } /* End skip_current_packet condition */
 
 	    if(pd) {
@@ -771,7 +771,7 @@ int main (int argc, char **argv) {
 #endif
 
 	} /* End main PDS loop */
-	
+
 	/* Flush raw data stream for each channel */
 	flushing_raw_data_stream();
 	save_channel_states();
@@ -805,27 +805,27 @@ int main (int argc, char **argv) {
     }
 
 #ifdef HAVE_LIBMSEED
-	if(*msr_list_chan) {
-	    for(i_chan = 0; i_chan < channelList_subset->number; i_chan++) {
-		if(msr_list_chan[i_chan]) {
-		    msr_free(&(msr_list_chan[i_chan]));
-		}
+    if(*msr_list_chan) {
+	for(i_chan = 0; i_chan < channelList_subset->number; i_chan++) {
+	    if(msr_list_chan[i_chan]) {
+		msr_free(&(msr_list_chan[i_chan]));
 	    }
 	}
+    }
 #endif
 
-	for(i_chan = 0; i_chan < channelList_subset->number; i_chan++) {
-	    nmxp_raw_stream_free(&(channelListSeq[i_chan].raw_stream_buffer));
-	}
+    for(i_chan = 0; i_chan < channelList_subset->number; i_chan++) {
+	nmxp_raw_stream_free(&(channelListSeq[i_chan].raw_stream_buffer));
+    }
 
-	if(channelListSeq) {
-	    free(channelListSeq);
-	}
+    if(channelListSeq) {
+	free(channelListSeq);
+    }
 
-	/* This has to be tha last */
-	if(channelList_subset) {
-	    free(channelList_subset);
-	}
+    /* This has to be tha last */
+    if(channelList_subset) {
+	free(channelList_subset);
+    }
 
     return 0;
 } /* End MAIN */
@@ -899,7 +899,7 @@ void load_channel_states(NMXP_CHAN_LIST_NET *chan_list, NMXPTOOL_CHAN_SEQ *chan_
 		n_scanf = sscanf(line, "%s %s %s", s_chan, s_noraw_time_s, s_rawtime_s); 
 
 		s_noraw_time_f_calc = DEFAULT_BUFFERED_TIME;
-	       	s_rawtime_f_calc = DEFAULT_BUFFERED_TIME;
+		s_rawtime_f_calc = DEFAULT_BUFFERED_TIME;
 		if(n_scanf == 3) {
 		    if(nmxp_data_parse_date(s_noraw_time_s, &tmp_tmt) == -1) {
 			nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY, "Error parsing %s\n", s_noraw_time_s); 
@@ -965,9 +965,9 @@ static void clientShutdown(int sig) {
     }
 
 #ifdef HAVE_EARTHWORMOBJS
-	if(params.ew_configuration_file) {
-	    nmxptool_ew_detach();
-	}
+    if(params.ew_configuration_file) {
+	nmxptool_ew_detach();
+    }
 #endif
 
 #ifdef HAVE_LIBMSEED
