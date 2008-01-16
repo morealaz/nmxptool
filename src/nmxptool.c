@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.107 2008-01-16 10:14:59 mtheo Exp $
+ * $Id: nmxptool.c,v 1.108 2008-01-16 10:51:44 mtheo Exp $
  *
  */
 
@@ -831,19 +831,25 @@ int main (int argc, char **argv) {
 } /* End MAIN */
 
 
+#define MAX_LEN_FILENAME 4096
+#define NMXP_STR_STATE_EXT ".nmxpstate"
+
 static void save_channel_states() {
     int to_cur_chan;
     char last_time_str[30];
     char raw_last_sample_time_str[30];
     char state_line_str[1000];
     FILE *fstatefile = NULL;
+    char statefilefilename[MAX_LEN_FILENAME] = "";
 
     if(params.statefile) {
-	fstatefile = fopen(params.statefile, "w");
+	strncpy(statefilefilename, params.statefile, MAX_LEN_FILENAME);
+	strncat(statefilefilename, NMXP_STR_STATE_EXT, MAX_LEN_FILENAME);
+	fstatefile = fopen(statefilefilename, "w");
 	if(fstatefile == NULL) {
-	    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY, "Unable to write channel states into %s!\n", params.statefile);
+	    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY, "Unable to write channel states into %s!\n", statefilefilename);
 	} else {
-	    nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "Writing channel states into %s!\n", params.statefile);
+	    nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "Writing channel states into %s!\n", statefilefilename);
 	}
 
 	/* Save state for each channel */
@@ -876,6 +882,7 @@ static void save_channel_states() {
 
 void load_channel_states(NMXP_CHAN_LIST_NET *chan_list, NMXPTOOL_CHAN_SEQ *chan_list_seq) {
     FILE *fstatefile = NULL;
+    FILE *fstatefileINPUT = NULL;
 #define MAXSIZE_LINE 2048
     char line[MAXSIZE_LINE];
     char s_chan[128];
@@ -885,13 +892,39 @@ void load_channel_states(NMXP_CHAN_LIST_NET *chan_list, NMXPTOOL_CHAN_SEQ *chan_
     int cur_chan;
     int n_scanf;
     NMXP_TM_T tmp_tmt;
+    char statefilefilename[MAX_LEN_FILENAME] = "";
 
     if(params.statefile) {
-	fstatefile = fopen(params.statefile, "r");
+	strncpy(statefilefilename, params.statefile, MAX_LEN_FILENAME);
+	strncat(statefilefilename, NMXP_STR_STATE_EXT, MAX_LEN_FILENAME);
+	fstatefile = fopen(statefilefilename, "r");
 	if(fstatefile == NULL) {
-	    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY, "Unable to write channel states into %s!\n", params.statefile);
+	    fstatefileINPUT = fopen(params.statefile, "r");
+	    if(fstatefileINPUT == NULL) {
+		nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY, "Unable to read channel states from %s!\n", params.statefile);
+	    } else {
+		fstatefile = fopen(statefilefilename, "w");
+		if(fstatefile == NULL) {
+		    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY, "Unable to write channel states into %s!\n", statefilefilename);
+		} else {
+		    while(fgets(line, MAXSIZE_LINE, fstatefileINPUT) != NULL) {
+			fputs(line, fstatefile);
+		    }
+		    fclose(fstatefile);
+		}
+		fclose(fstatefileINPUT);
+	    }
+	}
+    }
+
+    if(params.statefile) {
+	strncpy(statefilefilename, params.statefile, MAX_LEN_FILENAME);
+	strncat(statefilefilename, NMXP_STR_STATE_EXT, MAX_LEN_FILENAME);
+	fstatefile = fopen(statefilefilename, "r");
+	if(fstatefile == NULL) {
+	    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY, "Unable to read channel states from %s!\n", statefilefilename);
 	} else {
-	    nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "Loading channel states from %s!\n", params.statefile);
+	    nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "Loading channel states from %s!\n", statefilefilename);
 	    while(fgets(line, MAXSIZE_LINE, fstatefile) != NULL) {
 		s_chan[0] = 0;
 		s_noraw_time_s[0] = 0;
@@ -932,6 +965,7 @@ void load_channel_states(NMXP_CHAN_LIST_NET *chan_list, NMXPTOOL_CHAN_SEQ *chan_
 	    fclose(fstatefile);
 	}
     }
+    errno = 0;
 }
 
 
