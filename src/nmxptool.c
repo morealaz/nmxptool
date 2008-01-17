@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.113 2008-01-17 12:45:09 mtheo Exp $
+ * $Id: nmxptool.c,v 1.114 2008-01-17 13:46:46 mtheo Exp $
  *
  */
 
@@ -368,7 +368,8 @@ int main (int argc, char **argv) {
 			if(params.end_time - params.start_time > params.max_data_to_retrieve) {
 			    nmxp_data_to_str(start_time_str, params.start_time);
 			    nmxp_data_to_str(default_start_time_str, params.end_time - params.max_data_to_retrieve);
-			    nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "start_time changed from %s to %s\n", start_time_str, default_start_time_str);
+			    nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "%s start_time changed from %s to %s\n",
+				    channelList_subset->channel[i_chan].name, start_time_str, default_start_time_str);
 			    params.start_time = params.end_time - params.max_data_to_retrieve;
 			}
 		    } else {
@@ -381,7 +382,8 @@ int main (int argc, char **argv) {
 		nmxp_data_to_str(start_time_str, params.start_time);
 		nmxp_data_to_str(end_time_str, params.end_time);
 		nmxp_data_to_str(default_start_time_str, default_start_time);
-		nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_EXTRA, "start_time = %s - end_time = %s - (default_start_time = %s)\n", start_time_str, end_time_str, default_start_time_str);
+		nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_EXTRA, "%s start_time = %s - end_time = %s - (default_start_time = %s)\n",
+			channelList_subset->channel[i_chan].name, start_time_str, end_time_str, default_start_time_str);
 
 		/* DAP Step 5: Send Data Request */
 		request_SOCKET_OK = nmxp_sendDataRequest(naqssock, channelList_subset->channel[i_chan].key, (int32_t) params.start_time, (int32_t) (params.end_time + 1.0));
