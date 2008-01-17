@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.112 2008-01-17 12:05:15 mtheo Exp $
+ * $Id: nmxptool.c,v 1.113 2008-01-17 12:45:09 mtheo Exp $
  *
  */
 
@@ -456,7 +456,7 @@ int main (int argc, char **argv) {
 
 		    /* DAP Step 6: Receive Data until receiving a Ready message */
 		    ret = nmxp_receiveMessage(naqssock, &type, &buffer, &length, 0, &recv_errno);
-		    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CONNFLOW, "ret = %d, type = %d\n", ret, type);
+		    /* nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CONNFLOW, "ret = %d, type = %d\n", ret, type); */
 
 		    while(ret == NMXP_SOCKET_OK   &&    type != NMXP_MSG_READY) {
 
@@ -524,7 +524,7 @@ int main (int argc, char **argv) {
 
 			/* Receive Data */
 			ret = nmxp_receiveMessage(naqssock, &type, &buffer, &length, 0, &recv_errno);
-			nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CONNFLOW, "ret = %d, type = %d\n", ret, type);
+			/* nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CONNFLOW, "ret = %d, type = %d\n", ret, type); */
 		    }
 
 		    if(params.flag_writefile  &&  outfile) {
