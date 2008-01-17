@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.111 2008-01-17 11:20:43 mtheo Exp $
+ * $Id: nmxptool.c,v 1.112 2008-01-17 12:05:15 mtheo Exp $
  *
  */
 
@@ -375,6 +375,8 @@ int main (int argc, char **argv) {
 			params.start_time = default_start_time;
 		    }
 		}
+
+		channelListSeq[i_chan].last_time = params.start_time;
 
 		nmxp_data_to_str(start_time_str, params.start_time);
 		nmxp_data_to_str(end_time_str, params.end_time);
