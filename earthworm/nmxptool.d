@@ -24,6 +24,8 @@ NmxpPortDAP          28002                 # Port number of the DataServer serve
 
 MaxTolerableLatency  120                   # Max tolerable latency for each channel. (Default 600 sec.)
                                            # In general, do not use with parameter TimeoutRecv.
+MaxDataToRetrieve    60                    # Max amount of data of the past to retrieve
+                                           # from the DataServer (default 60) [30..86400].
 
 #TimeoutRecv          30                    # Time-out in seconds for flushing queued data for each channel.
                                            # Useful for Data On Demand (i.e. channel HL) (Default 0. No time-out)
@@ -36,16 +38,16 @@ DefaultNetworkCode   IV                    # Default network code where in Chann
                                            # CHAN can contain '?', stands for any character.
                                            # Example:  *.HH?,N1.STA2.??Z,STA3.?H?
 
-# ChannelFile   /home/ew/naqs1a.list.txt  # State Channel file (It will be updated)
+ChannelFile   /home/ew/naqs1a.list.txt    # State Channel file (It will not be updated.)
                                           # Allow data continuity between program restarts
                                           # and within available data buffered on NaqsServer.
                                           # Do not use with Channel parameter below.
 
-Channel              ES.BOB.HH?
-Channel              MN.TIR.HH?
-Channel              MDI.HH?
-Channel              DOI.HH?
-Channel              SALO.HH?
-Channel              MONC.HH?
+# Channel              ES.BOB.HH?
+# Channel              MN.TIR.HH?
+# Channel              MDI.HH?
+# Channel              DOI.HH?
+# Channel              SALO.HH?
+# Channel              MONC.HH?
 # Channel              *.BHZ               # Channel selection
 

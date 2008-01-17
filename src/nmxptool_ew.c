@@ -395,6 +395,9 @@ int nmxptool_ew_proc_configfile (char * configfile, NMXPTOOL_PARAMS *params) {
 		params->max_tolerable_latency = k_int();
 	    }
 
+	    else if (k_its ("MaxDataToRetrieve")) {
+		params->max_data_to_retrieve = k_int();
+	    }
 
 	    else if (k_its ("DefaultNetworkCode")) {
 		if ( (str = k_str ()) ) {
