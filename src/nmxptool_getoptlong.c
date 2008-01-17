@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.54 2008-01-17 08:14:44 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.55 2008-01-17 11:00:45 mtheo Exp $
  *
  */
 
@@ -44,6 +44,7 @@ const NMXPTOOL_PARAMS NMXPTOOL_PARAMS_DEFAULT =
     NULL,
     NULL,
     DEFAULT_BUFFERED_TIME,
+    DEFAULT_MAX_TIME_TO_RETRIEVE,
     0,
     0,
     0,
@@ -111,8 +112,10 @@ Usage: %s -H hostname   --listchannels | --listchannelsnaqs\n\
              Print list of available channels on DataServer or NaqsServer.\n\
 \n\
        %s -H hostname -C channellist [...]\n\
-       %s -H hostname -F statefile [...]\n\
              Receive data from NaqsServer by PDS.\n\
+\n\
+       %s -H hostname -F statefile [...]\n\
+             Receive data from NaqsServer and/or DataServer.\n\
 \n\
        %s -H hostname -C channellist -s DATE -e DATE [...]\n\
        %s -H hostname -C channellist -s DATE -t SECs [...]\n\
@@ -122,7 +125,7 @@ Usage: %s -H hostname   --listchannels | --listchannelsnaqs\n\
 #ifdef HAVE_EARTHWORMOBJS
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
        %s nmxptool.d\n\
-             Run as earthworm module receiving data from NaqsServer by PDS.\n\
+             Run as earthworm module receiving data from NaqsServer and/or DataServer.\n\
 \n", PACKAGE_NAME);
 #endif
 
@@ -133,14 +136,20 @@ Arguments:\n\
                           NET  is optional and used only for output.\n\
                           STA  can be '*', stands for all stations.\n\
                           CHAN can contain '?', stands for any character.\n\
-                          Example:  *.HH?,N1.STA2.??Z,STA3.?H?\n");
-
-    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
-PDS arguments:\n\
+                          Example:  *.HH?,N1.STA2.??Z,STA3.?H?\n\
   -F, --statefile=FILE    Load/Save time of last sample of each channel.\n\
                           Allow data continuity between program restarts\n\
                           and within data buffered by the NaqsServer.\n\
                           Enable option -b. Do not use with -C.\n\
+  -M, --maxtimeretr=SECs  Max time to retrieve (default %d) [%d..%d].\n\
+\n",
+	    DEFAULT_MAX_TIME_TO_RETRIEVE,
+	    DEFAULT_MAX_TIME_TO_RETRIEVE_MINIMUM,
+	    DEFAULT_MAX_TIME_TO_RETRIEVE_MAXIMUM
+);
+
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
+PDS arguments:\n\
   -S, --stc=SECs          Short-term-completion (default %d).\n\
                           -1 is for Raw Stream, no short-term completion.\n\
                            0 chronological order without waiting\n\
@@ -316,44 +325,45 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 	/* {"quiet",          no_argument,       &(params->flag_verbose), 0}, */
 	/* These options don't set a flag.
 	 *                   We distinguish them by their indices. */
-	{"hostname",     required_argument, 0, 'H'},
-	{"portpds",      required_argument, 0, 'P'},
-	{"portdap",      required_argument, 0, 'D'},
-	{"channels",     required_argument, 0, 'C'},
-	{"network",      required_argument, 0, 'N'},
-	{"location",     required_argument, 0, 'n'},
-	{"stc",          required_argument, 0, 'S'},
-	{"rate",         required_argument, 0, 'R'},
-	{"start_time",   required_argument, 0, 's'},
-	{"end_time",     required_argument, 0, 'e'},
-	{"interval",     required_argument, 0, 't'},
-	{"delay",        required_argument, 0, 'd'},
-	{"username",     required_argument, 0, 'u'},
-	{"password",     required_argument, 0, 'p'},
-	{"maxlatency",   required_argument, 0, 'M'},
-	{"timeoutrecv",  required_argument, 0, 'T'},
-	{"verbose",      required_argument, 0, 'v'},
-	{"bufferedt",    required_argument, 0, 'B'},
+	{"hostname",     required_argument, NULL, 'H'},
+	{"portpds",      required_argument, NULL, 'P'},
+	{"portdap",      required_argument, NULL, 'D'},
+	{"channels",     required_argument, NULL, 'C'},
+	{"network",      required_argument, NULL, 'N'},
+	{"location",     required_argument, NULL, 'n'},
+	{"stc",          required_argument, NULL, 'S'},
+	{"rate",         required_argument, NULL, 'R'},
+	{"start_time",   required_argument, NULL, 's'},
+	{"end_time",     required_argument, NULL, 'e'},
+	{"interval",     required_argument, NULL, 't'},
+	{"delay",        required_argument, NULL, 'd'},
+	{"username",     required_argument, NULL, 'u'},
+	{"password",     required_argument, NULL, 'p'},
+	{"maxlatency",   required_argument, NULL, 'M'},
+	{"timeoutrecv",  required_argument, NULL, 'T'},
+	{"verbose",      required_argument, NULL, 'v'},
+	{"bufferedt",    required_argument, NULL, 'B'},
+	{"maxtimeretr",  required_argument, NULL, 'A'},
 	/* Following are flags */
-	{"logdata",      no_argument,       0, 'g'},
-	{"buffered",     no_argument,       0, 'b'},
-	{"listchannels", no_argument,       0, 'l'},
-	{"listchannelsnaqs", no_argument,   0, 'L'},
-	{"channelinfo",  no_argument,       0, 'i'},
+	{"logdata",      no_argument,       NULL, 'g'},
+	{"buffered",     no_argument,       NULL, 'b'},
+	{"listchannels", no_argument,       NULL, 'l'},
+	{"listchannelsnaqs", no_argument,   NULL, 'L'},
+	{"channelinfo",  no_argument,       NULL, 'i'},
 #ifdef HAVE_LIBMSEED
-	{"writeseed",    no_argument,       0, 'm'},
+	{"writeseed",    no_argument,       NULL, 'm'},
 #endif
-	{"writefile",    no_argument,       0, 'w'},
+	{"writefile",    no_argument,       NULL, 'w'},
 #ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
-	{"slink",        required_argument, 0, 'k'},
+	{"slink",        required_argument, NULL, 'k'},
 #endif
-	{"statefile",    required_argument, 0, 'F'},
-	{"help",         no_argument,       0, 'h'},
-	{"version",      no_argument,       0, 'V'},
+	{"statefile",    required_argument, NULL, 'F'},
+	{"help",         no_argument,       NULL, 'h'},
+	{"version",      no_argument,       NULL, 'V'},
 	{0, 0, 0, 0}
     };
 
-    char optstr[100] = "H:P:D:C:N:n:S:R:s:e:t:d:u:p:M:T:v:B:F:gblLiwhV";
+    char optstr[300] = "H:P:D:C:N:n:S:R:s:e:t:d:u:p:M:T:v:B:A:F:gblLiwhV";
 
 #ifdef HAVE_LIBMSEED
     strcat(optstr, "m");
@@ -511,6 +521,12 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 		    }
 		    break;
 
+		case 'A':
+		    if(optarg) {
+			params->max_time_to_retrieve = atoi(optarg);
+		    }
+		    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "Max_time_to_retrieve %d\n", params->max_time_to_retrieve);
+		    break;
 
 #ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
 		case 'k':
@@ -757,6 +773,12 @@ int nmxptool_check_params(NMXPTOOL_PARAMS *params) {
     } else if(params->flag_buffered != 0 && params->start_time != 0.0   &&   params->end_time != 0.0) {
 	ret = -1;
 	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY, "<buffered> can not be used with options <start_time> and <end_time>.\n");
+    } else if( (params->max_time_to_retrieve < DEFAULT_MAX_TIME_TO_RETRIEVE_MINIMUM  ||
+		params->max_time_to_retrieve > DEFAULT_MAX_TIME_TO_RETRIEVE_MAXIMUM)) {
+	ret = -1;
+	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "<maxtimeretr> has to be within [%d..%d].\n",
+		DEFAULT_MAX_TIME_TO_RETRIEVE_MINIMUM,
+		DEFAULT_MAX_TIME_TO_RETRIEVE_MAXIMUM);
     } else if( params->stc == -1
 	    && (params->max_tolerable_latency < DEFAULT_MAX_TOLERABLE_LATENCY_MINIMUM  ||
 		params->max_tolerable_latency > DEFAULT_MAX_TOLERABLE_LATENCY_MAXIMUM)) {

@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.109 2008-01-17 08:15:00 mtheo Exp $
+ * $Id: nmxptool.c,v 1.110 2008-01-17 11:00:33 mtheo Exp $
  *
  */
 
@@ -132,6 +132,7 @@ int main (int argc, char **argv) {
 
     int times_flow = 0;
     double default_start_time = 0.0;
+    char start_time_str[30], end_time_str[30], default_start_time_str[30];
 
     NMXP_DATA_PROCESS *pd;
 
@@ -364,12 +365,17 @@ int main (int argc, char **argv) {
 		if(params.statefile) {
 		    if(channelListSeq[i_chan].after_start_time > 0) {
 			params.start_time = channelListSeq[i_chan].after_start_time;
+			if(params.end_time - params.start_time > params.max_time_to_retrieve) {
+			    nmxp_data_to_str(start_time_str, params.start_time);
+			    nmxp_data_to_str(default_start_time_str, params.end_time - params.max_time_to_retrieve);
+			    nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "start_time changed from %s to %s\n", start_time_str, default_start_time_str);
+			    params.start_time = params.end_time - params.max_time_to_retrieve;
+			}
 		    } else {
 			params.start_time = default_start_time;
 		    }
 		}
 
-		char start_time_str[30], end_time_str[30], default_start_time_str[30];
 		nmxp_data_to_str(start_time_str, params.start_time);
 		nmxp_data_to_str(end_time_str, params.end_time);
 		nmxp_data_to_str(default_start_time_str, default_start_time);
