@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.53 2008-01-09 17:16:30 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.54 2008-01-17 08:14:44 mtheo Exp $
  *
  */
 
@@ -31,7 +31,7 @@ const NMXPTOOL_PARAMS NMXPTOOL_PARAMS_DEFAULT =
     NULL,
     0.0,
     0.0,
-    DEFAULT_INTERVAL,
+    DEFAULT_INTERVAL_NO_VALUE,
     NULL,
     NULL,
     DEFAULT_STC,
@@ -700,11 +700,6 @@ void nmxptool_log_params(NMXPTOOL_PARAMS *params) {
 int nmxptool_check_params(NMXPTOOL_PARAMS *params) {
     int ret = 0;
 
-    if(params->start_time != 0.0 && params->interval != 0   &&   params->end_time == 0.0) {
-	params->end_time = params->start_time + params->interval;
-	params->interval = 0;
-    }
-
     if(params->ew_configuration_file != NULL) {
 	/* Do nothing */
     } else if(params->hostname == NULL) {
@@ -726,12 +721,9 @@ int nmxptool_check_params(NMXPTOOL_PARAMS *params) {
     } else if(params->start_time == 0.0 &&  params->end_time != 0.0) {
 	ret = -1;
 	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "<end_time> is required when declaring <start_time>!\n");
-    } else if(params->start_time != 0.0 &&  params->end_time == 0.0) {
+    } else if(params->start_time != 0.0  &&  params->end_time != 0.0  && params->interval != DEFAULT_INTERVAL_NO_VALUE) {
 	ret = -1;
-	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "<start_time> has to be used with <end_time> or <interval>!\n");
-    } else if(params->start_time != 0.0 && params->interval != 0   &&   params->end_time != 0.0) {
-	ret = -1;
-	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "<end_time> and <interval> can not be used together!\n");
+	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "<start_time> has to be used with either <end_time> or <interval>!\n");
     } else if(params->start_time != 0.0   &&   params->end_time != 0.0
 	    && params->start_time >= params->end_time) {
 	ret = -1;
@@ -764,7 +756,7 @@ int nmxptool_check_params(NMXPTOOL_PARAMS *params) {
 	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "<rate> can not be used with options <start_time> and <end_time>.\n");
     } else if(params->flag_buffered != 0 && params->start_time != 0.0   &&   params->end_time != 0.0) {
 	ret = -1;
-	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "<buffered> can not be used with options <start_time> and <end_time>.\n");
+	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY, "<buffered> can not be used with options <start_time> and <end_time>.\n");
     } else if( params->stc == -1
 	    && (params->max_tolerable_latency < DEFAULT_MAX_TOLERABLE_LATENCY_MINIMUM  ||
 		params->max_tolerable_latency > DEFAULT_MAX_TOLERABLE_LATENCY_MAXIMUM)) {

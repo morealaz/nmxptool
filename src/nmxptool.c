@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.108 2008-01-16 10:51:44 mtheo Exp $
+ * $Id: nmxptool.c,v 1.109 2008-01-17 08:15:00 mtheo Exp $
  *
  */
 
@@ -41,6 +41,8 @@
 #ifdef HAVE___SRC_SEEDLINK_PLUGIN_H
 #include "seedlink_plugin.h"
 #endif
+
+#define DAP_CONDITION(params_struct) ( params_struct.start_time != 0.0 || params_struct.delay > 0 )
 
 #define CURRENT_NETWORK ( (params.network)? params.network : DEFAULT_NETWORK )
 #define NETCODE_OR_CURRENT_NETWORK ( (network_code[0] != 0)? network_code : CURRENT_NETWORK )
@@ -128,6 +130,8 @@ int main (int argc, char **argv) {
     double cur_after_start_time = DEFAULT_BUFFERED_TIME;
     int skip_current_packet = 0;
 
+    int times_flow = 0;
+    double default_start_time = 0.0;
 
     NMXP_DATA_PROCESS *pd;
 
@@ -207,7 +211,7 @@ int main (int argc, char **argv) {
     nmxptool_log_params(&params);
 
     /* Get list of available channels and get a subset list of params.channels */
-    if(params.start_time != 0.0  &&  params.end_time != 0.0) {
+    if( DAP_CONDITION(params) ) {
 	/* From DataServer */
 	nmxp_getMetaChannelList(params.hostname, params.portnumberdap, NMXP_DATA_TIMESERIES, params.flag_request_channelinfo, params.datas_username, params.datas_password, &channelList);
     } else {
@@ -281,12 +285,37 @@ int main (int argc, char **argv) {
 
     nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CONNFLOW, "Starting comunication.\n");
 
-    /* TODO condition starting DAP or PDS */
-    if( (params.start_time != 0.0   &&   params.end_time != 0.0)
-	    || params.delay > 0
-      ) {
+    times_flow = 0;
 
-	if(params.delay > 0) {
+    while(times_flow < 2) {
+
+	if(times_flow == 0) {
+	    if(params.statefile) {
+		params.interval = DEFAULT_INTERVAL_INFINITE;
+	    }
+	} else if(times_flow == 1) {
+	    params.start_time = 0.0;
+	    params.end_time = 0.0;
+	    params.interval = DEFAULT_INTERVAL_NO_VALUE;
+
+	    if(params.statefile) {
+		load_channel_states(channelList_subset, channelListSeq);
+	    }
+
+	}
+
+    /* TODO condition starting DAP or PDS */
+    if( DAP_CONDITION(params) || (times_flow == 0  &&  params.statefile  && params.interval == DEFAULT_INTERVAL_INFINITE) ) {
+
+	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CONNFLOW, "Begin DAP Flow.\n");
+
+	if(params.interval > 0  ||  params.interval == DEFAULT_INTERVAL_INFINITE) {
+	    if(params.interval > 0) {
+		params.end_time = params.start_time + params.interval;
+	    } else {
+		params.end_time = nmxp_data_gmtime_now();
+	    }
+	} else if(params.delay > 0) {
 	    params.start_time = ((double) (time(NULL) - params.delay - span_interval) / 10.0) * 10.0;
 	    params.end_time = params.start_time + span_interval;
 	}
@@ -322,15 +351,29 @@ int main (int argc, char **argv) {
 
 	exitdapcondition = 1;
 
-	while(exitdapcondition) {
+	default_start_time = (params.start_time > 0.0)? params.start_time : nmxp_data_gmtime_now() - 10.0;
 
-	    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_EXTRA, "start_time = %.4f - end_time = %.4f\n", params.start_time, params.end_time);
+	while(exitdapcondition) {
 
 	    /* Start loop for sending requests */
 	    i_chan=0;
 	    request_SOCKET_OK = NMXP_SOCKET_OK;
 
 	    while(request_SOCKET_OK == NMXP_SOCKET_OK  &&  i_chan < channelList_subset->number) {
+
+		if(params.statefile) {
+		    if(channelListSeq[i_chan].after_start_time > 0) {
+			params.start_time = channelListSeq[i_chan].after_start_time;
+		    } else {
+			params.start_time = default_start_time;
+		    }
+		}
+
+		char start_time_str[30], end_time_str[30], default_start_time_str[30];
+		nmxp_data_to_str(start_time_str, params.start_time);
+		nmxp_data_to_str(end_time_str, params.end_time);
+		nmxp_data_to_str(default_start_time_str, default_start_time);
+		nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_EXTRA, "start_time = %s - end_time = %s - (default_start_time = %s)\n", start_time_str, end_time_str, default_start_time_str);
 
 		/* DAP Step 5: Send Data Request */
 		request_SOCKET_OK = nmxp_sendDataRequest(naqssock, channelList_subset->channel[i_chan].key, (int32_t) params.start_time, (int32_t) (params.end_time + 1.0));
@@ -522,9 +565,13 @@ int main (int argc, char **argv) {
 	/* End subscription protocol "DATA ACCESS PROTOCOL" version 1.0 */
 	/* ************************************************************ */
 
+	save_channel_states();
 
+	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CONNFLOW, "End DAP Flow.\n");
 
     } else {
+
+	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CONNFLOW, "Begin PDS Flow.\n");
 
 	if(params.stc == -1) {
 
@@ -774,6 +821,7 @@ int main (int argc, char **argv) {
 
 	/* Flush raw data stream for each channel */
 	flushing_raw_data_stream();
+
 	save_channel_states();
 
 #ifdef HAVE_EARTHWORMOBJS
@@ -800,7 +848,15 @@ int main (int argc, char **argv) {
 	/* End subscription protocol "PRIVATE DATA STREAM" version 1.4 */
 	/* *********************************************************** */
 
+	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CONNFLOW, "End PDS Flow.\n");
 
+    }
+
+    if(params.interval == DEFAULT_INTERVAL_INFINITE) {
+	times_flow++;
+    } else {
+	times_flow = 100;
+    }
 
     }
 

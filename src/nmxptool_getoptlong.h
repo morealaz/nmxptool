@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.h,v 1.52 2008-01-14 08:06:42 mtheo Exp $
+ * $Id: nmxptool_getoptlong.h,v 1.53 2008-01-17 08:14:44 mtheo Exp $
  *
  */
 
@@ -50,8 +50,8 @@
 
 #define DEFAULT_BUFFERED_TIME			-1.0
 
-#define DEFAULT_INTERVAL_INFINITE		-1
-#define DEFAULT_INTERVAL			0
+#define DEFAULT_INTERVAL_NO_VALUE		-1
+#define DEFAULT_INTERVAL_INFINITE		0
 
 /*! \brief Struct that stores information about parameter of the program */
 typedef struct {
