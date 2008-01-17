@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_chan.c,v 1.27 2007-12-11 05:08:11 mtheo Exp $
+ * $Id: nmxp_chan.c,v 1.28 2008-01-17 08:14:04 mtheo Exp $
  *
  */
 
@@ -423,7 +423,7 @@ NMXP_META_CHAN_LIST *nmxp_meta_chan_add(NMXP_META_CHAN_LIST **chan_list, int32_t
     NMXP_META_CHAN_LIST *iter = NULL;
     NMXP_META_CHAN_LIST *new_item = NULL;
 
-    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CHANNEL, "nmxp_meta_chan_add(%d, %d, %s, %d, %d, %s, %d)\n", *chan_list, key, name, start_time, end_time, network, sorttype);
+    /* nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CHANNEL, "nmxp_meta_chan_add(%d, %d, %s, %d, %d, %s, %d)\n", *chan_list, key, name, start_time, end_time, network, sorttype); */
 
     if(sorttype != NMXP_META_SORT_KEY  &&  sorttype != NMXP_META_SORT_NAME) {
 	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANNEL, "nmxp_meta_chan_add() can only accept NMXP_META_SORT_KEY or NMXP_META_SORT_NAME. Fixed NMXP_META_SORT_KEY!\n");
@@ -469,7 +469,7 @@ NMXP_META_CHAN_LIST *nmxp_meta_chan_search_key(NMXP_META_CHAN_LIST *chan_list, i
     NMXP_META_CHAN_LIST *iter = chan_list;
     int found = 0;
 
-    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CHANNEL, "nmxp_meta_chan_search_key()\n");
+    /* nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CHANNEL, "nmxp_meta_chan_search_key()\n"); */
 
     while(iter != NULL  &&  !found) {
 	if(iter->key == key) {
@@ -497,7 +497,7 @@ NMXP_META_CHAN_LIST *nmxp_meta_chan_set_name(NMXP_META_CHAN_LIST *chan_list, int
 NMXP_META_CHAN_LIST *nmxp_meta_chan_set_times(NMXP_META_CHAN_LIST *chan_list, int32_t key, int32_t start_time, int32_t end_time) {
     NMXP_META_CHAN_LIST *ret = NULL;
 
-    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CHANNEL, "nmxp_meta_chan_set_times()\n");
+    /* nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CHANNEL, "nmxp_meta_chan_set_times()\n"); */
 
     if( (ret = nmxp_meta_chan_search_key(chan_list, key)) ) {
 	ret->start_time = start_time;
