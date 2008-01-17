@@ -50,10 +50,11 @@ Nanometrics server and connection parameters:<br>
 <a href="#NmxpPortDAP">NmxpPortDAP</a>		optional<br>
 <a href="#ForceTraceBuf1">ForceTraceBuf1</a>		optional<br>
 <a href="#MaxTolerableLatency">MaxTolerableLatency</a>	optional<br>
+<a href="#MaxDataToRetrieve">DataToRetrieve</a>		optional<br>
 <a href="#TimeoutRecv">TimeoutRecv</a>		optional<br>
 <a href="#DefaultNetworkCode">DefaultNetworkCode</a>	optional<br>
-<a href="#ChannelFile">ChannelFile</a>		required	or Channel<br>
-<a href="#Channel">Channel</a>			required	or ChannelFile<br>
+<a href="#ChannelFile">ChannelFile</a>		required	Xor Channel<br>
+<a href="#Channel">Channel</a>			required	Xor ChannelFile<br>
 <br>
 
 Output control:<br>
@@ -81,6 +82,7 @@ The <font color="red">streamkey</font> is composed of a network, station and cha
 separated by period. network is optional and it is used only for output.
 Station code can be &#42; that stands for all stations.
 Within channel code can appear character &#63; that stands for any characters.
+DO NOT USE WITH <a href="#ChannelFile">ChannelFile</a>!
   <pre><br>Default:  none<br>Example:  Channel  ES.BOB.HH?<br>          Channel  *.HHZ<br>          Channel  MN.TIR.HH?<br>          Channel  SALO.BH?</pre>
 </blockquote>
 
@@ -89,10 +91,10 @@ Within channel code can appear character &#63; that stands for any characters.
 <blockquote><!-- command description goes here --> Specifies one or more streams
 of data to be requested from the NmxpHost.
 The <font color="red">streamkey</font> is the same for the <a href="#Channel">Channel</a>.
-Allow data continuity between program restarts and within data buffered by the NaqsServer.
-First time, the file is created by the user. nmxptool will update date and time of last sample received for each channel. DO NOT USE WITH <a href="#Channel">Channel</a>!
+Allow data continuity between program restarts, within time defined by <a href="#MaxDataToRetrieve">MaxDataToRetrieve</a> and data buffered by the DataServer and NaqsServer.
+This file is created by the user, nmxptool will update date and time of last sample received for each channel into the file &quot;<font color="red">channel_state_file</font>.nmxpstate&quot;. DO NOT USE WITH <a href="#Channel">Channel</a>!
   <pre><br>Default:  none<br>Example:  ChannelFile  /home/ew/list_channels_naqs1.txt</br>
-</br>Example of file created by the user the first time:<br />ES.BOB.HH?<br/>MN.TIR.HHZ
+</br>Example of file created by the user:<br />ES.BOB.HH?<br/>MN.TIR.HHZ
 </br>Example of file updated by nmxptool:<br />ES.BOB.HHE 1970.001,00:00:00.0000 2007.353,13:30:36.8700<br />ES.BOB.HHN 1970.001,00:00:00.0000 2007.353,13:30:37.4800<br />ES.BOB.HHZ 1970.001,00:00:00.0000 2007.353,13:30:37.2799<br/>MN.TIR.HHZ 1970.001,00:00:00.0000 2007.353,13:30:34.5199
 </pre>
 </blockquote>
@@ -140,6 +142,12 @@ in the EW_LOG directory (environment variable).&nbsp; If <font
  color="red">switch</font> is 2 the log file is written but output to
 stdout and stderr is suppressed.
   <pre><!-- Default and example go here   --><br>Default:  none<br>Example:  LogFile   1<br>  </pre>
+</blockquote>
+
+<hr><!-- command name as anchor inside quotes -->
+<pre><a name="MaxDataToRetrieve"><b>MaxDataToRetrieve <font color="red">seconds</font>                                  ReadConfig              nmxptool parameters<br></b><!-- command args ... -->           <br></a></pre>
+<blockquote><!-- command description goes here --> Max amount of data of the past to retrieve from the DataServer when program restarts. Range is [30..86400].
+  <pre><!-- Default and example go here   --><br>Default:  60<br>Example:  MaxDataToRetrieve  3600</pre>
 </blockquote>
 
 <hr><!-- command name as anchor inside quotes -->
@@ -231,7 +239,7 @@ memory region.
 MyModuleId           MOD_NMXPTOOL
 RingName             WAVE_RING             # Transport ring to write data to.
 
-HeartBeatInterval    30                    # Heartbeat interval, in seconds.
+HeartBeatInterval    15                    # Heartbeat interval, in seconds.
 LogFile              1                     # 1 -> Keep log, 0 -> no log file
                                            # 2 -> write to module log but not stderr/stdout
 Verbosity            16                    # Set level of verbosity. Verbosity is a bitmap:
@@ -252,9 +260,11 @@ NmxpPortDAP          28002                 # Port number of the DataServer serve
 MaxTolerableLatency  120                   # Max tolerable latency for each channel. (Default 600 sec.)
                                            # In general, do not use with parameter TimeoutRecv.
 
+MaxDataToRetrieve    60                    # Max amount of data of the past to retrieve from the
+                                           # DataServer when tool restarts (default 60) [30..86400].
+
 #TimeoutRecv          30                    # Time-out in seconds for flushing queued data for each channel.
                                            # Useful for Data On Demand (i.e. channel HL) (Default 0. No time-out)
-
 
 DefaultNetworkCode   IV                    # Default network code where in Channel is not declared
 
@@ -263,13 +273,20 @@ DefaultNetworkCode   IV                    # Default network code where in Chann
                                            # STA  can be '*', stands for all stations.
                                            # CHAN can contain '?', stands for any character.
                                            # Example:  *.HH?,N1.STA2.??Z,STA3.?H?
-Channel              ES.BOB.HH?
-Channel              MN.TIR.HH?
-Channel              MDI.HH?
-Channel              DOI.HH?
-Channel              SALO.HH?
-Channel              MONC.HH?
+
+ChannelFile   /home/ew/naqs1a.list.txt    # State Channel file (It will not be updated.)
+                                          # Allow data continuity between program restarts
+                                          # and within available data buffered on NaqsServer.
+                                          # Do not use with Channel parameter below.
+
+# Channel              ES.BOB.HH?
+# Channel              MN.TIR.HH?
+# Channel              MDI.HH?
+# Channel              DOI.HH?
+# Channel              SALO.HH?
+# Channel              MONC.HH?
 # Channel              *.BHZ               # Channel selection
+
 </pre>
 
 <hr>
