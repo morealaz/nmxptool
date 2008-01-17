@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_data.c,v 1.47 2008-01-10 10:59:11 mtheo Exp $
+ * $Id: nmxp_data.c,v 1.48 2008-01-17 08:13:51 mtheo Exp $
  *
  */
 
@@ -180,7 +180,7 @@ int nmxp_data_to_str(char *out_str, double time_d) {
 	    tm_start_time->tm_hour,
 	    tm_start_time->tm_min,
 	    tm_start_time->tm_sec,
-	    (int) (  ((time_d - (double) time_t_start_time)) * 10000.0 )
+	    (time_t_start_time == 0)? 0 : (int) (  ((time_d - (double) time_t_start_time)) * 10000.0 )
 	   );
     
     return 0;
