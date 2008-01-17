@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.57 2008-01-17 13:05:49 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.58 2008-01-17 13:10:44 mtheo Exp $
  *
  */
 
@@ -685,9 +685,11 @@ void nmxptool_log_params(NMXPTOOL_PARAMS *params) {
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_EXTRA, "\
     char *ew_configuration_file: %s\n\
     char *statefile: %s\n\
+    int32_t max_data_to_retrieve: %d\n\
 ",
     RETURN_STR(params->ew_configuration_file),
-    RETURN_STR(params->statefile)
+    RETURN_STR(params->statefile),
+    params->max_data_to_retrieve
 );
 
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_EXTRA, "\
