@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.55 2008-01-17 11:00:45 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.56 2008-01-17 11:20:36 mtheo Exp $
  *
  */
 
@@ -141,7 +141,8 @@ Arguments:\n\
                           Allow data continuity between program restarts\n\
                           and within data buffered by the NaqsServer.\n\
                           Enable option -b. Do not use with -C.\n\
-  -M, --maxtimeretr=SECs  Max time to retrieve (default %d) [%d..%d].\n\
+  -M, --maxdataretr=SECs  Max amount of data of the past to retrieve\n\
+                          from the DataServer (default %d) [%d..%d].\n\
 \n",
 	    DEFAULT_MAX_TIME_TO_RETRIEVE,
 	    DEFAULT_MAX_TIME_TO_RETRIEVE_MINIMUM,
@@ -192,7 +193,8 @@ DAP Arguments:\n\
                           where:\n\
                               <date> = yyyy/mm/dd | yyy.jjj\n\
                               <time> = hh:mm:ss | hh:mm:ss.dddd | hh:mm\n\
-  -t, --interval=SECs     Time interval from start_time.\n\
+  -t, --interval=SECs     Time interval from start_time (greater than zero).\n\
+                          If equal to zero, tool will switch connection on PDS.\n\
   -d, --delay=SECs        Receive continuosly data with delay [%d..%d].\n\
   -u, --username=USER     DataServer username.\n\
   -p, --password=PASS     DataServer password.\n\
@@ -343,7 +345,7 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 	{"timeoutrecv",  required_argument, NULL, 'T'},
 	{"verbose",      required_argument, NULL, 'v'},
 	{"bufferedt",    required_argument, NULL, 'B'},
-	{"maxtimeretr",  required_argument, NULL, 'A'},
+	{"maxdataretr",  required_argument, NULL, 'A'},
 	/* Following are flags */
 	{"logdata",      no_argument,       NULL, 'g'},
 	{"buffered",     no_argument,       NULL, 'b'},
@@ -523,9 +525,9 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 
 		case 'A':
 		    if(optarg) {
-			params->max_time_to_retrieve = atoi(optarg);
+			params->max_data_to_retrieve = atoi(optarg);
 		    }
-		    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "Max_time_to_retrieve %d\n", params->max_time_to_retrieve);
+		    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "Max_time_to_retrieve %d\n", params->max_data_to_retrieve);
 		    break;
 
 #ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
@@ -773,10 +775,10 @@ int nmxptool_check_params(NMXPTOOL_PARAMS *params) {
     } else if(params->flag_buffered != 0 && params->start_time != 0.0   &&   params->end_time != 0.0) {
 	ret = -1;
 	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY, "<buffered> can not be used with options <start_time> and <end_time>.\n");
-    } else if( (params->max_time_to_retrieve < DEFAULT_MAX_TIME_TO_RETRIEVE_MINIMUM  ||
-		params->max_time_to_retrieve > DEFAULT_MAX_TIME_TO_RETRIEVE_MAXIMUM)) {
+    } else if( (params->max_data_to_retrieve < DEFAULT_MAX_TIME_TO_RETRIEVE_MINIMUM  ||
+		params->max_data_to_retrieve > DEFAULT_MAX_TIME_TO_RETRIEVE_MAXIMUM)) {
 	ret = -1;
-	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "<maxtimeretr> has to be within [%d..%d].\n",
+	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "<maxdataretr> has to be within [%d..%d].\n",
 		DEFAULT_MAX_TIME_TO_RETRIEVE_MINIMUM,
 		DEFAULT_MAX_TIME_TO_RETRIEVE_MAXIMUM);
     } else if( params->stc == -1
