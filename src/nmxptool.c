@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.119 2008-01-18 08:13:15 mtheo Exp $
+ * $Id: nmxptool.c,v 1.120 2008-01-18 08:20:07 mtheo Exp $
  *
  */
 
@@ -359,7 +359,7 @@ int main (int argc, char **argv) {
 
 	exitdapcondition = 1;
 
-	default_start_time = (params.start_time > 0.0)? params.start_time : nmxp_data_gmtime_now() - 10.0;
+	default_start_time = (params.start_time > 0.0)? params.start_time : nmxp_data_gmtime_now() - params.max_data_to_retrieve;
 
 	while(exitdapcondition) {
 
