@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_base.h,v 1.26 2007-12-07 14:02:21 mtheo Exp $
+ * $Id: nmxp_base.h,v 1.27 2008-01-18 06:46:38 mtheo Exp $
  *
  */
 
@@ -151,7 +151,7 @@ int nmxp_receiveMessage(int isock, NMXP_MSG_SERVER *type, void **buffer, int32_t
  * \return Return a pointer to static struct NMXP_DATA_PROCESS.
  *
  */
-NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data, NMXP_CHAN_LIST_NET *channelList, const char *network_code);
+NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data, NMXP_CHAN_LIST_NET *channelList, const char *network_code_default);
 
 
 /*! \brief Process decompressed Data message by function func_processData().
@@ -164,7 +164,7 @@ NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data
  * \return Return a pointer to static struct NMXP_DATA_PROCESS.
  *
  */
-NMXP_DATA_PROCESS *nmxp_processDecompressedData(char* buffer_data, int length_data, NMXP_CHAN_LIST_NET *channelList, const char *network_code);
+NMXP_DATA_PROCESS *nmxp_processDecompressedData(char* buffer_data, int length_data, NMXP_CHAN_LIST_NET *channelList, const char *network_code_default);
 
 
 /*! \brief Wrapper for functions sleep on different platforms
