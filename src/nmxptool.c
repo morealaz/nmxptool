@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.117 2008-01-18 07:11:34 mtheo Exp $
+ * $Id: nmxptool.c,v 1.118 2008-01-18 07:24:28 mtheo Exp $
  *
  */
 
@@ -740,7 +740,7 @@ int main (int argc, char **argv) {
 		    cur_after_start_time = DEFAULT_BUFFERED_TIME;
 		}
 		nmxp_data_to_str(cur_after_start_time_str, cur_after_start_time);
-		nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_EXTRA, "cur_chan %d, cur_after_start_time %f, cur_after_start_time_str %s\n", cur_chan, cur_after_start_time, cur_after_start_time_str);
+		nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_PACKETMAN, "cur_chan %d, cur_after_start_time %f, cur_after_start_time_str %s\n", cur_chan, cur_after_start_time, cur_after_start_time_str);
 		if(pd->time + ((double) pd->nSamp / (double) pd->sampRate) >= cur_after_start_time) {
 		    if(pd->time < cur_after_start_time) {
 			int first_nsample_to_remove = (cur_after_start_time - pd->time) * (double) pd->sampRate;
