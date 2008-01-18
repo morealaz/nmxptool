@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.118 2008-01-18 07:24:28 mtheo Exp $
+ * $Id: nmxptool.c,v 1.119 2008-01-18 08:13:15 mtheo Exp $
  *
  */
 
@@ -1004,9 +1004,11 @@ void load_channel_states(NMXP_CHAN_LIST_NET *chan_list, NMXPTOOL_CHAN_SEQ *chan_
 		if(fstatefile == NULL) {
 		    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY, "Unable to write channel states into %s!\n", statefilefilename);
 		} else {
+		    /*
 		    while(fgets(line, MAXSIZE_LINE, fstatefileINPUT) != NULL) {
 			fputs(line, fstatefile);
 		    }
+		    */
 		    fclose(fstatefile);
 		}
 		fclose(fstatefileINPUT);
@@ -1060,7 +1062,7 @@ void load_channel_states(NMXP_CHAN_LIST_NET *chan_list, NMXPTOOL_CHAN_SEQ *chan_
 			nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "For channel %s there is not valid start_time.\n", s_chan); 
 		    }
 		} else {
-		    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY, "Channel %s not found!\n", s_chan); 
+		    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY, "Channel %s not found! (%d %s)\n", s_chan, strlen(line), line); 
 		}
 	    }
 	    fclose(fstatefile);
