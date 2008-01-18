@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.116 2008-01-17 16:23:31 mtheo Exp $
+ * $Id: nmxptool.c,v 1.117 2008-01-18 07:11:34 mtheo Exp $
  *
  */
 
@@ -90,6 +90,7 @@ int naqssock = 0;
 FILE *outfile = NULL;
 NMXP_CHAN_LIST *channelList = NULL;
 NMXP_CHAN_LIST_NET *channelList_subset = NULL;
+NMXP_CHAN_LIST_NET *channelList_subset_waste = NULL;
 NMXPTOOL_CHAN_SEQ *channelList_Seq = NULL;
 int n_func_pd = 0;
 int (*p_func_pd[NMXP_MAX_FUNC_PD]) (NMXP_DATA_PROCESS *);
@@ -667,7 +668,7 @@ int main (int argc, char **argv) {
 	}
 
 	/* Get a subset of channel from arguments */
-	channelList_subset = nmxp_chan_subset(channelList, NMXP_DATA_TIMESERIES, params.channels, CURRENT_NETWORK);
+	channelList_subset_waste = nmxp_chan_subset(channelList, NMXP_DATA_TIMESERIES, params.channels, CURRENT_NETWORK);
 
 
 	/* PDS Step 4: Send a Request Pending (optional) */
@@ -951,7 +952,8 @@ static void save_channel_states(NMXP_CHAN_LIST_NET *chan_list, NMXPTOOL_CHAN_SEQ
 	while(to_cur_chan < chan_list->number) {
 	    nmxp_data_to_str(last_time_str, chan_list_seq[to_cur_chan].last_time);
 	    nmxp_data_to_str(raw_last_sample_time_str, chan_list_seq[to_cur_chan].raw_stream_buffer.last_sample_time);
-	    sprintf(state_line_str, "%s %s %s",
+	    sprintf(state_line_str, "%d %s %s %s",
+		    chan_list->channel[to_cur_chan].key,
 		    chan_list->channel[to_cur_chan].name,
 		    last_time_str,
 		    raw_last_sample_time_str
@@ -985,6 +987,7 @@ void load_channel_states(NMXP_CHAN_LIST_NET *chan_list, NMXPTOOL_CHAN_SEQ *chan_
     double s_noraw_time_f_calc, s_rawtime_f_calc;
     int cur_chan;
     int n_scanf;
+    int32_t key_chan;
     NMXP_TM_T tmp_tmt;
     char statefilefilename[MAX_LEN_FILENAME] = "";
 
@@ -1023,11 +1026,11 @@ void load_channel_states(NMXP_CHAN_LIST_NET *chan_list, NMXPTOOL_CHAN_SEQ *chan_
 		s_chan[0] = 0;
 		s_noraw_time_s[0] = 0;
 		s_rawtime_s[0] = 0;
-		n_scanf = sscanf(line, "%s %s %s", s_chan, s_noraw_time_s, s_rawtime_s); 
+		n_scanf = sscanf(line, "%d %s %s %s", &key_chan, s_chan, s_noraw_time_s, s_rawtime_s); 
 
 		s_noraw_time_f_calc = DEFAULT_BUFFERED_TIME;
 		s_rawtime_f_calc = DEFAULT_BUFFERED_TIME;
-		if(n_scanf == 3) {
+		if(n_scanf == 4) {
 		    if(nmxp_data_parse_date(s_noraw_time_s, &tmp_tmt) == -1) {
 			nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY, "Parsing time '%s'\n", s_noraw_time_s); 
 		    } else {
@@ -1040,7 +1043,7 @@ void load_channel_states(NMXP_CHAN_LIST_NET *chan_list, NMXPTOOL_CHAN_SEQ *chan_
 		    }
 		}
 
-		nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_EXTRA, "%d %-14s %16.4f %s %16.4f %s\n", n_scanf, s_chan, s_noraw_time_f_calc, s_noraw_time_s, s_rawtime_f_calc, s_rawtime_s); 
+		nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_EXTRA, "%d %12d %-14s %16.4f %s %16.4f %s\n", n_scanf, key_chan, s_chan, s_noraw_time_f_calc, s_noraw_time_s, s_rawtime_f_calc, s_rawtime_s); 
 
 		cur_chan = 0;
 		while(cur_chan < chan_list->number  &&  strcasecmp(s_chan, chan_list->channel[cur_chan].name) != 0) {

@@ -4,6 +4,3 @@ KNOWN BUGS:
 
 - nmxp_log() string arguments
 
-- Channel selection (i.e. *.HHZ,AMUR.HH?)
-	does not allow properly to manage channel state file
-
