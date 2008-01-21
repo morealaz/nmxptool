@@ -4,3 +4,4 @@ KNOWN BUGS:
 
 - nmxp_log() string arguments
 
+- earthworm add rule clean_solaris and Co.

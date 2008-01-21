@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.58 2008-01-17 13:10:44 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.59 2008-01-21 10:35:04 mtheo Exp $
  *
  */
 
@@ -141,7 +141,7 @@ Arguments:\n\
                           Allow data continuity between program restarts\n\
                           and within data buffered by the NaqsServer.\n\
                           Enable option -b. Do not use with -C.\n\
-  -M, --maxdataretr=SECs  Max amount of data of the past to retrieve from the\n\
+  -A, --maxdataretr=SECs  Max amount of data of the past to retrieve from the\n\
                           DataServer when program restarts (default %d) [%d..%d].\n\
 \n",
 	    DEFAULT_MAX_TIME_TO_RETRIEVE,
