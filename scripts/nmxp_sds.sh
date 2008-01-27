@@ -5,10 +5,11 @@
 # TODO: add location
 #
 # Dependencies: bash, stat (linux version), nmxptool
-
-# SDS structure
-# /YEAR/NET/STA/CHAN/
-#		NET.STA.LOC.CHAN.YEAR.JDAY
+#
+# Author: Matteo Quintiliani - quintiliani@ingv.it - I.N.G.V.
+#
+#
+# SDS structure: /YEAR/NET/STA/CHAN/  NET.STA.LOC.CHAN.YEAR.JDAY
 
 
 export PATH="/bin:/usr/bin:/usr/local/bin:$PATH"
