@@ -3,6 +3,8 @@
 # Syntax: cmd <year> <net> <sta> <chan>  <jday> 
 # 
 # TODO: add location
+#
+# Dependencies: bash, stat (linux version), nmxptool
 
 # SDS structure
 # /YEAR/NET/STA/CHAN/
@@ -35,6 +37,7 @@ STA=$3
 CHAN=$4
 JDAY=$5
 JDAY=`echo $5 | sed -e "s/^[0]*//"`
+NMXPHOST=naqs2a.int.ingv.it
 
 if [ $JDAY -le 0 ]; then
     	export TODAY=$(date "+%j" | sed -e "s/^[0]*//")
@@ -62,7 +65,6 @@ JDAY=$(printf %03d $JDAY)
 #pseudo static variables
 NMXPBINDIR=/home/sysop/seiscomp/acquisition/bin
 NMXPTOOL=${NMXPBINDIR}/nmxptool
-NMXPHOST=naqs2a.int.ingv.it
 DIRARCHIVESDS=/mnt/seedstore/nmxp_accel
 
 # derivated variables
