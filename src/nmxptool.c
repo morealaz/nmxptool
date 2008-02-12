@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.121 2008-02-12 10:45:47 mtheo Exp $
+ * $Id: nmxptool.c,v 1.122 2008-02-12 14:16:18 mtheo Exp $
  *
  */
 
@@ -1169,6 +1169,28 @@ static void clientShutdown(int sig) {
 
 /* Empty signal handler routine */
 static void clientDummyHandler(int sig) {
+    int chan_index;
+    for(chan_index = 0; chan_index < channelList_subset->number; chan_index++) {
+	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY,
+		"i %2d s %d lt %f ltrs %d x_1 %8d after_st %d ",
+	chan_index,
+	channelList_Seq[chan_index].significant,
+	channelList_Seq[chan_index].last_time,
+	channelList_Seq[chan_index].last_time_call_raw_stream,
+	channelList_Seq[chan_index].x_1,
+	channelList_Seq[chan_index].after_start_time
+		);
+
+	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY,
+	    "sqno %d lst %.4f maxit %d maxlat %.2f torv %d nit %d\n",
+	channelList_Seq[chan_index].raw_stream_buffer.last_seq_no_sent,
+	channelList_Seq[chan_index].raw_stream_buffer.last_sample_time,
+	channelList_Seq[chan_index].raw_stream_buffer.max_pdlist_items,
+	channelList_Seq[chan_index].raw_stream_buffer.max_tolerable_latency,
+	channelList_Seq[chan_index].raw_stream_buffer.timeoutrecv,
+	channelList_Seq[chan_index].raw_stream_buffer.n_pdlist
+		);
+    }
 }
 
 #endif /* HAVE_WINDOWS_H */
