@@ -95,6 +95,16 @@ nmxptool allows you to:
                                   nmxptool_ovr.html
 
 
+- ACKNOWLEDGEMENT
+   In no particular order,
+     * Salvatore Mazza - I.N.G.V. (Istituto Nazionale di Geofisica e Vulcanologia)
+     * Marco Olivieri - I.N.G.V.
+     * Luigi Falco - I.N.G.V.
+     * Martina Demartin - I.N.G.V.
+     * Paul Frieberg - ISTI (Instrumental Software Technologies, Inc.)
+     * Marian Jusko
+
+
 - LICENSE
   Read file COPYING
 
