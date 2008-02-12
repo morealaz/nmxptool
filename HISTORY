@@ -2,7 +2,7 @@
 nmxptool Release History
 #########################
 
-* Release 1.1.8-beta17     (2008/01/20)
+* Release 1.1.8-rc1     (2008/02/12)
     - Fixed major bug in DAP authentication (option -u and -p)
     - Added support for retrieving Data on Demand (option -T)
     - Added management of channel sample sequence.
