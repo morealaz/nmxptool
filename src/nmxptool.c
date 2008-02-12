@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.120 2008-01-18 08:20:07 mtheo Exp $
+ * $Id: nmxptool.c,v 1.121 2008-02-12 10:45:47 mtheo Exp $
  *
  */
 
@@ -474,6 +474,9 @@ int main (int argc, char **argv) {
 			pd = nmxp_processCompressedData(buffer, length, channelList_subset, NETCODE_OR_CURRENT_NETWORK);
 			nmxp_data_trim(pd, params.start_time, params.end_time, 0);
 
+			/* To prevent to manage a packet with zero sample after nmxp_data_trim() */
+			if(pd->nSamp > 0) {
+
 			/* Log contents of last packet */
 			if(params.flag_logdata) {
 			    nmxp_data_log(pd);
@@ -531,10 +534,13 @@ int main (int argc, char **argv) {
 			    }
 			}
 
+			}
+
 			/* Store x_1 */
 			if(pd->nSamp > 0) {
 			    channelList_Seq[cur_chan].x_1 = pd->pDataPtr[pd->nSamp-1];
 			}
+
 			/* Free pd->buffer */
 			if(pd->buffer) {
 			    free(pd->buffer);
