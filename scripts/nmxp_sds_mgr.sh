@@ -13,8 +13,8 @@ STATION_LIST="ACER.HLE.IV ACER.HLN.IV ACER.HLZ.IV ARCI.HLE.IV ARCI.HLN.IV ARCI.H
 
 # variables dependent on the input parameters
 YEAR=2008
-JDAYSTART=1
-JDAYEND=42
+JDAYSTART=44
+JDAYEND=44
 
 NMXP_SDS=`dirname $0`/nmxp_sds.sh 
 
