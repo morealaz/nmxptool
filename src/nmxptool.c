@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.122 2008-02-12 14:16:18 mtheo Exp $
+ * $Id: nmxptool.c,v 1.123 2008-02-15 07:26:53 mtheo Exp $
  *
  */
 
@@ -123,6 +123,9 @@ int main (int argc, char **argv) {
     void *buffer;
     int32_t length;
     int ret;
+
+    int pd_null_count = 0;
+    int timeoutrecv_warning = 60;
 
     int recv_errno = 0;
 
@@ -711,17 +714,34 @@ int main (int argc, char **argv) {
 	    /* Process Compressed or Decompressed Data */
 	    pd = nmxp_receiveData(naqssock, channelList_subset, NETCODE_OR_CURRENT_NETWORK, params.timeoutrecv, &recv_errno);
 
+	    if(!pd) {
+		pd_null_count++;
+		if((pd_null_count * params.timeoutrecv) >= timeoutrecv_warning) {
+		    nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "Received %d times a null packet. (%d sec.)\n",
+			    pd_null_count, pd_null_count * params.timeoutrecv);
+		    pd_null_count = 0;
+		}
+	    } else {
+		pd_null_count = 0;
+	    }
+
 	    if(recv_errno == 0) {
 		// TODO
 		exitpdscondition = 1;
 	    } else {
-		nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CONNFLOW, "Error receiving data. pd=%p recv_errno=%d\n", pd, recv_errno);
+		if(recv_errno == EWOULDBLOCK) {
+		    // TODO
+		    exitpdscondition = 1;
+		} else {
+		    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CONNFLOW, "Error receiving data. pd=%p recv_errno=%d\n", pd, recv_errno);
 
 #ifdef HAVE_EARTHWORMOBJS
-		nmxptool_ew_send_error(NMXPTOOL_EW_ERR_RECVDATA);
+		    if(params.ew_configuration_file) {
+			nmxptool_ew_send_error(NMXPTOOL_EW_ERR_RECVDATA);
+		    }
 #endif
-
-		exitpdscondition = 0;
+		    exitpdscondition = 0;
+		}
 	    }
 
 	    if(pd) {
@@ -766,7 +786,8 @@ int main (int argc, char **argv) {
 		}
 	    }
 
-	    if(!skip_current_packet) {
+	    if(pd &&
+		    !skip_current_packet) {
 
 		/* Manage Raw Stream */
 		if(params.stc == -1) {
