@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_base.c,v 1.50 2008-01-11 10:57:58 mtheo Exp $
+ * $Id: nmxp_base.c,v 1.51 2008-02-15 07:25:30 mtheo Exp $
  *
  */
 
@@ -142,6 +142,31 @@ int nmxp_send_ctrl(int isock, void* buffer, int length)
   return NMXP_SOCKET_OK;
 }
 
+#ifdef HAVE_BROKEN_SO_RCVTIMEO
+#warning Managing non-blocking I/O using select()
+int nmxp_recv_select_timeout(int s, char *buf, int len, int timeout)
+{
+    fd_set fds;
+    int n;
+    struct timeval tv;
+
+    // set up the file descriptor set
+    FD_ZERO(&fds);
+    FD_SET(s, &fds);
+
+    // set up the struct timeval for the timeout
+    tv.tv_sec = timeout;
+    tv.tv_usec = 0;
+
+    // wait until timeout or data received
+    n = select(s+1, &fds, NULL, NULL, &tv);
+    if (n == 0) return -2; // timeout!
+    if (n == -1) return -1; // error
+ 
+    // data must be here, so do a normal recv()
+    return recv(s, buf, len, 0);
+}
+#endif
 
 int nmxp_recv_ctrl(int isock, void *buffer, int length, int timeoutsec, int *recv_errno )
 {
@@ -163,7 +188,11 @@ int nmxp_recv_ctrl(int isock, void *buffer, int length, int timeoutsec, int *rec
 #ifdef HAVE_WINDOWS_H
   int timeos;
 #else
+
+#ifndef HAVE_BROKEN_SO_RCVTIMEO
   struct timeval timeo;
+#endif
+
 #endif
 
 
@@ -181,11 +210,15 @@ int nmxp_recv_ctrl(int isock, void *buffer, int length, int timeoutsec, int *rec
 	  perror("setsockopt SO_RCVTIMEO");
       }
 #else
+
+#ifndef HAVE_BROKEN_SO_RCVTIMEO
       timeo.tv_sec  = timeoutsec;
       timeo.tv_usec = 0;
       if (setsockopt(isock, SOL_SOCKET, SO_RCVTIMEO, &timeo, sizeof(timeo)) < 0) {
 	  perror("setsockopt SO_RCVTIMEO");
       }
+#endif
+
 #endif
   }
   
@@ -193,11 +226,27 @@ int nmxp_recv_ctrl(int isock, void *buffer, int length, int timeoutsec, int *rec
   *recv_errno  = 0;
   recvCount = 0;
   while(cc > 0 && *recv_errno == 0  && recvCount < length) {
-      cc = recv(isock, buffer_char + recvCount, length - recvCount, 0);
+
+#ifdef HAVE_BROKEN_SO_RCVTIMEO
+      if(timeoutsec == 0) {
+#endif
+
+	  cc = recv(isock, buffer_char + recvCount, length - recvCount, 0);
+
+#ifdef HAVE_BROKEN_SO_RCVTIMEO
+      } else {
+	  cc = nmxp_recv_select_timeout(isock, buffer_char + recvCount, length - recvCount, timeoutsec);
+      }
+#endif
+
 #ifdef HAVE_WINDOWS_H
       *recv_errno  = WSAGetLastError();
 #else
-      *recv_errno  = errno;
+      if(cc == -2) {
+	  *recv_errno  = EWOULDBLOCK;
+      } else {
+	  *recv_errno  = errno;
+      }
 #endif
       if(cc <= 0) {
 	  /*
@@ -216,11 +265,15 @@ int nmxp_recv_ctrl(int isock, void *buffer, int length, int timeoutsec, int *rec
 	  perror("setsockopt SO_RCVTIMEO");
       }
 #else
+
+#ifndef HAVE_BROKEN_SO_RCVTIMEO
       timeo.tv_sec  = 0;
       timeo.tv_usec = 0;
       if (setsockopt(isock, SOL_SOCKET, SO_RCVTIMEO, &timeo, sizeof(timeo)) < 0) {
 	  perror("setsockopt SO_RCVTIMEO");
       }
+#endif
+
 #endif
   }
 
@@ -234,22 +287,27 @@ int nmxp_recv_ctrl(int isock, void *buffer, int length, int timeoutsec, int *rec
       recv_errno_str = strerror(*recv_errno);
 #endif
 #endif
-    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CONNFLOW, "nmxp_recv_ctrl(): recvCount=%d  length=%d  (cc=%d) errno=%d (%s)\n", recvCount, length, cc, *recv_errno, recv_errno_str);
-	    
-    /* TO IMPROVE 
-     * Fixed bug receiving zero byte from recv() 'TCP FIN or EOF received'
-     * */
-    if(cc == 0  &&  *recv_errno == 0) {
-	*recv_errno = -100;
-    }
+
+      if(*recv_errno != EWOULDBLOCK) {
+	  nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CONNFLOW, "nmxp_recv_ctrl(): recvCount=%d  length=%d  (cc=%d) errno=%d (%s)\n",
+		  recvCount, length, cc, *recv_errno, recv_errno_str);
+      }
+
+      /* TO IMPROVE 
+       * Fixed bug receiving zero byte from recv() 'TCP FIN or EOF received'
+       * */
+      if(cc == 0  &&  *recv_errno == 0) {
+	  *recv_errno = -100;
+      }
 
 #ifdef HAVE_WINDOWS_H
-    if(recvCount != length || *recv_errno != WSAEWOULDBLOCK) {
+      if(recvCount != length || *recv_errno != WSAEWOULDBLOCK)
 #else
-    if(recvCount != length || *recv_errno != EWOULDBLOCK) {
+      if(recvCount != length || *recv_errno != EWOULDBLOCK)
 #endif
-	return NMXP_SOCKET_ERROR;
-    }
+      {
+	  return NMXP_SOCKET_ERROR;
+      }
   }
   
   return NMXP_SOCKET_OK;
