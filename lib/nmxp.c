@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp.c,v 1.57 2007-12-28 10:55:45 mtheo Exp $
+ * $Id: nmxp.c,v 1.58 2008-02-15 11:31:04 mtheo Exp $
  *
  */
 
@@ -661,8 +661,10 @@ int nmxp_raw_stream_manage(NMXP_RAW_STREAM_DATA *p, NMXP_DATA_PROCESS *a_pd, int
     }
 
     /* Add pd and sort array */
-    if(p->n_pdlist >= p->max_pdlist_items
-	    || latency >= p->max_tolerable_latency) {
+    if( (p->n_pdlist >= p->max_pdlist_items
+	    || latency >= p->max_tolerable_latency) &&
+	    p->timeoutrecv <= 0
+	    ) {
 	/* Supposing p->pdlist is ordered,
 	 * handle the first item and over write it.
 	 */
