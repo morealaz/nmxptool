@@ -178,4 +178,12 @@ AC_CHECK_FUNCS([memset strdup])
 
 AC_CONFIG_FILES([Makefile
                  src/Makefile])
+
+# AC_CONFIG_SUBDIRS([libnmxp])
+
 AC_OUTPUT
+
+AC_MSG_NOTICE([
+      Compile nmxptool using 'make'.
+	  ])
+
