@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.125 2008-02-15 11:31:04 mtheo Exp $
+ * $Id: nmxptool.c,v 1.126 2008-02-16 15:32:23 mtheo Exp $
  *
  */
 
@@ -125,7 +125,7 @@ int main (int argc, char **argv) {
     int ret;
 
     int pd_null_count = 0;
-    int timeoutrecv_warning = 60;
+    int timeoutrecv_warning = 300; /* 5 minutes */
 
     int recv_errno = 0;
 

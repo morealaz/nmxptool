@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_base.c,v 1.51 2008-02-15 07:25:30 mtheo Exp $
+ * $Id: nmxp_base.c,v 1.52 2008-02-16 15:32:23 mtheo Exp $
  *
  */
 
@@ -395,7 +395,7 @@ int nmxp_receiveMessage(int isock, NMXP_MSG_SERVER *type, void **buffer, int32_t
 #else
 	if(*recv_errno == EWOULDBLOCK) {
 #endif
-	    nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_CONNFLOW, "Timeout receiving in nmxp_receiveMessage()\n");
+	    nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_DOD, "Timeout receiving in nmxp_receiveMessage()\n");
 	} else {
 	    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CONNFLOW, "Error in nmxp_receiveMessage()\n");
 	}
