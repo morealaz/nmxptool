@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_chan.c,v 1.28 2008-01-17 08:14:04 mtheo Exp $
+ * $Id: nmxp_chan.c,v 1.29 2008-02-17 14:41:02 mtheo Exp $
  *
  */
 
@@ -344,11 +344,16 @@ void nmxp_chan_print_channelList(NMXP_CHAN_LIST *channelList) {
     int chan_number = channelList->number;
     int i_chan = 0;
 
-    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "%04d channels:\n", chan_number);
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_CHANNEL, "%04d channels:\n", chan_number);
 
     for (i_chan = 0; i_chan < chan_number; i_chan++)
     {
-	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "%04d %12d %s\n", i_chan+1, channelList->channel[i_chan].key, channelList->channel[i_chan].name);
+	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "%04d %12d %6s%c%-11s\n",
+		i_chan+1,
+		channelList->channel[i_chan].key,
+		"    ",
+		' ',
+		channelList->channel[i_chan].name);
     }
 
 }
@@ -524,6 +529,7 @@ void nmxp_meta_chan_print(NMXP_META_CHAN_LIST *chan_list) {
     char str_start_time[200], str_end_time[200];
     str_start_time[0] = 0;
     str_end_time[0] = 0;
+    int i_chan = 0;
 
     nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CHANNEL, "nmxp_meta_chan_print()\n");
 
@@ -531,14 +537,17 @@ void nmxp_meta_chan_print(NMXP_META_CHAN_LIST *chan_list) {
 	nmxp_data_to_str(str_start_time, iter->start_time);
 	nmxp_data_to_str(str_end_time,   iter->end_time);
 
-	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "%10d %11s.%-5s (%s  -  %s)\n",
+	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "%04d %12d %6s%c%-11s (%s  -  %s)\n",
+		i_chan+1,
 		iter->key,
-		iter->name,
 		iter->network,
+		(strcmp(iter->network, "")==0)? ' ' : '.',
+		iter->name,
 		str_start_time,
 		str_end_time
 		);
 	iter = iter->next;
+	i_chan++;
     }
 }
 
