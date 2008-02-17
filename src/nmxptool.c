@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.126 2008-02-16 15:32:23 mtheo Exp $
+ * $Id: nmxptool.c,v 1.127 2008-02-17 13:54:09 mtheo Exp $
  *
  */
 
@@ -316,7 +316,8 @@ int main (int argc, char **argv) {
 	}
 
     /* TODO condition starting DAP or PDS */
-    if( DAP_CONDITION(params) || (times_flow == 0  &&  params.statefile  && params.interval == DEFAULT_INTERVAL_INFINITE) ) {
+    if( DAP_CONDITION(params) ||
+	    (times_flow == 0  &&  params.statefile && params.max_data_to_retrieve > 0 && params.interval == DEFAULT_INTERVAL_INFINITE) ) {
 
 	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CONNFLOW, "Begin DAP Flow.\n");
 
@@ -800,7 +801,6 @@ int main (int argc, char **argv) {
 
 		    /* Check timeout for other channels */
 		    if(params.timeoutrecv > 0) {
-			exitpdscondition = 1;
 			to_cur_chan = 0;
 			while(to_cur_chan < channelList_subset->number) {
 			    timeout_for_channel = nmxp_data_gmtime_now() - channelList_Seq[to_cur_chan].last_time_call_raw_stream;
