@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.59 2008-01-21 10:35:04 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.60 2008-02-17 13:54:35 mtheo Exp $
  *
  */
 
@@ -143,6 +143,7 @@ Arguments:\n\
                           Enable option -b. Do not use with -C.\n\
   -A, --maxdataretr=SECs  Max amount of data of the past to retrieve from the\n\
                           DataServer when program restarts (default %d) [%d..%d].\n\
+                          0 to disable connection to DataServer.\n\
 \n",
 	    DEFAULT_MAX_TIME_TO_RETRIEVE,
 	    DEFAULT_MAX_TIME_TO_RETRIEVE_MINIMUM,
