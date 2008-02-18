@@ -198,6 +198,20 @@ AC_CONFIG_FILES([Makefile
 AC_OUTPUT
 
 AC_MSG_NOTICE([
-      Compile nmxptool using 'make'.
-	  ])
+      Compile nmxptool using 'make'.])
+
+AS_IF([test "x$EWOSOURCES" != xno], 
+      [AC_MSG_NOTICE([
+      After compilation you can install nmxptool for Earthworm:
+            make install-ew-bin
+            make install-ew-conf])
+      ]
+)
+AS_IF([test "x$with_seedlink" != xno], 
+      [AC_MSG_NOTICE([
+      After compilation you can install nmxptool for SeedLink:
+            make install-seiscomp-bin
+            make install-seiscomp-templates])
+      ]
+)
 
