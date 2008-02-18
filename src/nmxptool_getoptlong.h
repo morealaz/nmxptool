@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.h,v 1.67 2008-02-17 13:54:35 mtheo Exp $
+ * $Id: nmxptool_getoptlong.h,v 1.68 2008-02-18 09:32:13 mtheo Exp $
  *
  */
 
@@ -55,7 +55,7 @@
 
 #define DEFAULT_MAX_TIME_TO_RETRIEVE_MINIMUM	0
 #define DEFAULT_MAX_TIME_TO_RETRIEVE_MAXIMUM	86400
-#define DEFAULT_MAX_TIME_TO_RETRIEVE 		60
+#define DEFAULT_MAX_TIME_TO_RETRIEVE 		0
 
 /*! \brief Struct that stores information about parameter of the program */
 typedef struct {
