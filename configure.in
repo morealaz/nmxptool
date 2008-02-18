@@ -140,6 +140,9 @@ AS_IF([test "x$with_ew" != xno],
 		esac
 		AC_MSG_WARN(EWOS set to $EWOS)
 		AC_SUBST(EWOS)
+		AC_SUBST(EW_HOME)
+		AC_SUBST(EW_VERSION)
+		AC_SUBST(EW_PARAMS)
 	       ],
 	      [
 	       LIBS="$LIBS $EWOBJS"
@@ -157,7 +160,18 @@ AM_CONDITIONAL(WITHEWSOURCES, test x$EWOS != x)
 
 # Seedlink check.
 AS_IF([test "x$with_seedlink" != xno], 
-      [AC_CHECK_FILES([./src/seedlink_plugin.c ./src/seedlink_plugin.h], [], AC_MSG_ERROR([seedlink plug-in sources not found!]))],
+      [
+       AC_CHECK_FILES([./src/seedlink_plugin.c ./src/seedlink_plugin.h], [], AC_MSG_ERROR([seedlink plug-in sources not found!]))
+
+       AS_IF([test "x$SEISCOMPDIR" == x],
+	      [
+	       SEISCOMPDIR=/home/sysop/seiscomp
+	       ]
+	      )
+       AC_MSG_WARN([SEISCOMPDIR is set to ${SEISCOMPDIR}])
+       AC_SUBST(SEISCOMPDIR)
+
+       ],
     [AC_MSG_WARN([SeedLink support has been disabled!])]
 )
 AM_CONDITIONAL(WITHSEEDLINK, test x$with_seedlink != xno)
