@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.60 2008-02-17 13:54:35 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.61 2008-02-18 09:32:53 mtheo Exp $
  *
  */
 
@@ -108,14 +108,14 @@ void nmxptool_usage(struct option long_options[])
 
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
 \n\
-Usage: %s -H hostname   --listchannels | --listchannelsnaqs\n\
+Usage: %s -H hostname   -l | -L\n\
              Print list of available channels on DataServer or NaqsServer.\n\
 \n\
        %s -H hostname -C channellist [...]\n\
-             Receive data from NaqsServer by PDS.\n\
+             Receive data in near real-time from NaqsServer by PDS.\n\
 \n\
        %s -H hostname -F statefile [...]\n\
-             Receive data from NaqsServer and/or DataServer.\n\
+             Receive data from NaqsServer, and from DataServer if is necessary.\n\
 \n\
        %s -H hostname -C channellist -s DATE -e DATE [...]\n\
        %s -H hostname -C channellist -s DATE -t SECs [...]\n\
@@ -125,22 +125,36 @@ Usage: %s -H hostname   --listchannels | --listchannelsnaqs\n\
 #ifdef HAVE_EARTHWORMOBJS
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
        %s nmxptool.d\n\
-             Run as earthworm module receiving data from NaqsServer and/or DataServer.\n\
+             Launched as Earthworm module to redirect data into the EW-Rings.\n\
+\n", PACKAGE_NAME);
+#endif
+
+#ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
+       %s <option ... option> -k\n\
+             Launched as SeedLink plug-in to feed the SL-Server.\n\
 \n", PACKAGE_NAME);
 #endif
 
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
+       %s --help\n\
+             Print this help.\n\
+\n", PACKAGE_NAME);
+
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
 Arguments:\n\
-  -H, --hostname=HOST     Nanometrics hostname.\n\
-  -C, --channels=LIST     Sequence of NET.STA.CHAN separated by comma.\n\
+  -H, --hostname=HOST     NaqsServer or DataServer hostname.\n\
+  -C, --channels=LIST     List of NET.STA.CHAN separated by comma.\n\
                           NET  is optional and used only for output.\n\
-                          STA  can be '*', stands for all stations.\n\
-                          CHAN can contain '?', stands for any character.\n\
+                          STA  can be '*', it stands for all stations.\n\
+                          CHAN can contain '?', it stands for any character.\n\
                           Example:  *.HH?,N1.STA2.??Z,STA3.?H?\n\
   -F, --statefile=FILE    Load/Save time of last sample of each channel.\n\
-                          Allow data continuity between program restarts\n\
-                          and within data buffered by the NaqsServer.\n\
-                          Enable option -b. Do not use with -C.\n\
+                          Allow data continuity between program restarts.\n\
+                          Related to -A and it enables -b.\n\
+                          DO NOT USE with -C.\n");
+
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
   -A, --maxdataretr=SECs  Max amount of data of the past to retrieve from the\n\
                           DataServer when program restarts (default %d) [%d..%d].\n\
                           0 to disable connection to DataServer.\n\
@@ -152,13 +166,15 @@ Arguments:\n\
 
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
 PDS arguments:\n\
-  -S, --stc=SECs          Short-term-completion (default %d).\n\
-                          -1 is for Raw Stream, no short-term completion.\n\
-                           0 chronological order without waiting\n\
-                             for missing data.\n\
-                          [1..300] chronological order waiting a period\n\
-                             for missing data.\n\
-                          Raw Stream is usable only with --rate=-1.\n\
+  -S, --stc=SECs          Short-Term-Completion (default %d).\n\
+                          -1 is for Raw Stream, no Short-Term-Completion.\n\
+                             Packet are compressed. Related to -M, -T.\n\
+                             It enables --rate=-1.\n\
+                           0 decompressed packets are received in chronological\n\
+                             order without waiting for missing data.\n\
+                          [1..300] decompressed packets are received in\n\
+                             chronological order but waiting for missing data\n\
+                             at most SECs seconds.\n\
   -R, --rate=Hz           Receive data with specified sample rate (default %d).\n\
                           -1 for original sample rate and compressed data.\n\
                            0 for original sample rate and decompressed data.\n\
@@ -169,9 +185,9 @@ PDS arguments:\n\
   -L, --listchannelsnaqs  Print list of available channels on NaqsServer.\n\
   -M, --maxlatency=SECs   Max tolerable latency (default %d) [%d..%d].\n\
   -T, --timeoutrecv=SECs  Time-out for flushing buffered packets.\n\
-                          (default %d. No time-out.) [%d..%d].\n\
+                          (default %d, no time-out) [%d..%d].\n\
                           -T is useful for retrieving Data On Demand.\n\
-                          -M, -T are usable only with Raw Stream --stc=-1.\n\
+                          -M, -T are usable only with Raw Stream, -S=-1.\n\
                           In general, -M and -T are not used together.\n\
 \n\
 ",
@@ -195,7 +211,6 @@ DAP Arguments:\n\
                               <date> = yyyy/mm/dd | yyy.jjj\n\
                               <time> = hh:mm:ss | hh:mm:ss.dddd | hh:mm\n\
   -t, --interval=SECs     Time interval from start_time (greater than zero).\n\
-                          If equal to zero, tool will switch connection on PDS.\n\
   -d, --delay=SECs        Receive continuosly data with delay [%d..%d].\n\
   -u, --username=USER     DataServer username.\n\
   -p, --password=PASS     DataServer password.\n\
@@ -745,6 +760,9 @@ int nmxptool_check_params(NMXPTOOL_PARAMS *params) {
     } else if(params->start_time != 0.0  &&  params->end_time != 0.0  && params->interval != DEFAULT_INTERVAL_NO_VALUE) {
 	ret = -1;
 	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "<start_time> has to be used with either <end_time> or <interval>!\n");
+    } else if(params->interval != DEFAULT_INTERVAL_NO_VALUE && params->interval <= 0) {
+	ret = -1;
+	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "<interval> has to be greater than zero!\n");
     } else if(params->start_time != 0.0   &&   params->end_time != 0.0
 	    && params->start_time >= params->end_time) {
 	ret = -1;
