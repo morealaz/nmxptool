@@ -50,7 +50,7 @@ Nanometrics server and connection parameters:<br>
 <a href="#NmxpPortDAP">NmxpPortDAP</a>		optional<br>
 <a href="#ForceTraceBuf1">ForceTraceBuf1</a>		optional<br>
 <a href="#MaxTolerableLatency">MaxTolerableLatency</a>	optional<br>
-<a href="#MaxDataToRetrieve">DataToRetrieve</a>		optional<br>
+<a href="#MaxDataToRetrieve">MaxDataToRetrieve</a>	optional<br>
 <a href="#TimeoutRecv">TimeoutRecv</a>		optional<br>
 <a href="#DefaultNetworkCode">DefaultNetworkCode</a>	optional<br>
 <a href="#ChannelFile">ChannelFile</a>		required	Xor Channel<br>
@@ -146,8 +146,8 @@ stdout and stderr is suppressed.
 
 <hr><!-- command name as anchor inside quotes -->
 <pre><a name="MaxDataToRetrieve"><b>MaxDataToRetrieve <font color="red">seconds</font>                                  ReadConfig              nmxptool parameters<br></b><!-- command args ... -->           <br></a></pre>
-<blockquote><!-- command description goes here --> Max amount of data of the past to retrieve from the DataServer when program restarts. Range is [30..86400].
-  <pre><!-- Default and example go here   --><br>Default:  60<br>Example:  MaxDataToRetrieve  3600</pre>
+<blockquote><!-- command description goes here --> Max amount of data of the past to retrieve from the DataServer when program restarts.  0 to disable connection to DataServer. Range is [0..86400].
+  <pre><!-- Default and example go here   --><br>Default:  0<br>Example:  MaxDataToRetrieve  180</pre>
 </blockquote>
 
 <hr><!-- command name as anchor inside quotes -->
@@ -221,14 +221,11 @@ memory region.
 
 
 <hr>
-<h2><a name="advanced_description"></a>3. Advanced Description<br>
-</h2>
-<pre><a name="SLmode"><b>...</b></a></pre>
-<blockquote> ..... .<br>
-</blockquote>
-<pre><a name="SLselectors"><b>.....</b></a><br></pre>
-<blockquote>.....<br>
-</blockquote>
+<h2><a name="advanced_description"></a>3. Advanced Description</h2>
+<p>
+Not yet.
+</p>
+
 <h2><a name="sample_config"></a>4. Sample Configuration File </h2>
 
 
@@ -260,10 +257,11 @@ NmxpPortDAP          28002                 # Port number of the DataServer serve
 MaxTolerableLatency  120                   # Max tolerable latency for each channel. (Default 600 sec.)
                                            # In general, do not use with parameter TimeoutRecv.
 
-MaxDataToRetrieve    180                    # Max amount of data of the past to retrieve from the
-                                           # DataServer when tool restarts (default 60) [30..86400].
+# MaxDataToRetrieve    180                   # Max amount of data of the past to retrieve from the
+                                           # DataServer when program restarts (default 0) [0..86400].
+                                           # 0 to disable connection to DataServer.
 
-#TimeoutRecv          30                    # Time-out in seconds for flushing queued data for each channel.
+# TimeoutRecv          30                    # Time-out in seconds for flushing queued data for each channel.
                                            # Useful for Data On Demand (i.e. channel HL) (Default 0. No time-out)
 
 DefaultNetworkCode   IV                    # Default network code where in Channel is not declared
@@ -277,7 +275,7 @@ DefaultNetworkCode   IV                    # Default network code where in Chann
 ChannelFile   /home/ew/naqs1a.list.txt    # State Channel file (It will not be updated.)
                                           # Allow data continuity between program restarts
                                           # and within available data buffered on NaqsServer.
-                                          # Do not use with Channel parameter below.
+                                          # DO NOT USE with Channel parameter below.
 
 # Channel              ES.BOB.HH?
 # Channel              MN.TIR.HH?
