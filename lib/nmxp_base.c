@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_base.c,v 1.53 2008-02-19 13:16:26 mtheo Exp $
+ * $Id: nmxp_base.c,v 1.54 2008-02-19 14:40:58 mtheo Exp $
  *
  */
 
@@ -289,7 +289,7 @@ int nmxp_recv_ctrl(int isock, void *buffer, int length, int timeoutsec, int *rec
 #endif
 
 #ifdef HAVE_WINDOWS_H
-      if(*recv_errno != WSAEWOULDBLOCK)
+      if(*recv_errno != WSAEWOULDBLOCK  &&  *recv_errno != WSAETIMEDOUT)
 #else
       if(*recv_errno != EWOULDBLOCK)
 #endif
@@ -306,7 +306,7 @@ int nmxp_recv_ctrl(int isock, void *buffer, int length, int timeoutsec, int *rec
       }
 
 #ifdef HAVE_WINDOWS_H
-      if(recvCount != length || *recv_errno != WSAEWOULDBLOCK)
+      if(recvCount != length || (*recv_errno != WSAEWOULDBLOCK  &&  *recv_errno != WSAETIMEDOUT))
 #else
       if(recvCount != length || *recv_errno != EWOULDBLOCK)
 #endif
@@ -396,7 +396,7 @@ int nmxp_receiveMessage(int isock, NMXP_MSG_SERVER *type, void **buffer, int32_t
 
     if(*recv_errno != 0) {
 #ifdef HAVE_WINDOWS_H
-	if(*recv_errno == WSAEWOULDBLOCK) {
+	if(*recv_errno == WSAEWOULDBLOCK  ||  *recv_errno == WSAETIMEDOUT) {
 #else
 	if(*recv_errno == EWOULDBLOCK) {
 #endif
@@ -434,7 +434,7 @@ NMXP_DATA_PROCESS *nmxp_processDecompressedData(char* buffer_data, int length_da
   if ( pKey != netInt ) { swap = 1; }
 
   memcpy(&pTime, &buffer_data[4], 8);
-  if ( swap ) { nmxp_data_swap_8b((int64_t *) &pTime); }
+  if ( swap ) { nmxp_data_swap_8b((int64_t *) ((void *)&pTime)); }
 
   memcpy(&netInt, &buffer_data[12], 4);
   pNSamp = ntohl(netInt);
