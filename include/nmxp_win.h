@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_win.h,v 1.1 2007-12-16 14:02:12 mtheo Exp $
+ * $Id: nmxp_win.h,v 1.2 2008-02-19 14:40:20 mtheo Exp $
  *
  */
 
@@ -35,7 +35,7 @@ void nmxp_initWinsock();
  * \retval
  *
  */
-const char* WSAGetLastErrorMessage(int nErrorID);
+char* WSAGetLastErrorMessage(int nErrorID);
 
 
 #endif

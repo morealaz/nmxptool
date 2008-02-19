@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_win.c,v 1.1 2007-12-16 14:02:12 mtheo Exp $
+ * $Id: nmxp_win.c,v 1.2 2008-02-19 14:40:20 mtheo Exp $
  *
  */
 
@@ -124,7 +124,7 @@ static struct ErrorEntry {
 const int kNumMessages = sizeof(gaErrorList) / sizeof(struct ErrorEntry);
 
 
-const char* WSAGetLastErrorMessage(int nErrorID)
+char* WSAGetLastErrorMessage(int nErrorID)
 {
 	static char acErrorBuffer[2048];
 	int i = 0;
