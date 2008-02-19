@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_base.c,v 1.52 2008-02-16 15:32:23 mtheo Exp $
+ * $Id: nmxp_base.c,v 1.53 2008-02-19 13:16:26 mtheo Exp $
  *
  */
 
@@ -288,7 +288,12 @@ int nmxp_recv_ctrl(int isock, void *buffer, int length, int timeoutsec, int *rec
 #endif
 #endif
 
-      if(*recv_errno != EWOULDBLOCK) {
+#ifdef HAVE_WINDOWS_H
+      if(*recv_errno != WSAEWOULDBLOCK)
+#else
+      if(*recv_errno != EWOULDBLOCK)
+#endif
+      {
 	  nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CONNFLOW, "nmxp_recv_ctrl(): recvCount=%d  length=%d  (cc=%d) errno=%d (%s)\n",
 		  recvCount, length, cc, *recv_errno, recv_errno_str);
       }
