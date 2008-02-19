@@ -62,7 +62,7 @@ status collapsed
 \backslash
 small 
 \backslash
-itshape $ $Revision: 1.16 $ $ $ $Date: 2008-01-10 14:58:20 $ $}
+itshape $ $Revision: 1.17 $ $ $ $Date: 2008-02-19 14:51:01 $ $}
 \end_layout
 
 \end_inset
@@ -224,8 +224,8 @@ name "fig:stationclients"
 
 \begin_layout Standard
 We are considering more the second part, especially the software implementation
- aspects in the interaction from a software client with both NaqsServer
- and DataServer as well-documented into the Nanometrics manuals 
+ aspects in the interaction of a software client with both NaqsServer and
+ DataServer as well-documented into the Nanometrics manuals 
 \begin_inset LatexCommand cite
 key "nanometrics"
 
@@ -882,7 +882,7 @@ Test
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Standard
 \align center
