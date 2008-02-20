@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.63 2008-02-20 08:47:32 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.64 2008-02-20 21:43:07 mtheo Exp $
  *
  */
 
@@ -114,7 +114,7 @@ Usage: %s -H hostname   -l | -L\n\
        %s -H hostname -C channellist [...]\n\
              Receive data in near real-time from NaqsServer by PDS.\n\
 \n\
-       %s -H hostname -F statefile [...]\n\
+       %s -H hostname -F statefile [-A SECs] [...]\n\
              Receive data from NaqsServer, and from DataServer if is necessary.\n\
 \n\
        %s -H hostname -C channellist -s DATE -e DATE [...]\n\
@@ -206,7 +206,7 @@ PDS arguments for NaqsServer:\n\
 	  );
 
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
-DAP Arguments for DataServer:\n\
+DAP arguments for DataServer:\n\
   -D, --portdap=PORT      DataServer port number (default %d).\n\
   -s, --start_time=DATE   Start time in date format.\n\
   -e, --end_time=DATE     End time in date format.\n\
