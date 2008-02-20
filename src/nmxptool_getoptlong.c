@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.61 2008-02-18 09:32:53 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.62 2008-02-20 06:40:31 mtheo Exp $
  *
  */
 
@@ -68,7 +68,7 @@ Mail bug reports and suggestions to <%s>.\n",
 void nmxptool_version() {
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
 %s %s%s, Nanometrics tool based on %s\n\
-        (Data Access Protocol 1.0, Private Data Stream 1.4)\n",
+        (Private Data Stream 1.4, Data Access Protocol 1.0)\n",
 	PACKAGE_NAME, PACKAGE_VERSION, PACKAGE_BUILD,
 	nmxp_log_version()	
 	);
@@ -142,13 +142,14 @@ Usage: %s -H hostname   -l | -L\n\
 \n", PACKAGE_NAME);
 
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
-Arguments:\n\
+Main arguments:\n\
   -H, --hostname=HOST     NaqsServer or DataServer hostname.\n\
   -C, --channels=LIST     List of NET.STA.CHAN separated by comma.\n\
                           NET  is optional and used only for output.\n\
                           STA  can be '*', it stands for all stations.\n\
                           CHAN can contain '?', it stands for any character.\n\
                           Example:  *.HH?,N1.STA2.??Z,STA3.?H?\n\
+                          DO NOT USE with -F.\n\
   -F, --statefile=FILE    Load/Save time of last sample of each channel.\n\
                           Allow data continuity between program restarts.\n\
                           Related to -A and it enables -b.\n\
@@ -157,7 +158,8 @@ Arguments:\n\
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
   -A, --maxdataretr=SECs  Max amount of data of the past to retrieve from the\n\
                           DataServer when program restarts (default %d) [%d..%d].\n\
-                          0 to disable connection to DataServer.\n\
+                          0 to disable connection to DataServer and retrieve\n\
+                          only data buffered by NaqsServer when using -F o -b.\n\
 \n",
 	    DEFAULT_MAX_TIME_TO_RETRIEVE,
 	    DEFAULT_MAX_TIME_TO_RETRIEVE_MINIMUM,
@@ -165,15 +167,16 @@ Arguments:\n\
 );
 
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
-PDS arguments:\n\
+PDS arguments for NaqsServer:\n\
+  -P, --portpds=PORT      NaqsServer port number (default %d).\n\
   -S, --stc=SECs          Short-Term-Completion (default %d).\n\
                           -1 is for Raw Stream, no Short-Term-Completion.\n\
-                             Packet are compressed. Related to -M, -T.\n\
+                             Packets contain compressed data. Related to -M, -T.\n\
                              It enables --rate=-1.\n\
                            0 decompressed packets are received in chronological\n\
-                             order without waiting for missing data.\n\
+                             order without waiting for missing packets.\n\
                           [1..300] decompressed packets are received in\n\
-                             chronological order but waiting for missing data\n\
+                             chronological order but waiting for missing packets\n\
                              at most SECs seconds.\n\
   -R, --rate=Hz           Receive data with specified sample rate (default %d).\n\
                           -1 for original sample rate and compressed data.\n\
@@ -191,6 +194,7 @@ PDS arguments:\n\
                           In general, -M and -T are not used together.\n\
 \n\
 ",
+	    DEFAULT_PORT_PDS,
 	    DEFAULT_STC,
 	    DEFAULT_RATE,
 	    DEFAULT_MAX_TOLERABLE_LATENCY,
@@ -202,7 +206,8 @@ PDS arguments:\n\
 	  );
 
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
-DAP Arguments:\n\
+DAP Arguments for DataServer:\n\
+  -D, --portdap=PORT      DataServer port number (default %d).\n\
   -s, --start_time=DATE   Start time in date format.\n\
   -e, --end_time=DATE     End time in date format.\n\
                           DATE can be in formats:\n\
@@ -211,20 +216,20 @@ DAP Arguments:\n\
                               <date> = yyyy/mm/dd | yyy.jjj\n\
                               <time> = hh:mm:ss | hh:mm:ss.dddd | hh:mm\n\
   -t, --interval=SECs     Time interval from start_time (greater than zero).\n\
+                          DO NOT USE with -e.\n\
   -d, --delay=SECs        Receive continuosly data with delay [%d..%d].\n\
   -u, --username=USER     DataServer username.\n\
   -p, --password=PASS     DataServer password.\n\
   -l, --listchannels      Print list of available channels on DataServer.\n\
-  -i, --channelinfo       Print list of available channels and channelinfo.\n\
+  -i, --channelinfo       Print channelinfo (network name) when using -l.\n\
 \n\
 ",
+DEFAULT_PORT_DAP,
 DEFAULT_DELAY_MINIMUM,
 DEFAULT_DELAY_MAXIMUM);
 
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
 Other arguments:\n\
-  -P, --portpds=PORT      NaqsServer port number (default %d).\n\
-  -D, --portdap=PORT      DataServer port number (default %d).\n\
   -N, --network=NET       Default output Network code. (default '%s').\n\
   -L, --location=LOC      Default output Location code. DISABLED!\n\
   -v, --verbose=level     Be verbose. level is a bitmap:\n\
@@ -232,10 +237,8 @@ Other arguments:\n\
                           %d CRC32, %d Connection flow,\n\
                           %d Packet Management, %d Extra, %d Date,\n\
                           %d Gap, %d DOD, %d All messages.\n\
-  -g, --logdata           Print info about data.\n\
+  -g, --logdata           Print info about packet data.\n\
 ",
-	    DEFAULT_PORT_PDS,
-	    DEFAULT_PORT_DAP,
 	    DEFAULT_NETWORK,
 	    NMXP_LOG_D_PACKET,
 	    NMXP_LOG_D_CHANNEL,
@@ -257,14 +260,14 @@ Other arguments:\n\
 #endif
 
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
-  -w, --writefile         Dump received data to a file.\n");
+  -w, --writefile         Dump received packet data to a file.\n");
 
 #ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
-  -k, --slink=plug_name   Send received data to SeedLink as a plug-in.\n\
-                          plug_name is set by SeisComP daemon.\n\
+  -k, --slink=plugin_name Send received data to SeedLink as a plug-in.\n\
+                          plugin_name is set by SeisComP daemon.\n\
                           INTO THE FILE seedlink.in, THIS OPTION MUST BE\n\
-                          THE LAST WITHOUT ADDING VALUE FOR plug_name!\n");
+                          THE LAST WITHOUT ADDING VALUE FOR plugin_name!\n");
 #endif
 
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
