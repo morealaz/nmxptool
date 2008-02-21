@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.64 2008-02-20 21:43:07 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.65 2008-02-21 13:58:30 mtheo Exp $
  *
  */
 
@@ -264,10 +264,10 @@ Other arguments:\n\
 
 #ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
-  -k, --slink=plugin_name Send received data to SeedLink as a plug-in.\n\
+  -k, --slink=pluginid    Send received data to SeedLink as a plug-in.\n\
                           THIS OPTION, INSIDE THE FILE seedlink.ini, MUST BE\n\
-                          THE LAST WITHOUT ADDING VALUE FOR plugin_name!\n\
-                          plugin_name is set by SeisComP daemon.\n");
+                          THE LAST WITHOUT ADDING VALUE FOR pluginid!\n\
+                          pluginid is set by SeisComP daemon.\n");
 #endif
 
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
