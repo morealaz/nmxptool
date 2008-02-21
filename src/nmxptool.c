@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.128 2008-02-19 14:42:26 mtheo Exp $
+ * $Id: nmxptool.c,v 1.129 2008-02-21 11:27:26 mtheo Exp $
  *
  */
 
@@ -968,6 +968,11 @@ static void save_channel_states(NMXP_CHAN_LIST_NET *chan_list, NMXPTOOL_CHAN_SEQ
     FILE *fstatefile = NULL;
     char statefilefilename[MAX_LEN_FILENAME] = "";
 
+    if(chan_list == NULL  ||  chan_list_seq == NULL) {
+	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY, "save_channel_states() channel lists are NULL!\n");
+	return;
+    }
+
     if(params.statefile) {
 	strncpy(statefilefilename, params.statefile, MAX_LEN_FILENAME);
 	strncat(statefilefilename, NMXP_STR_STATE_EXT, MAX_LEN_FILENAME);
@@ -1107,6 +1112,11 @@ void load_channel_states(NMXP_CHAN_LIST_NET *chan_list, NMXPTOOL_CHAN_SEQ *chan_
 static void flushing_raw_data_stream() {
     int to_cur_chan;
 
+    if(channelList_subset == NULL  || channelList_Seq == NULL) {
+	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY, " flushing_raw_data_stream() channel lists are NULL.\n");
+	return ;
+    }
+
     /* Flush raw data stream for each channel */
     if(params.stc == -1) {
 	to_cur_chan = 0;
@@ -1149,13 +1159,11 @@ static void clientShutdown(int sig) {
     }
 #endif
 
-
     /* PDS Step 7: Send Terminate Subscription */
     nmxp_sendTerminateSubscription(naqssock, NMXP_SHUTDOWN_NORMAL, "Good Bye!");
 
     /* PDS Step 8: Close the socket */
     nmxp_closeSocket(naqssock);
-
 
 
     /* Free the complete channel list */
@@ -1164,20 +1172,22 @@ static void clientShutdown(int sig) {
 	channelList = NULL;
     }
 
-    int i_chan = 0;
+    if(channelList_subset && channelList_Seq) {
+	int i_chan = 0;
 
 #ifdef HAVE_LIBMSEED
-    if(*msr_list_chan) {
-	for(i_chan = 0; i_chan < channelList_subset->number; i_chan++) {
-	    if(msr_list_chan[i_chan]) {
-		msr_free(&(msr_list_chan[i_chan]));
+	if(*msr_list_chan) {
+	    for(i_chan = 0; i_chan < channelList_subset->number; i_chan++) {
+		if(msr_list_chan[i_chan]) {
+		    msr_free(&(msr_list_chan[i_chan]));
+		}
 	    }
 	}
-    }
 #endif
 
-    for(i_chan = 0; i_chan < channelList_subset->number; i_chan++) {
-	nmxp_raw_stream_free(&(channelList_Seq[i_chan].raw_stream_buffer));
+	for(i_chan = 0; i_chan < channelList_subset->number; i_chan++) {
+	    nmxp_raw_stream_free(&(channelList_Seq[i_chan].raw_stream_buffer));
+	}
     }
 
     if(channelList_Seq) {
@@ -1185,7 +1195,7 @@ static void clientShutdown(int sig) {
     }
 
     /* This has to be the last */
-    if(channelList_subset == NULL) {
+    if(channelList_subset) {
 	free(channelList_subset);
     }
 
