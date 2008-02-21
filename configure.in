@@ -154,6 +154,7 @@ AS_IF([test "x$with_ew" != xno],
     [AC_MSG_WARN([Earthworm support has been disabled!])]
 )
 AM_CONDITIONAL(WITHEWSOURCES, test x$EWOS != x)
+AM_CONDITIONAL(WITHEW, test x$with_ew != xno)
 
 
 # Checks for files.
@@ -200,7 +201,7 @@ AC_OUTPUT
 AC_MSG_NOTICE([
       Compile nmxptool using 'make'.])
 
-AS_IF([test "x$EWOSOURCES" != xno], 
+AS_IF([test "x$with_ew" != xno], 
       [AC_MSG_NOTICE([
       After compilation you can install nmxptool for Earthworm:
             make install-ew-bin
