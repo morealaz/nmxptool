@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.130 2008-02-22 06:21:14 mtheo Exp $
+ * $Id: nmxptool.c,v 1.131 2008-02-22 08:06:06 mtheo Exp $
  *
  */
 
@@ -108,6 +108,7 @@ int main (int argc, char **argv) {
     int request_SOCKET_OK;
     int i_chan, cur_chan = 0;
     int to_cur_chan = 0;
+    int request_chan;
     int exitpdscondition;
     int exitdapcondition;
     time_t timeout_for_channel;
@@ -368,37 +369,41 @@ int main (int argc, char **argv) {
 	while(exitdapcondition) {
 
 	    /* Start loop for sending requests */
-	    i_chan=0;
+	    request_chan=0;
 	    request_SOCKET_OK = NMXP_SOCKET_OK;
 
-	    while(request_SOCKET_OK == NMXP_SOCKET_OK  &&  i_chan < channelList_subset->number) {
+	    while(request_SOCKET_OK == NMXP_SOCKET_OK  &&  request_chan < channelList_subset->number) {
 
 		if(params.statefile) {
-		    if(channelList_Seq[i_chan].after_start_time > 0) {
-			params.start_time = channelList_Seq[i_chan].after_start_time;
+		    if(channelList_Seq[request_chan].after_start_time > 0) {
+			params.start_time = channelList_Seq[request_chan].after_start_time;
 			if(params.end_time - params.start_time > params.max_data_to_retrieve) {
 			    nmxp_data_to_str(start_time_str, params.start_time);
 			    nmxp_data_to_str(default_start_time_str, params.end_time - params.max_data_to_retrieve);
 			    nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "%s start_time changed from %s to %s\n",
-				    channelList_subset->channel[i_chan].name, start_time_str, default_start_time_str);
+				    channelList_subset->channel[request_chan].name, start_time_str, default_start_time_str);
 			    params.start_time = params.end_time - params.max_data_to_retrieve;
 			}
 		    } else {
 			params.start_time = default_start_time;
 		    }
-		    channelList_Seq[i_chan].last_time = params.start_time;
-		    channelList_Seq[i_chan].significant = 1;
+		    channelList_Seq[request_chan].last_time = params.start_time;
+		    channelList_Seq[request_chan].significant = 1;
 
 		}
+
+		nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_EXTRA, "nmxp_sendDataRequest %d %s (%d)\n",
+			channelList_subset->channel[request_chan].key,
+			channelList_subset->channel[request_chan].name, request_chan);
 
 		nmxp_data_to_str(start_time_str, params.start_time);
 		nmxp_data_to_str(end_time_str, params.end_time);
 		nmxp_data_to_str(default_start_time_str, default_start_time);
 		nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_EXTRA, "%s start_time = %s - end_time = %s - (default_start_time = %s)\n",
-			channelList_subset->channel[i_chan].name, start_time_str, end_time_str, default_start_time_str);
+			channelList_subset->channel[request_chan].name, start_time_str, end_time_str, default_start_time_str);
 
 		/* DAP Step 5: Send Data Request */
-		request_SOCKET_OK = nmxp_sendDataRequest(naqssock, channelList_subset->channel[i_chan].key, (int32_t) params.start_time, (int32_t) (params.end_time + 1.0));
+		request_SOCKET_OK = nmxp_sendDataRequest(naqssock, channelList_subset->channel[request_chan].key, (int32_t) params.start_time, (int32_t) (params.end_time + 1.0));
 
 		if(request_SOCKET_OK == NMXP_SOCKET_OK) {
 
@@ -409,7 +414,7 @@ int main (int argc, char **argv) {
 
 		    if(params.flag_writefile) {
 			/* Open output file */
-			if(nmxp_chan_cpy_sta_chan(channelList_subset->channel[i_chan].name, station_code, channel_code, network_code)) {
+			if(nmxp_chan_cpy_sta_chan(channelList_subset->channel[request_chan].name, station_code, channel_code, network_code)) {
 			    sprintf(filename, "%s.%s.%s_%s_%s.nmx",
 				    NETCODE_OR_CURRENT_NETWORK,
 				    station_code,
@@ -418,7 +423,7 @@ int main (int argc, char **argv) {
 				    str_end_time);
 			} else {
 			    sprintf(filename, "%s_%s_%s.nmx",
-				    channelList_subset->channel[i_chan].name,
+				    channelList_subset->channel[request_chan].name,
 				    str_start_time,
 				    str_end_time);
 			}
@@ -432,7 +437,7 @@ int main (int argc, char **argv) {
 #ifdef HAVE_LIBMSEED
 		    if(params.flag_writeseed) {
 			/* Open output Mini-SEED file */
-			if(nmxp_chan_cpy_sta_chan(channelList_subset->channel[i_chan].name, station_code, channel_code, network_code)) {
+			if(nmxp_chan_cpy_sta_chan(channelList_subset->channel[request_chan].name, station_code, channel_code, network_code)) {
 			    sprintf(data_seed.filename_mseed, "%s.%s.%s_%s_%s.miniseed",
 				    NETCODE_OR_CURRENT_NETWORK,
 				    station_code,
@@ -441,7 +446,7 @@ int main (int argc, char **argv) {
 				    str_end_time);
 			} else {
 			    sprintf(filename, "%s_%s_%s.miniseed",
-				    channelList_subset->channel[i_chan].name,
+				    channelList_subset->channel[request_chan].name,
 				    str_start_time,
 				    str_end_time);
 			}
@@ -457,7 +462,7 @@ int main (int argc, char **argv) {
 			/* Compute SNCL line */
 
 			/* Separate station_code_old_way and channel_code_old_way */
-			if(nmxp_chan_cpy_sta_chan(channelList_subset->channel[i_chan].name, station_code, channel_code, network_code)) {
+			if(nmxp_chan_cpy_sta_chan(channelList_subset->channel[request_chan].name, station_code, channel_code, network_code)) {
 			    /* Write SNCL line */
 			    fprintf(outfile, "%s.%s.%s.%s\n",
 				    station_code,
@@ -470,7 +475,8 @@ int main (int argc, char **argv) {
 
 		    /* DAP Step 6: Receive Data until receiving a Ready message */
 		    ret = nmxp_receiveMessage(naqssock, &type, &buffer, &length, 0, &recv_errno);
-		    /* nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CONNFLOW, "ret = %d, type = %d\n", ret, type); */
+
+		    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_EXTRA, "ret = %d, type = %d, length = %d, recv_errno = %d\n", ret, type, length, recv_errno);
 
 		    while(ret == NMXP_SOCKET_OK   &&    type != NMXP_MSG_READY) {
 
@@ -488,12 +494,14 @@ int main (int argc, char **argv) {
 
 			/* Set cur_chan */
 			cur_chan = nmxp_chan_lookupKeyIndex(pd->key, channelList_subset);
-			if(i_chan != cur_chan) {
-			    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY, "i_chan != cur_chan  %d != %d! (%d, %s) (%d, %s.%s.%s)\n",
-				    i_chan, cur_chan,
-				    channelList_subset->channel[i_chan].key, channelList_subset->channel[i_chan].name,
+
+			/* It is not the channel I have requested or error from nmxp_chan_lookupKeyIndex() */
+			if(request_chan != cur_chan  &&  cur_chan != -1) {
+			    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY, "request_chan != cur_chan  %d != %d! (%d, %s) (%d, %s.%s.%s)\n",
+				    request_chan, cur_chan,
+				    channelList_subset->channel[request_chan].key, channelList_subset->channel[request_chan].name,
 				    pd->key, pd->network, pd->station, pd->channel);
-			}
+			} else {
 
 			/* Management of gaps */
 			if(!channelList_Seq[cur_chan].significant && pd->nSamp > 0) {
@@ -541,12 +549,15 @@ int main (int argc, char **argv) {
 			    }
 			}
 
+			/* Store x_1 */
+			channelList_Seq[cur_chan].x_1 = pd->pDataPtr[pd->nSamp-1];
+
 			}
 
-			/* Store x_1 */
-			if(pd->nSamp > 0) {
-			    channelList_Seq[cur_chan].x_1 = pd->pDataPtr[pd->nSamp-1];
+			} else {
+			    /* TODO: nSamp <= 0 */
 			}
+
 
 			/* Free pd->buffer */
 			if(pd->buffer) {
@@ -573,8 +584,10 @@ int main (int argc, char **argv) {
 		    }
 #endif
 
+		} else {
+		    /* TODO: error message */
 		}
-		i_chan++;
+		request_chan++;
 	    }
 	    /* DAP Step 7: Repeat steps 5 and 6 for each data request */
 
@@ -756,6 +769,9 @@ int main (int argc, char **argv) {
 	    if(pd) {
 		/* Set cur_chan */
 		cur_chan = nmxp_chan_lookupKeyIndex(pd->key, channelList_subset);
+		if(cur_chan == -1) {
+		    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY, "Key %d not found in channelList_subset!\n", pd->key);
+		}
 	    }
 
 	    /* Log contents of last packet */
@@ -1135,6 +1151,7 @@ static void flushing_raw_data_stream() {
 #ifndef HAVE_WINDOWS_H
 /* Do any needed cleanup and exit */
 static void clientShutdown(int sig) {
+    int i_chan = 0;
 
     nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "Program interrupted!\n");
 
@@ -1176,8 +1193,6 @@ static void clientShutdown(int sig) {
     }
 
     if(channelList_subset && channelList_Seq) {
-	int i_chan = 0;
-
 #ifdef HAVE_LIBMSEED
 	if(*msr_list_chan) {
 	    for(i_chan = 0; i_chan < channelList_subset->number; i_chan++) {
@@ -1246,7 +1261,7 @@ int nmxptool_write_miniseed(NMXP_DATA_PROCESS *pd) {
 	ret = nmxp_data_msr_pack(pd, &data_seed, msr_list_chan[cur_chan]);
 
     } else {
-	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANNEL, "Key %d not found in channelList_subset!\n", pd->key);
+	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY, "Key %d not found in channelList_subset!\n", pd->key);
     }
     return ret;
 }
