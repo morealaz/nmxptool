@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.129 2008-02-21 11:27:26 mtheo Exp $
+ * $Id: nmxptool.c,v 1.130 2008-02-22 06:21:14 mtheo Exp $
  *
  */
 
@@ -489,7 +489,10 @@ int main (int argc, char **argv) {
 			/* Set cur_chan */
 			cur_chan = nmxp_chan_lookupKeyIndex(pd->key, channelList_subset);
 			if(i_chan != cur_chan) {
-			    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY, "i_chan != cur_chan  %d != %d!\n", i_chan, cur_chan);
+			    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY, "i_chan != cur_chan  %d != %d! (%d, %s) (%d, %s.%s.%s)\n",
+				    i_chan, cur_chan,
+				    channelList_subset->channel[i_chan].key, channelList_subset->channel[i_chan].name,
+				    pd->key, pd->network, pd->station, pd->channel);
 			}
 
 			/* Management of gaps */
