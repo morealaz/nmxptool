@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_base.c,v 1.54 2008-02-19 14:40:58 mtheo Exp $
+ * $Id: nmxp_base.c,v 1.55 2008-02-22 08:04:57 mtheo Exp $
  *
  */
 
@@ -426,12 +426,19 @@ NMXP_DATA_PROCESS *nmxp_processDecompressedData(char* buffer_data, int length_da
   char channel_code[20];
   char network_code[20];
 
+  char *nmxp_channel_name = NULL;
   static NMXP_DATA_PROCESS pd;
 
   /* copy the header contents into local fields and swap */
   memcpy(&netInt, &buffer_data[0], 4);
   pKey = ntohl(netInt);
   if ( pKey != netInt ) { swap = 1; }
+
+  nmxp_data_init(&pd);
+
+  nmxp_channel_name = nmxp_chan_lookupName(pKey, channelList);
+
+  if(nmxp_channel_name) {
 
   memcpy(&pTime, &buffer_data[4], 8);
   if ( swap ) { nmxp_data_swap_8b((int64_t *) ((void *)&pTime)); }
@@ -451,12 +458,10 @@ NMXP_DATA_PROCESS *nmxp_processDecompressedData(char* buffer_data, int length_da
       pDataPtr[idx] = netInt;
   }
 
-  if(!nmxp_chan_cpy_sta_chan(nmxp_chan_lookupName(pKey, channelList), station_code, channel_code, network_code)) {
-    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_PACKETMAN, "Channel name not in STA.CHAN format: %s\n", nmxp_chan_lookupName(pKey, channelList));
+  if(!nmxp_chan_cpy_sta_chan(nmxp_channel_name, station_code, channel_code, network_code)) {
+    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_PACKETMAN, "Channel name not in STA.CHAN format: %s\n", nmxp_channel_name);
   }
   
-  nmxp_data_init(&pd);
-
   pd.key = pKey;
   if(network_code[0] != 0) {
       strcpy(pd.network, network_code);
@@ -482,6 +487,8 @@ NMXP_DATA_PROCESS *nmxp_processDecompressedData(char* buffer_data, int length_da
   pd.nSamp = pNSamp;
   pd.pDataPtr = pDataPtr;
   pd.sampRate = pSampRate;
+
+  }
 
   return &pd;
 }
@@ -523,6 +530,8 @@ NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data
 	int32_t outdata[MAX_OUTDATA];
 	int32_t nout, i, k;
 	int32_t prev_xn;
+
+	char *nmxp_channel_name = NULL;
 
 	// TOREMOVE int my_order = get_my_wordorder();
 	int my_host_is_bigendian = nmxp_data_bigendianhost();
@@ -591,8 +600,14 @@ NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data
 
 	pSampRate = this_sample_rate;
 
-	if(!nmxp_chan_cpy_sta_chan(nmxp_chan_lookupName(pKey, channelList), station_code, channel_code, network_code)) {
-	    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_PACKETMAN, "Channel name not in STA.CHAN format: %s\n", nmxp_chan_lookupName(pKey, channelList));
+	nmxp_data_init(&pd);
+
+	nmxp_channel_name = nmxp_chan_lookupName(pKey, channelList);
+
+	if(nmxp_channel_name) {
+
+	if(!nmxp_chan_cpy_sta_chan(nmxp_channel_name, station_code, channel_code, network_code)) {
+	    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_PACKETMAN, "Channel name not in STA.CHAN format: %s\n", nmxp_channel_name);
 	}
   
 	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN, "Channel key %d for %s.%s\n", pKey, station_code, channel_code);
@@ -628,8 +643,6 @@ NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data
 
 	pNSamp = nout;
 
-	nmxp_data_init(&pd);
-
 	pd.key = pKey;
 	if(network_code[0] != 0) {
 	    strcpy(pd.network, network_code);
@@ -654,6 +667,8 @@ NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data
 	pd.nSamp = pNSamp;
 	pd.pDataPtr = pDataPtr;
 	pd.sampRate = pSampRate;
+
+	}
 
 	return &pd;
 }
