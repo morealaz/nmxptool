@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_chan.c,v 1.29 2008-02-17 14:41:02 mtheo Exp $
+ * $Id: nmxp_chan.c,v 1.30 2008-02-22 08:05:06 mtheo Exp $
  *
  */
 
@@ -233,7 +233,7 @@ char *nmxp_chan_lookupName(int32_t key, NMXP_CHAN_LIST_NET *channelList)
     }
 
     if(ret[0] == 0) {
-	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANNEL, "Key %d not found!", key);
+	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANNEL, "Key %d not found!\n", key);
 	return NULL;
     } else {
 	return ret;
