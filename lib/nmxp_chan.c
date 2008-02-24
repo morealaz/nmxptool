@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_chan.c,v 1.31 2008-02-24 15:10:52 mtheo Exp $
+ * $Id: nmxp_chan.c,v 1.32 2008-02-24 17:41:44 mtheo Exp $
  *
  */
 
@@ -61,7 +61,8 @@ int nmxp_chan_cpy_sta_chan(const char *net_dot_station_dot_channel, char *statio
 		strcpy(channel_code, period1);
 	    }
 	} else {
-	    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANNEL, "Name %s is not in NET.STA.CHAN format! (NET. is optional)\n", net_dot_station_dot_channel);
+	    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANNEL, "Name %s is not in NET.STA.CHAN format! (NET. is optional)\n",
+		    NMXP_LOG_STR(net_dot_station_dot_channel));
 	}
 
 	if(tmp_name) {
@@ -69,7 +70,8 @@ int nmxp_chan_cpy_sta_chan(const char *net_dot_station_dot_channel, char *statio
 	}
 
     } else {
-	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANNEL, "Some parameter is NULL in nmxp_chan_cpy_sta_chan().\n",  net_dot_station_dot_channel);
+	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANNEL, "Some parameter is NULL in nmxp_chan_cpy_sta_chan() %s.\n",
+		NMXP_LOG_STR(net_dot_station_dot_channel));
     }
 
     return ret;
@@ -95,7 +97,8 @@ int nmxp_chan_match(const char *net_dot_station_dot_channel, char *pattern)
 
     /* validate pattern channel */
     if(!nmxp_chan_cpy_sta_chan(pattern, sta_pattern, cha_pattern, net_pattern)) {
-	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANNEL, "Channel pattern %s is not in STA.CHAN format!\n", pattern);
+	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANNEL, "Channel pattern %s is not in STA.CHAN format!\n",
+		NMXP_LOG_STR(pattern));
 	return -1;
     }
 
@@ -108,7 +111,8 @@ int nmxp_chan_match(const char *net_dot_station_dot_channel, char *pattern)
 		|| (net_pattern[i] >= '0'  &&  net_pattern[i] <= '9')
 		)
 	  ) {
-	    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANNEL, "Channel pattern %s has not valid NET format!\n", pattern);
+	    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANNEL, "Channel pattern %s has not valid NET format!\n",
+		    NMXP_LOG_STR(pattern));
 	    return -1;
 	}
 	i++;
@@ -127,7 +131,8 @@ int nmxp_chan_match(const char *net_dot_station_dot_channel, char *pattern)
 		|| (sta_pattern[i] == '_' )
 	     )
 	  ) {
-	    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANNEL, "Channel pattern %s has not valid STA format!\n", pattern);
+	    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANNEL, "Channel pattern %s has not valid STA format!\n",
+		    NMXP_LOG_STR(pattern));
 	    return -1;
 	}
 	i++;
@@ -136,7 +141,8 @@ int nmxp_chan_match(const char *net_dot_station_dot_channel, char *pattern)
     
     l = strlen(cha_pattern);
     if(l != 3) {
-	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANNEL, "Channel pattern %s has not valid CHAN format!\n", pattern);
+	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANNEL, "Channel pattern %s has not valid CHAN format!\n",
+		NMXP_LOG_STR(pattern));
 	return -1;
     }
     i = 0;
@@ -148,7 +154,8 @@ int nmxp_chan_match(const char *net_dot_station_dot_channel, char *pattern)
 		    || (cha_pattern[i] == '?' )
 	      )
 	  ) {
-	    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANNEL, "Channel pattern %s has not valid CHAN format!\n", pattern);
+	    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANNEL, "Channel pattern %s has not valid CHAN format!\n",
+		    NMXP_LOG_STR(pattern));
 	    return -1;
 	}
 	i++;
@@ -156,7 +163,8 @@ int nmxp_chan_match(const char *net_dot_station_dot_channel, char *pattern)
 
     strcpy(sta_sdc, net_dot_station_dot_channel);
     if( (cha_sdc = strchr(sta_sdc, '.')) == NULL ) {
-	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANNEL, "Channel %s is not in STA.CHAN format!\n", net_dot_station_dot_channel);
+	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANNEL, "Channel %s is not in STA.CHAN format!\n",
+		NMXP_LOG_STR(net_dot_station_dot_channel));
 	return -2;
     }
     if(cha_sdc) {
@@ -164,7 +172,8 @@ int nmxp_chan_match(const char *net_dot_station_dot_channel, char *pattern)
     }
     l = strlen(cha_sdc);
     if(l != 3) {
-	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANNEL, "Channel %s has not valid CHAN format!\n", pattern);
+	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANNEL, "Channel %s has not valid CHAN format!\n",
+		NMXP_LOG_STR(pattern));
 	return -1;
     }
 
@@ -353,7 +362,7 @@ void nmxp_chan_print_channelList(NMXP_CHAN_LIST *channelList) {
 		channelList->channel[i_chan].key,
 		"    ",
 		' ',
-		channelList->channel[i_chan].name);
+		NMXP_LOG_STR(channelList->channel[i_chan].name));
     }
 
 }
@@ -366,7 +375,9 @@ void nmxp_chan_print_netchannelList(NMXP_CHAN_LIST_NET *channelList) {
 
     for (i_chan = 0; i_chan < chan_number; i_chan++)
     {
-	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CHANNEL, "%04d %12d %s\n", i_chan+1, channelList->channel[i_chan].key, channelList->channel[i_chan].name);
+	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CHANNEL, "%04d %12d %s\n",
+		i_chan+1, channelList->channel[i_chan].key,
+		NMXP_LOG_STR(channelList->channel[i_chan].name));
     }
 
 }
@@ -428,10 +439,9 @@ NMXP_META_CHAN_LIST *nmxp_meta_chan_add(NMXP_META_CHAN_LIST **chan_list, int32_t
     NMXP_META_CHAN_LIST *iter = NULL;
     NMXP_META_CHAN_LIST *new_item = NULL;
 
-    /* nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CHANNEL, "nmxp_meta_chan_add(%d, %d, %s, %d, %d, %s, %d)\n", *chan_list, key, name, start_time, end_time, network, sorttype); */
-
     if(sorttype != NMXP_META_SORT_KEY  &&  sorttype != NMXP_META_SORT_NAME) {
-	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANNEL, "nmxp_meta_chan_add() can only accept NMXP_META_SORT_KEY or NMXP_META_SORT_NAME. Fixed NMXP_META_SORT_KEY!\n");
+	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANNEL,
+		"nmxp_meta_chan_add() can only accept NMXP_META_SORT_KEY or NMXP_META_SORT_NAME. Fixed NMXP_META_SORT_KEY!\n");
 	sorttype = NMXP_META_SORT_KEY;
     }
 
@@ -540,11 +550,11 @@ void nmxp_meta_chan_print(NMXP_META_CHAN_LIST *chan_list) {
 	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "%04d %12d %6s%c%-11s (%s  -  %s)\n",
 		i_chan+1,
 		iter->key,
-		iter->network,
+		NMXP_LOG_STR(iter->network),
 		(strcmp(iter->network, "")==0)? ' ' : '.',
-		iter->name,
-		str_start_time,
-		str_end_time
+		NMXP_LOG_STR(iter->name),
+		NMXP_LOG_STR(str_start_time),
+		NMXP_LOG_STR(str_end_time)
 		);
 	iter = iter->next;
 	i_chan++;
