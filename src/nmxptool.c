@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.131 2008-02-22 08:06:06 mtheo Exp $
+ * $Id: nmxptool.c,v 1.132 2008-02-24 15:32:48 mtheo Exp $
  *
  */
 
@@ -721,7 +721,7 @@ int main (int argc, char **argv) {
 	}
 #endif
 
-	// TODO
+	/* TODO*/
 	exitpdscondition = 1;
 
 	skip_current_packet = 0;
@@ -743,7 +743,7 @@ int main (int argc, char **argv) {
 	    }
 
 	    if(recv_errno == 0) {
-		// TODO
+		/* TODO*/
 		exitpdscondition = 1;
 	    } else {
 #ifdef HAVE_WINDOWS_H
@@ -752,7 +752,7 @@ int main (int argc, char **argv) {
 		if(recv_errno == EWOULDBLOCK)
 #endif
 		{
-		    // TODO
+		    /* TODO*/
 		    exitpdscondition = 1;
 		} else {
 		    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CONNFLOW, "Error receiving data. pd=%p recv_errno=%d\n", pd, recv_errno);
@@ -1003,7 +1003,7 @@ static void save_channel_states(NMXP_CHAN_LIST_NET *chan_list, NMXPTOOL_CHAN_SEQ
 	}
 
 	/* Save state for each channel */
-	// if(params.stc == -1)
+	/* if(params.stc == -1)*/
 	to_cur_chan = 0;
 	while(to_cur_chan < chan_list->number) {
 	    nmxp_data_to_str(last_time_str, chan_list_seq[to_cur_chan].last_time);
