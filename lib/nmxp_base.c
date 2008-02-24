@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_base.c,v 1.56 2008-02-24 15:10:52 mtheo Exp $
+ * $Id: nmxp_base.c,v 1.57 2008-02-24 17:36:01 mtheo Exp $
  *
  */
 
@@ -57,7 +57,8 @@ int nmxp_openSocket(char *hostname, int portNum)
   }
 
   if ( (hostinfo = gethostbyname(hostname)) == NULL) {
-    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CONNFLOW, "Cannot lookup host: %s\n", hostname);
+    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CONNFLOW, "Cannot lookup host: %s\n",
+	    NMXP_LOG_STR(hostname));
     return -1;
   }
 
@@ -96,19 +97,19 @@ int nmxp_openSocket(char *hostname, int portNum)
     memcpy(&hostaddr.s_addr, *hostinfo->h_addr_list,
 	   sizeof (hostaddr.s_addr));
     nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CONNFLOW, "Attempting to connect to %s port %d\n",
-	    inet_ntoa(hostaddr), portNum);
+	    NMXP_LOG_STR(inet_ntoa(hostaddr)), portNum);
 
     if (connect(isock, (struct sockaddr *)&psServAddr, sizeof(psServAddr)) >= 0)
     {
       sleepTime = 1;
       nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CONNFLOW, "Connection established: socket=%i,IP=%s,port=%d\n",
-	      isock, inet_ntoa(hostaddr), portNum);
+	      isock, NMXP_LOG_STR(inet_ntoa(hostaddr)), portNum);
       return isock;
     }
     else
     {
       nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CONNFLOW, "Connecting to %s port %d. Trying again after %d seconds...\n",
-	      inet_ntoa(hostaddr), portNum, sleepTime);
+	      NMXP_LOG_STR(inet_ntoa(hostaddr)), portNum, sleepTime);
       nmxp_closeSocket(isock);
       nmxp_sleep (sleepTime);
       sleepTime *= 2;
@@ -250,7 +251,8 @@ int nmxp_recv_ctrl(int isock, void *buffer, int length, int timeoutsec, int *rec
 #endif
       if(cc <= 0) {
 	  /*
-	  nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CONNFLOW, "nmxp_recv_ctrl(): (cc=%d <= 0) errno=%d  recvCount=%d  length=%d\n", cc, *recv_errno, recvCount, length);
+	  nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CONNFLOW, "nmxp_recv_ctrl(): (cc=%d <= 0) errno=%d  recvCount=%d  length=%d\n",
+	  cc, *recv_errno, recvCount, length);
 	  */
       } else {
 	  recvCount += cc;
@@ -295,7 +297,7 @@ int nmxp_recv_ctrl(int isock, void *buffer, int length, int timeoutsec, int *rec
 #endif
       {
 	  nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CONNFLOW, "nmxp_recv_ctrl(): recvCount=%d  length=%d  (cc=%d) errno=%d (%s)\n",
-		  recvCount, length, cc, *recv_errno, recv_errno_str);
+		  recvCount, length, cc, *recv_errno, NMXP_LOG_STR(recv_errno_str));
       }
 
       /* TO IMPROVE 
@@ -349,7 +351,8 @@ int nmxp_receiveHeader(int isock, NMXP_MSG_SERVER *type, int32_t *length, int ti
 	if (msg.signature != NMX_SIGNATURE)
 	{
 	    ret = NMXP_SOCKET_ERROR;
-	    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CONNFLOW, "nmxp_receiveHeader(): signature mismatches. signature = %d, type = %d, length = %d\n",
+	    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CONNFLOW,
+		    "nmxp_receiveHeader(): signature mismatches. signature = %d, type = %d, length = %d\n",
 		    msg.signature, msg.type, msg.length);
 	} else {
 	    *type = msg.type;
@@ -386,7 +389,7 @@ int nmxp_receiveMessage(int isock, NMXP_MSG_SERVER *type, void **buffer, int32_t
 	    ret = nmxp_recv_ctrl(isock, *buffer, *length, 0, recv_errno);
 
 	    if(*type == NMXP_MSG_ERROR) {
-		nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_PACKETMAN, "Received ErrorMessage: %s\n", *buffer);
+		nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_PACKETMAN, "Received ErrorMessage: %s\n", NMXP_LOG_STR(*buffer));
 	    } else {
 		nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_PACKETMAN, "Received message type: %d  length=%d\n", *type, *length);
 	    }
@@ -459,7 +462,8 @@ NMXP_DATA_PROCESS *nmxp_processDecompressedData(char* buffer_data, int length_da
   }
 
   if(!nmxp_chan_cpy_sta_chan(nmxp_channel_name, station_code, channel_code, network_code)) {
-    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_PACKETMAN, "Channel name not in STA.CHAN format: %s\n", nmxp_channel_name);
+    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_PACKETMAN, "Channel name not in STA.CHAN format: %s\n",
+	    NMXP_LOG_STR(nmxp_channel_name));
   }
   
   pd.key = pKey;
@@ -607,10 +611,12 @@ NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data
 	if(nmxp_channel_name) {
 
 	if(!nmxp_chan_cpy_sta_chan(nmxp_channel_name, station_code, channel_code, network_code)) {
-	    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_PACKETMAN, "Channel name not in STA.CHAN format: %s\n", nmxp_channel_name);
+	    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_PACKETMAN, "Channel name not in STA.CHAN format: %s\n",
+		    NMXP_LOG_STR(nmxp_channel_name));
 	}
   
-	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN, "Channel key %d for %s.%s\n", pKey, station_code, channel_code);
+	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN, "Channel key %d for %s.%s\n",
+		pKey, NMXP_LOG_STR(station_code), NMXP_LOG_STR(channel_code));
 
 	comp_bytecount = length_data-21;
 	indata = (unsigned char *) buffer_data + 21;
@@ -630,7 +636,11 @@ NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data
 		exit(1);
 	    }
 	    k = nmxp_data_unpack_bundle (outdata+nout,indata+i,&prev_xn);
-	    if (k < 0) nmxp_log (NMXP_LOG_WARN, NMXP_LOG_D_PACKETMAN, "Null bundle: %s.%s.%s (k=%d) %s %d\n", network_code, station_code, channel_code, k, __FILE__,  __LINE__);
+	    if (k < 0) nmxp_log (NMXP_LOG_WARN, NMXP_LOG_D_PACKETMAN, "Null bundle: %s.%s.%s (k=%d) %s %d\n",
+		    NMXP_LOG_STR(network_code),
+		    NMXP_LOG_STR(station_code),
+		    NMXP_LOG_STR(channel_code), k,
+		    __FILE__,  __LINE__);
 	    if (k < 0) break;
 	    nout += k;
 	    /* prev_xn = outdata[nout-1]; */
