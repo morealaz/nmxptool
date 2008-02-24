@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.66 2008-02-24 16:49:25 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.67 2008-02-24 17:19:26 mtheo Exp $
  *
  */
 
@@ -60,7 +60,7 @@ void nmxptool_author_support() {
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
 Matteo Quintiliani - Istituto Nazionale di Geofisica e Vulcanologia - Italy\n\
 Mail bug reports and suggestions to <%s>.\n",
-	    PACKAGE_BUGREPORT
+	    NMXP_LOG_STR(PACKAGE_BUGREPORT)
 	    );
 }
 
@@ -69,7 +69,7 @@ void nmxptool_version() {
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
 %s %s%s, Nanometrics tool based on %s\n\
         (Private Data Stream 1.4, Data Access Protocol 1.0)\n",
-	PACKAGE_NAME, PACKAGE_VERSION, PACKAGE_BUILD,
+	NMXP_LOG_STR(PACKAGE_NAME), NMXP_LOG_STR(PACKAGE_VERSION), NMXP_LOG_STR(PACKAGE_BUILD),
 	nmxp_log_version()	
 	);
 
@@ -120,26 +120,31 @@ Usage: %s -H hostname   -l | -L\n\
        %s -H hostname -C channellist -s DATE -e DATE [...]\n\
        %s -H hostname -C channellist -s DATE -t SECs [...]\n\
              Receive data from DataServer by DAP.\n\
-\n", PACKAGE_NAME, PACKAGE_NAME, PACKAGE_NAME, PACKAGE_NAME, PACKAGE_NAME);
+\n",
+NMXP_LOG_STR(PACKAGE_NAME),
+NMXP_LOG_STR(PACKAGE_NAME),
+NMXP_LOG_STR(PACKAGE_NAME),
+NMXP_LOG_STR(PACKAGE_NAME),
+NMXP_LOG_STR(PACKAGE_NAME));
 
 #ifdef HAVE_EARTHWORMOBJS
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
        %s nmxptool.d\n\
              Launched as Earthworm module to redirect data into the EW-Rings.\n\
-\n", PACKAGE_NAME);
+\n", NMXP_LOG_STR(PACKAGE_NAME));
 #endif
 
 #ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
        %s <option ... option> -k\n\
              Launched as SeedLink plug-in to feed the SL-Server.\n\
-\n", PACKAGE_NAME);
+\n", NMXP_LOG_STR(PACKAGE_NAME));
 #endif
 
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
        %s --help\n\
              Print this help.\n\
-\n", PACKAGE_NAME);
+\n", NMXP_LOG_STR(PACKAGE_NAME));
 
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
 Main arguments:\n\
@@ -239,7 +244,7 @@ Other arguments:\n\
                           %d Gap, %d DOD, %d All messages.\n\
   -g, --logdata           Print info about packet data.\n\
 ",
-	    DEFAULT_NETWORK,
+	    NMXP_LOG_STR(DEFAULT_NETWORK),
 	    NMXP_LOG_D_PACKET,
 	    NMXP_LOG_D_CHANNEL,
 	    NMXP_LOG_D_RAWSTREAM,
@@ -281,7 +286,9 @@ Other arguments:\n\
     if(long_options) {
 	int i=0;
 	while(long_options[i].name) {
-	    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_EXTRA, "%s %d %d %d %c\n", long_options[i].name, long_options[i].has_arg, (long_options[i].flag)? *(long_options[i].flag) : 0, long_options[i].val, long_options[i].val);
+	    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_EXTRA, "%s %d %d %d %c\n",
+	    NMXP_LOG_STR(long_options[i].name), long_options[i].has_arg,
+	    (long_options[i].flag)? *(long_options[i].flag) : 0, long_options[i].val, long_options[i].val);
 	    i++;
 	}
     }
@@ -428,7 +435,7 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 
 	if(one_time_option[c] > 1) {
 	    ret_errors++;
-	    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "Replicated option -%c (value %s)\n", c, optarg);
+	    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "Replicated option -%c (value %s)\n", c, NMXP_LOG_STR(optarg));
 	} else {
 	    switch (c)
 	    {
@@ -436,9 +443,11 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 		    /* If this option set a flag, do nothing else now. */
 		    if (long_options[option_index].flag != 0)
 			break;
-		    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "option %s", long_options[option_index].name);
-		    if (optarg)
-			nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, " with arg %s", optarg);
+		    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "option %s",
+			    NMXP_LOG_STR(long_options[option_index].name));
+		    if (optarg) {
+			nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, " with arg %s", NMXP_LOG_STR(optarg));
+		    }
 		    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\n");
 		    break;
 
@@ -456,7 +465,8 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 
 		case 'C':
 		    if(params->channels) {
-			nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY, "Channels have been already defined by State File (option -F)!\n");
+			nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY,
+				"Channels have been already defined by State File (option -F)!\n");
 			ret_errors++;
 		    } else {
 			params->channels = optarg;
@@ -520,12 +530,14 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 
 		case 'M':
 		    params->max_tolerable_latency = atoi(optarg);
-		    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "Max_tolerable_latency %d\n", params->max_tolerable_latency);
+		    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "Max_tolerable_latency %d\n",
+			    params->max_tolerable_latency);
 		    break;
 
 		case 'T':
 		    params->timeoutrecv = atoi(optarg);
-		    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "Time-out receiving %d\n", params->timeoutrecv);
+		    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "Time-out receiving %d\n",
+			    params->timeoutrecv);
 		    break;
 
 		case 'v':
@@ -535,7 +547,7 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 		case 'B':
 		    params->flag_buffered = 1;
 		    if(nmxp_data_parse_date(optarg, &tmp_tmt) == -1) {
-			// MESSAGE ERROR
+			/* MESSAGE ERROR */
 			ret_errors++;
 		    } else {
 			params->buffered_time = nmxp_data_tm_to_time(&tmp_tmt);
@@ -565,11 +577,13 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 			    /* Do nothing */
 			} else {
 			    ret_errors++;
-			    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "State file %s not found or unable to read!\n", params->statefile);
+			    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY,
+				    "State file %s not found or unable to read!\n", NMXP_LOG_STR(params->statefile));
 			}
 		    } else {
 			ret_errors++;
-			nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY, "Channels have been already defined by option -C!\n");
+			nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY,
+				"Channels have been already defined by option -C!\n");
 		    }
 		    break;
 
@@ -633,7 +647,7 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 
 	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "non-option ARGV-elements: ");
 	while (optind < argc)
-	    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "%s ", argv[optind++]);
+	    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "%s ", NMXP_LOG_STR(argv[optind++]));
 	putchar ('\n');
     }
 
