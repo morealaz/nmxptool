@@ -2,7 +2,7 @@
  *
  * \brief Computing a 32 bit CRC.
  *
- * $Id: nmxp_crc32.c,v 1.5 2007-12-28 11:21:51 mtheo Exp $
+ * $Id: nmxp_crc32.c,v 1.6 2008-02-24 15:10:52 mtheo Exp $
  *
  *
  */
@@ -17,7 +17,7 @@ void crc32_init_table () {
     crc32_tab[0] = 0;
     for (i = 128; i; i >>= 1) {
 	h = (h >> 1) ^ ((h & 1) ? POLYNOMIAL : 0);
-	// h is now crc_table[i]
+	/* h is now crc_table[i]*/
 	for (j = 0; j < 256; j += 2 * i) {
 	    crc32_tab[i + j] = crc32_tab[j] ^ h;
 	}

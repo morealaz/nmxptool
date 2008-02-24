@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_chan.c,v 1.30 2008-02-22 08:05:06 mtheo Exp $
+ * $Id: nmxp_chan.c,v 1.31 2008-02-24 15:10:52 mtheo Exp $
  *
  */
 
@@ -307,7 +307,7 @@ NMXP_CHAN_LIST_NET *nmxp_chan_subset(NMXP_CHAN_LIST *channelList, NMXP_DATATYPE 
 }
 
 
-// Comparison Key Function
+/* Comparison Key Function*/
 int chan_key_compare(const void *a, const void *b)
 {
     int ret = 0;
@@ -326,7 +326,7 @@ void nmxp_chan_sortByKey(NMXP_CHAN_LIST *channelList) {
     qsort (channelList->channel, channelList->number, sizeof (NMXP_CHAN_KEY), chan_key_compare);
 }
 
-// Comparison Name Function
+/* Comparison Name Function*/
 int chan_name_compare(const void *a, const void *b)
 {
     NMXP_CHAN_KEY *pa = (NMXP_CHAN_KEY *) a; 

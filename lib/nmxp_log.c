@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_log.c,v 1.14 2007-11-22 11:10:40 mtheo Exp $
+ * $Id: nmxp_log.c,v 1.15 2008-02-24 15:10:52 mtheo Exp $
  *
  */
 
@@ -104,7 +104,7 @@ int nmxp_log(int level, int verb, ... )
 
     /* Build local time string and cut off the newline */
     time(&loc_time);
-    // TODO
+    /* TODO*/
     strcpy(timestr, asctime(localtime(&loc_time)));
     timestr[strlen(timestr) - 1] = '\0';
 

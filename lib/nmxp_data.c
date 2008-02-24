@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_data.c,v 1.48 2008-01-17 08:13:51 mtheo Exp $
+ * $Id: nmxp_data.c,v 1.49 2008-02-24 15:10:52 mtheo Exp $
  *
  */
 
@@ -89,7 +89,6 @@ int nmxp_data_unpack_bundle (int32_t *outdata, unsigned char *indata, int32_t *p
 	int32_t d4[4];
 	int16_t d2[2];
 	int32_t cb[4];  
-	//mtheo int i, j, k;
 	int32_t i, j, k=0;
 	unsigned char cbits;
 	/* TOREMOVE int my_order = get_my_wordorder(); */
@@ -169,7 +168,6 @@ int nmxp_data_to_str(char *out_str, double time_d) {
     }
     tm_start_time = gmtime(&time_t_start_time);
     
-    // sprintf(out_str, "%04d/%02d/%02d %02d:%02d:%02d.%04d",
     sprintf(out_str, "%04d.%03d,%02d:%02d:%02d.%04d",
 	    tm_start_time->tm_year + 1900,
 	    /*
@@ -315,8 +313,8 @@ int nmxp_data_log(NMXP_DATA_PROCESS *pd) {
 	nmxp_data_to_str(str_start, pd->time);
 	nmxp_data_to_str(str_end, pd->time + ((double) pd->nSamp / (double) pd->sampRate));
 
-	// nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN, "%12d %5s.%3s rate=%03d (%s - %s) [%d, %d] pts=%04d (%d, %d, %d, %d) lat=%.1f len=%d\n",
-	// printf("%10d %5s.%3s 03dHz (%s - %s) lat=%.1fs [%d, %d] pts=%04d (%d, %d, %d, %d) len=%d\n",
+	/* nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN, "%12d %5s.%3s rate=%03d (%s - %s) [%d, %d] pts=%04d (%d, %d, %d, %d) lat=%.1f len=%d\n", */
+	/* printf("%10d %5s.%3s 03dHz (%s - %s) lat=%.1fs [%d, %d] pts=%04d (%d, %d, %d, %d) len=%d\n", */
 	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "%s.%s.%3s %3dHz (%s - %s) lat %.1fs [%d, %d] (%d) %4dpts (%d, %d, %d, %d, %d) %d\n",
 		/* pd->key, */
 		pd->network,
@@ -665,12 +663,12 @@ int nmxp_data_msr_pack(NMXP_DATA_PROCESS *pd, NMXP_DATA_SEED *data_seed, void *p
 
 	/* Populate MSRecord values */
 
-	// TODO
-	// msr->starttime = ms_seedtimestr2hptime ("2004,350,00:00:00.00");
+	/* TODO */
+	/* msr->starttime = ms_seedtimestr2hptime ("2004,350,00:00:00.00"); */
 	msr->starttime = MS_EPOCH2HPTIME(pd->time);
 	msr->samprate = pd->sampRate;
 
-	// msr->byteorder = 0;         /* big endian byte order */
+	/* msr->byteorder = 0; */         /* big endian byte order */
 	msr->byteorder = nmxp_data_bigendianhost ();
 
 	msr->sequence_number = pd->seq_no % 1000000;

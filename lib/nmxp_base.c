@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_base.c,v 1.55 2008-02-22 08:04:57 mtheo Exp $
+ * $Id: nmxp_base.c,v 1.56 2008-02-24 15:10:52 mtheo Exp $
  *
  */
 
@@ -150,20 +150,20 @@ int nmxp_recv_select_timeout(int s, char *buf, int len, int timeout)
     int n;
     struct timeval tv;
 
-    // set up the file descriptor set
+    /* set up the file descriptor set*/
     FD_ZERO(&fds);
     FD_SET(s, &fds);
 
-    // set up the struct timeval for the timeout
+    /* set up the struct timeval for the timeout*/
     tv.tv_sec = timeout;
     tv.tv_usec = 0;
 
-    // wait until timeout or data received
+    /* wait until timeout or data received*/
     n = select(s+1, &fds, NULL, NULL, &tv);
-    if (n == 0) return -2; // timeout!
-    if (n == -1) return -1; // error
+    if (n == 0) return -2; /* timeout!*/
+    if (n == -1) return -1; /* error*/
  
-    // data must be here, so do a normal recv()
+    /* data must be here, so do a normal recv()*/
     return recv(s, buf, len, 0);
 }
 #endif
@@ -478,9 +478,9 @@ NMXP_DATA_PROCESS *nmxp_processDecompressedData(char* buffer_data, int length_da
   pd.x0 = -1;
   pd.xn = -1;
   pd.x0n_significant = 0;
-  // TODO
-  // pd.oldest_seq_no = ;
-  // pd.seq_no = ;
+  /* TODO*/
+  /* pd.oldest_seq_no = ;*/
+  /* pd.seq_no = ;*/
   pd.time = pTime;
   pd.buffer = buffer_data;
   pd.length = length_data;
@@ -533,7 +533,7 @@ NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data
 
 	char *nmxp_channel_name = NULL;
 
-	// TOREMOVE int my_order = get_my_wordorder();
+	/* TOREMOVE int my_order = get_my_wordorder();*/
 	int my_host_is_bigendian = nmxp_data_bigendianhost();
 	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN, "my_host_is_bigendian %d\n", my_host_is_bigendian);
 
@@ -546,7 +546,7 @@ NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data
 	if ( (nmx_ptype & 0xf) == 9) {
 	    /* Filler packet.  Discard entire packet.   */
 	    nmxp_log (NMXP_LOG_ERR, NMXP_LOG_D_PACKETMAN, "Filler packet - discarding\n");
-	    //m continue;
+	    /*m continue;*/
 	    exit(0);
 	}
 
@@ -562,7 +562,7 @@ NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data
 	const uint32_t high_scale_p = 4096 * 4096;
 	/* check if nmx_x0 is negative like as signed 3-byte int */
 	if( (nmx_x0 & high_scale) ==  high_scale) {
-	    // nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN, "WARNING: changed nmx_x0, old value = %d\n",  nmx_x0);
+	    /* nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN, "WARNING: changed nmx_x0, old value = %d\n",  nmx_x0);*/
 	    nmx_x0 -= high_scale_p;
 	}
 	/* TOREMOVE if (my_order != SEED_LITTLE_ENDIAN) { */
@@ -574,7 +574,7 @@ NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data
 	    nmx_x0 = nmx_x0 >> 8;
 	    nmxp_data_swap_4b (&nmx_x0);
 	    nmx_x0 = nmx_x0 >> 8;
-	    // TODO
+	    /* TODO*/
 	    nmx_x0++;
 	}
 	nmx_seconds_double = (double) nmx_seconds + ( (double) nmx_ticks / 10000.0 );
