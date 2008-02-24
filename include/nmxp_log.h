@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_log.h,v 1.10 2007-12-16 21:08:16 mtheo Exp $
+ * $Id: nmxp_log.h,v 1.11 2008-02-24 16:49:07 mtheo Exp $
  *
  */
 
@@ -33,6 +33,8 @@
 /*! normal output with only package name */
 #define NMXP_LOG_NORM_PKG 4
 
+/*! If s is NULL return "<null>", otherwise value of s */
+#define NMXP_LOG_STR(s) (s == NULL)? "<null>" : s
 
 /*! kind of log message */
 #define NMXP_LOG_D_NULL        0

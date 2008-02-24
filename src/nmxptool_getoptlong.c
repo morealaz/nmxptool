@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.65 2008-02-21 13:58:30 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.66 2008-02-24 16:49:25 mtheo Exp $
  *
  */
 
@@ -641,15 +641,13 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 }
 
 
-#define RETURN_STR(s) (s == NULL)? "<null>" : s
-
 void nmxptool_log_params(NMXPTOOL_PARAMS *params) {
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_EXTRA, "\
     char *hostname: %s\n\
     int portnumberdap: %d\n\
     int portnumberpds: %d\n\
 ",
-    RETURN_STR(params->hostname),
+    NMXP_LOG_STR(params->hostname),
     params->portnumberdap,
     params->portnumberpds
 );
@@ -657,7 +655,7 @@ void nmxptool_log_params(NMXPTOOL_PARAMS *params) {
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_EXTRA, "\
     char *channels: %s\n\
 ",
-    RETURN_STR(params->channels)
+    NMXP_LOG_STR(params->channels)
 );
 
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_EXTRA, "\
@@ -667,8 +665,8 @@ void nmxptool_log_params(NMXPTOOL_PARAMS *params) {
     double end_time: %f\n\
     int32_t interval: %d\n\
 ",
-    RETURN_STR(params->network),
-    RETURN_STR(params->location),
+    NMXP_LOG_STR(params->network),
+    NMXP_LOG_STR(params->location),
     params->start_time,
     params->end_time,
     params->interval
@@ -679,8 +677,8 @@ void nmxptool_log_params(NMXPTOOL_PARAMS *params) {
     char *datas_username: %s\n\
     char *datas_password: %s\n\
 ",
-    RETURN_STR(params->datas_username),
-    RETURN_STR(params->datas_password)
+    NMXP_LOG_STR(params->datas_username),
+    NMXP_LOG_STR(params->datas_password)
 );
 
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_EXTRA, "\
@@ -694,7 +692,7 @@ void nmxptool_log_params(NMXPTOOL_PARAMS *params) {
 ",
     params->stc,
     params->rate,
-    RETURN_STR(params->plugin_slink),
+    NMXP_LOG_STR(params->plugin_slink),
     params->delay,
     params->max_tolerable_latency,
     params->timeoutrecv,
@@ -706,8 +704,8 @@ void nmxptool_log_params(NMXPTOOL_PARAMS *params) {
     char *statefile: %s\n\
     int32_t max_data_to_retrieve: %d\n\
 ",
-    RETURN_STR(params->ew_configuration_file),
-    RETURN_STR(params->statefile),
+    NMXP_LOG_STR(params->ew_configuration_file),
+    NMXP_LOG_STR(params->statefile),
     params->max_data_to_retrieve
 );
 
