@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.67 2008-02-24 17:19:26 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.68 2008-02-25 11:02:07 mtheo Exp $
  *
  */
 
@@ -220,7 +220,9 @@ DAP arguments for DataServer:\n\
                           where:\n\
                               <date> = yyyy/mm/dd | yyy.jjj\n\
                               <time> = hh:mm:ss | hh:mm:ss.dddd | hh:mm\n\
-  -t, --interval=SECs     Time interval from start_time (greater than zero).\n\
+  -t, --interval=TIME     Time interval from start_time (greater than zero).\n\
+                          TIME is in seconds, otherwise append 'm' for minutes\n\
+                          'h' for hours or 'd' for days. [1 sec .. %d days]\n\
                           DO NOT USE with -e.\n\
   -d, --delay=SECs        Receive continuosly data with delay [%d..%d].\n\
   -u, --username=USER     DataServer username.\n\
@@ -230,6 +232,7 @@ DAP arguments for DataServer:\n\
 \n\
 ",
 DEFAULT_PORT_DAP,
+(DEFAULT_INTERVAL_MAXIMUM / 86400),
 DEFAULT_DELAY_MINIMUM,
 DEFAULT_DELAY_MAXIMUM);
 
@@ -344,6 +347,10 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
     int i;
     char one_time_option[255];
     int c;
+
+    int len_int, j;
+    char unit = 'X';
+    char str_interval[100];
 
     struct option long_options[] =
     {
@@ -496,7 +503,7 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 
 		case 's':
 		    if(nmxp_data_parse_date(optarg, &tmp_tmt) == -1) {
-			// MESSAGE ERROR
+			/* MESSAGE ERROR */
 			ret_errors++;
 		    } else {
 			params->start_time = nmxp_data_tm_to_time(&tmp_tmt);
@@ -505,7 +512,7 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 
 		case 'e':
 		    if(nmxp_data_parse_date(optarg, &tmp_tmt) == -1) {
-			// MESSAGE ERROR
+			/* MESSAGE ERROR */
 			ret_errors++;
 		    } else {
 			params->end_time = nmxp_data_tm_to_time(&tmp_tmt);
@@ -513,7 +520,50 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 		    break;
 
 		case 't':
-		    params->interval = atoi(optarg);
+		    strncpy(str_interval, optarg, 100);
+		    len_int = strlen(str_interval);
+		    if(len_int <= 0) {
+			/* ERROR */
+			ret_errors++;
+		    } else {
+			j=0;
+			while(j < len_int  && str_interval[j] >= '0' && str_interval[j] <= '9') {
+			    j++;
+			}
+			if(j < len_int) {
+			    if(j == len_int-1) {
+				unit = str_interval[j];
+				str_interval[j] = 0;
+				if(unit == 'm' || unit == 'h' || unit == 'd') {
+				    params->interval = atoi(str_interval);
+				    switch(unit) {
+					case 'm' :
+					    params->interval *= 60;
+					    break;
+					case 'h' :
+					    params->interval *= ( 60 * 60 );
+					    break;
+					case 'd' :
+					    params->interval *= ( 60 * 60 * 24 );
+					    break;
+				    }
+				} else {
+				    ret_errors++;
+				    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY,
+					    "Syntax of interval is not correct!\n");
+				}
+			    } else {
+				ret_errors++;
+				nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY,
+					"Syntax of interval is not correct!\n");
+			    }
+			} else {
+			    /* All numbers, then seconds */
+			    params->interval = atoi(str_interval);
+			}
+
+		    }
+
 		    break;
 
 		case 'd':
@@ -778,6 +828,9 @@ int nmxptool_check_params(NMXPTOOL_PARAMS *params) {
     } else if(params->interval != DEFAULT_INTERVAL_NO_VALUE && params->interval <= 0) {
 	ret = -1;
 	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "<interval> has to be greater than zero!\n");
+    } else if(params->interval > DEFAULT_INTERVAL_MAXIMUM) {
+	ret = -1;
+	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "<interval> has to be less than %d seconds (%d days)!\n", DEFAULT_INTERVAL_MAXIMUM, DEFAULT_INTERVAL_MAXIMUM / 86400);
     } else if(params->start_time != 0.0   &&   params->end_time != 0.0
 	    && params->start_time >= params->end_time) {
 	ret = -1;
