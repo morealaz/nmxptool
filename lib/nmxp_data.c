@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_data.c,v 1.49 2008-02-24 15:10:52 mtheo Exp $
+ * $Id: nmxp_data.c,v 1.50 2008-02-25 06:34:23 mtheo Exp $
  *
  */
 
@@ -317,12 +317,12 @@ int nmxp_data_log(NMXP_DATA_PROCESS *pd) {
 	/* printf("%10d %5s.%3s 03dHz (%s - %s) lat=%.1fs [%d, %d] pts=%04d (%d, %d, %d, %d) len=%d\n", */
 	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "%s.%s.%3s %3dHz (%s - %s) lat %.1fs [%d, %d] (%d) %4dpts (%d, %d, %d, %d, %d) %d\n",
 		/* pd->key, */
-		pd->network,
-		(strlen(pd->station) == 0)? "XXXX" : pd->station,
-		(strlen(pd->channel) == 0)? "XXX" : pd->channel,
+		NMXP_LOG_STR(pd->network),
+		(strlen(pd->station) == 0)? "XXXX" : NMXP_LOG_STR(pd->station),
+		(strlen(pd->channel) == 0)? "XXX" : NMXP_LOG_STR(pd->channel),
 		pd->sampRate,
-		str_start,
-		str_end,
+		NMXP_LOG_STR(str_start),
+		NMXP_LOG_STR(str_end),
 		nmxp_data_latency(pd),
 		pd->packet_type,
 		pd->seq_no,
@@ -388,14 +388,14 @@ int nmxp_data_parse_date(const char *pstr_date, NMXP_TM_T *ret_tmt) {
     int state;
     int flag_finished = 0;
 
-    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_DATE, "Date to validate '%s'\n", pstr_date);
+    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_DATE, "Date to validate '%s'\n", NMXP_LOG_STR(pstr_date));
 	
     strncpy(str_date, pstr_date, MAX_LENGTH_STR_MESSAGE);
     pEnd = str_date;
     app = strtol(str_date, &pEnd, 10);
     state = 0;
     if(  errno == EINVAL ||  errno == ERANGE ) {
-	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_DATE, "%s\n", strerror(errno));
+	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_DATE, "%s\n", NMXP_LOG_STR(strerror(errno)));
 	ret = -1;
     }
 
@@ -435,7 +435,8 @@ int nmxp_data_parse_date(const char *pstr_date, NMXP_TM_T *ret_tmt) {
 	    &&  errno != ERANGE
 	    ) {
 
-    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_DATE, "state=%d value=%d flag_finished=%d ret=%d pEnd[0]=%c [%d]  (%s)\n", state, app, flag_finished, ret, (pEnd[0]==0)? '_' : pEnd[0], pEnd[0], pEnd);
+    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_DATE, "state=%d value=%d flag_finished=%d ret=%d pEnd[0]=%c [%d]  (%s)\n",
+	    state, app, flag_finished, ret, (pEnd[0]==0)? '_' : pEnd[0], pEnd[0], NMXP_LOG_STR(pEnd));
 
 	/* switch on state */
 	switch(state) {
@@ -581,13 +582,14 @@ int nmxp_data_parse_date(const char *pstr_date, NMXP_TM_T *ret_tmt) {
 		    app -= 10000;
 	    }
 	    if(  errno == EINVAL ||  errno == ERANGE ) {
-		nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_DATE, "%s\n", strerror(errno));
+		nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_DATE, "%s\n", NMXP_LOG_STR(strerror(errno)));
 		ret = -1;
 	    }
 	}
     }
 
-    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_DATE, "FINAL: state=%d value=%d flag_finished=%d ret=%d pEnd[0]=%c [%d]  (%s)\n", state, app, flag_finished, ret, (pEnd[0]==0)? '_' : pEnd[0], pEnd[0], pEnd);
+    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_DATE, "FINAL: state=%d value=%d flag_finished=%d ret=%d pEnd[0]=%c [%d]  (%s)\n",
+	    state, app, flag_finished, ret, (pEnd[0]==0)? '_' : pEnd[0], pEnd[0], NMXP_LOG_STR(pEnd));
 
     if(!flag_finished && (ret == 0)) {
 	strncpy(err_message, "Date incomplete!", MAX_LENGTH_ERR_MESSAGE);
@@ -595,10 +597,11 @@ int nmxp_data_parse_date(const char *pstr_date, NMXP_TM_T *ret_tmt) {
     }
 
     if(ret == -1) {
-	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_DATE, "in date '%s' %s\n", pstr_date, err_message);
+	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_DATE, "in date '%s' %s\n",
+		NMXP_LOG_STR(pstr_date), NMXP_LOG_STR(err_message));
     } else {
 	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_DATE, "Date '%s' has been validate! %04d/%02d/%02d %02d:%02d:%02d.%04d\n",
-		pstr_date,
+		NMXP_LOG_STR(pstr_date),
 		ret_tmt->t.tm_year,
 		ret_tmt->t.tm_mon,
 		ret_tmt->t.tm_mday,
