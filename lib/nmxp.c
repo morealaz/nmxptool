@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp.c,v 1.62 2008-02-25 06:27:25 mtheo Exp $
+ * $Id: nmxp.c,v 1.63 2008-02-25 07:08:21 mtheo Exp $
  *
  */
 
@@ -653,7 +653,11 @@ int nmxp_raw_stream_manage(NMXP_RAW_STREAM_DATA *p, NMXP_DATA_PROCESS *a_pd, int
 	} else {
 	    pd->pDataPtr = NULL;
 	}
+    } else {
+	nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_RAWSTREAM,
+		"nmxp_raw_stream_manage() passing pointer NMXP_DATA_PROCESS equal to NULL\n");
     }
+    /* From here, use only pd */
 
     /* First time */
     if(p->last_seq_no_sent == -1  &&  pd) {
@@ -673,15 +677,11 @@ int nmxp_raw_stream_manage(NMXP_RAW_STREAM_DATA *p, NMXP_DATA_PROCESS *a_pd, int
 	latency = nmxp_data_latency(p->pdlist[0]);
     }
 
-    /* Add pd and sort array */
-    if( (p->n_pdlist >= p->max_pdlist_items
-	    || latency >= p->max_tolerable_latency) &&
-	    p->timeoutrecv <= 0
-	    ) {
-	/* Supposing p->pdlist is ordered,
-	 * handle the first item and over write it.
-	 */
+    /* Add pd and sort array, in case handle the first item */
+    if( (p->n_pdlist >= p->max_pdlist_items || latency >= p->max_tolerable_latency)
+	    && p->timeoutrecv <= 0 ) {
 
+	/* Supposing p->pdlist is ordered, handle the first item and over write it.  */
 	if(p->n_pdlist > 0) {
 	    seq_no_diff = p->pdlist[0]->seq_no - p->last_seq_no_sent;
 	    time_diff = p->pdlist[0]->time - p->last_sample_time;
@@ -730,12 +730,12 @@ int nmxp_raw_stream_manage(NMXP_RAW_STREAM_DATA *p, NMXP_DATA_PROCESS *a_pd, int
 		p->pdlist[0] = pd;
 	    }
 	}
-
     } else {
 	if(pd) {
 	    p->pdlist[p->n_pdlist++] = pd;
 	}
     }
+    /* Sort array */
     qsort(p->pdlist, p->n_pdlist, sizeof(NMXP_DATA_PROCESS *), nmxp_raw_stream_seq_no_compare);
 
     /* TODO Check for packet duplication in pd->pdlist*/
@@ -752,6 +752,8 @@ int nmxp_raw_stream_manage(NMXP_RAW_STREAM_DATA *p, NMXP_DATA_PROCESS *a_pd, int
     if(!pd && p->n_pdlist > 0) {
 	p->last_seq_no_sent = p->pdlist[0]->seq_no - 1;
 	p->last_sample_time = p->pdlist[0]->time;
+	nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_RAWSTREAM, "pd is NULL and p->n_pdlist = %d > 0, p->last_seq_no_sent %d, p->last_sample_time %.4f\n",
+		p->n_pdlist,  p->last_seq_no_sent, p->last_sample_time);
     }
 
     /* Manage array and execute func_pd() */
