@@ -10,6 +10,7 @@ nmxptool Release History
           within time defined by MaxDataToRetrieve (option -A)
           and data buffered by the DataServer and NaqsServer.
     - Added ten thousandth of second in date format (option -s, -e)
+    - Option interval can be declared in minutes, hours or days (option -t)
     - Added option "buffered time" for a single channel (option -B)
     - Fixed minor bugs
 
