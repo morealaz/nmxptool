@@ -1,55 +1,90 @@
 
-NMXPTOOL AND LIBNMXP : OPEN-SOURCE SOFTWARE FOR
-                      NANOMETRICS SEISMIC DATA TRANSMISSION
-
-  nmxptool and libnmxp have been developed for interacting
-  with NaqsServer and DataServer.
+NMXPTOOL: OPEN-SOURCE AND CROSS-PLATFORM SOFTWARE
+          FOR NANOMETRICS SEISMIC DATA ACQUISITION
 
   Matteo Quintiliani - Istituto Nazionale di Geofisica e Vulcanologia - Italy
   Mail bug reports and suggestions to <quintiliani@ingv.it> 
 
+  nmxptool and libnmxp have been developed for interacting
+  with NaqsServer and DataServer. (Nanometrics Inc.)
+
+
+CONTENTS
+   INTRODUCTION
+   DEPENDENCIES
+   QUICK INSTALLATION
+   INSTALLATION
+   DOCUMENTATION
+   ACKNOWLEDGEMENT
+   SUPPORTED PLATFORMS
+   LICENSE
+
 
 - INTRODUCTION
 
-nmxptool is based on libnmxp.
+nmxptool can be used in three different ways:
+    * stand-alone to monitor data or save retrieved data in mini-seed records
+    * launched as an Earthworm module to redirect data into the EW-rings
+    * like a Seed-Link plug-in to feed the SL-server
+
+nmxptool is based on the library libnmxp.
 
 The library offers APIs to:
-    * interact with NaqsServer that uses
-      version 1.4 of the Private Data Stream Protocol
-    * interact with DataServer that uses
-      version 1.0 of the Nanometrics Data Access Protocol
+    * interact with NaqsServer that uses version 1.4
+      of the Private Data Stream Protocol (PDS)
+    * interact with DataServer that uses version 1.0
+      of the Nanometrics Data Access Protocol (DAP)
     * manage Nanometrics data formats
     * request, receive and interpret online and offline data
 
-nmxptool allows you to:
-    * analyze data in realtime (waveforms, triggers, ...)
-    * retrieve and convert on the fly data
-      into the mini-SEED records (optional)
-    * feed SeedLink server (optional)
-    * feed Earthworm Server (optional)
+The main contribute, as regards other similar software, is the capability to
+manage Raw Stream connections by buffering and sorting all received packets,
+included the retransmitted ones, guaranteeing a good compromise between data
+continuity and low latency. Besides, nmxptool allows to retrieve
+Data-On-Demand with minimum delay after request.
 
 
 - DEPENDENCIES
-  Optional libraries:
 
-    * Earthworm 6.2 or later: http://www.isti2.com/ew/
+  Optional libraries:
 
     * libmseed-2.1.4 or later: http://www.iris.edu/manuals/
       The Mini-SEED library. A C library framework for manipulating and
       managing SEED data records.  Author: Chad Trabant, IRIS DMC
 
+    * Earthworm 6.2 or later: http://www.isti2.com/ew/
+
+    * Seedlink, SeisComP - http://www.gfz-potsdam.de/geofon/seiscomp/
+      Seedlink is a system for near real time seismic data distribution.
+
+  Read section INSTALLATION below.
+
 
 - QUICK INSTALLATION
-     cd libnmxp
+
+     tar xvfz nmxptool-X.X.X.tar.gz
+
+     cd nmxptool-X.X.X/libnmxp
      ./configure
      make
      cd ..
      ./configure
      make
+
+     make install
+         OR
+     make install-ew-bin
+     make install-ew-conf (ONLY THE FIRST TIME)
+         OR
+     make install-seiscomp-bin
+     make install-seiscomp-templates (ONLY THE FIRST TIME)
+         OR
      cp src/nmxptool <where_you_want>
 
 
+
 - INSTALLATION
+
   nmxptool and libnmxp have been developed using GNU Build Tools
   (automake, autoconf and configure script) taking in account the
   POSIX Cross-Platform aspects. So you should be able to compile
@@ -66,27 +101,56 @@ nmxptool allows you to:
       --without-ew            disable support for earthworm
       --without-seedlink      disable support for seedlink
 
-  * libmseed, if available within includes and libraries path,
-              this library will enable Mini-SEED support.
+  * libmseed, The Mini-SEED library - http://www.iris.edu/manuals/
+         If available within includes and libraries path,
+         this library will enable Mini-SEED support.
+         You might add to CFLAGS this "-I/<anywhere>/libmseed"
+         and to LDFLAGS this "-L/<anywhere>/libmseed"
 
-  * ew, compiling depends on environment variables $EW_HOME, $EW_VERSION
+  * ew, Earthworm System - http://www.isti2.com/ew/
+         nmxptool is included into the official Earthworm distributions since EW v7.2
+         Anyway you can compile nmxptool outside the EW distribution, for example, to upgrade.
+         Compiling depends on environment variables $EW_HOME, $EW_VERSION and $EW_PARAMS
         `configure` look for necessary earthworm object files inside $EW_HOME/$EW_VERSION/lib
          and link them to nmxptool in order to enable Earthworm support.
          If some object file is missing then it will attempt to discover sources
          dependents on your operating system and compile them before linking.
-         Install and configure nmxptool for Earthworm:
-           cp src/nmxptool $EW_HOME/$EW_VERSION/bin
-           cp earthworm/nmxptool.d earthworm/nmxptool.desc ${EW_PARAMS}
-           cp nmxptool_ovr.html $EW_HOME/$EW_VERSION/ewdoc/WEB_DOC/ovr/
 
-  * seedlink, inside the directory `src` has been copied files
-              `seedlink_plugin.c` and `seedlink_plugin.h` from `plugin.c` and `plugin.h`
-               belonging to the SeisComP 2.x distribution
-               Install and configure nmxptool for SeedLink:
-                 cp src/nmxptool %SEISCOMP_ROOT%/acquisition/bin
-                 cp -r seiscomp_templates/135_nmxptool \
-                            /home/sysop/seiscomp/acquisition/templates/source/
-                 seiscomp config
+         Install binary and configuration files for Earthworm:
+
+             make install-ew-bin
+             make install-ew-conf (ONLY THE FIRST TIME)
+
+         The first command copies nmxptool binary in $EW_HOME/$EW_VERSION/bin
+         The second command copies earthworm/nmxptool.d earthworm/nmxptool.desc in $EW_PARAMS
+         If you are upgrading nmxptool then you might do that:
+
+	     cp nmxptool_ovr.html $EW_HOME/$EW_VERSION/ewdoc/WEB_DOC/ovr/
+	     cp nmxptool_cmd.html $EW_HOME/$EW_VERSION/ewdoc/WEB_DOC/cmd/
+
+  * seedlink, SeisComP - http://www.gfz-potsdam.de/geofon/seiscomp/
+         Seedlink is a system for near real time seismic data distribution.
+         Inside the directory `src` has been copied files
+         `seedlink_plugin.c` and `seedlink_plugin.h` from `plugin.c` and `plugin.h`
+         belonging to the SeisComP 2.5 distribution
+
+         If your SEISCOMPDIR is not equal to /home/sysop/seiscomp,
+         you should launch the script configure like this:
+
+             ./configure ... ... SEISCOMPDIR=/<where>/<seiscompdir>/<is>
+
+         Install binary and template files for SeedLink:
+
+             make install-seiscomp-bin
+             make install-seiscomp-templates (ONLY THE FIRST TIME)
+
+         The first command copies nmxptool binary in %SEISCOMPDIR%/acquisition/bin
+         The second command copies the directory seiscomp_templates/135_nmxptool
+         in %SEISCOMPDIR%/acquisition/templates/source/
+
+         After, you can use:
+
+             seiscomp config
 
 
 - DOCUMENTATION
@@ -96,7 +160,7 @@ nmxptool allows you to:
 
 
 - ACKNOWLEDGEMENT
-   In no particular order,
+   In no particular order:
      * Salvatore Mazza - I.N.G.V. (Istituto Nazionale di Geofisica e Vulcanologia)
      * Marco Olivieri - I.N.G.V.
      * Luigi Falco - I.N.G.V.
@@ -104,7 +168,15 @@ nmxptool allows you to:
      * Paul Frieberg - ISTI (Instrumental Software Technologies, Inc.)
      * Marian Jusko
 
+- SUPPORTED PLATFORMS
+   nmxptool has been written in C language using the GNU Build Tools
+   (automake, autoconf and configure script) and taking in account
+   the cross-platform compilation aspects, in fact, it can run on
+   almost all the Unix-like operating systems, Mac OS X,
+   Windows and either 32-bit or 64-bit architectures.
+     
 
 - LICENSE
-  Read file COPYING
+  Software is open-source and released under GNU Library General Public License.
+  Read file COPYING for details.
 
