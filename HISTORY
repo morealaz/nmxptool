@@ -3,14 +3,15 @@ nmxptool Release History
 #########################
 
 * Release 1.1.8-rc4     (2008/02/26)
-    - Added support for retrieving Data on Demand (option -T).
     - Added management of channel sample sequence.
           Allow data continuity between program restarts, (option -F)
           within time defined by MaxDataToRetrieve (option -A)
           and data buffered by the DataServer and NaqsServer.
+    - Added support for retrieving Data-On-Demand
+          with minimum delay from NaqsServer (option -T).
+    - Added option "buffered time" for a single channel (options -b, -B).
     - Added ten thousandth of second in date format (option -s, -e).
     - Option interval can be declared in minutes, hours or days (option -t).
-    - Added option "buffered time" for a single channel (options -b, -B).
     - Fixed major bug in DAP authentication (options -u and -p).
     - Fixed several minor bugs.
 
