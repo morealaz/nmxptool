@@ -3,32 +3,32 @@ nmxptool Release History
 #########################
 
 * Release 1.1.8-rc4     (2008/02/26)
-    - Fixed major bug in DAP authentication (option -u and -p)
-    - Added support for retrieving Data on Demand (option -T)
+    - Added support for retrieving Data on Demand (option -T).
     - Added management of channel sample sequence.
           Allow data continuity between program restarts, (option -F)
           within time defined by MaxDataToRetrieve (option -A)
           and data buffered by the DataServer and NaqsServer.
-    - Added ten thousandth of second in date format (option -s, -e)
-    - Option interval can be declared in minutes, hours or days (option -t)
-    - Added option "buffered time" for a single channel (option -B)
-    - Fixed minor bugs
+    - Added ten thousandth of second in date format (option -s, -e).
+    - Option interval can be declared in minutes, hours or days (option -t).
+    - Added option "buffered time" for a single channel (options -b, -B).
+    - Fixed major bug in DAP authentication (options -u and -p).
+    - Fixed several minor bugs.
 
 * Release 1.1.7     (2007/12/11)
-    - Added support for WindowsXP and Windows2000 (compilation under MinGW)
-    - Added support for recompiling earthworm sources when object files are missing
-    - Added possibility defining channel list pattern to match all stations
+    - Added support for WindowsXP and Windows2000 (compilation under MinGW).
+    - Added support for recompiling earthworm sources when object files are missing.
+    - Added possibility to define channel list pattern to match all stations.
     - Added documentation in README, earthworm/nmxptool_cmd.html, earthworm/nmxptool_ovr.html
-    - Fixed minor bugs
+    - Fixed minor bugs.
 
 * Release 1.1.6     (2007/12/03)
-    - Added argument to option "-v" in order to configure level of verbosity
-    - Changed directory structure. Compilation now follows this order:
-    - Made source independent on MSG_WAITALL using a loop
-    - Added output of available channels on both NaqsServer and DataServer
-    - Fixed a major bug in connection management
-    - Fixed bug and improved log message management
-    - Fixed minor bugs
+    - Added argument to option "-v" in order to configure level of verbosity.
+    - Changed directory structure. Library directory is under nmxptool directory.
+    - Made source independent on MSG_WAITALL using a loop.
+    - Added output of available channels on both NaqsServer and DataServer.
+    - Fixed a major bug in connection management.
+    - Fixed bug and improved log message management.
+    - Fixed minor bugs.
 
 * Release 1.1.5     (2007/10/07)
     - First public release.
