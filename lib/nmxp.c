@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp.c,v 1.65 2008-02-25 21:34:06 mtheo Exp $
+ * $Id: nmxp.c,v 1.66 2008-02-26 11:47:36 mtheo Exp $
  *
  */
 
@@ -743,6 +743,24 @@ int nmxp_raw_stream_manage(NMXP_RAW_STREAM_DATA *p, NMXP_DATA_PROCESS *a_pd, int
 	    p->pdlist[p->n_pdlist++] = pd;
 	}
     }
+
+    /* Check if some element in pdlist is NULL and remove it */
+    int y, w;
+    y=0;
+    while(y < p->n_pdlist) {
+	if(p->pdlist[y] == NULL) {
+	    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY,
+		    "nmxp_raw_stream_manage() an element in pdlist is NULL.\n");
+	    /* Shift array */
+	    for(w=y+1; w < p->n_pdlist; w++) {
+		p->pdlist[w-1] = p->pdlist[w];
+	     }
+	    p->n_pdlist--;
+	} else {
+	    y++;
+	}
+    }
+
     /* Sort array */
     qsort(p->pdlist, p->n_pdlist, sizeof(NMXP_DATA_PROCESS *), nmxp_raw_stream_seq_no_compare);
 
