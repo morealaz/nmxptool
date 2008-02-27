@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.135 2008-02-27 11:11:39 mtheo Exp $
+ * $Id: nmxptool.c,v 1.136 2008-02-27 11:20:59 mtheo Exp $
  *
  */
 
@@ -211,7 +211,9 @@ int main (int argc, char **argv) {
     }
 
     nmxp_log(NMXP_LOG_SET, params.verbose_level);
-    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "verbose_level %d\n", params.verbose_level);
+    if(params.verbose_level != DEFAULT_VERBOSE_LEVEL) {
+	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "verbose_level %d\n", params.verbose_level);
+    }
 
     nmxptool_log_params(&params);
 
