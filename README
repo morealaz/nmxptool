@@ -6,7 +6,7 @@ NMXPTOOL: OPEN-SOURCE AND CROSS-PLATFORM SOFTWARE
   Mail bug reports and suggestions to <quintiliani@ingv.it> 
 
   nmxptool and libnmxp have been developed for interacting
-  with NaqsServer and DataServer. (Nanometrics Inc.)
+  with NaqsServer and DataServer of Nanometrics Inc.
 
 
 CONTENTS
@@ -110,8 +110,10 @@ Data-On-Demand with minimum delay after request.
   * ew, Earthworm System - http://www.isti2.com/ew/
          nmxptool is included into the official Earthworm distributions since EW v7.2
          Anyway you can compile nmxptool outside the EW distribution, for example, to upgrade.
-         Compiling depends on environment variables $EW_HOME, $EW_VERSION and $EW_PARAMS
-        `configure` look for necessary earthworm object files inside $EW_HOME/$EW_VERSION/lib
+         Before launching 'configure', run the appropriate script from directory 'environment',
+         compilation depends on environment variables:
+             $EW_HOME, $EW_VERSION, $EW_PARAMS and $GLOBALFLAGS.
+         'configure' look for necessary earthworm object files inside $EW_HOME/$EW_VERSION/lib
          and link them to nmxptool in order to enable Earthworm support.
          If some object file is missing then it will attempt to discover sources
          dependents on your operating system and compile them before linking.
@@ -122,7 +124,7 @@ Data-On-Demand with minimum delay after request.
              make install-ew-conf (ONLY THE FIRST TIME)
 
          The first command copies nmxptool binary in $EW_HOME/$EW_VERSION/bin
-         The second command copies earthworm/nmxptool.d earthworm/nmxptool.desc in $EW_PARAMS
+         The second command copies earthworm/nmxptool.d, earthworm/nmxptool.desc in $EW_PARAMS
          If you are upgrading nmxptool then you might do that:
 
 	     cp nmxptool_ovr.html $EW_HOME/$EW_VERSION/ewdoc/WEB_DOC/ovr/
@@ -130,8 +132,8 @@ Data-On-Demand with minimum delay after request.
 
   * seedlink, SeisComP - http://www.gfz-potsdam.de/geofon/seiscomp/
          Seedlink is a system for near real time seismic data distribution.
-         Inside the directory `src` has been copied files
-         `seedlink_plugin.c` and `seedlink_plugin.h` from `plugin.c` and `plugin.h`
+         Inside the directory 'src' has been copied files
+         'seedlink_plugin.c' and 'seedlink_plugin.h' from 'plugin.c' and 'plugin.h'
          belonging to the SeisComP 2.5 distribution
 
          If your SEISCOMPDIR is not equal to /home/sysop/seiscomp,
