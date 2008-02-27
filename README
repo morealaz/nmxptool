@@ -5,6 +5,8 @@ NMXPTOOL: OPEN-SOURCE AND CROSS-PLATFORM SOFTWARE
   Matteo Quintiliani - Istituto Nazionale di Geofisica e Vulcanologia - Italy
   Mail bug reports and suggestions to <quintiliani@ingv.it> 
 
+  Website: http://mednet.rm.ingv.it/nmxptool.php
+
   nmxptool and libnmxp have been developed for interacting
   with NaqsServer and DataServer of Nanometrics Inc.
 
@@ -109,7 +111,7 @@ Data-On-Demand with minimum delay after request.
 
   * ew, Earthworm System - http://www.isti2.com/ew/
          nmxptool is included into the official Earthworm distributions since EW v7.2
-         Anyway you can compile nmxptool outside the EW distribution, for example, to upgrade.
+         Anyway, you can compile nmxptool outside the EW distribution, for example, to upgrade.
          Before launching 'configure', run the appropriate script from directory 'environment',
          compilation depends on environment variables:
              $EW_HOME, $EW_VERSION, $EW_PARAMS and $GLOBALFLAGS.
@@ -156,7 +158,8 @@ Data-On-Demand with minimum delay after request.
 
 
 - DOCUMENTATION
-    * ./nmxptool -h
+    * Print nmxptool help:
+         # nmxptool -h
     * Earthworm module: earthworm/nmxptool_cmd.html
                                   nmxptool_ovr.html
 
@@ -170,12 +173,13 @@ Data-On-Demand with minimum delay after request.
      * Paul Frieberg - ISTI (Instrumental Software Technologies, Inc.)
      * Marian Jusko
 
+
 - SUPPORTED PLATFORMS
    nmxptool has been written in C language using the GNU Build Tools
    (automake, autoconf and configure script) and taking in account
    the cross-platform compilation aspects, in fact, it can run on
-   almost all the Unix-like operating systems, Mac OS X,
-   Windows and either 32-bit or 64-bit architectures.
+   almost all the Unix-like operating systems, Mac OS X, Windows
+   and either 32-bit or 64-bit architectures.
      
 
 - LICENSE
