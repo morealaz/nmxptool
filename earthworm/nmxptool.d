@@ -30,7 +30,8 @@ MaxTolerableLatency  120                   # Max tolerable latency for each chan
                                            # 0 to disable connection to DataServer.
 
 # TimeoutRecv          30                    # Time-out in seconds for flushing queued data for each channel.
-                                           # Useful for Data On Demand (i.e. channel HL) (Default 0. No time-out)
+                                           # (Default 0. No time-out) [10..300].
+                                           # Useful for retrieving Data On Demand with minimum delay.
 
 DefaultNetworkCode   IV                    # Default network code where in Channel is not declared
 
