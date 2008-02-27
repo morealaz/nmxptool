@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_base.c,v 1.57 2008-02-24 17:36:01 mtheo Exp $
+ * $Id: nmxp_base.c,v 1.58 2008-02-27 11:33:47 mtheo Exp $
  *
  */
 
@@ -296,8 +296,8 @@ int nmxp_recv_ctrl(int isock, void *buffer, int length, int timeoutsec, int *rec
       if(*recv_errno != EWOULDBLOCK)
 #endif
       {
-	  nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CONNFLOW, "nmxp_recv_ctrl(): recvCount=%d  length=%d  (cc=%d) errno=%d (%s)\n",
-		  recvCount, length, cc, *recv_errno, NMXP_LOG_STR(recv_errno_str));
+	  nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CONNFLOW, "nmxp_recv_ctrl(): %s (errno=%d recvCount=%d length=%d cc=%d)\n",
+		  NMXP_LOG_STR(recv_errno_str), *recv_errno, recvCount, length, cc);
       }
 
       /* TO IMPROVE 
@@ -405,7 +405,8 @@ int nmxp_receiveMessage(int isock, NMXP_MSG_SERVER *type, void **buffer, int32_t
 #endif
 	    nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_DOD, "Timeout receiving in nmxp_receiveMessage()\n");
 	} else {
-	    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CONNFLOW, "Error in nmxp_receiveMessage()\n");
+	    /* Log message is not necessary because managed by nmxp_recv_ctrl() */
+	    /* nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CONNFLOW, "Error in nmxp_receiveMessage()\n"); */
 	}
     }
 
