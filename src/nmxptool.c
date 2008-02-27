@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.134 2008-02-27 10:42:42 mtheo Exp $
+ * $Id: nmxptool.c,v 1.135 2008-02-27 11:11:39 mtheo Exp $
  *
  */
 
@@ -143,11 +143,6 @@ int main (int argc, char **argv) {
 
     NMXP_DATA_PROCESS *pd;
 
-#ifdef HAVE_LIBMSEED
-    /* Init mini-SEED variables */
-    nmxp_data_seed_init(&data_seed);
-#endif
-
 #ifndef HAVE_WINDOWS_H
     /* Signal handling, use POSIX calls with standardized semantics */
     struct sigaction sa;
@@ -220,6 +215,14 @@ int main (int argc, char **argv) {
 
     nmxptool_log_params(&params);
 
+#ifdef HAVE_LIBMSEED
+    if(params.flag_writeseed) {
+	/* Init mini-SEED variables */
+	nmxp_data_seed_init(&data_seed);
+    }
+#endif
+
+
     /* Get list of available channels and get a subset list of params.channels */
     if( DAP_CONDITION(params) ) {
 	/* From DataServer */
@@ -252,35 +255,37 @@ int main (int argc, char **argv) {
 	}
 
 #ifdef HAVE_LIBMSEED
-	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_EXTRA, "Init mini-SEED record list.\n");
+	if(params.flag_writeseed) {
+	    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_EXTRA, "Init mini-SEED record list.\n");
 
-	/* Init mini-SEED record list */
-	for(i_chan = 0; i_chan < channelList_subset->number; i_chan++) {
+	    /* Init mini-SEED record list */
+	    for(i_chan = 0; i_chan < channelList_subset->number; i_chan++) {
 
-	    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_EXTRA,
-		    "Init mini-SEED record for %s\n", NMXP_LOG_STR(channelList_subset->channel[i_chan].name));
+		nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_EXTRA,
+			"Init mini-SEED record for %s\n", NMXP_LOG_STR(channelList_subset->channel[i_chan].name));
 
-	    msr_list_chan[i_chan] = msr_init(NULL);
+		msr_list_chan[i_chan] = msr_init(NULL);
 
-	    /* Separate station_code and channel_code */
-	    if(nmxp_chan_cpy_sta_chan(channelList_subset->channel[i_chan].name, station_code, channel_code, network_code)) {
+		/* Separate station_code and channel_code */
+		if(nmxp_chan_cpy_sta_chan(channelList_subset->channel[i_chan].name, station_code, channel_code, network_code)) {
 
-		nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_EXTRA, "%s.%s.%s\n",
-			NMXP_LOG_STR(NETCODE_OR_CURRENT_NETWORK), NMXP_LOG_STR(station_code), NMXP_LOG_STR(channel_code));
+		    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_EXTRA, "%s.%s.%s\n",
+			    NMXP_LOG_STR(NETCODE_OR_CURRENT_NETWORK), NMXP_LOG_STR(station_code), NMXP_LOG_STR(channel_code));
 
-		strcpy(msr_list_chan[i_chan]->network, NETCODE_OR_CURRENT_NETWORK);
-		strcpy(msr_list_chan[i_chan]->station, station_code);
-		strcpy(msr_list_chan[i_chan]->channel, channel_code);
+		    strcpy(msr_list_chan[i_chan]->network, NETCODE_OR_CURRENT_NETWORK);
+		    strcpy(msr_list_chan[i_chan]->station, station_code);
+		    strcpy(msr_list_chan[i_chan]->channel, channel_code);
 
-		msr_list_chan[i_chan]->reclen = 512;         /* byte record length */
-		msr_list_chan[i_chan]->encoding = DE_STEIM1;  /* Steim 1 compression */
+		    msr_list_chan[i_chan]->reclen = 512;         /* byte record length */
+		    msr_list_chan[i_chan]->encoding = DE_STEIM1;  /* Steim 1 compression */
 
-	    } else {
-		nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANNEL,
-			"Channels %s error in format!\n", NMXP_LOG_STR(channelList_subset->channel[i_chan].name));
-		return 1;
+		} else {
+		    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANNEL,
+			    "Channels %s error in format!\n", NMXP_LOG_STR(channelList_subset->channel[i_chan].name));
+		    return 1;
+		}
+
 	    }
-
 	}
 #endif
 
@@ -375,6 +380,7 @@ int main (int argc, char **argv) {
 	    request_chan=0;
 	    request_SOCKET_OK = NMXP_SOCKET_OK;
 
+	    /* For each channel */
 	    while(request_SOCKET_OK == NMXP_SOCKET_OK  &&  request_chan < channelList_subset->number  &&  exitdapcondition) {
 
 		if(params.statefile) {
@@ -970,13 +976,15 @@ int main (int argc, char **argv) {
 #endif
 
 #ifdef HAVE_LIBMSEED
-    if(*msr_list_chan) {
-	for(i_chan = 0; i_chan < channelList_subset->number; i_chan++) {
-	    if(msr_list_chan[i_chan]) {
-		msr_free(&(msr_list_chan[i_chan]));
+	if(params.flag_writeseed) {
+	    if(*msr_list_chan) {
+		for(i_chan = 0; i_chan < channelList_subset->number; i_chan++) {
+		    if(msr_list_chan[i_chan]) {
+			msr_free(&(msr_list_chan[i_chan]));
+		    }
+		}
 	    }
 	}
-    }
 #endif
 
     for(i_chan = 0; i_chan < channelList_subset->number; i_chan++) {
@@ -1128,7 +1136,7 @@ void load_channel_states(NMXP_CHAN_LIST_NET *chan_list, NMXPTOOL_CHAN_SEQ *chan_
 		    }
 		}
 
-		nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_EXTRA, "%d %12d %-14s %16.4f %s %16.4f %s\n",
+		nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_EXTRA, "%d %12d %-14s %16.4f %s %16.4f %s\n",
 			n_scanf, key_chan, s_chan,
 			s_noraw_time_f_calc, NMXP_LOG_STR(s_noraw_time_s),
 			s_rawtime_f_calc, NMXP_LOG_STR(s_rawtime_s)); 
@@ -1230,10 +1238,12 @@ static void clientShutdown(int sig) {
 
     if(channelList_subset && channelList_Seq) {
 #ifdef HAVE_LIBMSEED
-	if(*msr_list_chan) {
-	    for(i_chan = 0; i_chan < channelList_subset->number; i_chan++) {
-		if(msr_list_chan[i_chan]) {
-		    msr_free(&(msr_list_chan[i_chan]));
+	if(params.flag_writeseed) {
+	    if(*msr_list_chan) {
+		for(i_chan = 0; i_chan < channelList_subset->number; i_chan++) {
+		    if(msr_list_chan[i_chan]) {
+			msr_free(&(msr_list_chan[i_chan]));
+		    }
 		}
 	    }
 	}
