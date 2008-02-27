@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.133 2008-02-24 17:19:26 mtheo Exp $
+ * $Id: nmxptool.c,v 1.134 2008-02-27 10:42:42 mtheo Exp $
  *
  */
 
@@ -375,7 +375,7 @@ int main (int argc, char **argv) {
 	    request_chan=0;
 	    request_SOCKET_OK = NMXP_SOCKET_OK;
 
-	    while(request_SOCKET_OK == NMXP_SOCKET_OK  &&  request_chan < channelList_subset->number) {
+	    while(request_SOCKET_OK == NMXP_SOCKET_OK  &&  request_chan < channelList_subset->number  &&  exitdapcondition) {
 
 		if(params.statefile) {
 		    if(channelList_Seq[request_chan].after_start_time > 0) {
@@ -602,6 +602,24 @@ int main (int argc, char **argv) {
 		    /* TODO: error message */
 		}
 		request_chan++;
+
+#ifdef HAVE_EARTHWORMOBJS
+		if(params.ew_configuration_file) {
+
+		    /* Check if we are being asked to terminate */
+		    if( nmxptool_ew_check_flag_terminate() ) {
+			logit ("t", "nmxptool terminating on request\n");
+			nmxptool_ew_send_error(NMXPTOOL_EW_ERR_TERMREQ);
+			exitdapcondition = 0;
+			times_flow = TIMES_FLOW_EXIT;
+		    }
+
+		    /* Check if we need to send heartbeat message */
+		    nmxptool_ew_send_heartbeat_if_needed();
+
+		}
+#endif
+
 	    }
 	    /* DAP Step 7: Repeat steps 5 and 6 for each data request */
 
@@ -618,24 +636,6 @@ int main (int argc, char **argv) {
 	    } else {
 		exitdapcondition = 0;
 	    }
-
-
-#ifdef HAVE_EARTHWORMOBJS
-	    if(params.ew_configuration_file) {
-
-		/* Check if we are being asked to terminate */
-		if( nmxptool_ew_check_flag_terminate() ) {
-		    logit ("t", "nmxptool terminating on request\n");
-		    nmxptool_ew_send_error(NMXPTOOL_EW_ERR_TERMREQ);
-		    exitdapcondition = 0;
-		    times_flow = TIMES_FLOW_EXIT;
-		}
-
-		/* Check if we need to send heartbeat message */
-		nmxptool_ew_send_heartbeat_if_needed();
-
-	    }
-#endif
 
 	} /* END while(exitdapcondition) */
 
