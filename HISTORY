@@ -11,6 +11,7 @@ nmxptool Release History
           with minimum delay from NaqsServer (option -T).
     - Added option "buffered time" for a single channel (options -b, -B).
     - Added ten thousandth of second in date format (option -s, -e).
+    - Added logging of sample values (option -G).
     - Option interval can be declared in minutes, hours or days (option -t).
     - Fixed major bug in DAP authentication (options -u and -p).
     - Fixed bug in packet decompression.
