@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp.c,v 1.66 2008-02-26 11:47:36 mtheo Exp $
+ * $Id: nmxp.c,v 1.67 2008-02-28 13:59:33 mtheo Exp $
  *
  */
 
@@ -142,6 +142,7 @@ int nmxp_sendConnectRequest(int isock, char *naqs_username, char *naqs_password,
     NMXP_CONNECT_REQUEST connectRequest;
     int naqs_username_length, naqs_password_length;
     int32_t protocol_version = 0;
+char *pp = NULL;
 
     nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CRC, "%s - %s\n",
 	    NMXP_LOG_STR(naqs_username), NMXP_LOG_STR(naqs_password));
@@ -209,7 +210,7 @@ int nmxp_sendConnectRequest(int isock, char *naqs_username, char *naqs_password,
 	for(i=0; i < crc32buf_length; i++) {
 	    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_CRC, "%d ", crc32buf[i]);
 	}
-	char *pp = (char *) &connectRequest.crc32;
+	pp = (char *) &connectRequest.crc32;
 	for(i=0; i < sizeof(connectRequest.crc32); i++) {
 	    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_CRC, "%d ", pp[i]);
 	}
@@ -630,6 +631,7 @@ int nmxp_raw_stream_manage(NMXP_RAW_STREAM_DATA *p, NMXP_DATA_PROCESS *a_pd, int
     int i_func_pd;
     char str_time[200];
     NMXP_DATA_PROCESS *pd = NULL;
+    int y, w;
 
     /* Allocate pd copy value from a_pd */
     if(a_pd) {
@@ -745,7 +747,6 @@ int nmxp_raw_stream_manage(NMXP_RAW_STREAM_DATA *p, NMXP_DATA_PROCESS *a_pd, int
     }
 
     /* Check if some element in pdlist is NULL and remove it */
-    int y, w;
     y=0;
     while(y < p->n_pdlist) {
 	if(p->pdlist[y] == NULL) {

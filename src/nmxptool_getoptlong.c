@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.70 2008-02-28 12:23:01 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.71 2008-02-28 13:58:07 mtheo Exp $
  *
  */
 
@@ -410,6 +410,9 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 
     char optstr[300] = "H:P:D:C:N:n:S:R:s:e:t:d:u:p:M:T:v:B:A:F:gGblLiwhV";
 
+    int option_index = 0;
+
+
 #ifdef HAVE_LIBMSEED
     strcat(optstr, "m");
 #endif
@@ -420,8 +423,6 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 
 
     /* getopt_long stores the option index here. */
-    int option_index = 0;
-
     /* init array for checking one time option */
     for(i=0; i<255; i++) {
 	one_time_option[i] = 0;
