@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.136 2008-02-27 11:20:59 mtheo Exp $
+ * $Id: nmxptool.c,v 1.137 2008-02-28 07:36:18 mtheo Exp $
  *
  */
 
@@ -72,6 +72,8 @@ static void flushing_raw_data_stream();
 
 #ifdef HAVE_LIBMSEED
 int nmxptool_write_miniseed(NMXP_DATA_PROCESS *pd);
+int nmxptool_log_miniseed(const char *s);
+int nmxptool_logerr_miniseed(const char *s);
 #endif
 
 #ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
@@ -219,6 +221,7 @@ int main (int argc, char **argv) {
 
 #ifdef HAVE_LIBMSEED
     if(params.flag_writeseed) {
+	ms_loginit((void*)&nmxptool_log_miniseed, NULL, (void*)&nmxptool_logerr_miniseed, "error: ");
 	/* Init mini-SEED variables */
 	nmxp_data_seed_init(&data_seed);
     }
@@ -509,7 +512,7 @@ int main (int argc, char **argv) {
 
 			/* Log contents of last packet */
 			if(params.flag_logdata) {
-			    nmxp_data_log(pd);
+			    nmxp_data_log(pd, params.flag_logsample);
 			}
 
 			/* Set cur_chan */
@@ -802,7 +805,7 @@ int main (int argc, char **argv) {
 
 	    /* Log contents of last packet */
 	    if(params.flag_logdata) {
-		nmxp_data_log(pd);
+		nmxp_data_log(pd, params.flag_logsample);
 	    }
 
 	    skip_current_packet = 0;
@@ -1382,3 +1385,14 @@ void nmxptool_str_time_to_filename(char *str_time) {
 	}
     }
 }
+
+#ifdef HAVE_LIBMSEED
+int nmxptool_log_miniseed(const char *s) {
+    return nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "%s", s);
+}
+
+int nmxptool_logerr_miniseed(const char *s) {
+    return nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "%s", s);
+}
+#endif
+
