@@ -8,7 +8,7 @@
 <center>
 <h1>Earthworm Modules: <br>
 nmxptool configuration file </h1>
-<i>(Last revised 18 January, 2008)</i></center>
+<i>(Last revised 28 February, 2008)</i></center>
 Page Index:<br>
 1. <a href="#function">Functional command listing</a><br>
 2. <a href="#alphabet">Alphabetic command listing &amp; description</a><br>
@@ -78,10 +78,10 @@ and example commands are listed after each command description. </p>
 <pre><a name="Channel"><b>Channel <font color="red">streamkey</font>                 ReadConfig              nmxptool parameters<br></b><!-- command args ... -->           <br></a></pre>
 <blockquote><!-- command description goes here --> Specifies one stream
 of data to be requested from the NmxpHost.
-The <font color="red">streamkey</font> is composed of a network, station and channel code
+The <font color="red">streamkey</font> is not in SCNL format. It is composed of a network, station and channel code
 separated by period. network is optional and it is used only for output.
-Station code can be &#42; that stands for all stations.
-Within channel code can appear character &#63; that stands for any characters.
+Station code can be &quot;&#42;&quot; that stands for all stations.
+Within channel code can appear character &quot;&#63;&quot; that stands for any characters.
 DO NOT USE WITH <a href="#ChannelFile">ChannelFile</a>!
   <pre><br>Default:  none<br>Example:  Channel  ES.BOB.HH?<br>          Channel  *.HHZ<br>          Channel  MN.TIR.HH?<br>          Channel  SALO.BH?</pre>
 </blockquote>
@@ -146,7 +146,8 @@ stdout and stderr is suppressed.
 
 <hr><!-- command name as anchor inside quotes -->
 <pre><a name="MaxDataToRetrieve"><b>MaxDataToRetrieve <font color="red">seconds</font>                                  ReadConfig              nmxptool parameters<br></b><!-- command args ... -->           <br></a></pre>
-<blockquote><!-- command description goes here --> Max amount of data of the past to retrieve from the DataServer when program restarts.  0 to disable connection to DataServer. Range is [0..86400].
+<blockquote><!-- command description goes here --> Max amount of data of the past to retrieve from the DataServer when program restarts.  0 to disable connection to DataServer.
+    If this parameter is zero and <a href="#ChannelFile">ChannelFile</a> is used, only data buffered by NaqsServer will be retrieved. Range is [0..86400].
   <pre><!-- Default and example go here   --><br>Default:  0<br>Example:  MaxDataToRetrieve  180</pre>
 </blockquote>
 
@@ -239,44 +240,66 @@ RingName             WAVE_RING             # Transport ring to write data to.
 HeartBeatInterval    15                    # Heartbeat interval, in seconds.
 LogFile              1                     # 1 -> Keep log, 0 -> no log file
                                            # 2 -> write to module log but not stderr/stdout
+
+#ForceTraceBuf1      0                     # On systems that support TRACEBUF2
+                                           # messages this flag will force the module
+                                           # to create TRACEBUF messages instead.
+                                           # Most people will never need this.
+
 Verbosity            16                    # Set level of verbosity. Verbosity is a bitmap:
                                            # 1 Packet, 2 Channel, 4 Raw Stream,
                                            # 8 CRC32, 16 Connection flow,
                                            # 32 Packet Management, 64 Extra, 128 Date,
                                            # 256 Gap, 512 DOD, 1023 All messages.
+                                           # It is equivalent to the option -v.
 
-NmxpHost             naqs1a.int.ingv.it    # Host address of the NaqsServer server
-NmxpPortPDS          28000                 # Port number of the NaqsServer server (Default 28000)
-NmxpPortDAP          28002                 # Port number of the DataServer server (Default 28002)
+NmxpHost             naqs1a.int.ingv.it    # Host address of NaqsServer/DataServer
+                                           # It is equivalent to the option -H.
 
-#ForceTraceBuf1      0                      # On systems that support TRACEBUF2
-                                           # messages this flag will force the module
-                                           # to create TRACEBUF messages instead.
-                                           # Most people will never need this.
+NmxpPortPDS          28000                 # Port number of NaqsServer (Default 28000)
+                                           # It is equivalent to the option -P.
+
+NmxpPortDAP          28002                 # Port number of DataServer(Default 28002)
+                                           # It is equivalent to the option -D.
 
 MaxTolerableLatency  120                   # Max tolerable latency for each channel. (Default 600 sec.)
-                                           # In general, do not use with parameter TimeoutRecv.
+                                           # In general, DO NOT use with parameter TimeoutRecv.
+                                           # It is equivalent to the option -M.
 
-# MaxDataToRetrieve    180                   # Max amount of data of the past to retrieve from the
-                                           # DataServer when program restarts (default 0) [0..86400].
-                                           # 0 to disable connection to DataServer.
+#TimeoutRecv          30                   # Time-out in seconds for flushing queued data for each channel.
+                                           # (Default 0. No time-out) [10..300].
+                                           # Useful for retrieving Data On Demand with minimum delay.
+                                           # It is equivalent to the option -T.
 
-# TimeoutRecv          30                    # Time-out in seconds for flushing queued data for each channel.
-                                           # Useful for Data On Demand (i.e. channel HL) (Default 0. No time-out)
+DefaultNetworkCode   IV                    # Default network code where in 'ChannelFile' or 'Channel' is not declared.
+                                           # It is equivalent to the option -N.
 
-DefaultNetworkCode   IV                    # Default network code where in Channel is not declared
-
-                                           # Channel definition IS NOT equal to SCNL
-                                           # it is NSC, that is NET.STA.CHAN
+                                           # nmxptool channel definition IS NOT equal to SCNL
+                                           # It is NSC, that is NET.STA.CHAN
+                                           # NET  is optional and used only for output.
                                            # STA  can be '*', stands for all stations.
                                            # CHAN can contain '?', stands for any character.
                                            # Example:  *.HH?,N1.STA2.??Z,STA3.?H?
+                                           # Related to the parameters 'ChannelFile' and 'Channel'.
 
-ChannelFile   /home/ew/naqs1a.list.txt    # State Channel file (It will not be updated.)
-                                          # Allow data continuity between program restarts
-                                          # and within available data buffered on NaqsServer.
-                                          # DO NOT USE with Channel parameter below.
+#MaxDataToRetrieve    180                  # Max amount of data of the past to retrieve from the
+                                           # DataServer when program restarts (default 0) [0..86400].
+                                           # 0 to disable connection to DataServer.
+                                           # It is equivalent to the option -A. Related to 'ChannelFile'.
+                                           # If 'MaxDataToRetrieve' is zero and 'ChannelFile' is used,
+                                           # only data buffered by NaqsServer will be retrieved.
 
+ChannelFile   /home/ew/naqs1a.list.txt    # List of channels. One for each line. (It will not be modified)
+                                          # Load/Save time of last sample of each channel in a file
+                                          # with the same name, same directory, appending suffix ".nmxpstate"
+                                          # Allow data continuity between program restarts.
+                                          # It is equivalent to the option -F. Related to 'MaxDataToRetrieve'.
+
+    # DO NOT USE parameters 'Channel' and 'ChannelFile' together.
+    # 'ChannelFile' is preferable. At restart you can retrieve data
+    # of the past from DataServer. See 'MaxDataToRetrieve'.
+
+# Example of nmxptool channel definition
 # Channel              ES.BOB.HH?
 # Channel              MN.TIR.HH?
 # Channel              MDI.HH?
