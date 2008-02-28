@@ -1,7 +1,9 @@
 #!/bin/sh
 
-# Syntax: cmd <year> <net> <sta> <chan>  <jday> 
+# Syntax: cmd <year> <net> <sta> <chan>  <jday> [y/n]
 # 
+#        Last parameter declare if override existing files. Default 'n'
+#
 # TODO: add location
 #
 # Dependencies: bash, stat (linux version), nmxptool
@@ -38,6 +40,7 @@ STA=$3
 CHAN=$4
 JDAY=$5
 JDAY=`echo $5 | sed -e "s/^[0]*//"`
+OVERRIDE=$6
 NMXPHOST=naqs2a.int.ingv.it
 
 if [ $JDAY -le 0 ]; then
@@ -60,6 +63,21 @@ if [ "$CHAN" == "HH?" ]; then
 	exit
 fi
 
+if [ -z $OVERRIDE ]; then
+	OVERRIDE=n
+else
+	if [ $OVERRIDE != "n" ] &&  [ $OVERRIDE != "y" ]; then
+		echo "ERROR: Last parameter must be 'y' or 'n' !"
+		exit
+	fi
+fi
+
+if [ $OVERRIDE == "n" ]; then
+	OVERRIDEMESSAGE="It will NOT BE overrode!"
+else
+	OVERRIDEMESSAGE="It will BE overrode!"
+fi
+
 # add zero to JDAY
 JDAY=$(printf %03d $JDAY)
 
@@ -76,9 +94,16 @@ FILEMAILDAY=$DIRLOG/mail
 
 FILEARCH=${DIRARCHIVESDS}/${YEAR}/${NET}/${STA}/${CHAN}.D/${NET}.${STA}.${LOC}.${CHAN}.D.${YEAR}.${JDAY}
 
+RUNNMXP=y
+
 if [ -f ${FILEARCH} ]; then
-	echo "WARNING: ${FILEARCH} already exists! It will not be override!"
-else
+	echo "WARNING: ${FILEARCH} already exists! ${OVERRIDEMESSAGE}"
+	if [ $OVERRIDE == "n" ]; then
+		RUNNMXP=n
+	fi
+fi
+
+if [ $RUNNMXP == "y" ]; then
 	$NMXPTOOL -H $NMXPHOST -m -C ${NET}.${STA}.${CHAN} -s ${YEAR}.${JDAY},00:00:00.0000 -e  ${YEAR}.${JDAY},23:59:59.9999
 	NMXPFILEARCH=${NET}.${STA}.${CHAN}_${YEAR}.${JDAY}.00.00.00.0000_${YEAR}.${JDAY}.23.59.59.9999.miniseed
 	if [ -f $NMXPFILEARCH ]; then
@@ -89,7 +114,7 @@ else
 		else
 			echo "Moving ${NMXPFILEARCH} to ${FILEARCH} ... "
 			mkdir -p `dirname ${FILEARCH}`
-			mv ${NMXPFILEARCH} ${FILEARCH}
+			mv -f ${NMXPFILEARCH} ${FILEARCH}
 		fi
 	else
 		echo "ERROR: ${NMXPFILEARCH} has not been created by nmxptool."

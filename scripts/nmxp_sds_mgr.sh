@@ -13,8 +13,9 @@ STATION_LIST="IV.ACER.HLE IV.ACER.HLN IV.ACER.HLZ IV.ARCI.HLE IV.ARCI.HLN IV.ARC
 
 # variables dependent on the input parameters
 YEAR=2008
-JDAYSTART=44
-JDAYEND=50
+JDAYSTART=1
+JDAYEND=58
+OVERRIDE=y
 
 NMXP_SDS=`dirname $0`/nmxp_sds.sh 
 
@@ -25,7 +26,7 @@ while [ $JDAY -le ${JDAYEND} ]; do
 		NET=`echo ${STATION} | cut -f 1 -d'.'`
 		STA=`echo ${STATION} | cut -f 2 -d'.'`
 		CHAN=`echo ${STATION} | cut -f 3 -d'.'`
-		${NMXP_SDS} ${YEAR} ${NET} ${STA} ${CHAN} ${JDAY}
+		${NMXP_SDS} ${YEAR} ${NET} ${STA} ${CHAN} ${JDAY} ${OVERRIDE}
 	done
 	JDAY=$(($JDAY + 1))
 done
