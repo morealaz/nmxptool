@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.138 2008-02-28 09:04:11 mtheo Exp $
+ * $Id: nmxptool.c,v 1.139 2008-02-28 12:22:01 mtheo Exp $
  *
  */
 
@@ -1010,7 +1010,6 @@ int main (int argc, char **argv) {
 
 
 #define MAX_LEN_FILENAME 4096
-#define NMXP_STR_STATE_EXT ".nmxpstate"
 
 static void save_channel_states(NMXP_CHAN_LIST_NET *chan_list, NMXPTOOL_CHAN_SEQ *chan_list_seq) {
     int to_cur_chan;
