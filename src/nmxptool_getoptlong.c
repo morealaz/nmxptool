@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.69 2008-02-28 07:36:52 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.70 2008-02-28 12:23:01 mtheo Exp $
  *
  */
 
@@ -156,16 +156,23 @@ Main arguments:\n\
                           CHAN can contain '?', it stands for any character.\n\
                           Example:  *.HH?,N1.STA2.??Z,STA3.?H?\n\
                           DO NOT USE with -F.\n\
-  -F, --statefile=FILE    Load/Save time of last sample of each channel.\n\
+  -F, --statefile=FILE    List of channels. One for each line.\n\
+                          Load/Save time of the last sample of each channel\n\
+                          into a file with the same name, same directory,\n\
+                          appending the suffix '%s'.\n\
                           Allow data continuity between program restarts.\n\
                           Related to -A and it enables -b.\n\
-                          DO NOT USE with -C.\n");
+                          DO NOT USE with -C.\n",
+			  NMXP_STR_STATE_EXT
+);
 
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
   -A, --maxdataretr=SECs  Max amount of data of the past to retrieve from the\n\
                           DataServer when program restarts (default %d) [%d..%d].\n\
-                          0 to disable connection to DataServer and retrieve\n\
-                          only data buffered by NaqsServer when using -F o -b.\n\
+                          0 to disable connection to DataServer.\n\
+                          If this option is equal to zero and -F is used,\n\
+                          only data buffered by NaqsServer will be retrieved.\n\
+                          Related to -F.\n\
 \n",
 	    DEFAULT_MAX_TIME_TO_RETRIEVE,
 	    DEFAULT_MAX_TIME_TO_RETRIEVE_MINIMUM,
@@ -247,7 +254,7 @@ Other arguments:\n\
                           %d Packet Management, %d Extra, %d Date,\n\
                           %d Gap, %d DOD, %d All messages.\n\
   -g, --logdata           Print info about packet data.\n\
-  -G, --logsample         Print sample values of packets.\n\
+  -G, --logsample         Print sample values of packets. Includes -g.\n\
 ",
 	    NMXP_LOG_STR(DEFAULT_NETWORK),
 	    NMXP_LOG_D_PACKET,
@@ -270,7 +277,7 @@ Other arguments:\n\
 #endif
 
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
-  -w, --writefile         Dump received packet data to a file.\n");
+  -w, --writefile         Dump received packets to a file.\n");
 
 #ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
@@ -645,6 +652,7 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 		    break;
 
 		case 'G':
+		    params->flag_logdata = 1;
 		    params->flag_logsample = 1;
 		    break;
 
