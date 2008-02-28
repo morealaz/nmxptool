@@ -14,8 +14,8 @@
 # Author: Matteo Quintiliani - I.N.G.V. - quintiliani@ingv.it
 #############################################################################
 
-CFLAGS += $(GLOBALFLAGS) -I$(EW_HOME)/$(EW_VERSION)/src/libsrc/util/libmseed
-LDFLAGS += -L$(EW_HOME)/$(EW_VERSION)/src/libsrc/util/libmseed
+NMXP_CFLAGS += $(GLOBALFLAGS) -I$(EW_HOME)/$(EW_VERSION)/src/libsrc/util/libmseed
+NMXP_LDFLAGS += -L$(EW_HOME)/$(EW_VERSION)/src/libsrc/util/libmseed
 
 B = $(EW_HOME)/$(EW_VERSION)/bin
 
@@ -24,7 +24,8 @@ LIBNMXPSRC=libnmxp
 PROGS = nmxptool
 
 all:
-	cd $(LIBNMXPSRC) && ./configure && make && cd .. && ./configure && make && make install-ew-bin
+	cd $(LIBNMXPSRC) && ./configure CFLAGS="$(NMXP_CFLAGS)" LDFLAGS="$(NMXP_LDFLAGS)" && make \
+	&& cd .. && ./configure CFLAGS="$(NMXP_CFLAGS)" LDFLAGS="$(NMXP_LDFLAGS)" && make && make install-ew-bin
 
 # Clean rules
 clean:
