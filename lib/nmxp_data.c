@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_data.c,v 1.54 2008-02-28 14:05:10 mtheo Exp $
+ * $Id: nmxp_data.c,v 1.55 2008-02-28 14:09:41 mtheo Exp $
  *
  */
 
@@ -749,6 +749,10 @@ void nmxp_data_swap_4b (int32_t *in) {
 void nmxp_data_swap_8b (double *in) {
     unsigned char *p = (unsigned char *)in;
     unsigned char tmp;
+    if(sizeof(double) != 8) {
+	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY,
+		"nmxp_data_swap_8b() argument is not 8 bytes length!\n");
+    }
     tmp = *p;
     *p = *(p+7);
     *(p+7) = tmp;
