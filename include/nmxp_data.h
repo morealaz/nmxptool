@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_data.h,v 1.26 2007-12-17 07:20:15 mtheo Exp $
+ * $Id: nmxp_data.h,v 1.27 2008-02-28 08:48:38 mtheo Exp $
  *
  */
 
@@ -202,9 +202,10 @@ double nmxp_data_latency(NMXP_DATA_PROCESS *pd);
 /*! \brief Print info about struct NMXP_DATA_PROCESS
  *
  * \param pd Pointer to struct NMXP_DATA_PROCESS
+ * \param flag_sample If it is not equal to zero sample values will be printed
  *
  */
-int nmxp_data_log(NMXP_DATA_PROCESS *pd);
+int nmxp_data_log(NMXP_DATA_PROCESS *pd, int flag_sample);
 
 
 /*! \brief Parse string and set value in ret_tm

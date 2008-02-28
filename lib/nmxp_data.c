@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_data.c,v 1.50 2008-02-25 06:34:23 mtheo Exp $
+ * $Id: nmxp_data.c,v 1.51 2008-02-28 08:48:38 mtheo Exp $
  *
  */
 
@@ -302,9 +302,10 @@ double nmxp_data_latency(NMXP_DATA_PROCESS *pd) {
 }
 
 
-int nmxp_data_log(NMXP_DATA_PROCESS *pd) {
+int nmxp_data_log(NMXP_DATA_PROCESS *pd, int flag_sample) {
 
     char str_start[200], str_end[200];
+    int i;
 
     str_start[0] = 0;
     str_end[0] = 0;
@@ -335,18 +336,17 @@ int nmxp_data_log(NMXP_DATA_PROCESS *pd) {
 		pd->x0n_significant,
 		pd->length
 	      );
-	/*
-	if(pd->nSamp > 0) {
-	    int i;
+
+	if(pd->pDataPtr  &&  flag_sample != 0  &&  pd->nSamp > 0) {
 	    for(i=0; i < pd->nSamp; i++) {
-		printf("%6d ", pd->pDataPtr[i]);
+		nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "%7d ", pd->pDataPtr[i]);
 		if((i + 1) % 20 == 0) {
-		    printf("\n");
+		    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\n");
 		}
 	    }
-	    printf("\n");
+	    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\n");
 	}
-	*/
+
     } else {
 	nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_PACKETMAN, "Pointer to NMXP_DATA_PROCESS is NULL!\n");
     }
@@ -685,17 +685,18 @@ int nmxp_data_msr_pack(NMXP_DATA_PROCESS *pd, NMXP_DATA_SEED *data_seed, void *p
 	msr_srcname (msr, data_seed->srcname, 0);
 
 	pDataDest = msr->datasamples;
-	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN, "x0 %d, xn %d\n", pDataDest[0], pDataDest[msr->numsamples-1]);
 
 	/* msr_print(msr, 2); */
 
 	/* Pack the record(s) */
 	precords = msr_pack (msr, &nmxp_data_msr_write_handler, data_seed->srcname, &psamples, 1, verbose);
 
-	if ( precords == -1 )
-	    ms_log (2, "Cannot pack records\n");
-	else {
+	if ( precords == -1 ) {
+	    ms_log (2, "Cannot pack records %s.%s.%s\n", pd->network, pd->station, pd->channel);
+	} else {
 	    /* ms_log (1, "Packed %d samples into %d records\n", psamples, precords); */
+	    ms_log (1, "pack records %s.%s.%s x0=%d xn=%d\n",
+		    pd->network, pd->station, pd->channel, pDataDest[0], pDataDest[msr->numsamples-1]);
 	}
 
     }
