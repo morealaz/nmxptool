@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_base.c,v 1.60 2008-02-28 14:01:17 mtheo Exp $
+ * $Id: nmxp_base.c,v 1.61 2008-02-28 22:17:50 mtheo Exp $
  *
  */
 
@@ -567,23 +567,20 @@ NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data
 	memcpy (&nmx_sample_rate, nmx_hdr+13, 1);
 	memcpy (&nmx_x0, nmx_hdr+14, 3);
 
-	/* check if nmx_x0 is negative like as signed 3-byte int */
-	if( (nmx_x0 & high_scale) ==  high_scale) {
-	    /* nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN, "WARNING: changed nmx_x0, old value = %d\n",  nmx_x0);*/
-	    nmx_x0 -= high_scale_p;
-	}
-	/* TOREMOVE if (my_order != SEED_LITTLE_ENDIAN) { */
 	if (my_host_is_bigendian) {
 	    nmxp_data_swap_4b ((int32_t *)&nmx_seconds);
 	    nmxp_data_swap_2b (&nmx_ticks);
 	    nmxp_data_swap_2b (&nmx_instr_id);
 	    nmxp_data_swap_4b (&nmx_seqno);
-	    nmx_x0 = nmx_x0 >> 8;
 	    nmxp_data_swap_4b (&nmx_x0);
-	    nmx_x0 = nmx_x0 >> 8;
-	    /* TODO*/
-	    nmx_x0++;
 	}
+
+	/* check if nmx_x0 is negative like as signed 3-byte int */
+	if( (nmx_x0 & high_scale) ==  high_scale) {
+	    /* nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN, "WARNING: changed nmx_x0, old value = %d\n",  nmx_x0);*/
+	    nmx_x0 -= high_scale_p;
+	}
+
 	nmx_seconds_double = (double) nmx_seconds + ( (double) nmx_ticks / 10000.0 );
 	rate_code = nmx_sample_rate>>3;
 	chan_code = nmx_sample_rate&7;
