@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.68 2008-02-25 11:02:07 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.69 2008-02-28 07:36:52 mtheo Exp $
  *
  */
 
@@ -45,6 +45,7 @@ const NMXPTOOL_PARAMS NMXPTOOL_PARAMS_DEFAULT =
     NULL,
     DEFAULT_BUFFERED_TIME,
     DEFAULT_MAX_TIME_TO_RETRIEVE,
+    0,
     0,
     0,
     0,
@@ -246,6 +247,7 @@ Other arguments:\n\
                           %d Packet Management, %d Extra, %d Date,\n\
                           %d Gap, %d DOD, %d All messages.\n\
   -g, --logdata           Print info about packet data.\n\
+  -G, --logsample         Print sample values of packets.\n\
 ",
 	    NMXP_LOG_STR(DEFAULT_NETWORK),
 	    NMXP_LOG_D_PACKET,
@@ -381,6 +383,7 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 	{"maxdataretr",  required_argument, NULL, 'A'},
 	/* Following are flags */
 	{"logdata",      no_argument,       NULL, 'g'},
+	{"logsample",    no_argument,       NULL, 'G'},
 	{"buffered",     no_argument,       NULL, 'b'},
 	{"listchannels", no_argument,       NULL, 'l'},
 	{"listchannelsnaqs", no_argument,   NULL, 'L'},
@@ -398,7 +401,7 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 	{0, 0, 0, 0}
     };
 
-    char optstr[300] = "H:P:D:C:N:n:S:R:s:e:t:d:u:p:M:T:v:B:A:F:gblLiwhV";
+    char optstr[300] = "H:P:D:C:N:n:S:R:s:e:t:d:u:p:M:T:v:B:A:F:gGblLiwhV";
 
 #ifdef HAVE_LIBMSEED
     strcat(optstr, "m");
@@ -641,6 +644,10 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 		    params->flag_logdata = 1;
 		    break;
 
+		case 'G':
+		    params->flag_logsample = 1;
+		    break;
+
 		case 'b':
 		    params->flag_buffered = 1;
 		    break;
@@ -783,6 +790,7 @@ void nmxptool_log_params(NMXPTOOL_PARAMS *params) {
     int flag_slink: %d\n\
     int flag_buffered: %d\n\
     int flag_logdata: %d\n\
+    int flag_logsample: %d\n\
 ",
     params->buffered_time,
     params->flag_writeseed,
@@ -792,7 +800,8 @@ void nmxptool_log_params(NMXPTOOL_PARAMS *params) {
     params->flag_writefile,
     params->flag_slink,
     params->flag_buffered,
-    params->flag_logdata
+    params->flag_logdata,
+    params->flag_logsample
     );
 }
 
