@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.137 2008-02-28 07:36:18 mtheo Exp $
+ * $Id: nmxptool.c,v 1.138 2008-02-28 09:04:11 mtheo Exp $
  *
  */
 
@@ -1388,11 +1388,11 @@ void nmxptool_str_time_to_filename(char *str_time) {
 
 #ifdef HAVE_LIBMSEED
 int nmxptool_log_miniseed(const char *s) {
-    return nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "%s", s);
+    return nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN, "%s", s);
 }
 
 int nmxptool_logerr_miniseed(const char *s) {
-    return nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "%s", s);
+    return nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY, "%s", s);
 }
 #endif
 
