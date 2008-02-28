@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_data.c,v 1.51 2008-02-28 08:48:38 mtheo Exp $
+ * $Id: nmxp_data.c,v 1.52 2008-02-28 09:00:48 mtheo Exp $
  *
  */
 
@@ -339,7 +339,7 @@ int nmxp_data_log(NMXP_DATA_PROCESS *pd, int flag_sample) {
 
 	if(pd->pDataPtr  &&  flag_sample != 0  &&  pd->nSamp > 0) {
 	    for(i=0; i < pd->nSamp; i++) {
-		nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "%7d ", pd->pDataPtr[i]);
+		nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "%6d ", pd->pDataPtr[i]);
 		if((i + 1) % 20 == 0) {
 		    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\n");
 		}
@@ -643,10 +643,12 @@ int nmxp_data_seed_init(NMXP_DATA_SEED *data_seed) {
 	NMXP_DATA_SEED *data_seed = pdata_seed;
 	if( data_seed->outfile_mseed ) {
 	    if ( fwrite(record, reclen, 1, data_seed->outfile_mseed) != 1 ) {
-		ms_log (2, "Error writing %s to output file\n", data_seed->filename_mseed);
+		nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_PACKETMAN,
+			"Error writing %s to output file\n", data_seed->filename_mseed);
 	    }
 	} else {
-		ms_log (2, "Error opening file %s\n", data_seed->filename_mseed);
+		nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_PACKETMAN,
+			"Error opening file %s\n", data_seed->filename_mseed);
 	}
     }
 
@@ -692,11 +694,12 @@ int nmxp_data_msr_pack(NMXP_DATA_PROCESS *pd, NMXP_DATA_SEED *data_seed, void *p
 	precords = msr_pack (msr, &nmxp_data_msr_write_handler, data_seed->srcname, &psamples, 1, verbose);
 
 	if ( precords == -1 ) {
-	    ms_log (2, "Cannot pack records %s.%s.%s\n", pd->network, pd->station, pd->channel);
+	    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_PACKETMAN,
+		    "Cannot pack records %s.%s.%s\n", pd->network, pd->station, pd->channel);
 	} else {
-	    /* ms_log (1, "Packed %d samples into %d records\n", psamples, precords); */
-	    ms_log (1, "pack records %s.%s.%s x0=%d xn=%d\n",
-		    pd->network, pd->station, pd->channel, pDataDest[0], pDataDest[msr->numsamples-1]);
+	    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN,
+		    "Packed %d samples into %d records for %s.%s.%s x0=%d xn=%d\n",
+		    psamples, precords, pd->network, pd->station, pd->channel, pDataDest[0], pDataDest[msr->numsamples-1]);
 	}
 
     }
