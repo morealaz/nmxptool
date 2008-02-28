@@ -35,7 +35,8 @@ MaxTolerableLatency  120                   # Max tolerable latency for each chan
 
 DefaultNetworkCode   IV                    # Default network code where in Channel is not declared
 
-                                           # Channel is like NET.STA.CHAN
+                                           # Channel definition IS NOT equal to SCNL
+                                           # it is NSC, that is NET.STA.CHAN
                                            # NET  is optional and used only for output.
                                            # STA  can be '*', stands for all stations.
                                            # CHAN can contain '?', stands for any character.
