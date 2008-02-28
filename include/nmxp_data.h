@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_data.h,v 1.27 2008-02-28 08:48:38 mtheo Exp $
+ * $Id: nmxp_data.h,v 1.28 2008-02-28 14:01:17 mtheo Exp $
  *
  */
 
@@ -273,7 +273,7 @@ void nmxp_data_swap_4b (int32_t *in);
  * \param in Variable length 8 bytes.
  *
  */
-void nmxp_data_swap_8b (int64_t *in);
+void nmxp_data_swap_8b (double *in);
 
 
 /*! \brief Determine the byte order of the host machine. 

@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_data.c,v 1.52 2008-02-28 09:00:48 mtheo Exp $
+ * $Id: nmxp_data.c,v 1.53 2008-02-28 14:01:17 mtheo Exp $
  *
  */
 
@@ -388,6 +388,13 @@ int nmxp_data_parse_date(const char *pstr_date, NMXP_TM_T *ret_tmt) {
     int state;
     int flag_finished = 0;
 
+    time_t time_now;
+    struct tm *tm_now;
+
+    int month_days[12] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+    int m, d, day_sum, jday=app;
+
+
     nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_DATE, "Date to validate '%s'\n", NMXP_LOG_STR(pstr_date));
 	
     strncpy(str_date, pstr_date, MAX_LENGTH_STR_MESSAGE);
@@ -407,10 +414,6 @@ int nmxp_data_parse_date(const char *pstr_date, NMXP_TM_T *ret_tmt) {
     }
 
     /* initialize ret_tmt */
-    time_t time_now;
-    struct tm *tm_now;
-    time(&time_now);
-    tm_now = gmtime(&time_now);
 
     ret_tmt->t.tm_sec = 0 ;
     ret_tmt->t.tm_min = 0;
@@ -476,9 +479,6 @@ int nmxp_data_parse_date(const char *pstr_date, NMXP_TM_T *ret_tmt) {
 
 	    case 3: /* Parse Julian Day */
 		ret_tmt->t.tm_yday = app - 1;
-
-		int month_days[12] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-		int m, d, day_sum, jday=app;
 
 		if(NMXP_DATA_IS_LEAP(ret_tmt->t.tm_year)) {
 		    month_days[1]++;
@@ -742,7 +742,7 @@ void nmxp_data_swap_4b (int32_t *in) {
 }
 
 
-void nmxp_data_swap_8b (int64_t *in) {
+void nmxp_data_swap_8b (double *in) {
     unsigned char *p = (unsigned char *)in;
     unsigned char tmp;
     tmp = *p;

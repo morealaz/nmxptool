@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_base.c,v 1.59 2008-02-28 08:47:06 mtheo Exp $
+ * $Id: nmxp_base.c,v 1.60 2008-02-28 14:01:17 mtheo Exp $
  *
  */
 
@@ -445,7 +445,7 @@ NMXP_DATA_PROCESS *nmxp_processDecompressedData(char* buffer_data, int length_da
   if(nmxp_channel_name) {
 
   memcpy(&pTime, &buffer_data[4], 8);
-  if ( swap ) { nmxp_data_swap_8b((int64_t *) ((void *)&pTime)); }
+  if ( swap ) { nmxp_data_swap_8b(&pTime); }
 
   memcpy(&netInt, &buffer_data[12], 4);
   pNSamp = ntohl(netInt);
@@ -537,6 +537,8 @@ NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data
 	static int32_t outdata[MAX_OUTDATA];
 	int32_t nout, i, k;
 	int32_t prev_xn;
+	const uint32_t high_scale = 4096 * 2048;
+	const uint32_t high_scale_p = 4096 * 4096;
 
 	char *nmxp_channel_name = NULL;
 
@@ -565,8 +567,6 @@ NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data
 	memcpy (&nmx_sample_rate, nmx_hdr+13, 1);
 	memcpy (&nmx_x0, nmx_hdr+14, 3);
 
-	const uint32_t high_scale = 4096 * 2048;
-	const uint32_t high_scale_p = 4096 * 4096;
 	/* check if nmx_x0 is negative like as signed 3-byte int */
 	if( (nmx_x0 & high_scale) ==  high_scale) {
 	    /* nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN, "WARNING: changed nmx_x0, old value = %d\n",  nmx_x0);*/
