@@ -1,7 +1,7 @@
 #############################################################################
 # WARNING: this file is a meta-makefile written to adapt the compilation of
 # nmxptool when you are compiling it under Earthworm system. This file should
-# work for all operating systems using almost any 'make' program.
+# work for all operating systems using almost all 'make' programs.
 # For Windows-XP and Windows-2000 compile under MinGW.
 #
 # CFLAGS and LDFLAGS variables will be overrided. 
@@ -14,8 +14,8 @@
 # Author: Matteo Quintiliani - I.N.G.V. - quintiliani@ingv.it
 #############################################################################
 
-CFLAGS = $(GLOBALFLAGS) -I$(EW_HOME)/$(EW_VERSION)/src/libsrc/util/libmseed
-LDFLAGS = -L$(EW_HOME)/$(EW_VERSION)/src/libsrc/util/libmseed
+CFLAGS += $(GLOBALFLAGS) -I$(EW_HOME)/$(EW_VERSION)/src/libsrc/util/libmseed
+LDFLAGS += -L$(EW_HOME)/$(EW_VERSION)/src/libsrc/util/libmseed
 
 B = $(EW_HOME)/$(EW_VERSION)/bin
 
@@ -24,8 +24,7 @@ LIBNMXPSRC=libnmxp
 PROGS = nmxptool
 
 all:
-	cd $(LIBNMXPSRC) && ./configure && make
-	./configure && make && cp src/$(PROGS) $B/
+	cd $(LIBNMXPSRC) && ./configure && make && cd .. && ./configure && make && make install-ew-bin
 
 # Clean rules
 clean:
