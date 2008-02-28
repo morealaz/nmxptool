@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_base.c,v 1.58 2008-02-27 11:33:47 mtheo Exp $
+ * $Id: nmxp_base.c,v 1.59 2008-02-28 08:47:06 mtheo Exp $
  *
  */
 
@@ -421,10 +421,10 @@ NMXP_DATA_PROCESS *nmxp_processDecompressedData(char* buffer_data, int length_da
   double    pTime     = 0.0;
   int32_t   pNSamp    = 0;
   int32_t   pSampRate = 0;
-  int32_t  *pDataPtr  = 0;
+  int32_t  *pDataPtr  = NULL;
   int       swap      = 0;
   int       idx;
-  int32_t outdata[MAX_OUTDATA];
+  static int32_t outdata[MAX_OUTDATA];
 
   char station_code[20];
   char channel_code[20];
@@ -493,6 +493,8 @@ NMXP_DATA_PROCESS *nmxp_processDecompressedData(char* buffer_data, int length_da
   pd.pDataPtr = pDataPtr;
   pd.sampRate = pSampRate;
 
+  } else {
+      nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_PACKETMAN, "Channel name not found for key %d\n", pKey);
   }
 
   return &pd;
@@ -505,7 +507,7 @@ NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data
     double    pTime     = 0.0;
     int32_t   pNSamp    = 0;
     int32_t   pSampRate = 0;
-    int32_t  *pDataPtr  = 0;
+    int32_t  *pDataPtr  = NULL;
 
     char station_code[20];
     char channel_code[20];
@@ -532,7 +534,7 @@ NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data
 
 	int32_t comp_bytecount;
 	unsigned char *indata;
-	int32_t outdata[MAX_OUTDATA];
+	static int32_t outdata[MAX_OUTDATA];
 	int32_t nout, i, k;
 	int32_t prev_xn;
 
@@ -679,6 +681,8 @@ NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data
 	pd.pDataPtr = pDataPtr;
 	pd.sampRate = pSampRate;
 
+	} else {
+	    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_PACKETMAN, "Channel name not found for key %d\n", pKey);
 	}
 
 	return &pd;
