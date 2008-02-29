@@ -26,6 +26,9 @@ install-ew-conf:
 	test -d "${EW_PARAMS}"
 	${INSTALL_DATA} 'earthworm/nmxptool.d' '${EW_PARAMS}/nmxptool.d'
 	${INSTALL_DATA} 'earthworm/nmxptool.desc' '${EW_PARAMS}/nmxptool.desc'
+
+uninstall-ew-bin:
+	rm -f ${NMXPTOOLBINEW}
 endif
 
 if WITHSEEDLINK
@@ -42,5 +45,8 @@ install-seiscomp-templates:
 	${INSTALL_DATA} 'seiscomp_templates/135_nmxptool/plugins.ini.tpl' '${SEISCOMPDIRTEMPLATES}/135_nmxptool/plugins.ini.tpl'
 	${INSTALL_DATA} 'seiscomp_templates/135_nmxptool/seedlink_plugin.tpl' '${SEISCOMPDIRTEMPLATES}/135_nmxptool/seedlink_plugin.tpl'
 	${INSTALL_DATA} 'seiscomp_templates/135_nmxptool/seedlink_station.tpl' '${SEISCOMPDIRTEMPLATES}/135_nmxptool/seedlink_station.tpl'
+
+uninstall-seiscomp-bin:
+	rm -f ${NMXPTOOLBINSEISCOMP}
 endif
 
