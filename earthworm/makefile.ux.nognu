@@ -2,10 +2,12 @@
 # WARNING: this file is a meta-makefile written to adapt the compilation of
 # nmxptool when you are compiling it under Earthworm system. This file should
 # work for all operating systems using almost all 'make' programs.
+#
 # It is based on program 'test' and environment variables:
 #     $GLOBLAFLAGS, $EW_HOME, $EW_VERSION
 # If you want to enable libmseed support for nmxptool you have to have 'gcc'
 #     and set variable EXTRAPACKAGE to "with-libmseed".
+#
 # For Windows-XP and Windows-2000 compile under MinGW.
 #
 # make -f makefile.ux.nognu 
