@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_chan.c,v 1.34 2008-02-29 16:23:53 mtheo Exp $
+ * $Id: nmxp_chan.c,v 1.35 2008-02-29 22:16:08 mtheo Exp $
  *
  */
 
@@ -242,7 +242,6 @@ char *nmxp_chan_lookupName(int32_t key, NMXP_CHAN_LIST_NET *channelList)
     }
 
     if(ret[0] == 0) {
-	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANNEL, "Key %d not found!\n", key);
 	return NULL;
     } else {
 	return ret;
@@ -280,12 +279,18 @@ NMXP_CHAN_LIST_NET *nmxp_chan_subset(NMXP_CHAN_LIST *channelList, NMXP_DATATYPE 
     char network_code[20];
     char station_code[20];
     char channel_code[20];
+    int i_chan_found = -1;
+    int i_chan_duplicated = -1;
+    char *nmxp_channel_name = NULL;
+    char nmxp_channel_name_duplicated[50];
 
     ret_channelList = (NMXP_CHAN_LIST_NET *) malloc(sizeof(NMXP_CHAN_LIST_NET));
     ret_channelList->number = 0;
 
     istalist = 0;
     while(sta_chan_list[istalist] != sep_chan_list  &&  sta_chan_list[istalist] != 0) {
+	
+	/* Build sta_chan_code_pattern from sta_chan_list */
 	ista = 0;
 	while(sta_chan_list[istalist] != sep_chan_list  &&  sta_chan_list[istalist] != 0) {
 	    sta_chan_code_pattern[ista++] = sta_chan_list[istalist++];
@@ -294,23 +299,55 @@ NMXP_CHAN_LIST_NET *nmxp_chan_subset(NMXP_CHAN_LIST *channelList, NMXP_DATATYPE 
 	if(sta_chan_list[istalist] == sep_chan_list) {
 	    istalist++;
 	}
+
+	/* Match name to sta_chan_code_pattern and set i_chan_found */
+	nmxp_channel_name = NULL;
+	nmxp_channel_name_duplicated[0] = 0;
+	i_chan_found = -1;
+	i_chan_duplicated = -1;
 	ret_match = 1;
 	i_chan = 0;
-	while(i_chan < channelList->number  &&  ret_match != -1) {
+	while(i_chan < channelList->number) {
 	    ret_match = nmxp_chan_match(channelList->channel[i_chan].name, sta_chan_code_pattern);
 	    if(ret_match == 1) {
-		/* TODO Add check for channel duplication in sta_chan_list */
-		    if(i_chan != -1  && getDataTypeFromKey(channelList->channel[i_chan].key) == dataType) {
-			ret_channelList->channel[ret_channelList->number].key =        channelList->channel[i_chan].key;
-			strcpy(ret_channelList->channel[ret_channelList->number].name, channelList->channel[i_chan].name);
-			nmxp_chan_cpy_sta_chan(sta_chan_code_pattern, station_code, channel_code, network_code);
-			sprintf(ret_channelList->channel[ret_channelList->number].name, "%s.%s",
-				(network_code[0] != 0)? network_code : network_code_default, channelList->channel[i_chan].name);
-			ret_channelList->number++;
+		    if(getDataTypeFromKey(channelList->channel[i_chan].key) == dataType) {
+			/* Check for channel duplication */
+			nmxp_channel_name = nmxp_chan_lookupName(channelList->channel[i_chan].key, ret_channelList);
+			if(nmxp_channel_name == NULL) {
+			    /* Add channel */
+			    i_chan_found = i_chan;
+			    ret_channelList->channel[ret_channelList->number].key =        channelList->channel[i_chan_found].key;
+			    strcpy(ret_channelList->channel[ret_channelList->number].name, channelList->channel[i_chan_found].name);
+			    nmxp_chan_cpy_sta_chan(sta_chan_code_pattern, station_code, channel_code, network_code);
+			    sprintf(ret_channelList->channel[ret_channelList->number].name, "%s.%s",
+				    (network_code[0] != 0)? network_code : network_code_default, channelList->channel[i_chan_found].name);
+			    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CHANNEL, "Added %s for %s.\n",
+				    ret_channelList->channel[ret_channelList->number].name, sta_chan_code_pattern);
+			    ret_channelList->number++;
+			} else {
+			    strncpy(nmxp_channel_name_duplicated, nmxp_channel_name, 50);
+			    i_chan_duplicated = i_chan;
+			}
 		    }
 	    }
 	    i_chan++;
 	}
+
+	if(i_chan_duplicated != -1) {
+	    /* Error message for duplication */
+	    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANNEL, "Pattern %s duplicates channel %s. (%s, %d, Key %d).\n",
+		    sta_chan_code_pattern,
+		    channelList->channel[i_chan_duplicated].name,
+		    NMXP_LOG_STR(nmxp_channel_name_duplicated),
+		    i_chan_duplicated, channelList->channel[i_chan_duplicated].key);
+	}
+
+	if(i_chan_found == -1  &&  i_chan_duplicated == -1) {
+	    /* Error message for channel not found of channel is not dataType */
+	    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANNEL, "Pattern %s does not match to any key.\n",
+		    sta_chan_code_pattern);
+	}
+
     }
     
     return ret_channelList;
