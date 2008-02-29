@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.139 2008-02-28 12:22:01 mtheo Exp $
+ * $Id: nmxptool.c,v 1.140 2008-02-29 06:40:38 mtheo Exp $
  *
  */
 
@@ -1042,7 +1042,7 @@ static void save_channel_states(NMXP_CHAN_LIST_NET *chan_list, NMXPTOOL_CHAN_SEQ
 	while(to_cur_chan < chan_list->number) {
 	    nmxp_data_to_str(last_time_str, chan_list_seq[to_cur_chan].last_time);
 	    nmxp_data_to_str(raw_last_sample_time_str, chan_list_seq[to_cur_chan].raw_stream_buffer.last_sample_time);
-	    sprintf(state_line_str, "%d %s %s %s",
+	    sprintf(state_line_str, "%10d %s %s %s",
 		    chan_list->channel[to_cur_chan].key,
 		    chan_list->channel[to_cur_chan].name,
 		    last_time_str,
@@ -1151,12 +1151,16 @@ void load_channel_states(NMXP_CHAN_LIST_NET *chan_list, NMXPTOOL_CHAN_SEQ *chan_
 		}
 		if(cur_chan < chan_list->number) {
 		    if( s_rawtime_f_calc != DEFAULT_BUFFERED_TIME  && s_rawtime_f_calc != 0.0 ) {
-			chan_list_seq[cur_chan].after_start_time = s_rawtime_f_calc;
+			chan_list_seq[cur_chan].after_start_time                   = s_rawtime_f_calc;
+			chan_list_seq[cur_chan].last_time                          = s_rawtime_f_calc;
+			chan_list_seq[cur_chan].raw_stream_buffer.last_sample_time = s_rawtime_f_calc;
 			nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "For channel %s (%d %d) starting from %s. %f.\n",
 				NMXP_LOG_STR(s_chan), cur_chan, chan_list->channel[cur_chan].key,
 				NMXP_LOG_STR(s_rawtime_s), s_rawtime_f_calc); 
 		    } else if( s_noraw_time_f_calc != DEFAULT_BUFFERED_TIME ) {
-			chan_list_seq[cur_chan].after_start_time = s_noraw_time_f_calc;
+			chan_list_seq[cur_chan].after_start_time                   = s_noraw_time_f_calc;
+			chan_list_seq[cur_chan].last_time                          = s_noraw_time_f_calc;
+			chan_list_seq[cur_chan].raw_stream_buffer.last_sample_time = s_noraw_time_f_calc;
 			nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "For channel %s (%d %d) starting from %s. %f.\n",
 				NMXP_LOG_STR(s_chan), cur_chan, chan_list->channel[cur_chan].key,
 				NMXP_LOG_STR(s_noraw_time_s), s_noraw_time_f_calc); 
