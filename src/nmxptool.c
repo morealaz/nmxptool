@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.140 2008-02-29 06:40:38 mtheo Exp $
+ * $Id: nmxptool.c,v 1.141 2008-02-29 07:09:25 mtheo Exp $
  *
  */
 
@@ -329,7 +329,7 @@ int main (int argc, char **argv) {
 
 	}
 
-    /* TODO condition starting DAP or PDS */
+    /* Condition for starting DAP or PDS */
     if( DAP_CONDITION(params) ||
 	    (times_flow == 0  &&  params.statefile && params.max_data_to_retrieve > 0 && params.interval == DEFAULT_INTERVAL_INFINITE) ) {
 
@@ -770,7 +770,6 @@ int main (int argc, char **argv) {
 	    }
 
 	    if(recv_errno == 0) {
-		/* TODO*/
 		exitpdscondition = 1;
 	    } else {
 #ifdef HAVE_WINDOWS_H
@@ -779,7 +778,6 @@ int main (int argc, char **argv) {
 		if(recv_errno == EWOULDBLOCK)
 #endif
 		{
-		    /* TODO*/
 		    exitpdscondition = 1;
 		} else {
 		    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CONNFLOW, "Error receiving data. pd=%p recv_errno=%d\n",

@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.71 2008-02-28 13:58:07 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.72 2008-02-29 07:09:25 mtheo Exp $
  *
  */
 
@@ -712,8 +712,10 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 	ret_errors += optind;
 
 	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "non-option ARGV-elements: ");
-	while (optind < argc)
-	    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "%s ", NMXP_LOG_STR(argv[optind++]));
+	while (optind < argc) {
+	    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "%s ",
+		    NMXP_LOG_STR(argv[optind++]));
+	}
 	putchar ('\n');
     }
 
