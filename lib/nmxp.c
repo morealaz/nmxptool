@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp.c,v 1.67 2008-02-28 13:59:33 mtheo Exp $
+ * $Id: nmxp.c,v 1.68 2008-02-29 10:09:27 mtheo Exp $
  *
  */
 
@@ -595,7 +595,7 @@ void nmxp_raw_stream_init(NMXP_RAW_STREAM_DATA *raw_stream_buffer, int32_t max_t
     raw_stream_buffer->last_seq_no_sent = -1;
     raw_stream_buffer->last_sample_time = -1.0;
     /* TODO 
-     * Suppose a packet can contain 1/4 secs of data */
+     * Suppose a packet can contain 1/4 secs of data (that is, minimum packet length is 0.25 secs of data) */
     raw_stream_buffer->max_tolerable_latency = max_tolerable_latency;
     raw_stream_buffer->max_pdlist_items = max_tolerable_latency * 4;
     raw_stream_buffer->timeoutrecv = timeoutrecv;

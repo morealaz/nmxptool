@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_log.h,v 1.11 2008-02-24 16:49:07 mtheo Exp $
+ * $Id: nmxp_log.h,v 1.12 2008-02-29 10:09:27 mtheo Exp $
  *
  */
 
@@ -53,27 +53,40 @@
   NMXP_LOG_D_PACKETMAN | NMXP_LOG_D_EXTRA | NMXP_LOG_D_DATE | NMXP_LOG_D_GAP | NMXP_LOG_D_DOD )
 
 
-/*! \brief  TODO
+/*! \brief  Print value of PACKAGE_NAME and PACKAGE_VERSION
  */
 const char *nmxp_log_version();
 
 
-/*! \brief TODO
+/*! \brief Set function pointers for "normal logging" and "error logging"
+ *
+ * \param func_log Function pointer to the the function for "normal logging"
+ * \param func_log_err Function pointer to the the function for "error logging"
+ *
  */
 void nmxp_log_init(int (*func_log)(char *), int (*func_log_err)(char *));
 
 
-/*! \brief TODO
+/*! \brief Add function pointers to "normal logging" and "error_logging"
+ *
+ * \param func_log Function pointer to the the function for "normal logging"
+ * \param func_log_err Function pointer to the the function for "error logging"
+ *
  */
 void nmxp_log_add(int (*func_log)(char *), int (*func_log_err)(char *));
 
 
-/*! \brief TODO
+/*! \brief Wrapper for fprintf to stdout and flushing
+ *
+ * \param msg String message
+ *
  */
 int nmxp_log_stdout(char *msg);
 
 
-/*! \brief TODO
+/*! \brief Wrapper for fprintf to stderror and flushing
+ *
+ * \param msg String message
  */
 int nmxp_log_stderr(char *msg);
 
