@@ -95,6 +95,15 @@ for DIRECTORY in $DIRSOURCEVERSION/libnmxp $DIRSOURCEVERSION ; do
     cd -
 done
 
+# link to the earthworm makefiles
+EWMAKEFILESOL=earthworm/makefile.ux.nognu
+EWMAKEFILEUX=earthworm/makefile.ux.nognu
+cd $DIRSOURCEVERSION
+ln -s $EWMAKEFILESOL makefile.sol
+ln -s $EWMAKEFILEUX makefile.ux
+cd -
+
+
 rm -f `find . -iname "*~"`
 rm -fr $DIRSOURCEVERSION/libnmxp/doc/rapporto_tecnico_ingv_nmxp.*
 rm -fr $DIRSOURCEVERSION/libnmxp/doc/nanometrics_naqs_and_data.graffle
