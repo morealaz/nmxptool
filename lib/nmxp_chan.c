@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_chan.c,v 1.33 2008-02-28 13:58:57 mtheo Exp $
+ * $Id: nmxp_chan.c,v 1.34 2008-02-29 16:23:53 mtheo Exp $
  *
  */
 
@@ -299,6 +299,7 @@ NMXP_CHAN_LIST_NET *nmxp_chan_subset(NMXP_CHAN_LIST *channelList, NMXP_DATATYPE 
 	while(i_chan < channelList->number  &&  ret_match != -1) {
 	    ret_match = nmxp_chan_match(channelList->channel[i_chan].name, sta_chan_code_pattern);
 	    if(ret_match == 1) {
+		/* TODO Add check for channel duplication in sta_chan_list */
 		    if(i_chan != -1  && getDataTypeFromKey(channelList->channel[i_chan].key) == dataType) {
 			ret_channelList->channel[ret_channelList->number].key =        channelList->channel[i_chan].key;
 			strcpy(ret_channelList->channel[ret_channelList->number].name, channelList->channel[i_chan].name);
