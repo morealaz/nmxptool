@@ -2,7 +2,7 @@
 nmxptool Release History
 #########################
 
-* Release 1.1.8-rc5     (2008/02/28)
+* Release 1.1.8-beta27     (2008/02/29)
     - Added management of channel sample sequences.
           Allow data continuity between program restarts, (option -F)
           within time defined by MaxDataToRetrieve (option -A)
@@ -14,7 +14,8 @@ nmxptool Release History
     - Added logging of sample values (option -G).
     - Option interval can be declared in minutes, hours or days (option -t).
     - Fixed major bug in DAP authentication (options -u and -p).
-    - Fixed bug in packet decompression.
+    - Fixed bug in packet decompression on Big-Endian architecture.
+          Offset +1 count was added when x0 was greater than zero.
     - Fixed several minor bugs.
 
 * Release 1.1.7     (2007/12/11)
