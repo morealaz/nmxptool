@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.73 2008-02-29 07:18:44 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.74 2008-03-01 22:35:12 mtheo Exp $
  *
  */
 
@@ -110,7 +110,8 @@ void nmxptool_usage(struct option long_options[])
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
 \n\
 Usage: %s -H hostname   -l | -L\n\
-             Print list of available channels on DataServer or NaqsServer.\n\
+             Print list of available Time Series channels\n\
+             on DataServer and NaqsServer respectively.\n\
 \n\
        %s -H hostname -C channellist [...]\n\
              Receive data in near real-time from NaqsServer by PDS.\n\
@@ -198,7 +199,7 @@ PDS arguments for NaqsServer:\n\
   -b, --buffered          Request also recent packets into the past.\n\
   -B, --buff_date=DATE    Request also recent packets into the past\n\
                           but consider only samples after DATE.\n\
-  -L, --listchannelsnaqs  Print list of available channels on NaqsServer.\n\
+  -L, --listchannelsnaqs  List of available Time Series channels on NaqsServer.\n\
   -M, --maxlatency=SECs   Max tolerable latency (default %d) [%d..%d].\n\
   -T, --timeoutrecv=SECs  Time-out for flushing buffered packets.\n\
                           (default %d, no time-out) [%d..%d].\n\
@@ -235,7 +236,7 @@ DAP arguments for DataServer:\n\
   -d, --delay=SECs        Receive continuosly data with delay [%d..%d].\n\
   -u, --username=USER     DataServer username.\n\
   -p, --password=PASS     DataServer password.\n\
-  -l, --listchannels      Print list of available channels on DataServer.\n\
+  -l, --listchannels      List of available Time Series channels on DataServer.\n\
   -i, --channelinfo       Print channelinfo (network name) when using -l.\n\
 \n\
 ",
@@ -247,9 +248,9 @@ DEFAULT_DELAY_MAXIMUM);
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
 Other arguments:\n\
   -N, --network=NET       Default output Network code. (default '%s').\n\
-  -L, --location=LOC      Default output Location code. DISABLED!\n\
+  -n, --location=LOC      Default output Location code. DISABLED!\n\
   -v, --verbose=level     Be verbose. level is a bitmap:\n\
-                          %d Packet, %d Channel, %d Raw Stream,\n\
+                          %d Channel State, %d Channel, %d Raw Stream,\n\
                           %d CRC32, %d Connection flow,\n\
                           %d Packet Management, %d Extra, %d Date,\n\
                           %d Gap, %d DOD, %d All messages.\n\
@@ -257,7 +258,7 @@ Other arguments:\n\
   -G, --logsample         Print sample values of packets. Includes -g.\n\
 ",
 	    NMXP_LOG_STR(DEFAULT_NETWORK),
-	    NMXP_LOG_D_PACKET,
+	    NMXP_LOG_D_CHANSTATE,
 	    NMXP_LOG_D_CHANNEL,
 	    NMXP_LOG_D_RAWSTREAM,
 	    NMXP_LOG_D_CRC,
