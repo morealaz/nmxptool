@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp.c,v 1.68 2008-02-29 10:09:27 mtheo Exp $
+ * $Id: nmxp.c,v 1.69 2008-03-01 22:33:10 mtheo Exp $
  *
  */
 
@@ -142,7 +142,7 @@ int nmxp_sendConnectRequest(int isock, char *naqs_username, char *naqs_password,
     NMXP_CONNECT_REQUEST connectRequest;
     int naqs_username_length, naqs_password_length;
     int32_t protocol_version = 0;
-char *pp = NULL;
+    char *pp = NULL;
 
     nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CRC, "%s - %s\n",
 	    NMXP_LOG_STR(naqs_username), NMXP_LOG_STR(naqs_password));
@@ -354,7 +354,7 @@ int nmxp_sendDataRequest(int isock, int32_t key, int32_t start_time, int32_t end
 NMXP_CHAN_LIST *nmxp_getAvailableChannelList(char * hostname, int portnum, NMXP_DATATYPE datatype) {
     int naqssock;
     NMXP_CHAN_LIST *channelList = NULL, *channelList_subset = NULL;
-    int i;
+    /* int i; */
 
     /* 1. Open a socket*/
     naqssock = nmxp_openSocket(hostname, portnum);
@@ -368,16 +368,18 @@ NMXP_CHAN_LIST *nmxp_getAvailableChannelList(char * hostname, int portnum, NMXP_
 	     if(nmxp_receiveChannelList(naqssock, &channelList) == NMXP_SOCKET_OK) {
 
 		 channelList_subset = nmxp_chan_getType(channelList, datatype);
-		 nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CHANNEL, "%d / %d\n", channelList_subset->number, channelList->number);
+		 nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CHANNEL, "%d / %d are DataType channel.\n", channelList_subset->number, channelList->number);
 
 		 /* nmxp_chan_sortByKey(channelList_subset);*/
 		 nmxp_chan_sortByName(channelList_subset);
 
+		 /*
 		 for(i=0; i < channelList_subset->number; i++) {
 		     nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CHANNEL, "%12d %s\n",
 			     channelList_subset->channel[i].key,
 			     NMXP_LOG_STR(channelList_subset->channel[i].name));
 		 }
+		 */
 
 		 /* 4. Send a Request Pending (optional)*/
 
