@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_data.c,v 1.55 2008-02-28 14:09:41 mtheo Exp $
+ * $Id: nmxp_data.c,v 1.56 2008-03-01 22:33:34 mtheo Exp $
  *
  */
 
@@ -251,14 +251,16 @@ int nmxp_data_trim(NMXP_DATA_PROCESS *pd, double trim_start_time, double trim_en
 
 	    } else if(new_nSamp == 0) {
 		if(pd->pDataPtr) {
-		    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN, "nmxp_data_trim() nSamp = %d\n", new_nSamp);
+		    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN, "nmxp_data_trim() nSamp = %d for %s.%s.%s.\n",
+			    new_nSamp, NMXP_LOG_STR(pd->network), NMXP_LOG_STR(pd->station), NMXP_LOG_STR(pd->channel));
 		}
 		pd->nSamp = 0;
 		pd->x0 = -1;
 		pd->xn = -1;
 		ret = 1;
 	    } else {
-		    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_PACKETMAN, "Error in nmxp_data_trim() nSamp = %d\n", new_nSamp);
+		    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_PACKETMAN, "Error in nmxp_data_trim() nSamp = %d for %s.%s.%s.\n",
+			    new_nSamp, NMXP_LOG_STR(pd->network), NMXP_LOG_STR(pd->station), NMXP_LOG_STR(pd->channel));
 	    }
 
 	} else {
@@ -269,10 +271,12 @@ int nmxp_data_trim(NMXP_DATA_PROCESS *pd, double trim_start_time, double trim_en
     }
 
     if(ret == 1) {
-	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN, "nmxp_data_trim() trimmed data! (Output %d samples)\n", pd->nSamp);
+	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN, "nmxp_data_trim() trimmed data! (Output %d samples for %s.%s.%s)\n",
+		pd->nSamp, NMXP_LOG_STR(pd->network), NMXP_LOG_STR(pd->station), NMXP_LOG_STR(pd->channel));
     }
 
-    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN, "nmxp_data_trim() exit ret=%d\n", ret);
+    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN, "nmxp_data_trim() %s.%s.%s exit ret=%d\n",
+	    NMXP_LOG_STR(pd->network), NMXP_LOG_STR(pd->station), NMXP_LOG_STR(pd->channel), ret);
 
     return ret;
 }
