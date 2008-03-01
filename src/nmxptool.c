@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.142 2008-02-29 22:15:45 mtheo Exp $
+ * $Id: nmxptool.c,v 1.143 2008-03-01 22:36:10 mtheo Exp $
  *
  */
 
@@ -717,11 +717,8 @@ int main (int argc, char **argv) {
 	    printf("Error on receiveChannelList()\n");
 	    return 1;
 	}
-
-	/* Get a subset of channel from arguments */
-	/* TODO ????
-	 * channelList_subset_waste = nmxp_chan_subset(channelList, NMXP_DATA_TIMESERIES, params.channels, CURRENT_NETWORK);
-	 */
+	/* Get a subset of channel from arguments, in respect to the step 3 of PDS */
+	channelList_subset_waste = nmxp_chan_subset(channelList, NMXP_DATA_TIMESERIES, params.channels, CURRENT_NETWORK);
 
 
 	/* PDS Step 4: Send a Request Pending (optional) */
@@ -1020,7 +1017,7 @@ static void save_channel_states(NMXP_CHAN_LIST_NET *chan_list, NMXPTOOL_CHAN_SEQ
     char statefilefilename[MAX_LEN_FILENAME] = "";
 
     if(chan_list == NULL  ||  chan_list_seq == NULL) {
-	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY, "save_channel_states() channel lists are NULL!\n");
+	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANSTATE, "save_channel_states() channel lists are NULL!\n");
 	return;
     }
 
@@ -1029,10 +1026,10 @@ static void save_channel_states(NMXP_CHAN_LIST_NET *chan_list, NMXPTOOL_CHAN_SEQ
 	strncat(statefilefilename, NMXP_STR_STATE_EXT, MAX_LEN_FILENAME);
 	fstatefile = fopen(statefilefilename, "w");
 	if(fstatefile == NULL) {
-	    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY, "Unable to write channel states into %s!\n",
+	    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANSTATE, "Unable to write channel states into %s!\n",
 		    NMXP_LOG_STR(statefilefilename));
 	} else {
-	    nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "Writing channel states into %s!\n",
+	    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CHANSTATE, "Writing channel states into %s!\n",
 		    NMXP_LOG_STR(statefilefilename));
 	}
 
@@ -1048,11 +1045,11 @@ static void save_channel_states(NMXP_CHAN_LIST_NET *chan_list, NMXPTOOL_CHAN_SEQ
 		    last_time_str,
 		    raw_last_sample_time_str
 		   );
-	    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CHANNEL, "%s\n", NMXP_LOG_STR(state_line_str));
+	    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CHANSTATE, "%s\n", NMXP_LOG_STR(state_line_str));
 	    if(fstatefile) {
 		fprintf(fstatefile, "%s\n", state_line_str);
 		if( (chan_list_seq[to_cur_chan].last_time != 0) || (chan_list_seq[to_cur_chan].raw_stream_buffer.last_sample_time != -1.0) ) {
-		    nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "%s %d %d %f %f\n",
+		    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CHANSTATE, "%s %d %d %f %f\n",
 			    NMXP_LOG_STR(state_line_str), to_cur_chan, chan_list->channel[to_cur_chan].key,
 			    chan_list_seq[to_cur_chan].last_time, chan_list_seq[to_cur_chan].raw_stream_buffer.last_sample_time);
 		} else {
@@ -1089,12 +1086,12 @@ void load_channel_states(NMXP_CHAN_LIST_NET *chan_list, NMXPTOOL_CHAN_SEQ *chan_
 	if(fstatefile == NULL) {
 	    fstatefileINPUT = fopen(params.statefile, "r");
 	    if(fstatefileINPUT == NULL) {
-		nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY, "Unable to read channel states from %s!\n",
+		nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANSTATE, "Unable to read channel states from %s!\n",
 			NMXP_LOG_STR(params.statefile));
 	    } else {
 		fstatefile = fopen(statefilefilename, "w");
 		if(fstatefile == NULL) {
-		    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY, "Unable to write channel states into %s!\n",
+		    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANSTATE, "Unable to write channel states into %s!\n",
 			    NMXP_LOG_STR(statefilefilename));
 		} else {
 		    /*
@@ -1114,10 +1111,10 @@ void load_channel_states(NMXP_CHAN_LIST_NET *chan_list, NMXPTOOL_CHAN_SEQ *chan_
 	strncat(statefilefilename, NMXP_STR_STATE_EXT, MAX_LEN_FILENAME);
 	fstatefile = fopen(statefilefilename, "r");
 	if(fstatefile == NULL) {
-	    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY, "Unable to read channel states from %s!\n",
+	    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANSTATE, "Unable to read channel states from %s!\n",
 		    NMXP_LOG_STR(statefilefilename));
 	} else {
-	    nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "Loading channel states from %s!\n",
+	    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CHANSTATE, "Loading channel states from %s!\n",
 		    NMXP_LOG_STR(statefilefilename));
 	    while(fgets(line, MAXSIZE_LINE, fstatefile) != NULL) {
 		s_chan[0] = 0;
@@ -1129,18 +1126,18 @@ void load_channel_states(NMXP_CHAN_LIST_NET *chan_list, NMXPTOOL_CHAN_SEQ *chan_
 		s_rawtime_f_calc = DEFAULT_BUFFERED_TIME;
 		if(n_scanf == 4) {
 		    if(nmxp_data_parse_date(s_noraw_time_s, &tmp_tmt) == -1) {
-			nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY, "Parsing time '%s'\n", NMXP_LOG_STR(s_noraw_time_s)); 
+			nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANSTATE, "Parsing time '%s'\n", NMXP_LOG_STR(s_noraw_time_s)); 
 		    } else {
 			s_noraw_time_f_calc = nmxp_data_tm_to_time(&tmp_tmt);
 		    }
 		    if(nmxp_data_parse_date(s_rawtime_s, &tmp_tmt) == -1) {
-			nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY, "Parsing time '%s'\n", NMXP_LOG_STR(s_rawtime_s)); 
+			nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANSTATE, "Parsing time '%s'\n", NMXP_LOG_STR(s_rawtime_s)); 
 		    } else {
 			s_rawtime_f_calc = nmxp_data_tm_to_time(&tmp_tmt);
 		    }
 		}
 
-		nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_EXTRA, "%d %12d %-14s %16.4f %s %16.4f %s\n",
+		nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CHANSTATE, "%d %12d %-14s %16.4f %s %16.4f %s\n",
 			n_scanf, key_chan, s_chan,
 			s_noraw_time_f_calc, NMXP_LOG_STR(s_noraw_time_s),
 			s_rawtime_f_calc, NMXP_LOG_STR(s_rawtime_s)); 
@@ -1154,22 +1151,22 @@ void load_channel_states(NMXP_CHAN_LIST_NET *chan_list, NMXPTOOL_CHAN_SEQ *chan_
 			chan_list_seq[cur_chan].after_start_time                   = s_rawtime_f_calc;
 			chan_list_seq[cur_chan].last_time                          = s_rawtime_f_calc;
 			chan_list_seq[cur_chan].raw_stream_buffer.last_sample_time = s_rawtime_f_calc;
-			nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "For channel %s (%d %d) starting from %s. %f.\n",
+			nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CHANSTATE, "For channel %s (%d %d) starting from %s. %f.\n",
 				NMXP_LOG_STR(s_chan), cur_chan, chan_list->channel[cur_chan].key,
 				NMXP_LOG_STR(s_rawtime_s), s_rawtime_f_calc); 
 		    } else if( s_noraw_time_f_calc != DEFAULT_BUFFERED_TIME ) {
 			chan_list_seq[cur_chan].after_start_time                   = s_noraw_time_f_calc;
 			chan_list_seq[cur_chan].last_time                          = s_noraw_time_f_calc;
 			chan_list_seq[cur_chan].raw_stream_buffer.last_sample_time = s_noraw_time_f_calc;
-			nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "For channel %s (%d %d) starting from %s. %f.\n",
+			nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CHANSTATE, "For channel %s (%d %d) starting from %s. %f.\n",
 				NMXP_LOG_STR(s_chan), cur_chan, chan_list->channel[cur_chan].key,
 				NMXP_LOG_STR(s_noraw_time_s), s_noraw_time_f_calc); 
 		    } else {
-			nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "For channel %s there is not valid start_time.\n",
+			nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANSTATE, "For channel %s there is not valid start_time.\n",
 				NMXP_LOG_STR(s_chan)); 
 		    }
 		} else {
-		    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY, "Channel %s not found! (%d %s)\n",
+		    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANSTATE, "Channel %s not found! (%d %s)\n",
 			    NMXP_LOG_STR(s_chan), strlen(line), NMXP_LOG_STR(line)); 
 		}
 	    }
@@ -1192,7 +1189,7 @@ static void flushing_raw_data_stream() {
     if(params.stc == -1) {
 	to_cur_chan = 0;
 	while(to_cur_chan < channelList_subset->number) {
-	    nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "Flushing data for channel %s\n",
+	    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_RAWSTREAM, "Flushing data for channel %s\n",
 		    NMXP_LOG_STR(channelList_subset->channel[to_cur_chan].name));
 	    nmxp_raw_stream_manage(&(channelList_Seq[to_cur_chan].raw_stream_buffer), NULL, p_func_pd, n_func_pd);
 	    to_cur_chan++;
@@ -1205,7 +1202,7 @@ static void flushing_raw_data_stream() {
 static void clientShutdown(int sig) {
     int i_chan = 0;
 
-    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "Program interrupted!\n");
+    nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "Program interrupted!\n");
 
     flushing_raw_data_stream();
 

@@ -3,6 +3,9 @@ TODO LIST:
 - Add check for channel duplication in sta_chan_list
 	nmxp_chan_subset() in libnmxp/src/nmxp_chan.c
 
+- Riclassificare log messages 
+	Channel state
+
 - nmxp_log() check for NULL string
 
 - Add option for output directory dump and mini-seed
