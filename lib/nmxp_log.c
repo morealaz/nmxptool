@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_log.c,v 1.15 2008-02-24 15:10:52 mtheo Exp $
+ * $Id: nmxp_log.c,v 1.16 2008-03-01 22:32:44 mtheo Exp $
  *
  */
 
@@ -83,6 +83,9 @@ void nmxp_log_print_all(char *message, int (*a_func_log[NMXP_MAX_FUNC_LOG]) (cha
     }
 }
 
+/* #define NMXP_LOG_PREFIX PACKAGE_NAME */
+#define NMXP_LOG_PREFIX "nmxp"
+
 int nmxp_log(int level, int verb, ... )
 {
   static int staticverb = 0;
@@ -112,11 +115,11 @@ int nmxp_log(int level, int verb, ... )
 
     switch(level) {
 	case NMXP_LOG_ERR:
-	    sprintf(message_final, "%s - %s: error: %s", timestr, PACKAGE_NAME, message);
+	    sprintf(message_final, "%s - %s error: %s", timestr, NMXP_LOG_PREFIX, message);
 	    nmxp_log_print_all(message_final, p_func_log_err, n_func_log_err);
 	    break;
 	case NMXP_LOG_WARN:
-	    sprintf(message_final, "%s - %s: warning: %s", timestr, PACKAGE_NAME, message);
+	    sprintf(message_final, "%s - %s warning: %s", timestr, NMXP_LOG_PREFIX, message);
 	    nmxp_log_print_all(message_final, p_func_log, n_func_log);
 	    break;
 	case NMXP_LOG_NORM_NO:
@@ -124,11 +127,11 @@ int nmxp_log(int level, int verb, ... )
 	    nmxp_log_print_all(message_final, p_func_log, n_func_log);
 	    break;
 	case NMXP_LOG_NORM_PKG:
-	    sprintf(message_final, "%s: %s", PACKAGE_NAME, message);
+	    sprintf(message_final, "%s: %s", NMXP_LOG_PREFIX, message);
 	    nmxp_log_print_all(message_final, p_func_log, n_func_log);
 	    break;
 	default:
-	    sprintf(message_final, "%s - %s: %s", timestr, PACKAGE_NAME, message);
+	    sprintf(message_final, "%s - %s: %s", timestr, NMXP_LOG_PREFIX, message);
 	    nmxp_log_print_all(message_final, p_func_log, n_func_log);
 	    break;
     }
