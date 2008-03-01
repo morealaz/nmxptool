@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_chan.c,v 1.36 2008-03-01 10:50:19 mtheo Exp $
+ * $Id: nmxp_chan.c,v 1.37 2008-03-01 22:34:03 mtheo Exp $
  *
  */
 
@@ -327,24 +327,25 @@ NMXP_CHAN_LIST_NET *nmxp_chan_subset(NMXP_CHAN_LIST *channelList, NMXP_DATATYPE 
 			} else {
 			    strncpy(nmxp_channel_name_duplicated, nmxp_channel_name, 50);
 			    i_chan_duplicated = i_chan;
+
+			    if(i_chan_duplicated != -1) {
+				/* Warning message for duplication */
+				nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "Pattern %s duplicates %s. Kept %s. (%d, Key %d).\n",
+					sta_chan_code_pattern,
+					channelList->channel[i_chan_duplicated].name,
+					NMXP_LOG_STR(nmxp_channel_name_duplicated),
+					i_chan_duplicated, channelList->channel[i_chan_duplicated].key);
+			    }
+
 			}
 		    }
 	    }
 	    i_chan++;
 	}
 
-	if(i_chan_duplicated != -1) {
-	    /* Error message for duplication */
-	    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANNEL, "Pattern %s duplicates channel %s. (%s, %d, Key %d).\n",
-		    sta_chan_code_pattern,
-		    channelList->channel[i_chan_duplicated].name,
-		    NMXP_LOG_STR(nmxp_channel_name_duplicated),
-		    i_chan_duplicated, channelList->channel[i_chan_duplicated].key);
-	}
-
 	if(i_chan_found == -1  &&  i_chan_duplicated == -1) {
 	    /* Error message for channel not found of channel is not dataType */
-	    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANNEL, "Pattern %s does not match to any key.\n",
+	    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY, "Pattern %s does not match to any key.\n",
 		    sta_chan_code_pattern);
 	}
 
