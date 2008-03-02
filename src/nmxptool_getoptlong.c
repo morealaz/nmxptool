@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.74 2008-03-01 22:35:12 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.75 2008-03-02 16:26:40 mtheo Exp $
  *
  */
 
@@ -155,7 +155,9 @@ Main arguments:\n\
                           NET  is optional and used only for output.\n\
                           STA  can be '*', it stands for all stations.\n\
                           CHAN can contain '?', it stands for any character.\n\
-                          Example:  *.HH?,N1.STA2.??Z,STA3.?H?\n\
+                          Example: N1.S7.HH?,N2.*.HH?,S9.BH?\n\
+                          Second pattern includes the first. Unless S7, all\n\
+                          stations with HH channels will have network to N2.\n\
                           DO NOT USE with -F.\n\
   -F, --statefile=FILE    List of channels. One for each line.\n\
                           Load/Save time of the last sample of each channel\n\
