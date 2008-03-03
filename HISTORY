@@ -2,7 +2,7 @@
 nmxptool Release History
 #########################
 
-* Release 1.1.8-beta30     (2008/03/03)
+* Release 1.1.8-beta31     (2008/03/03)
     - Added management of channel sample sequences.
           Allow data continuity between program restarts, (option -F)
           within time defined by MaxDataToRetrieve (option -A)
