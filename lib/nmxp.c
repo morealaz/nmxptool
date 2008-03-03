@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp.c,v 1.69 2008-03-01 22:33:10 mtheo Exp $
+ * $Id: nmxp.c,v 1.70 2008-03-03 13:20:09 mtheo Exp $
  *
  */
 
@@ -634,6 +634,8 @@ int nmxp_raw_stream_manage(NMXP_RAW_STREAM_DATA *p, NMXP_DATA_PROCESS *a_pd, int
     char str_time[200];
     NMXP_DATA_PROCESS *pd = NULL;
     int y, w;
+    int count_null_element = 0;
+    char netstachan[100];
 
     /* Allocate pd copy value from a_pd */
     if(a_pd) {
@@ -752,8 +754,7 @@ int nmxp_raw_stream_manage(NMXP_RAW_STREAM_DATA *p, NMXP_DATA_PROCESS *a_pd, int
     y=0;
     while(y < p->n_pdlist) {
 	if(p->pdlist[y] == NULL) {
-	    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY,
-		    "nmxp_raw_stream_manage() an element in pdlist is NULL.\n");
+	    count_null_element++;
 	    /* Shift array */
 	    for(w=y+1; w < p->n_pdlist; w++) {
 		p->pdlist[w-1] = p->pdlist[w];
@@ -762,6 +763,20 @@ int nmxp_raw_stream_manage(NMXP_RAW_STREAM_DATA *p, NMXP_DATA_PROCESS *a_pd, int
 	} else {
 	    y++;
 	}
+    }
+
+    if(count_null_element > 0) {
+	if(p->n_pdlist > 0) {
+	    snprintf(netstachan, 100, "%s.%s.%s",
+		    NMXP_LOG_STR(p->pdlist[0]->network),
+		    NMXP_LOG_STR(p->pdlist[0]->station),
+		    NMXP_LOG_STR(p->pdlist[0]->channel));
+	} else {
+	    strncpy(netstachan, "Unknown", 100);
+	}
+	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY,
+		"nmxp_raw_stream_manage() %d NULL elements in pdlist for %s.\n",
+		count_null_element, netstachan);
     }
 
     /* Sort array */
