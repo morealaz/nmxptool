@@ -183,8 +183,16 @@ stdout and stderr is suppressed.
 <hr><!-- command name as anchor inside quotes -->
 <pre><a name="MaxDataToRetrieve"><b>MaxDataToRetrieve <font color="red">seconds</font>                                  ReadConfig              nmxptool parameters<br></b><!-- command args ... -->           <br></a></pre>
 <blockquote><!-- command description goes here --> Max amount of data of the past to retrieve from the DataServer when program restarts.  0 to disable connection to DataServer.
-    If this parameter is zero and <a href="#ChannelFile">ChannelFile</a> is used, only data buffered by NaqsServer will be retrieved. Range is [0..86400].
-  <pre><!-- Default and example go here   --><br>Default:  0<br>Example:  MaxDataToRetrieve  180</pre>
+    If this parameter is zero and <a href="#ChannelFile">ChannelFile</a> is used, only data buffered by NaqsServer will be retrieved.
+    It is preferable, inside the section Datastream of
+    the file Naqs.ini, setting DataBufferLength to a high
+    value, than using <a href="#MaxDataToRetrieve">MaxDataToRetrieve</a>.
+    It allows to retrieve
+    much more data of the past when the program restarts but
+    it slows down the execution.
+    It is extremely harmful when declare a lot of channels.
+    Range is [0..86400].
+  <pre><!-- Default and example go here   --><br>Default:  0<br>Example:  MaxDataToRetrieve  3600</pre>
 </blockquote>
 
 <hr><!-- command name as anchor inside quotes -->
@@ -249,7 +257,7 @@ memory region.
 <blockquote><!-- command description goes here --> Specifies the <b><font
 	    color="red">level</font></b> of logging verbosity.
     Verbosity is a bitmap:<br>
-    1 Packet, 2 Channel, 4 Raw Stream, 8 CRC32, 16 Connection flow, 32 Packet Management, 64 Extra, 128 Date, 256 Gap, 512 DOD, 1023 All messages.
+    1 Channel State, 2 Channel, 4 Raw Stream, 8 CRC32, 16 Connection flow, 32 Packet Management, 64 Extra, 128 Date, 256 Gap, 512 DOD, 1023 All messages.
   <pre><!-- Default and example go here   --><br>Default:  0<br>Example:  Verbosity 80		# 16 Connection flow + 64 Extra</pre>
 </blockquote>
 
@@ -323,12 +331,19 @@ DefaultNetworkCode   IV                  # Default network code where in 'Channe
                                          # stations with HH channels will have network to N2.
                                          # Station MMM will have default network defined by 'DefaultNetworkCode'.
 
-#MaxDataToRetrieve    180                # Max amount of data of the past to retrieve from the
+#MaxDataToRetrieve    3600               # Max amount of data of the past to retrieve from the
                                          # DataServer when program restarts (default 0) [0..86400].
                                          # 0 to disable connection to DataServer.
                                          # It is equivalent to the option -A. Related to 'ChannelFile'.
                                          # If 'MaxDataToRetrieve' is zero and 'ChannelFile' is used,
                                          # only data buffered by NaqsServer will be retrieved.
+                                         # It is preferable, inside the section Datastream of
+                                         # the file Naqs.ini, setting DataBufferLength to a high
+                                         # value, than using 'MaxDataToRetrieve'.
+                                         # It allows to retrieve much more data of the past when
+                                         # the program restarts but it slows down the execution.
+                                         # It is extremely harmful when declare a lot of channels.
+
 
 ChannelFile   /home/ew/naqs1a.list.txt   # List of channel patterns like 'Channel'. One for each line.
                                          # This file will not be modified by nmxptool.
@@ -351,7 +366,6 @@ ChannelFile   /home/ew/naqs1a.list.txt   # List of channel patterns like 'Channe
 # Channel              *.BHZ               # Channel selection
 
 # Please, for other details about parameters, refer to the command line "nmxptool -h"
-
 
 </pre>
 

@@ -63,8 +63,8 @@ DefaultNetworkCode   IV                  # Default network code where in 'Channe
                                          # It is preferable, inside the section Datastream of
                                          # the file Naqs.ini, setting DataBufferLength to a high
                                          # value, than using 'MaxDataToRetrieve'.
-                                         # It slows down execution but it allows to retrieve
-                                         # much more data of the past when the program restarts.
+                                         # It allows to retrieve much more data of the past when
+                                         # the program restarts but it slows down the execution.
                                          # It is extremely harmful when declare a lot of channels.
 
 
