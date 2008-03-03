@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.143 2008-03-01 22:36:10 mtheo Exp $
+ * $Id: nmxptool.c,v 1.144 2008-03-03 12:44:26 mtheo Exp $
  *
  */
 
@@ -303,16 +303,45 @@ int main (int argc, char **argv) {
     }
 
 #ifdef HAVE_EARTHWORMOBJS
-	if(params.ew_configuration_file) {
-	    nmxptool_ew_attach();
+    if(params.ew_configuration_file) {
+	nmxptool_ew_attach();
+    }
+#endif
+
+    if(params.stc == -1) {
+
+	if(params.flag_logdata) {
+	    p_func_pd[n_func_pd++] = nmxptool_print_seq_no;
+	}
+
+#ifdef HAVE_LIBMSEED
+	/* Write Mini-SEED record */
+	if(params.flag_writeseed) {
+	    p_func_pd[n_func_pd++] = nmxptool_write_miniseed;
 	}
 #endif
+
+#ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
+	/* Send data to SeedLink Server */
+	if(params.flag_slink) {
+	    p_func_pd[n_func_pd++] = nmxptool_send_raw_depoch;
+	}
+#endif
+
+#ifdef HAVE_EARTHWORMOBJS
+	if(params.ew_configuration_file) {
+	    p_func_pd[n_func_pd++] = nmxptool_ew_nmx2ew;
+	}
+#endif
+
+    }
+
 
     nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CONNFLOW, "Starting comunication.\n");
 
     times_flow = 0;
 
-    while(times_flow < 2) {
+    while(times_flow < 2  &&  recv_errno == 0) {
 
 	if(params.statefile) {
 	    load_channel_states(channelList_subset, channelList_Seq);
@@ -665,35 +694,6 @@ int main (int argc, char **argv) {
     } else {
 
 	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CONNFLOW, "Begin PDS Flow.\n");
-
-	if(params.stc == -1) {
-
-
-	    if(params.flag_logdata) {
-		p_func_pd[n_func_pd++] = nmxptool_print_seq_no;
-	    }
-
-#ifdef HAVE_LIBMSEED
-	    /* Write Mini-SEED record */
-	    if(params.flag_writeseed) {
-		p_func_pd[n_func_pd++] = nmxptool_write_miniseed;
-	    }
-#endif
-
-#ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
-	    /* Send data to SeedLink Server */
-	    if(params.flag_slink) {
-		p_func_pd[n_func_pd++] = nmxptool_send_raw_depoch;
-	    }
-#endif
-
-#ifdef HAVE_EARTHWORMOBJS
-	    if(params.ew_configuration_file) {
-		p_func_pd[n_func_pd++] = nmxptool_ew_nmx2ew;
-	    }
-#endif
-
-	}
 
 	/* ************************************************************* */
 	/* Start subscription protocol "PRIVATE DATA STREAM" version 1.4 */
