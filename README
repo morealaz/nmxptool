@@ -83,6 +83,7 @@ Data-On-Demand with minimum delay after request.
          OR
      cp src/nmxptool <where_you_want>
 
+     nmxptool --help
 
 
 - INSTALLATION
@@ -159,7 +160,7 @@ Data-On-Demand with minimum delay after request.
 
 - DOCUMENTATION
     * Print nmxptool help:
-         # nmxptool -h
+         # nmxptool --help
     * Earthworm module: earthworm/nmxptool_cmd.html
                                   nmxptool_ovr.html
 
