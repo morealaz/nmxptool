@@ -54,12 +54,19 @@ DefaultNetworkCode   IV                  # Default network code where in 'Channe
                                          # stations with HH channels will have network to N2.
                                          # Station MMM will have default network defined by 'DefaultNetworkCode'.
 
-#MaxDataToRetrieve    180                # Max amount of data of the past to retrieve from the
+#MaxDataToRetrieve    3600               # Max amount of data of the past to retrieve from the
                                          # DataServer when program restarts (default 0) [0..86400].
                                          # 0 to disable connection to DataServer.
                                          # It is equivalent to the option -A. Related to 'ChannelFile'.
                                          # If 'MaxDataToRetrieve' is zero and 'ChannelFile' is used,
                                          # only data buffered by NaqsServer will be retrieved.
+                                         # It is preferable, inside the section Datastream of
+                                         # the file Naqs.ini, setting DataBufferLength to a high
+                                         # value, than using 'MaxDataToRetrieve'.
+                                         # It slows down execution but it allows to retrieve
+                                         # much more data of the past when the program restarts.
+                                         # It is extremely harmful when declare a lot of channels.
+
 
 ChannelFile   /home/ew/naqs1a.list.txt   # List of channel patterns like 'Channel'. One for each line.
                                          # This file will not be modified by nmxptool.
