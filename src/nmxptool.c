@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.144 2008-03-03 12:44:26 mtheo Exp $
+ * $Id: nmxptool.c,v 1.145 2008-03-03 13:19:47 mtheo Exp $
  *
  */
 
@@ -924,6 +924,7 @@ int main (int argc, char **argv) {
 		    logit ("t", "nmxptool terminating on request\n");
 		    nmxptool_ew_send_error(NMXPTOOL_EW_ERR_TERMREQ);
 		    exitpdscondition = 0;
+		    times_flow = TIMES_FLOW_EXIT;
 		}
 
 		/* Check if we need to send heartbeat message */
@@ -959,7 +960,8 @@ int main (int argc, char **argv) {
 
     }
 
-    if(params.interval == DEFAULT_INTERVAL_INFINITE) {
+    if(times_flow != TIMES_FLOW_EXIT
+	    &&  params.interval == DEFAULT_INTERVAL_INFINITE) {
 	times_flow++;
     } else {
 	times_flow = TIMES_FLOW_EXIT;
