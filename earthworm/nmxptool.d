@@ -65,7 +65,7 @@ DefaultNetworkCode   IV                  # Default network code where in 'Channe
                                          # value, than using 'MaxDataToRetrieve'.
                                          # It allows to retrieve much more data of the past when
                                          # the program restarts but it slows down the execution.
-                                         # It is extremely harmful when declare a lot of channels.
+                                         # It is extremely harmful when you have many channels.
 
 
 ChannelFile   /home/ew/naqs1a.list.txt   # List of channel patterns like 'Channel'. One for each line.
