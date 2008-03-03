@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_base.c,v 1.61 2008-02-28 22:17:50 mtheo Exp $
+ * $Id: nmxp_base.c,v 1.62 2008-03-03 09:53:44 mtheo Exp $
  *
  */
 
@@ -376,6 +376,20 @@ int nmxp_sendMessage(int isock, NMXP_MSG_CLIENT type, void *buffer, int32_t leng
 }
 
 
+int32_t nmxp_display_error_from_server(char *buffer, int32_t length) {
+    /* NMXP_MSG_TERMINATESUBSCRIPTION */
+    char *str_msg = NULL;
+    int32_t reason;
+    memcpy(&reason, buffer, sizeof(reason));
+    reason = ntohl(reason);
+    str_msg = buffer + sizeof(reason);
+    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY, "%d %s shutdown: %s\n",
+	    reason,
+	    (reason == 0)? "Normal" : (reason == 1)? "Error" : (reason == 2)? "Timeout" : "Unknown",
+	    str_msg);
+    return reason;
+}
+
 int nmxp_receiveMessage(int isock, NMXP_MSG_SERVER *type, void **buffer, int32_t *length, int timeoutsec, int *recv_errno ) {
     int ret;
     *buffer = NULL;
@@ -388,7 +402,10 @@ int nmxp_receiveMessage(int isock, NMXP_MSG_SERVER *type, void **buffer, int32_t
 	    *buffer = malloc(*length);
 	    ret = nmxp_recv_ctrl(isock, *buffer, *length, 0, recv_errno);
 
-	    if(*type == NMXP_MSG_ERROR) {
+	    if(*type == NMXP_MSG_TERMINATESUBSCRIPTION) {
+		nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_PACKETMAN, "Received TerminateSubscritption.\n");
+		nmxp_display_error_from_server(*buffer, *length);
+	    } else if(*type == NMXP_MSG_ERROR) {
 		nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_PACKETMAN, "Received ErrorMessage: %s\n", NMXP_LOG_STR(*buffer));
 	    } else {
 		nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_PACKETMAN, "Received message type: %d  length=%d\n", *type, *length);
