@@ -17,6 +17,7 @@ CONTENTS
    QUICK INSTALLATION
    INSTALLATION
    DOCUMENTATION
+   HISTORY
    ACKNOWLEDGEMENT
    SUPPORTED PLATFORMS
    LICENSE
@@ -163,6 +164,9 @@ Data-On-Demand with minimum delay after request.
          # nmxptool --help
     * Earthworm module: earthworm/nmxptool_cmd.html
                                   nmxptool_ovr.html
+
+- HISTORY
+    Read file HISTORY.
 
 
 - ACKNOWLEDGEMENT
