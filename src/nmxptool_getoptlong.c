@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.77 2008-03-03 08:23:07 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.78 2008-03-03 10:37:52 mtheo Exp $
  *
  */
 
@@ -178,6 +178,11 @@ Main arguments:\n\
                           0 to disable connection to DataServer.\n\
                           If this option is equal to zero and -F is used,\n\
                           only data buffered by NaqsServer will be retrieved.\n\
+                          It is preferable, inside the section Datastream of\n\
+                          the file Naqs.ini, setting DataBufferLength to a high\n\
+                          value, than using -A. It slows down execution but\n\
+                          it allows to retrieve much more data of the past.\n\
+                          It is extremely harmful when declare a lot of channels.\n\
                           Related to -F.\n\
 \n",
 	    DEFAULT_MAX_TIME_TO_RETRIEVE,
