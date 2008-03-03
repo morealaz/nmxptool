@@ -83,7 +83,16 @@ separated by period. network is optional and it is used only for output.
 Station code can be &quot;&#42;&quot; that stands for all stations.
 Within channel code can appear character &quot;&#63;&quot; that stands for any characters.
 DO NOT USE WITH <a href="#ChannelFile">ChannelFile</a>!
-  <pre><br>Default:  none<br>Example:  Channel  ES.BOB.HH?<br>          Channel  *.HHZ<br>          Channel  MN.TIR.HH?<br>          Channel  SALO.BH?</pre>
+  <pre>
+Default:  none
+Example:  Channel  ES.BOB.HH?
+	  Channel  MN.TIR.HH?
+	  Channel  SALO.HH?
+	  Channel  *.HHZ
+
+N.B. Network code will be assigned from the first pattern that includes station and channel.
+     Unless HH channels of BOB and TIR, all other stations will have default network code from <a href="#DefaultNetworkCode">DefaultNetworkCode</a>.
+</pre>
 </blockquote>
 
 <hr><!-- ADD HERE: all commands; below is a sample command blank: --><!-- command name as anchor inside quotes -->
@@ -93,9 +102,36 @@ of data to be requested from the NmxpHost.
 The <font color="red">streamkey</font> is the same for the <a href="#Channel">Channel</a>.
 Allow data continuity between program restarts, within time defined by <a href="#MaxDataToRetrieve">MaxDataToRetrieve</a> and data buffered by the DataServer and NaqsServer.
 This file is created by the user, nmxptool will update date and time of last sample received for each channel into the file &quot;<font color="red">channel_state_file</font>.nmxpstate&quot;. DO NOT USE WITH <a href="#Channel">Channel</a>!
-  <pre><br>Default:  none<br>Example:  ChannelFile  /home/ew/list_channels_naqs1.txt</br>
-</br>Example of file created by the user:<br />ES.BOB.HH?<br/>MN.TIR.HHZ
-</br>Example of file updated by nmxptool:<br />ES.BOB.HHE 1970.001,00:00:00.0000 2007.353,13:30:36.8700<br />ES.BOB.HHN 1970.001,00:00:00.0000 2007.353,13:30:37.4800<br />ES.BOB.HHZ 1970.001,00:00:00.0000 2007.353,13:30:37.2799<br/>MN.TIR.HHZ 1970.001,00:00:00.0000 2007.353,13:30:34.5199
+  <pre>
+Default:  none
+Example:  ChannelFile  /home/ew/list_channels_naqs1.txt
+
+Example of file created by the user:
+ES.BOB.HH?
+MN.TIR.HH?
+SALO.HH?
+*.HH?
+
+N.B. Network code will be assigned from the first pattern that includes station and channel.
+     Unless HH channels of BOB and TIR, all other stations will have default network code from <a href="#DefaultNetworkCode">DefaultNetworkCode</a>.
+
+Example of file updated by nmxptool:
+1228603650 ES.BOB.HHE 2008.063,07:48:15.5799 2008.063,07:50:12.9000
+1228603649 ES.BOB.HHN 2008.063,07:48:16.0000 2008.063,07:50:13.6400
+1228603648 ES.BOB.HHZ 2008.063,07:48:16.0000 2008.063,07:50:12.4900
+1225851138 MN.TIR.HHE 2008.063,07:48:07.2200 2008.063,07:50:07.7999
+1225851137 MN.TIR.HHN 2008.063,07:48:16.0000 2008.063,07:50:07.9000
+1225851136 MN.TIR.HHZ 2008.063,07:48:05.7999 2008.063,07:50:08.2000
+1253900546 IV.SALO.HHE 2008.063,07:48:00.3199 2008.063,07:50:15.4800
+1253900545 IV.SALO.HHN 2008.063,07:48:16.0000 2008.063,07:50:15.7500
+1253900544 IV.SALO.HHZ 2008.063,07:48:16.0000 2008.063,07:50:16.3299
+1244987650 IV.AMUR.HHE 2008.063,07:48:09.0599 2008.063,07:50:13.3599
+1244987649 IV.AMUR.HHN 2008.063,07:48:10.9600 2008.063,07:50:11.8000
+1244987648 IV.AMUR.HHZ 2008.063,07:48:02.4600 2008.063,07:50:12.2799
+1237188866 IV.ARCI.HHE 2008.063,07:48:10.0099 2008.063,07:50:13.0100
+1237188865 IV.ARCI.HHN 2008.063,07:48:10.3399 2008.063,07:50:12.6200
+1237188864 IV.ARCI.HHZ 2008.063,07:48:16.0000 2008.063,07:50:11.6700
+...
 </pre>
 </blockquote>
 
