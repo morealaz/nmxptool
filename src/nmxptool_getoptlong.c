@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.76 2008-03-03 07:56:11 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.77 2008-03-03 08:23:07 mtheo Exp $
  *
  */
 
@@ -162,7 +162,7 @@ Main arguments:\n\
                           Second pattern includes the first. Unless AAA, all\n\
                           stations with HH channels will have network to N2.\n\
                           Station MMM will have default network defined by -N.\n\
-  -F, --statefile=FILE    List of pattern channels like -C. One for each line.\n\
+  -F, --statefile=FILE    List of channel patterns like -C. One for each line.\n\
                           Load/Save time of the last sample of each channel\n\
                           into a file with the same name, same directory,\n\
                           appending the suffix '%s'.\n\
