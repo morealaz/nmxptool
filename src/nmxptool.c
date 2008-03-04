@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.146 2008-03-04 14:01:54 mtheo Exp $
+ * $Id: nmxptool.c,v 1.147 2008-03-04 22:41:15 mtheo Exp $
  *
  */
 
@@ -238,6 +238,12 @@ int main (int argc, char **argv) {
     }
 
     channelList_subset = nmxp_chan_subset(channelList, NMXP_DATA_TIMESERIES, params.channels, CURRENT_NETWORK);
+    
+    /* Free the complete channel list */
+    if(channelList) {
+	free(channelList);
+	channelList = NULL;
+    }
 
     /* Check if some channel already exists */
     if(channelList_subset->number <= 0) {
@@ -294,12 +300,6 @@ int main (int argc, char **argv) {
 	}
 #endif
 
-    }
-
-    /* Free the complete channel list */
-    if(channelList) {
-	free(channelList);
-	channelList = NULL;
     }
 
 #ifdef HAVE_EARTHWORMOBJS
@@ -720,16 +720,19 @@ int main (int argc, char **argv) {
 	/* Get a subset of channel from arguments, in respect to the step 3 of PDS */
 	channelList_subset_waste = nmxp_chan_subset(channelList, NMXP_DATA_TIMESERIES, params.channels, CURRENT_NETWORK);
 
+	/* Free the complete channel list */
+	if(channelList) {
+	    free(channelList);
+	    channelList = NULL;
+	}
+
 	/* TODO check if channelList_subset_waste is equal to channelList_subset and free */
 	if(channelList_subset_waste) {
 	    free(channelList_subset_waste);
 	    channelList_subset_waste = NULL;
 	}
 	
-
-
 	/* PDS Step 4: Send a Request Pending (optional) */
-
 
 	/* PDS Step 5: Send AddChannels */
 	/* Request Data */
@@ -1242,13 +1245,6 @@ static void clientShutdown(int sig) {
 
     /* PDS Step 8: Close the socket */
     nmxp_closeSocket(naqssock);
-
-
-    /* Free the complete channel list */
-    if(channelList) {
-	free(channelList);
-	channelList = NULL;
-    }
 
     if(channelList_subset && channelList_Seq) {
 #ifdef HAVE_LIBMSEED
