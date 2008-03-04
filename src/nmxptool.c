@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.145 2008-03-03 13:19:47 mtheo Exp $
+ * $Id: nmxptool.c,v 1.146 2008-03-04 14:01:54 mtheo Exp $
  *
  */
 
@@ -719,6 +719,13 @@ int main (int argc, char **argv) {
 	}
 	/* Get a subset of channel from arguments, in respect to the step 3 of PDS */
 	channelList_subset_waste = nmxp_chan_subset(channelList, NMXP_DATA_TIMESERIES, params.channels, CURRENT_NETWORK);
+
+	/* TODO check if channelList_subset_waste is equal to channelList_subset and free */
+	if(channelList_subset_waste) {
+	    free(channelList_subset_waste);
+	    channelList_subset_waste = NULL;
+	}
+	
 
 
 	/* PDS Step 4: Send a Request Pending (optional) */
