@@ -1,7 +1,16 @@
 # mtheo
 
 SUBDIRS = src
-dist_doc_DATA = README
+dist_doc_DATA = BUGS HISTORY README earthworm seiscomp_templates makefile.sol makefile.ux
+
+EWMAKEFILESOL=earthworm/makefile.ux.nognu
+EWMAKEFILEUX=earthworm/makefile.ux.nognu
+
+dist-hook:
+	ln -f -s ${EWMAKEFILESOL} makefile.sol
+	ln -f -s ${EWMAKEFILEUX} makefile.ux
+	rm -rf `find $(distdir)/earthworm -name CVS`
+	rm -rf `find $(distdir)/seiscomp_templates -name CVS`
 
 # http://www.gnu.org/software/automake/manual/html_node/Extending.html#Extending
 clean-local:
