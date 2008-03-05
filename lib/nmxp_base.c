@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_base.c,v 1.62 2008-03-03 09:53:44 mtheo Exp $
+ * $Id: nmxp_base.c,v 1.63 2008-03-05 11:10:51 mtheo Exp $
  *
  */
 
@@ -564,6 +564,9 @@ NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data
 	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN, "my_host_is_bigendian %d\n", my_host_is_bigendian);
 
 	memcpy(&nmx_oldest_sequence_number, buffer_data, 4);
+	if (my_host_is_bigendian) {
+	    nmxp_data_swap_4b (&nmx_oldest_sequence_number);
+	}
 	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN, "Oldest sequence number = %d\n", nmx_oldest_sequence_number);
 
 	memcpy(nmx_hdr, buffer_data+4, 17);
