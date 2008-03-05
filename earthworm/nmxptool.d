@@ -4,7 +4,7 @@
 MyModuleId           MOD_NMXPTOOL
 RingName             WAVE_RING           # Transport ring to write data to.
 
-HeartBeatInterval    15                  # Heartbeat interval, in seconds.
+HeartBeatInterval    10                  # Heartbeat interval, in seconds.
 LogFile              1                   # 1 -> Keep log, 0 -> no log file
                                          # 2 -> write to module log but not stderr/stdout
 
