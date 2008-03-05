@@ -74,6 +74,7 @@ ChannelFile   /home/ew/naqs1a.list.txt   # List of channel patterns like 'Channe
                                          # Load/Save time of last sample of each channel in a file
                                          # with the same name, same directory, appending suffix ".nmxpstate"
                                          # Allow data continuity between program restarts.
+                                         # Related to 'MaxDataToRetrieve', it enables request of recent packets.
                                          # It is equivalent to the option -F. Related to 'MaxDataToRetrieve'.
 
     # DO NOT USE parameters 'Channel' and 'ChannelFile' together.
