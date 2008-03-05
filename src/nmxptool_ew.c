@@ -72,12 +72,13 @@ time_t timeLastBeat = 0;
 void nmxptool_ew_attach() {
     /* Attach to Output transport ring */
     tport_attach (&regionOut, ringKey);
-    logit ("t", "%s version %s%s\n", PACKAGE_NAME, PACKAGE_VERSION, PACKAGE_BUILD);
+    logit ("t", "%s version %s%s\n",
+	    NMXP_LOG_STR(PACKAGE_NAME), NMXP_LOG_STR(PACKAGE_VERSION), NMXP_LOG_STR(PACKAGE_BUILD));
 }
 
 void nmxptool_ew_detach() {
     tport_detach(&regionOut);
-    logit("t","%s terminated\n", PACKAGE_NAME);
+    logit("t","%s terminated\n", NMXP_LOG_STR(PACKAGE_NAME));
 }
 
 
@@ -169,7 +170,7 @@ int nmxptool_ew_pd2ewring (NMXP_DATA_PROCESS *pd, SHM_INFO *pregionOut, MSG_LOGO
     /* Set the approriate TRACE type in the logo */
     if ( tracebuf2 == 2 ) {
 	if ( typeWaveform2 == 0 ) {
-	    logit("et", "%s: Error - created TRACE2_HEADER but TYPE_TRACEBUF2 is unknown\n", PACKAGE_NAME);
+	    logit("et", "%s: Error - created TRACE2_HEADER but TYPE_TRACEBUF2 is unknown\n", NMXP_LOG_STR(PACKAGE_NAME));
 	    return EW_FAILURE;
 	} else {
 	    pwaveLogo->type = typeWaveform2;
@@ -179,7 +180,7 @@ int nmxptool_ew_pd2ewring (NMXP_DATA_PROCESS *pd, SHM_INFO *pregionOut, MSG_LOGO
     }
 
     if ( tport_putmsg( pregionOut, pwaveLogo, len, (char*)&tbuf ) != PUT_OK ) {
-	logit("et", "%s: Error sending message via transport.\n", PACKAGE_NAME);
+	logit("et", "%s: Error sending message via transport.\n", NMXP_LOG_STR(PACKAGE_NAME));
 	return EW_FAILURE;
     }
 
@@ -264,7 +265,7 @@ void nmxptool_ew_configure (char ** argvec, NMXPTOOL_PARAMS *params) {
     myPid = getpid();
 
     logit ("et" , "%s(%s): Read command file <%s>\n",
-	    argvec[0], myModName, argvec[1]);
+	    NMXP_LOG_STR(argvec[0]), NMXP_LOG_STR(myModName), NMXP_LOG_STR(argvec[1]));
 
     /* Reinitialize the logging level */
     logit_init (argvec[1], 0, 512, logSwitch);
@@ -520,13 +521,13 @@ void nmxptool_ew_report_status( MSG_LOGO * pLogo, short code, char * message ) {
 		    outMsg ) != PUT_OK ) {
 	    /* Log an error message */
 	    logit( "et", "%s: Failed to send a heartbeat message (%d).\n",
-		    PACKAGE_NAME,
+		    NMXP_LOG_STR(PACKAGE_NAME),
 		    code );
 	}
     } else {
 	if ( message ) {
-	    sprintf( outMsg, "%ld %hd %s\n\0", (long) msgTime, code, message );
-	    logit("t","Error:%d (%s)\n", code, message );
+	    sprintf( outMsg, "%ld %hd %s\n\0", (long) msgTime, code, NMXP_LOG_STR(message) );
+	    logit("t","Error:%d (%s)\n", code, NMXP_LOG_STR(message) );
 	} else {
 	    sprintf( outMsg, "%ld %hd\n\0", (long) msgTime, code );
 	    logit("t","Error:%d (No description)\n", code );
@@ -537,7 +538,7 @@ void nmxptool_ew_report_status( MSG_LOGO * pLogo, short code, char * message ) {
 		    outMsg ) != PUT_OK ) {
 	    /*     Log an error message                                    */
 	    logit( "et", "%s: Failed to send an error message (%d).\n",
-		    PACKAGE_NAME,
+		    NMXP_LOG_STR(PACKAGE_NAME),
 		    code );
 	}
 
@@ -580,12 +581,12 @@ void nmxptool_ew_send_error(unsigned int ierr) {
  * Hooks for Earthworm logging facility.
  ***************************************************************************/
 int nmxptool_ew_logit_msg (char *msg) {
-  logit ("o",  msg);
+  logit ("o",  NMXP_LOG_STR(msg));
   return 0;
 }
 
 int nmxptool_ew_logit_err (char *msg) {
-  logit ("e",  msg);
+  logit ("e",  NMXP_LOG_STR(msg));
   return 0;
 }
 
