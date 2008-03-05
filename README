@@ -25,28 +25,35 @@ CONTENTS
 
 - INTRODUCTION
 
-nmxptool can be used in three different ways:
-    * stand-alone to monitor data or save retrieved data in mini-seed records
-    * launched as an Earthworm module to redirect data into the EW-rings
-    * like a Seed-Link plug-in to feed the SL-server
+  The Nanometrics servers NaqsServer and DataServer can provide on-line access
+to seismic data and state-of-health information accepting TCP/IP connections
+and forwarding the requested data to each client program.  NaqsServer collates
+and stores in near-real-time incoming data in ringbuffers whereas DataServer
+provides data of the past stored in NaqsServer ringbuffers.  In order to
+implement the Nanometrics subscription protocols, the author developed a
+software consisting of a library called libnmxp and a tool called nmxptool. The
+library exposes a set of documented APIs which allow to communicate with the
+Nanometrics servers. The tool, based on libnmxp, allows to retrieve or monitor
+real-time data and data of the past.
 
-nmxptool is based on the library libnmxp.
+  nmxptool can be used in three different ways:
 
-The library offers APIs to:
-    * interact with NaqsServer that uses version 1.4
-      of the Private Data Stream Protocol (PDS)
-    * interact with DataServer that uses version 1.0
-      of the Nanometrics Data Access Protocol (DAP)
-    * manage Nanometrics data formats
-    * request, receive and interpret online and offline data
-
-The main contribute, as regards other similar software, is the capability to
+      * stand-alone to monitor data or save retrieved data in mini-seed records
+      * launched as an Earthworm module to redirect data into the EW-rings
+      * like a Seed-Link plug-in to feed the SL-server
+	
+  The main contribute, as regards other similar software, is the capability to
 manage Raw Stream connections by buffering and sorting all received packets,
 included the retransmitted ones, guaranteeing a good compromise between data
-continuity and low latency. Besides, nmxptool allows to retrieve
-Data-On-Demand with minimum delay after request.
+continuity and low latency. Besides, nmxptool allows to retrieve Data-On-Demand
+with minimum delay after request. Software is open-source and released under
+GNU Library General Public License. It has been written in C language using the
+GNU Build Tools (automake, autoconf and configure script) and taking in account
+the cross-platform compilation aspects, in fact, it can run on almost all the
+Unix-like operating systems, Mac OS X, Windows and either 32-bit or 64-bit
+architectures.
 
-
+	
 - DEPENDENCIES
 
   Optional libraries:
