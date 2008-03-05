@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp.c,v 1.70 2008-03-03 13:20:09 mtheo Exp $
+ * $Id: nmxp.c,v 1.71 2008-03-05 10:21:12 mtheo Exp $
  *
  */
 
@@ -423,9 +423,9 @@ NMXP_META_CHAN_LIST *nmxp_getMetaChannelList(char * hostname, int portnum, NMXP_
     NMXP_MSG_SERVER type;
     void *buffer = NULL;
     int32_t length;
-    NMXP_MSGBODY_PRECISLISTREQUEST precisListRequestBody;
-    NMXP_MSGBODY_CHANNELINFOREQUEST channelInfoRequestBody;
-    NMXP_MSGBODY_CHANNELINFORESPONSE *channelInfo;
+    NMXP_PRECISLISTREQUEST precisListRequestBody;
+    NMXP_CHANNELINFOREQUEST channelInfoRequestBody;
+    NMXP_CHANNELINFORESPONSE *channelInfo;
 
     char str_start[200], str_end[200];
     str_start[0] = 0;
@@ -487,7 +487,7 @@ NMXP_META_CHAN_LIST *nmxp_getMetaChannelList(char * hostname, int portnum, NMXP_
     precisListRequestBody.instr_id = htonl(-1);
     precisListRequestBody.datatype = htonl(NMXP_DATA_TIMESERIES);
     precisListRequestBody.type_of_channel = htonl(-1);
-    nmxp_sendMessage(naqssock, NMXP_MSG_PRECISLISTREQUEST, &precisListRequestBody, sizeof(NMXP_MSGBODY_PRECISLISTREQUEST));
+    nmxp_sendMessage(naqssock, NMXP_MSG_PRECISLISTREQUEST, &precisListRequestBody, sizeof(NMXP_PRECISLISTREQUEST));
 
 
     /* DAP Step 6: Receive Data until receiving a Ready message */
@@ -533,7 +533,7 @@ NMXP_META_CHAN_LIST *nmxp_getMetaChannelList(char * hostname, int portnum, NMXP_
 		/* DAP Step 5: Send Data Request */
 		channelInfoRequestBody.key = htonl(iter->key);
 		channelInfoRequestBody.ignored = htonl(0);
-		nmxp_sendMessage(naqssock, NMXP_MSG_CHANNELINFOREQUEST, &channelInfoRequestBody, sizeof(NMXP_MSGBODY_CHANNELINFOREQUEST));
+		nmxp_sendMessage(naqssock, NMXP_MSG_CHANNELINFOREQUEST, &channelInfoRequestBody, sizeof(NMXP_CHANNELINFOREQUEST));
 
 		/* DAP Step 6: Receive Data until receiving a Ready message */
 		ret_sock = nmxp_receiveMessage(naqssock, &type, &buffer, &length, 0, &recv_errno);

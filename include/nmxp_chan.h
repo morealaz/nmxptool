@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_chan.h,v 1.22 2007-11-24 21:39:54 mtheo Exp $
+ * $Id: nmxp_chan.h,v 1.23 2008-03-05 10:21:12 mtheo Exp $
  *
  */
 
@@ -87,20 +87,20 @@ typedef struct {
     int32_t instr_id;
     NMXP_DATATYPE datatype;
     int32_t type_of_channel;
-} NMXP_MSGBODY_PRECISLISTREQUEST;
+} NMXP_PRECISLISTREQUEST;
 
 /*! \brief Channel info request body */
 typedef struct {
     int32_t key;
     char name[12];
     char network[12];
-} NMXP_MSGBODY_CHANNELINFORESPONSE;
+} NMXP_CHANNELINFORESPONSE;
 
 /*! \brief Channel info request body */
 typedef struct {
     int32_t key;
     int32_t ignored;
-} NMXP_MSGBODY_CHANNELINFOREQUEST;
+} NMXP_CHANNELINFOREQUEST;
 
 
 /*! \brief Character separator for channel list */
