@@ -5,8 +5,8 @@
 #
 # It is based on program 'test' and environment variables:
 #     $GLOBLAFLAGS, $EW_HOME, $EW_VERSION
-# If you want to enable libmseed support for nmxptool you have to have 'gcc'
-#     and set variable EXTRAPACKAGE to "with-libmseed".
+# If you have not 'gcc' maybe you was not able to compile 'libmseed'
+#     Set variable EXTRAPACKAGE to "without-libmseed".
 #
 # For Windows-XP and Windows-2000 compile under MinGW.
 #
@@ -22,8 +22,8 @@
 # Author: Matteo Quintiliani - I.N.G.V. - quintiliani@ingv.it
 #############################################################################
 
-# If you do not use 'gcc' you can not compile 'libmseed'
-EXTRAPACKAGE=--without-libmseed
+# If you do not use 'gcc' you can not compile 'libmseed', uncomment following line:
+# EXTRAPACKAGE=--without-libmseed
 
 CFLAGS += $(GLOBALFLAGS) -I$(EW_HOME)/$(EW_VERSION)/src/libsrc/util/libmseed
 LDFLAGS += -L$(EW_HOME)/$(EW_VERSION)/src/libsrc/util/libmseed
