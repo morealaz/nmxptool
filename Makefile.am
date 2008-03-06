@@ -12,6 +12,30 @@ dist-hook:
 	rm -rf `find $(distdir)/earthworm -name CVS`
 	rm -rf `find $(distdir)/seiscomp_templates -name CVS`
 
+binary_dist_FILES= \
+	AUTHORS \
+        BUGS \
+        COPYING \
+        HISTORY  \
+        INSTALL \
+        README  \
+        README_DISTBIN \
+        bin/nmxptool${EXEEXT} \
+        earthworm/nmxptool.d \
+        earthworm/nmxptool.desc \
+	earthworm/nmxptool_cmd.html \
+	earthworm/nmxptool_ovr.html \
+        seiscomp_templates
+
+binary_dist_name_suffix=${BINARY_DIST_NAME_SUFFIX}
+binary_dist_name=${distdir}-bin-${binary_dist_name_suffix}
+
+dist-bin:
+	echo ${binary_dist_name}
+	uname -a > README_DISTBIN
+	rm -fr bin && mkdir bin && cp src/nmxptool${EXEEXT} bin/
+	${AMTAR} chovf - --exclude "CVS" ${binary_dist_FILES} |  GZIP=$(GZIP_ENV) gzip -c > ${binary_dist_name}.tar.gz
+#
 # http://www.gnu.org/software/automake/manual/html_node/Extending.html#Extending
 clean-local:
 	@echo "example of clean-local"
