@@ -5,6 +5,9 @@ nmxptool_SOURCES  = nmxptool.c
 nmxptool_SOURCES += nmxptool_getoptlong.c nmxptool_getoptlong.h
 nmxptool_SOURCES += nmxptool_ew.c nmxptool_ew.h
 
+nmxptool_CFLAGS= -I../include
+nmxptool_LDADD= ../lib/libnmxp.a
+
 if WITHSEEDLINK
 nmxptool_SOURCES += seedlink_plugin.c seedlink_plugin.h
 endif

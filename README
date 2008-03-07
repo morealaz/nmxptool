@@ -74,10 +74,7 @@ architectures.
 
      tar xvfz nmxptool-X.X.X.tar.gz
 
-     cd nmxptool-X.X.X/libnmxp
-     ./configure
-     make
-     cd ..
+     cd nmxptool-X.X.X
      ./configure
      make
 
