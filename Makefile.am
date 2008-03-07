@@ -34,7 +34,11 @@ dist-bin:
 	echo ${binary_dist_name}
 	uname -a > README_DISTBIN
 	rm -fr bin && mkdir bin && cp src/nmxptool${EXEEXT} bin/
-	${AMTAR} chovf - --exclude "CVS" ${binary_dist_FILES} |  GZIP=$(GZIP_ENV) gzip -c > ${binary_dist_name}.tar.gz
+	rm -fr ${binary_dist_name}
+	mkdir ${binary_dist_name}
+	${AMTAR} -cf - --exclude "CVS" ${binary_dist_FILES}  | ${AMTAR} xpf - -C ${binary_dist_name}
+	${AMTAR} chvf - ${binary_dist_name} |  GZIP=$(GZIP_ENV) gzip -c > ${binary_dist_name}.tar.gz
+	rm -fr ${binary_dist_name}
 #
 # http://www.gnu.org/software/automake/manual/html_node/Extending.html#Extending
 clean-local:
