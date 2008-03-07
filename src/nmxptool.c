@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.148 2008-03-05 11:02:18 mtheo Exp $
+ * $Id: nmxptool.c,v 1.149 2008-03-07 17:32:20 mtheo Exp $
  *
  */
 
@@ -231,7 +231,10 @@ int main (int argc, char **argv) {
     /* Get list of available channels and get a subset list of params.channels */
     if( DAP_CONDITION(params) ) {
 	/* From DataServer */
-	nmxp_getMetaChannelList(params.hostname, params.portnumberdap, NMXP_DATA_TIMESERIES, params.flag_request_channelinfo, params.datas_username, params.datas_password, &channelList);
+	if(!nmxp_getMetaChannelList(params.hostname, params.portnumberdap, NMXP_DATA_TIMESERIES,
+		    params.flag_request_channelinfo, params.datas_username, params.datas_password, &channelList)) {
+	    return -1;
+	}
     } else {
 	/* From NaqsServer */
 	channelList = nmxp_getAvailableChannelList(params.hostname, params.portnumberpds, NMXP_DATA_TIMESERIES);
