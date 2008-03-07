@@ -1,62 +1,64 @@
 #############################################################################
 # WARNING: this file is a meta-makefile written to adapt the compilation of
 # nmxptool when you are compiling it under Earthworm system. This file should
-# work for all operating systems using GNU make.
+# work for all operating systems using almost all 'make' programs.
+#
+# It is based on program 'test' and environment variables:
+#     $GLOBLAFLAGS, $EW_HOME, $EW_VERSION
+# If you have not 'gcc' maybe you was not able to compile 'libmseed'
+#     Set variable EXTRAPACKAGE to "without-libmseed".
+#
 # For Windows-XP and Windows-2000 compile under MinGW.
 #
-# CFLAGS and LDFLAGS variables will be overrided. 
+# make -f makefile.ux.nognu 
+# make -f makefile.ux.nognu clean
+# make -f makefile.ux.nognu clean_bin
 #
-# make -f makefile.ux 
-# make -f makefile.ux clean
-# make -f makefile.ux distclean
-# make -f makefile.ux clean_bin
+# make -f makefile.ux.nognu reconfigure
+#
+# make -f makefile.ux.nognu install
+# make -f makefile.ux.nognu distclean
 #
 # Author: Matteo Quintiliani - I.N.G.V. - quintiliani@ingv.it
 #############################################################################
 
-CFLAGS = $(GLOBALFLAGS) -I$(EW_HOME)/$(EW_VERSION)/src/libsrc/util/libmseed
-LDFLAGS = -L$(EW_HOME)/$(EW_VERSION)/src/libsrc/util/libmseed
+# If you do not use 'gcc' you can not compile 'libmseed', uncomment following line:
+# EXTRAPACKAGE=--without-libmseed
 
-B = $(EW_HOME)/$(EW_VERSION)/bin
+CFLAGS += $(GLOBALFLAGS) -I$(EW_HOME)/$(EW_VERSION)/src/libsrc/util/libmseed
+LDFLAGS += -L$(EW_HOME)/$(EW_VERSION)/src/libsrc/util/libmseed
 
-LIBNMXPSRC=libnmxp
+all: configurenmxp makenmxp install
 
-PROGS = nmxptool
-
-have_nmxp_makefiles := $(wildcard Makefile)
-
-# Configure and make rules
-ifeq ($(strip $(have_nmxp_makefiles)),)
-all:
-	cd $(LIBNMXPSRC) && ./configure && make
-	./configure && make && cp src/$(PROGS) $B/
-else
-all:
-	cd $(LIBNMXPSRC) && make
-	make && cp src/$(PROGS) $B/
-endif
-
-# Clean rules
-ifeq ($(strip $(have_nmxp_makefiles)),)
-clean:
-	@echo "nmxptool is already cleaned!"
-else
-clean:
-	test -f $(LIBNMXPSRC)/Makefile && cd $(LIBNMXPSRC) && make clean
-	test -f Makefile && make clean
-endif 
-
-# Distribution Clean rules
-ifeq ($(strip $(have_nmxp_makefiles)),)
-distclean:
-	@echo "nmxptool is already cleaned."
-else
-distclean:
-	test -f $(LIBNMXPSRC)/Makefile && cd $(LIBNMXPSRC) && make distclean
-	test -f Makefile && make distclean
-endif 
+clean: cleannmxp
 
 # Clean nmxptool binary from Earthworm system
 clean_bin:
-	rm -f $B/$(PROGS)
+	make uninstall-ew-bin
+
+reconfigure: distclean configurenmxp cleannmxp makenmxp install
+	
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+install:
+	make install-ew-bin
+
+distclean: distcleannmxp
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+configurenmxp:
+	( test -f Makefile && test -f src/Makefile ) \
+		|| ( ./configure $(EXTRAPACKAGE) CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" )
+
+makenmxp:
+	make
+
+cleannmxp:
+	( test ! -f Makefile ) \
+		|| ( make clean )
+
+distcleannmxp:
+	( test ! -f Makefile ) \
+		|| ( make distclean )
 

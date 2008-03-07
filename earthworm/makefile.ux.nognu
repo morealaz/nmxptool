@@ -28,52 +28,35 @@
 CFLAGS += $(GLOBALFLAGS) -I$(EW_HOME)/$(EW_VERSION)/src/libsrc/util/libmseed
 LDFLAGS += -L$(EW_HOME)/$(EW_VERSION)/src/libsrc/util/libmseed
 
-LIBNMXPSRC=libnmxp
+all: configurenmxp makenmxp install
 
-all: configurelib makelib configurenmxp makenmxp install
-
-clean: cleanlib cleannmxp
+clean: cleannmxp
 
 # Clean nmxptool binary from Earthworm system
 clean_bin:
 	make uninstall-ew-bin
 
-reconfigure: distclean configurelib cleanlib makelib configurenmxp cleannmxp makenmxp install
+reconfigure: distclean configurenmxp cleannmxp makenmxp install
 	
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 install:
 	make install-ew-bin
 
-distclean: distcleanlib distcleannmxp
+distclean: distcleannmxp
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-
-configurelib:
-	( test -f $(LIBNMXPSRC)/Makefile && test -f $(LIBNMXPSRC)/src/Makefile ) \
-		|| ( cd $(LIBNMXPSRC) && ./configure $(EXTRAPACKAGE) CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" )
 
 configurenmxp:
 	( test -f Makefile && test -f src/Makefile ) \
 		|| ( ./configure $(EXTRAPACKAGE) CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" )
 
-makelib:
-	cd $(LIBNMXPSRC) && make
-
 makenmxp:
 	make
-
-cleanlib:
-	( test ! -f $(LIBNMXPSRC)/Makefile ) \
-		|| ( cd $(LIBNMXPSRC) && make clean )
 
 cleannmxp:
 	( test ! -f Makefile ) \
 		|| ( make clean )
-
-distcleanlib:
-	( test ! -f $(LIBNMXPSRC)/Makefile ) \
-		|| (  cd $(LIBNMXPSRC) && make distclean )
 
 distcleannmxp:
 	( test ! -f Makefile ) \
