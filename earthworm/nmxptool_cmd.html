@@ -48,6 +48,8 @@ Nanometrics server and connection parameters:<br>
 <a href="#NmxpHost">NmxpHost</a>                required<br>
 <a href="#NmxpPortPDS">NmxpPortPDS</a>		optional<br>
 <a href="#NmxpPortDAP">NmxpPortDAP</a>		optional<br>
+<a href="#UserDAP">UserDAP</a>			optional<br>
+<a href="#PassDAP">PassDAP</a>			optional<br>
 <a href="#ForceTraceBuf1">ForceTraceBuf1</a>		optional<br>
 <a href="#MaxTolerableLatency">MaxTolerableLatency</a>	optional<br>
 <a href="#MaxDataToRetrieve">MaxDataToRetrieve</a>	optional<br>
@@ -236,6 +238,13 @@ commonly 28000.
 </blockquote>
 
 <hr><!-- command name as anchor inside quotes -->
+<pre><a name="PassDAP"><b>PassDAP <font color="red">password</font>                                  ReadConfig              nmxptool parameters<br></b><!-- command args ... -->           <br></a></pre>
+<blockquote><!-- command description goes here --> Specifies the <font
+	color="red">password</font> for the DataServer (<a href="#NmxpHost">NmxpHost</a>). Leave commented if password in DataServer.ini is set to &quot;none&quot;.
+  <pre><!-- Default and example go here   --><br>Default:  none<br>Example:  PassDAP  mypass</pre>
+</blockquote>
+
+<hr><!-- command name as anchor inside quotes -->
 <pre><a name="RingName"><b>RingName <font color="red">ring</font>                                ReadConfig              Earthworm setup<br></b><!-- command args ... -->           <br></a></pre>
 <blockquote><!-- command description goes here --> Indicates which
 shared memory region to use for waveform output.&nbsp; <font
@@ -250,6 +259,13 @@ memory region.
 <pre><a name="TimeoutRecv"><b>TimeoutRecv <font color="red">seconds</font>                                  ReadConfig              nmxptool parameters<br></b><!-- command args ... -->           <br></a></pre>
 <blockquote><!-- command description goes here --> Specifies time-out for flushing buffered packets for each channel. Useful for Data On Demand (i.e. channel HL).  Range is [10..300].
   <pre><!-- Default and example go here   --><br>Default:  0  (No Time-out)<br>Example:  TimeoutRecv  15</pre>
+</blockquote>
+
+<hr><!-- command name as anchor inside quotes -->
+<pre><a name="UserDAP"><b>UserDAP <font color="red">username</font>                                  ReadConfig              nmxptool parameters<br></b><!-- command args ... -->           <br></a></pre>
+<blockquote><!-- command description goes here --> Specifies the <font
+	color="red">username</font> for the DataServer (<a href="#NmxpHost">NmxpHost</a>). Leave commented if username in DataServer.ini is set to &quot;none&quot;.
+  <pre><!-- Default and example go here   --><br>Default:  none<br>Example:  UserDAP  mtheo</pre>
 </blockquote>
 
 <hr><!-- command name as anchor inside quotes -->
@@ -305,6 +321,10 @@ NmxpPortPDS          28000               # Port number of NaqsServer (Default 28
 
 NmxpPortDAP          28002               # Port number of DataServer(Default 28002)
                                          # It is equivalent to the option -D.
+#UserDAP              mtheo              # DataServer user name. Comment if 'none'.
+                                         # It is equivalent to the option -u.
+#PassDAP              mypass             # DataServer password. Comment if 'none'.
+                                         # It is equivalent to the option -p.
 
 MaxTolerableLatency  120                 # Max tolerable latency for each channel. (Default 600 sec.)
                                          # In general, DO NOT use with parameter TimeoutRecv.

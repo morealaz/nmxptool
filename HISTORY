@@ -5,6 +5,7 @@ nmxptool Release History
 * Release 1.2.0     (2008/03/07)
    - Reorganized structure of directories.
           Compilation in a single shot of configure and make.
+   - Added UserDAP and PassDAP in Earthworm configuration files.
 
 * Release 1.1.8     (2008/03/03)
     - Added management of channel sample sequences.

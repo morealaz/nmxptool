@@ -28,9 +28,9 @@ NmxpPortPDS          28000               # Port number of NaqsServer (Default 28
 
 NmxpPortDAP          28002               # Port number of DataServer(Default 28002)
                                          # It is equivalent to the option -D.
-#UserDAP              myuser             # DataServer user name. Comment if 'none'.
+#UserDAP              mtheo              # DataServer user name. Commented if 'none'.
                                          # It is equivalent to the option -u.
-#PassDAP              mypass             # DataServer password. Comment if 'none'.
+#PassDAP              mypass             # DataServer password. Commented if 'none'.
                                          # It is equivalent to the option -p.
 
 MaxTolerableLatency  120                 # Max tolerable latency for each channel. (Default 600 sec.)
