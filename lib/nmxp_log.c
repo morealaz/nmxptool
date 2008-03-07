@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_log.c,v 1.16 2008-03-01 22:32:44 mtheo Exp $
+ * $Id: nmxp_log.c,v 1.17 2008-03-07 10:36:18 mtheo Exp $
  *
  */
 
@@ -24,10 +24,12 @@
 
 #define MAX_LOG_MESSAGE_LENGTH 8000
 
+#define LIBRARY_NAME "libnmxp"
+#define NMXP_LOG_PREFIX "nmxp"
 
 const char *nmxp_log_version() {
     static char ret_str[MAX_LOG_MESSAGE_LENGTH] = "";
-    sprintf(ret_str, "%s-%s", PACKAGE_NAME, PACKAGE_VERSION);
+    sprintf(ret_str, "%s-%s", LIBRARY_NAME, PACKAGE_VERSION);
     return ret_str;
 }
 
@@ -82,9 +84,6 @@ void nmxp_log_print_all(char *message, int (*a_func_log[NMXP_MAX_FUNC_LOG]) (cha
 	nmxp_log_stdout(message);
     }
 }
-
-/* #define NMXP_LOG_PREFIX PACKAGE_NAME */
-#define NMXP_LOG_PREFIX "nmxp"
 
 int nmxp_log(int level, int verb, ... )
 {
