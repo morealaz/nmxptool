@@ -384,6 +384,18 @@ int nmxptool_ew_proc_configfile (char * configfile, NMXPTOOL_PARAMS *params) {
 		params->portnumberdap = k_int();
 	    }
 
+	    else if (k_its ("UserDAP")) {
+		if ( (str = k_str ()) ) {
+		    params->datas_username = strdup(str);
+		}
+	    }
+
+	    else if (k_its ("PassDAP")) {
+		if ( (str = k_str ()) ) {
+		    params->datas_password = strdup(str);
+		}
+	    }
+
 	    else if (k_its ("ForceTraceBuf1")) {
 		forcetracebuf = k_int();
 	    }
