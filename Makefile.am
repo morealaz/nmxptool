@@ -12,7 +12,7 @@ dist-hook:
 	rm -rf `find $(distdir)/earthworm -name CVS`
 	rm -rf `find $(distdir)/seiscomp_templates -name CVS`
 
-binary_dist_FILES= \
+binary_distdir_FILES= \
 	AUTHORS \
         BUGS \
         COPYING \
@@ -27,19 +27,20 @@ binary_dist_FILES= \
 	earthworm/nmxptool_ovr.html \
         seiscomp_templates
 
-binary_dist_name_suffix=${BINARY_DIST_NAME_SUFFIX}
-binary_dist_name=${distdir}-bin-${binary_dist_name_suffix}
+binary_distdir_suffix=${BINARY_DIST_NAME_SUFFIX}
+binary_distdir=${distdir}-bin-${binary_distdir_suffix}
 
 dist-bin:
-	echo ${binary_dist_name}
+	echo ${binary_distdir}
 	uname -a > README_DISTBIN
 	rm -fr bin && mkdir bin && cp src/nmxptool${EXEEXT} bin/
-	rm -fr ${binary_dist_name}
-	mkdir ${binary_dist_name}
-	${AMTAR} -cf - --exclude "CVS" ${binary_dist_FILES}  | ${AMTAR} xpf - -C ${binary_dist_name}
-	${AMTAR} chvf - ${binary_dist_name} |  GZIP=$(GZIP_ENV) gzip -c > ${binary_dist_name}.tar.gz
-	rm -fr ${binary_dist_name}
-#
+	rm -fr ${binary_distdir}
+	mkdir ${binary_distdir}
+	${AMTAR} -cf - ${binary_distdir_FILES}  | ${AMTAR} xpf - -C ${binary_distdir}
+	rm -fr `find ${binary_distdir} -name CVS`
+	${AMTAR} chvf - ${binary_distdir} |  GZIP=$(GZIP_ENV) gzip -c > ${binary_distdir}.tar.gz
+	rm -fr ${binary_distdir}
+
 # http://www.gnu.org/software/automake/manual/html_node/Extending.html#Extending
 clean-local:
 	@echo "example of clean-local"
