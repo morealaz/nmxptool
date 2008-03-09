@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_base.c,v 1.63 2008-03-05 11:10:51 mtheo Exp $
+ * $Id: nmxp_base.c,v 1.64 2008-03-09 20:23:54 mtheo Exp $
  *
  */
 
@@ -708,7 +708,7 @@ NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data
 
 unsigned int nmxp_sleep(unsigned int sleep_time) {
 #ifdef HAVE_WINDOWS_H
-    Sleep(sleep_time);
+    Sleep(sleep_time * 1000);
     return 0;
 #else
     return sleep(sleep_time);
