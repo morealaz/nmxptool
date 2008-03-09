@@ -2,7 +2,7 @@
 nmxptool Release History
 #########################
 
-* Release 1.2.1     (2008/03/09)
+* Release 1.2.1-Under-Development    (2008/03/09) 
    - Fixed bug: argument of Windows function Sleep() is in milliseconds.
 
 * Release 1.2.0     (2008/03/07)
