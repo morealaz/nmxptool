@@ -102,29 +102,36 @@ architectures.
      make
      make install
 
-  Before compiling nmxptool you need to compile libnmxp.
-
-  Optional Packages:
+  Disabling optional Packages:
       --without-libmseed      disable support for libmseed
       --without-ew            disable support for earthworm
       --without-seedlink      disable support for seedlink
 
+  Verifying the version and supports after compilation:
+
+     src/nmxptool -V
+
+     nmxptool 1.2.1, Nanometrics tool
+             (Private Data Stream 1.4, Data Access Protocol 1.0)
+              Support for: libmseed YES, SeedLink YES, Earthworm YES.
+
   * libmseed, The Mini-SEED library - http://www.iris.edu/manuals/
          If available within includes and libraries path,
-         this library will enable Mini-SEED support.
+         this library allows to save retrieved data in Mini-SEED records.
          You might add to CFLAGS this "-I/<anywhere>/libmseed"
-         and to LDFLAGS this "-L/<anywhere>/libmseed"
+         and to LDFLAGS this "-L/<anywhere>/libmseed",
+         do not forget to run 'ranlib libmseed.a' or similars.
 
   * ew, Earthworm System - http://www.isti2.com/ew/
-         nmxptool is included into the official Earthworm distributions since EW v7.2
+         nmxptool is included into the official Earthworm distributions since version 7.2.
          Anyway, you can compile nmxptool outside the EW distribution, for example, to upgrade.
          Before launching 'configure', run the appropriate script from directory 'environment',
-         compilation depends on environment variables:
+         the compilation depends on the following environment variables:
              $EW_HOME, $EW_VERSION, $EW_PARAMS and $GLOBALFLAGS.
-         'configure' look for necessary earthworm object files inside $EW_HOME/$EW_VERSION/lib
+         'configure' looks for necessary Earthworm object files inside $EW_HOME/$EW_VERSION/lib
          and link them to nmxptool in order to enable Earthworm support.
-         If some object file is missing then it will attempt to discover sources
-         dependents on your operating system and compile them before linking.
+         If some of object files are missing then it will attempt to discover sources
+         dependents on your operating system and it will compile them before linking.
 
          Install binary and configuration files for Earthworm:
 
@@ -144,10 +151,10 @@ architectures.
          Seedlink is a system for near real time seismic data distribution.
          Inside the directory 'src' has been copied files
          'seedlink_plugin.c' and 'seedlink_plugin.h' from 'plugin.c' and 'plugin.h'
-         belonging to the SeisComP 2.5 distribution
+         belonging to the SeisComP 2.5 distribution.
 
-         If your SEISCOMPDIR is not equal to /home/sysop/seiscomp,
-         you should launch the script configure like this:
+         If your SeisComP root directory is not equal to /home/sysop/seiscomp,
+         you have to launch the script 'configure' in the following way:
 
              ./configure ... ... SEISCOMPDIR=/<where>/<seiscompdir>/<is>
 
@@ -172,7 +179,7 @@ architectures.
                                   nmxptool_ovr.html
 
 - HISTORY
-    Read file HISTORY.
+    Read file HISTORY for release notes.
 
 
 - ACKNOWLEDGEMENT
