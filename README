@@ -135,8 +135,10 @@ architectures.
          The second command copies earthworm/nmxptool.d, earthworm/nmxptool.desc in $EW_PARAMS
          If you are upgrading nmxptool then you might do that:
 
-	     cp nmxptool_ovr.html $EW_HOME/$EW_VERSION/ewdoc/WEB_DOC/ovr/
-	     cp nmxptool_cmd.html $EW_HOME/$EW_VERSION/ewdoc/WEB_DOC/cmd/
+             make install-ew-doc
+
+         Last command copies nmxptool_ovr.html and nmxptool_cmd.html into the directories
+	 $EW_HOME/$EW_VERSION/ewdoc/WEB_DOC/ovr and $EW_HOME/$EW_VERSION/ewdoc/WEB_DOC/cmd
 
   * seedlink, SeisComP - http://www.gfz-potsdam.de/geofon/seiscomp/
          Seedlink is a system for near real time seismic data distribution.

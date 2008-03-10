@@ -65,6 +65,12 @@ install-ew-conf:
 	${INSTALL_DATA} 'earthworm/nmxptool.d' '${EW_PARAMS}/nmxptool.d'
 	${INSTALL_DATA} 'earthworm/nmxptool.desc' '${EW_PARAMS}/nmxptool.desc'
 
+install-ew-doc:
+	test -d "${EW_HOME}/${EW_VERSION}/ewdoc/WEB_DOC/cmd"
+	${INSTALL_DATA} 'earthworm/nmxptool_cmd.html' '${EW_HOME}/${EW_VERSION}/ewdoc/WEB_DOC/cmd/nmxptool_cmd.html'
+	test -d "${EW_HOME}/${EW_VERSION}/ewdoc/WEB_DOC/ovr"
+	${INSTALL_DATA} 'earthworm/nmxptool_ovr.html' '${EW_HOME}/${EW_VERSION}/ewdoc/WEB_DOC/ovr/nmxptool_ovr.html'
+
 uninstall-ew-bin:
 	rm -f ${NMXPTOOLBINEW}
 endif
