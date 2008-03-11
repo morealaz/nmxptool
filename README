@@ -19,7 +19,7 @@ CONTENTS
    DOCUMENTATION
    HISTORY
    ACKNOWLEDGEMENT
-   SUPPORTED PLATFORMS
+   SUPPORTED PLATFORMS AND 64-Bit ISSUES
    LICENSE
 
 
@@ -195,7 +195,7 @@ architectures.
      * Marian Jusko
 
 
-- SUPPORTED PLATFORMS
+- SUPPORTED PLATFORMS AND 64-Bit ISSUES
    nmxptool has been written in C language using the GNU Build Tools
    (automake, autoconf and configure script) and taking in account
    the cross-platform compilation aspects, in fact, it can run on
