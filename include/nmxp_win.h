@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_win.h,v 1.2 2008-02-19 14:40:20 mtheo Exp $
+ * $Id: nmxp_win.h,v 1.3 2008-03-11 07:28:55 mtheo Exp $
  *
  */
 
@@ -26,13 +26,14 @@
 void nmxp_initWinsock();
 
 /*! \brief A function similar in spirit to Unix's perror().
+ *
  * This function returns a pointer to an internal static buffer, so you must
  * copy the data from this function before you call it again.  It follows that
  * this function is also not thread-safe.
  *
  * \param nErrorID
  *
- * \retval
+ * \return Return a pointer to a static string which contains error description.
  *
  */
 char* WSAGetLastErrorMessage(int nErrorID);

@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_base.h,v 1.27 2008-01-18 06:46:38 mtheo Exp $
+ * $Id: nmxp_base.h,v 1.28 2008-03-11 07:28:55 mtheo Exp $
  *
  */
 
@@ -146,7 +146,7 @@ int nmxp_receiveMessage(int isock, NMXP_MSG_SERVER *type, void **buffer, int32_t
  * \param buffer_data Pointer to the data buffer containing Compressed Nanometrics packets.
  * \param length_data Buffer length in bytes.
  * \param channelList Pointer to the Channel List.
- * \param network_code Network code. It can be NULL.
+ * \param network_code_default Value of network code to assign returned structure. It should not be NULL.
  *
  * \return Return a pointer to static struct NMXP_DATA_PROCESS.
  *
@@ -159,7 +159,7 @@ NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data
  * \param buffer_data Pointer to the data buffer containing Decompressed Nanometrics packets.
  * \param length_data Buffer length in bytes.
  * \param channelList Pointer to the Channel List.
- * \param network_code Network code. It can be NULL.
+ * \param network_code_default Value of network code to assign returned structure. It should not be NULL.
  *
  * \return Return a pointer to static struct NMXP_DATA_PROCESS.
  *

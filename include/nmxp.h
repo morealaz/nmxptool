@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp.h,v 1.44 2007-12-28 10:37:28 mtheo Exp $
+ * $Id: nmxp.h,v 1.45 2008-03-11 07:28:55 mtheo Exp $
  *
  */
 
@@ -1163,11 +1163,13 @@ NMXP_CHAN_LIST *nmxp_getAvailableChannelList(char * hostname, int portnum, NMXP_
 
 /*! \brief Get the list of the start and end time for the available data for each channel.
  *
- * \param hostname host name
- * \param portnum port number
+ * \param hostname host name.
+ * \param portnum port number.
  * \param datatype Type of data contained in the channel.
+ * \param datas_username DataServer user name.
+ * \param datas_password DataServer password.
  * \param flag_request_channelinfo Request information about Network.
- * \param[out] channelList pointer to channel list
+ * \param[out] pchannelList pointer to a pointer of channel list.
  *
  * \return Channel list. It will need to be freed.
  *
