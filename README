@@ -16,10 +16,10 @@ CONTENTS
    DEPENDENCIES
    QUICK INSTALLATION
    INSTALLATION
+   SUPPORTED PLATFORMS AND 64-Bit ISSUES
    DOCUMENTATION
    HISTORY
    ACKNOWLEDGEMENT
-   SUPPORTED PLATFORMS AND 64-Bit ISSUES
    LICENSE
 
 
@@ -117,7 +117,7 @@ architectures.
               Enabled features: libmseed YES, SeedLink YES, Earthworm YES.
 
   * libmseed, The Mini-SEED library - http://www.iris.edu/manuals/
-         If available within includes and libraries path,
+         If available within include and library path,
          this library allows to save retrieved data in Mini-SEED records.
          You might add to CFLAGS this "-I/<anywhere>/libmseed"
          and to LDFLAGS this "-L/<anywhere>/libmseed",
@@ -173,28 +173,6 @@ architectures.
              seiscomp config
 
 
-- DOCUMENTATION
-    * Print nmxptool help:
-
-         nmxptool --help
-
-    * Earthworm module: earthworm/nmxptool_cmd.html
-                                  nmxptool_ovr.html
-
-- HISTORY
-    Read file HISTORY for release notes.
-
-
-- ACKNOWLEDGEMENT
-   In no particular order:
-     * Salvatore Mazza - I.N.G.V. (Istituto Nazionale di Geofisica e Vulcanologia)
-     * Marco Olivieri - I.N.G.V.
-     * Luigi Falco - I.N.G.V.
-     * Martina Demartin - I.N.G.V.
-     * Paul Frieberg - ISTI (Instrumental Software Technologies, Inc.)
-     * Marian Jusko
-
-
 - SUPPORTED PLATFORMS AND 64-Bit ISSUES
    nmxptool has been written in C language using the GNU Build Tools
    (automake, autoconf and configure script) and taking in account
@@ -218,6 +196,29 @@ architectures.
    N.B. No test has been done on Earthworm when
         nmxptool is compiled with 64-bit option (-m64)
      
+
+- DOCUMENTATION
+    * Print nmxptool help:
+
+         nmxptool --help
+
+    * Earthworm module: earthworm/nmxptool_cmd.html
+                                  nmxptool_ovr.html
+
+
+- HISTORY
+    Read file HISTORY for release notes.
+
+
+- ACKNOWLEDGEMENT
+   In no particular order:
+     * Salvatore Mazza - I.N.G.V. (Istituto Nazionale di Geofisica e Vulcanologia)
+     * Marco Olivieri - I.N.G.V.
+     * Luigi Falco - I.N.G.V.
+     * Martina Demartin - I.N.G.V.
+     * Paul Frieberg - ISTI (Instrumental Software Technologies, Inc.)
+     * Marian Jusko
+
 
 - LICENSE
   Software is open-source and released under GNU Library General Public License.
