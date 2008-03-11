@@ -103,6 +103,8 @@ architectures.
      make
      make install
 
+  Options for nmxptool 'configure' script:
+
   Disabling optional Features
       --disable-libmseed      disable saving data in mini-SEED records
       --disable-ew            do not compile nmxptool as Earthworm module
