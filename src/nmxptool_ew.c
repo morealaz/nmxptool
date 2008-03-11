@@ -72,8 +72,8 @@ time_t timeLastBeat = 0;
 void nmxptool_ew_attach() {
     /* Attach to Output transport ring */
     tport_attach (&regionOut, ringKey);
-    logit ("t", "%s version %s%s\n",
-	    NMXP_LOG_STR(PACKAGE_NAME), NMXP_LOG_STR(PACKAGE_VERSION), NMXP_LOG_STR(PACKAGE_BUILD));
+    logit ("t", "%s version %s\n",
+	    NMXP_LOG_STR(PACKAGE_NAME), NMXP_LOG_STR(PACKAGE_VERSION));
 }
 
 void nmxptool_ew_detach() {
