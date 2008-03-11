@@ -77,6 +77,7 @@ architectures.
      cd nmxptool-X.X.X
      ./configure
      make
+     src/nmxptool --version
 
      make install
          OR
@@ -102,18 +103,18 @@ architectures.
      make
      make install
 
-  Disabling optional Packages:
-      --without-libmseed      disable support for libmseed
-      --without-ew            disable support for earthworm
-      --without-seedlink      disable support for seedlink
+  Disabling optional Features
+      --disable-libmseed      disable saving data in mini-SEED records
+      --disable-ew            do not compile nmxptool as Earthworm module
+      --disable-seedlink      do not compile nmxptool as Seedlink plug-in
 
-  Verifying the version and supports after compilation:
+  Verifying the version and enabled features after compilation:
 
-     src/nmxptool -V
+     src/nmxptool --version
 
      nmxptool 1.2.1, Nanometrics tool
              (Private Data Stream 1.4, Data Access Protocol 1.0)
-              Support for: libmseed YES, SeedLink YES, Earthworm YES.
+              Enabled features: libmseed YES, SeedLink YES, Earthworm YES.
 
   * libmseed, The Mini-SEED library - http://www.iris.edu/manuals/
          If available within includes and libraries path,
@@ -129,7 +130,7 @@ architectures.
          the compilation depends on the following environment variables:
              $EW_HOME, $EW_VERSION, $EW_PARAMS and $GLOBALFLAGS.
          'configure' looks for necessary Earthworm object files inside $EW_HOME/$EW_VERSION/lib
-         and link them to nmxptool in order to enable Earthworm support.
+         and link them to nmxptool in order to enable Earthworm module feature.
          If some of object files are missing then it will attempt to discover sources
          dependents on your operating system and it will compile them before linking.
 
@@ -174,7 +175,9 @@ architectures.
 
 - DOCUMENTATION
     * Print nmxptool help:
-         # nmxptool --help
+
+         nmxptool --help
+
     * Earthworm module: earthworm/nmxptool_cmd.html
                                   nmxptool_ovr.html
 
@@ -198,6 +201,22 @@ architectures.
    the cross-platform compilation aspects, in fact, it can run on
    almost all the Unix-like operating systems, Mac OS X, Windows
    and either 32-bit or 64-bit architectures.
+
+   nmxptool has been successfully compiled and tested on the following
+   operating systems and architectures:
+       -------------------------------------------------
+      |          |  Intel    Intel    PowerPC   SPARC   |
+      |          | 32-bit   64-bit    32-bit   64-bit   |
+      |-------------------------------------------------|
+      | Linux    |    X        X                        |
+      | Solaris  |    X                           X     |
+      | Mac OS X |             X         X              |
+      | FreeBSD  |    X                                 |
+      | Windows  |    X                                 |
+       -------------------------------------------------
+
+   N.B. No test has been done on Earthworm when
+        nmxptool is compiled with 64-bit option (-m64)
      
 
 - LICENSE
