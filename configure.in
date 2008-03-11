@@ -23,6 +23,11 @@ AC_CONFIG_HEADER([config.h])
 
 AC_CANONICAL_SYSTEM
 
+# Set BINARY_DIST_NAME_SUFFIX
+BINARY_DIST_NAME_SUFFIX=$host
+AC_MSG_NOTICE(BINARY_DIST_NAME_SUFFIX set to $BINARY_DIST_NAME_SUFFIX)
+AC_SUBST(BINARY_DIST_NAME_SUFFIX)
+
 #mtheo
 # AM_INIT_AUTOMAKE(FULL_PACKAGE_NAME,VERSION)
 AM_INIT_AUTOMAKE([full_package_name], [version])
@@ -49,22 +54,22 @@ AC_SEARCH_LIBS(rt, nanosleep, ,
 AC_SEARCH_LIBS(ws2_32, puts, ,
 		[AC_CHECK_LIB(ws2_32, puts, LIBS="$LIBS -lws2_32", , -lws2_32)])
 
-AC_ARG_WITH([libmseed],
-	    [AS_HELP_STRING([--without-libmseed], [disable support for libmseed])],
+AC_ARG_ENABLE([libmseed],
+	      [AS_HELP_STRING([--disable-libmseed], [disable saving data in mini-SEED records])],
 	    [], 
-	    [with_libmseed=yes]
+	    [enable_libmseed=yes]
 ) 
 
-AC_ARG_WITH([ew],
-	    [AS_HELP_STRING([--without-ew], [disable support for earthworm])],
+AC_ARG_ENABLE([ew],
+	      [AS_HELP_STRING([--disable-ew], [do not compile nmxptool as Earthworm module])],
 	    [], 
-	    [with_ew=yes]
+	    [enable_ew=yes]
 ) 
 
-AC_ARG_WITH([seedlink],
-	    [AS_HELP_STRING([--without-seedlink], [disable support for seedlink])],
+AC_ARG_ENABLE([seedlink],
+	      [AS_HELP_STRING([--disable-seedlink], [do not compile nmxptool as Seedlink plug-in])],
 	    [], 
-	    [with_seedlink=yes]
+	    [enable_seedlink=yes]
 ) 
 
 case "$OSTYPE" in
@@ -78,7 +83,7 @@ msys*)
     AC_MSG_WARN(Operating system is not Windows. $OSTYPE)
 ;;
 esac
-AM_CONDITIONAL(WITHWINSOURCES, test x$WINSOURCES != x)
+AM_CONDITIONAL(ENABLE_WINSOURCES, test x$WINSOURCES != x)
 
 # mtheo
 AM_PROG_LIBTOOL
@@ -89,17 +94,17 @@ AC_HEADER_STDC
 AC_CHECK_HEADERS([arpa/inet.h netdb.h netinet/in.h stdint.h stdlib.h string.h sys/socket.h unistd.h])
 AC_CHECK_HEADERS([windows.h winsock2.h])
 
-AS_IF([test "x$with_libmseed" != xno], 
+AS_IF([test "x$enable_libmseed" != xno], 
       [AC_CHECK_LIB([mseed], [msr_init],
 		    [LIBS="$LIBS -lmseed"
 		     AC_DEFINE([HAVE_LIBMSEED], [1], [Define if you have libmseed]) 
 		     # AC_CHECK_LIB([nmxp], [nmxp_openSocket], [], [AC_MSG_ERROR([libnmxp not found!])]) 
 		     # AC_CHECK_LIB([nmxp], [nmxp_data_msr_pack],
 		#		  [],
-		#		  [AC_MSG_FAILURE([libmseed found but libnmxp does not support it. (Try --without-libmseed to disable)])])
+		#		  [AC_MSG_FAILURE([libmseed found but libnmxp does not support it. (Try --disable-libmseed to disable)])])
 		     ], 
 		     [AC_MSG_WARN([
-		      libmseed is not available (--without-libmseed to disable)
+		      libmseed is not available (--disable-libmseed to disable)
 		     ])
 		     # AC_CHECK_LIB([nmxp], [nmxp_openSocket], [], [AC_MSG_ERROR([libnmxp not found or it supports libmseed
 				   # but libmseed is not available anymore! Try to recompile libnmxp!
@@ -108,8 +113,8 @@ AS_IF([test "x$with_libmseed" != xno],
 				   )
       ],
       [
-       # AC_CHECK_LIB([nmxp], [nmxp_openSocket], [], [AC_MSG_ERROR([libnmxp not found or supports libmseed (--with-libmseed to enable)!])]) 
-       AC_MSG_WARN([Mini-SEED support has been disabled!])
+       # AC_CHECK_LIB([nmxp], [nmxp_openSocket], [], [AC_MSG_ERROR([libnmxp not found or supports libmseed (--enable-libmseed to enable)!])]) 
+       AC_MSG_WARN([libmseed feature has been disabled!])
       ]
 ) 
 
@@ -117,7 +122,7 @@ AS_IF([test "x$with_libmseed" != xno],
 EWOSOURCES=no
 
 # Earthworm check.
-AS_IF([test "x$with_ew" != xno], 
+AS_IF([test "x$enable_ew" != xno], 
       [
     AS_IF([test "x$EW_HOME" != x], 
 	  [
@@ -175,25 +180,18 @@ AS_IF([test "x$with_ew" != xno],
 	       LIBS="$LIBS $EWOBJS"
 	       ])
 	],
-	[AC_MSG_WARN([Earthworm files are not available (--without-ew to disable)])]
+	[AC_MSG_WARN([Earthworm files are not available (--disable-ew to disable)])]
     )
     ],
-    [AC_MSG_WARN([Earthworm support has been disabled!])]
+    [AC_MSG_WARN([ew feature has been disabled!])]
 )
-AM_CONDITIONAL(WITHEWSOURCES, test x$EWOS != x)
-AM_CONDITIONAL(WITHEW, test x$with_ew != xno)
-
-
-# Set BINARY_DIST_NAME_SUFFIX
-BINARY_DIST_NAME_SUFFIX=$host
-AC_MSG_NOTICE(BINARY_DIST_NAME_SUFFIX set to $BINARY_DIST_NAME_SUFFIX)
-AC_SUBST(BINARY_DIST_NAME_SUFFIX)
-
+AM_CONDITIONAL(ENABLE_EWSOURCES, test x$EWOS != x)
+AM_CONDITIONAL(ENABLE_EW, test x$enable_ew != xno)
 
 # Checks for files.
 
 # Seedlink check.
-AS_IF([test "x$with_seedlink" != xno], 
+AS_IF([test "x$enable_seedlink" != xno], 
       [
        AC_CHECK_FILES([./src/seedlink_plugin.c ./src/seedlink_plugin.h], [], AC_MSG_ERROR([seedlink plug-in sources not found!]))
 
@@ -206,9 +204,9 @@ AS_IF([test "x$with_seedlink" != xno],
        AC_SUBST(SEISCOMPDIR)
 
        ],
-    [AC_MSG_WARN([SeedLink support has been disabled!])]
+    [AC_MSG_WARN([seedlink feature has been disabled!])]
 )
-AM_CONDITIONAL(WITHSEEDLINK, test x$with_seedlink != xno)
+AM_CONDITIONAL(ENABLE_SEEDLINK, test x$enable_seedlink != xno)
 
 
 # Checks for typedefs, structures, and compiler characteristics.
@@ -294,16 +292,16 @@ AC_OUTPUT
 AC_MSG_NOTICE([
       Compile nmxptool using 'make'.])
 
-AS_IF([test "x$with_ew" != xno], 
+AS_IF([test "x$enable_ew" != xno], 
       [AC_MSG_NOTICE([
       After compilation you can install nmxptool for Earthworm:
             make install-ew-bin
             make install-ew-conf])
       ]
 )
-AS_IF([test "x$with_seedlink" != xno], 
+AS_IF([test "x$enable_seedlink" != xno], 
       [AC_MSG_NOTICE([
-      After compilation you can install nmxptool for SeedLink:
+      After compilation you can install nmxptool for Seedlink:
             make install-seiscomp-bin
             make install-seiscomp-templates])
       ]

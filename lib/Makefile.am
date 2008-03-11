@@ -14,7 +14,7 @@ include_HEADERS = $(INCDIR)/nmxp.h \
 libnmxp_a_SOURCES = nmxp.c nmxp_base.c nmxp_data.c nmxp_chan.c nmxp_log.c nmxp_crc32.c
 
 
-if WITHWINSOURCES
+if ENABLE_WINSOURCES
 libnmxp_a_SOURCES += nmxp_win.c
 include_HEADERS += $(INCDIR)/nmxp_win.h
 endif

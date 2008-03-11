@@ -6,7 +6,7 @@
 # It is based on program 'test' and environment variables:
 #     $GLOBLAFLAGS, $EW_HOME, $EW_VERSION
 # If you have not 'gcc' maybe you was not able to compile 'libmseed'
-#     Set variable EXTRAPACKAGE to "without-libmseed".
+#     Set variable DISABLEFEATURES to "disable-libmseed".
 #
 # For Windows-XP and Windows-2000 compile under MinGW.
 #
@@ -23,7 +23,7 @@
 #############################################################################
 
 # If you do not use 'gcc' you can not compile 'libmseed', uncomment following line:
-# EXTRAPACKAGE=--without-libmseed
+# DISABLEFEATURES=--disable-libmseed
 
 CFLAGS += $(GLOBALFLAGS) -I$(EW_HOME)/$(EW_VERSION)/src/libsrc/util/libmseed
 LDFLAGS += -L$(EW_HOME)/$(EW_VERSION)/src/libsrc/util/libmseed
@@ -49,7 +49,7 @@ distclean: distcleannmxp
 
 configurenmxp:
 	( test -f Makefile && test -f src/Makefile ) \
-		|| ( ./configure $(EXTRAPACKAGE) CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" )
+		|| ( ./configure $(DISABLEFEATURES) CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" )
 
 makenmxp:
 	make

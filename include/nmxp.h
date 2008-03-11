@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp.h,v 1.45 2008-03-11 07:28:55 mtheo Exp $
+ * $Id: nmxp.h,v 1.46 2008-03-11 11:01:12 mtheo Exp $
  *
  */
 
@@ -442,9 +442,9 @@
  * rispettivamente al configure i seguenti tre parametri:
  * 
  *   <pre>
- *   --without-libmseed      disable support for libmseed
- *   --without-seedlink      disable support for seedlink
- *   --without-ew            disable support for earthworm
+ *    --disable-libmseed      disable saving data in mini-SEED records
+ *    --disable-ew            do not compile nmxptool as Earthworm module
+ *    --disable-seedlink      do not compile nmxptool as Seedlink plug-in
  *   </pre>
  * 
  * Per configurare nmxptool come modulo Earthworm bisognera copiare i files

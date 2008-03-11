@@ -8,11 +8,11 @@ nmxptool_SOURCES += nmxptool_ew.c nmxptool_ew.h
 nmxptool_CFLAGS= -I../include
 nmxptool_LDADD= ../lib/libnmxp.a
 
-if WITHSEEDLINK
+if ENABLE_SEEDLINK
 nmxptool_SOURCES += seedlink_plugin.c seedlink_plugin.h
 endif
 
-if WITHEWSOURCES
+if ENABLE_EWSOURCES
 nodist_nmxptool_SOURCES = @EW_LIBSRC_UTIL@/kom.c
 nodist_nmxptool_SOURCES += @EW_LIBSRC_UTIL@/getutil.c
 nodist_nmxptool_SOURCES += @EW_LIBSRC_UTIL@/logit.c
