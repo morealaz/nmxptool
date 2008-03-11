@@ -108,6 +108,12 @@ architectures.
       --disable-ew            do not compile nmxptool as Earthworm module
       --disable-seedlink      do not compile nmxptool as Seedlink plug-in
 
+  Some influential environment variables:
+      EW_HOME     Earthworm home directory
+      EW_VERSION  Earthworm version directory
+      EW_PARAMS   Earthworm configuration files directory
+      GLOBALFLAGS C compiler flags for Earthworm
+
   Verifying the version and enabled features after compilation:
 
      src/nmxptool --version
