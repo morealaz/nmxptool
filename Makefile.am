@@ -30,13 +30,17 @@ binary_distdir_FILES= \
 binary_distdir_suffix=${BINARY_DIST_NAME_SUFFIX}
 binary_distdir=${distdir}-bin-${binary_distdir_suffix}
 
+TMPTARFILE=tmp_${binary_distdir}.tar
+
 dist-bin:
 	echo ${binary_distdir}
 	uname -a > README_DISTBIN
 	rm -fr bin && mkdir bin && cp src/nmxptool${EXEEXT} bin/
 	rm -fr ${binary_distdir}
 	mkdir ${binary_distdir}
-	${AMTAR} -cf - ${binary_distdir_FILES}  | ${AMTAR} xpf - -C ${binary_distdir}
+	${AMTAR} -cf ${TMPTARFILE} ${binary_distdir_FILES}
+	cd ${binary_distdir} && ${AMTAR} xpf ../${TMPTARFILE}
+	rm -f ${TMPTARFILE}
 	rm -fr `find ${binary_distdir} -name CVS`
 	${AMTAR} chvf - ${binary_distdir} |  GZIP=$(GZIP_ENV) gzip -c > ${binary_distdir}.tar.gz
 	rm -fr ${binary_distdir}
