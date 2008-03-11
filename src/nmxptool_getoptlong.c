@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.80 2008-03-07 10:35:23 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.81 2008-03-11 10:45:01 mtheo Exp $
  *
  */
 
@@ -81,7 +81,7 @@ void nmxptool_version() {
 
 void nmxptool_supports() {
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
-         Support for: libmseed ");
+         Enabled features: libmseed ");
 #ifdef HAVE_LIBMSEED
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "YES");
 #else
