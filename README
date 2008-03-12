@@ -99,7 +99,7 @@ architectures.
   POSIX Cross-Platform aspects. So you should be able to compile
   and install them everywhere you can launch the following commands:
 
-     ./configure
+     ./configure --enable-FEATURE1 ... VAR1=... VAR2=...
      make
      make install
 
@@ -115,6 +115,33 @@ architectures.
       EW_VERSION  Earthworm version directory
       EW_PARAMS   Earthworm configuration files directory
       GLOBALFLAGS C compiler flags for Earthworm
+
+  'configure' adds -I${EW_HOME}/${EW_VERSION}/include to CFLAGS
+
+  Examples:
+
+    * 'configure' tries to compile all features
+          ./configure CFLAGS="-O2 -Wall -pipe -I/<anywhere>/libmseed" \
+                      LDFLAGS="-L/<anywhere>/libmseed"
+
+    * Enable only Earthworm feature and set related variables
+          ./configure --disable-libmseed --disable-seedlink \
+                      CFLAGS="-O2 -Wall -pipe" \
+                      EW_HOME="/home/ew" \
+                      EW_VERSION="v7.2" \
+                      EW_PARAMS="${EW_HOME}/${EW_VERSION}/params" \
+                      GLOBALFLAGS="-D_SPARC -D_SOLARIS"
+
+                           or, for example
+                      GLOBALFLAGS="-m32 -Dlinux -D__i386 -D_LINUX -D_INTEL -D_USE_SCHED  -D_USE_PTHREADS -D_USE_TERMIOS"
+                      GLOBALFLAGS="-D_MACOSX -D_INTEL -D_USE_PTHREADS -D_USE_SCHED "
+                      GLOBALFLAGS="-D_WINNT -D_INTEL -D_CRT_SECURE_NO_DEPRECATE -D_USE_32BIT_TIME_T"
+                      Use the last one to compile Earthworm feature under Windows-MinGW.
+
+    * Enable only libmseed and seedlink
+          ./configure --disable-ew \
+                      CFLAGS="-O2 -Wall -pipe -I/<anywhere>/libmseed" \
+                      LDFLAGS="-L/<anywhere>/libmseed"
 
   Verifying the version and enabled features after compilation:
 
@@ -132,7 +159,7 @@ architectures.
          do not forget to run 'ranlib libmseed.a' or similars.
 
   * ew, Earthworm System - http://www.isti2.com/ew/
-         nmxptool is included into the official Earthworm distributions since version 7.2.
+         nmxptool is included into the official Earthworm distribution since the version 7.2.
          Anyway, you can compile nmxptool outside the EW distribution, for example, to upgrade.
          Before launching 'configure', run the appropriate script from directory 'environment',
          the compilation depends on the following environment variables:
