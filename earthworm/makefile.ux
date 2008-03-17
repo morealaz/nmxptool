@@ -28,7 +28,7 @@
 CFLAGS += $(GLOBALFLAGS) -I$(EW_HOME)/$(EW_VERSION)/src/libsrc/util/libmseed
 LDFLAGS += -L$(EW_HOME)/$(EW_VERSION)/src/libsrc/util/libmseed
 
-all: configurenmxp makenmxp install
+all: configurenmxp makenmxp installnmxp
 
 clean: cleannmxp
 
@@ -36,12 +36,14 @@ clean: cleannmxp
 clean_bin:
 	make uninstall-ew-bin
 
-reconfigure: distclean configurenmxp cleannmxp makenmxp install
+reconfigure: distclean configurenmxp cleannmxp makenmxp installnmxp
 	
+installnmxp:
+	make install-ew-bin
+
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-install:
-	make install-ew-bin
+install: installnmxp
 
 distclean: distcleannmxp
 
