@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.150 2008-03-18 13:52:57 mtheo Exp $
+ * $Id: nmxptool.c,v 1.151 2008-03-18 15:19:37 mtheo Exp $
  *
  */
 
@@ -142,6 +142,10 @@ int main (int argc, char **argv) {
     int times_flow = 0;
     double default_start_time = 0.0;
     char start_time_str[30], end_time_str[30], default_start_time_str[30];
+
+    /* Empiric constant values TODO */
+    const int n_channel = 9;
+    const int n_usec = 250000; /* 1/4 second */
 
     NMXP_DATA_PROCESS *pd;
 
@@ -744,7 +748,7 @@ int main (int argc, char **argv) {
 
 	/* PDS Step 5: Send AddChannels */
 	/* Request Data */
-	nmxp_sendAddTimeSeriesChannel(naqssock, channelList_subset, params.stc, params.rate, (params.flag_buffered)? NMXP_BUFFER_YES : NMXP_BUFFER_NO);
+	nmxp_sendAddTimeSeriesChannel(naqssock, channelList_subset, params.stc, params.rate, (params.flag_buffered)? NMXP_BUFFER_YES : NMXP_BUFFER_NO, n_channel, n_usec);
 
 	/* PDS Step 6: Repeat until finished: receive and handle packets */
 
@@ -950,7 +954,7 @@ int main (int argc, char **argv) {
 
 	    }
 #endif
-	    nmxp_sendAddTimeSeriesChannel(naqssock, channelList_subset, params.stc, params.rate, (params.flag_buffered)? NMXP_BUFFER_YES : NMXP_BUFFER_NO);
+	    nmxp_sendAddTimeSeriesChannel(naqssock, channelList_subset, params.stc, params.rate, (params.flag_buffered)? NMXP_BUFFER_YES : NMXP_BUFFER_NO, n_channel, n_usec);
 
 	} /* End main PDS loop */
 
