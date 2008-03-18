@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp.c,v 1.74 2008-03-18 15:19:37 mtheo Exp $
+ * $Id: nmxp.c,v 1.75 2008-03-18 19:13:37 mtheo Exp $
  *
  */
 
@@ -153,7 +153,7 @@ int nmxp_sendAddTimeSeriesChannel(int isock, NMXP_CHAN_LIST_NET *channelList, in
 		    }
 		    if(split_channelList.number > 0) {
 			    nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY,
-					    "Added %d channels (%d):", split_channelList.number, diff_usec);
+					    "Added %d channels (%d, %d):", split_channelList.number, i, diff_usec);
 			    for(j=0; j < split_channelList.number; j++) {
 				    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, " %s", NMXP_LOG_STR(split_channelList.channel[j].name));
 			    }
