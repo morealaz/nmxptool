@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.h,v 1.92 2008-03-11 13:36:26 mtheo Exp $
+ * $Id: nmxptool_getoptlong.h,v 1.93 2008-03-18 19:05:25 mtheo Exp $
  *
  */
 
@@ -57,6 +57,10 @@
 #define DEFAULT_MAX_TIME_TO_RETRIEVE_MAXIMUM	86400
 #define DEFAULT_MAX_TIME_TO_RETRIEVE 		0
 
+/* Empiric constant values TODO */
+#define DEFAULT_N_CHANNEL	9
+#define DEFAULT_N_USEC		250000
+
 /*! \brief Struct that stores information about parameter of the program */
 typedef struct {
     char *hostname;
@@ -80,6 +84,8 @@ typedef struct {
     char *ew_configuration_file;
     char *statefile;
     double buffered_time;
+    int n_channel;
+    int n_usec;
     int32_t max_data_to_retrieve;
     int flag_writeseed;
     int flag_listchannels;

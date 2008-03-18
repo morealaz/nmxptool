@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.82 2008-03-11 13:36:26 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.83 2008-03-18 19:05:25 mtheo Exp $
  *
  */
 
@@ -44,6 +44,8 @@ const NMXPTOOL_PARAMS NMXPTOOL_PARAMS_DEFAULT =
     NULL,
     NULL,
     DEFAULT_BUFFERED_TIME,
+    DEFAULT_N_CHANNEL,
+    DEFAULT_N_USEC,
     DEFAULT_MAX_TIME_TO_RETRIEVE,
     0,
     0,
