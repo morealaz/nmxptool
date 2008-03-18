@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.149 2008-03-07 17:32:20 mtheo Exp $
+ * $Id: nmxptool.c,v 1.150 2008-03-18 13:52:57 mtheo Exp $
  *
  */
 
@@ -950,6 +950,7 @@ int main (int argc, char **argv) {
 
 	    }
 #endif
+	    nmxp_sendAddTimeSeriesChannel(naqssock, channelList_subset, params.stc, params.rate, (params.flag_buffered)? NMXP_BUFFER_YES : NMXP_BUFFER_NO);
 
 	} /* End main PDS loop */
 

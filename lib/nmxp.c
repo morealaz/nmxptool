@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp.c,v 1.72 2008-03-07 17:30:54 mtheo Exp $
+ * $Id: nmxp.c,v 1.73 2008-03-18 13:52:57 mtheo Exp $
  *
  */
 
@@ -18,6 +18,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#ifdef HAVE_GETTIMEOFDAY
+#include <sys/time.h>
+#endif
 
 #ifdef HAVE_ARPA_INET_H
 #include <arpa/inet.h>
@@ -72,7 +76,7 @@ int nmxp_receiveChannelList(int isock, NMXP_CHAN_LIST **pchannelList) {
 }
 
 
-int nmxp_sendAddTimeSeriesChannel(int isock, NMXP_CHAN_LIST_NET *channelList, int32_t shortTermCompletion, int32_t out_format, NMXP_BUFFER_FLAG buffer_flag) {
+int nmxp_sendAddTimeSeriesChannel_raw(int isock, NMXP_CHAN_LIST_NET *channelList, int32_t shortTermCompletion, int32_t out_format, NMXP_BUFFER_FLAG buffer_flag) {
     int ret;
     int32_t buffer_length = 16 + (4 * channelList->number); 
     char *buffer = malloc(buffer_length);
@@ -107,6 +111,65 @@ int nmxp_sendAddTimeSeriesChannel(int isock, NMXP_CHAN_LIST_NET *channelList, in
     if(buffer) {
 	free(buffer);
     }
+    return ret;
+}
+
+int nmxp_sendAddTimeSeriesChannel(int isock, NMXP_CHAN_LIST_NET *channelList, int32_t shortTermCompletion, int32_t out_format, NMXP_BUFFER_FLAG buffer_flag) {
+    static int i = 0;
+    static int first_time = 1;
+    static struct timeval last_tp_now;
+
+    /* Empiric constant values TODO */
+    const int n_channel = 9;
+    const int n_usec = 250000; /* 1/4 second */
+
+    int j;
+    int ret = 0;
+    NMXP_CHAN_LIST_NET split_channelList;
+    long diff_usec;
+    struct timeval tp_now;
+
+#ifdef HAVE_GETTIMEOFDAY
+    gettimeofday(&tp_now, NULL);
+#else
+    TODO gettimeofday not found
+#endif
+
+    if(i <  channelList->number) {
+	    if(first_time) {
+		    diff_usec = n_usec + 1;
+		    first_time = 0;
+		    last_tp_now.tv_sec = 0;
+		    last_tp_now.tv_usec = 0;
+	    } else {
+		    diff_usec = (tp_now.tv_sec - last_tp_now.tv_sec) * 1000000;
+		    diff_usec += (tp_now.tv_usec - last_tp_now.tv_usec);
+	    }
+	    if(diff_usec >= n_usec) {
+		    /* while(ret == 0  &&  i <  channelList->number) { */
+		    split_channelList.number = 0;
+		    while(split_channelList.number < n_channel  &&  i < channelList->number) {
+			    split_channelList.channel[split_channelList.number].key = channelList->channel[i].key;
+			    /* Not necessary, but it could help for debugging */
+			    strcpy(split_channelList.channel[split_channelList.number].name, channelList->channel[i].name);
+			    split_channelList.number++;
+			    i++;
+		    }
+		    if(split_channelList.number > 0) {
+			    nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY,
+					    "Added %d channels (%d):", split_channelList.number, diff_usec);
+			    for(j=0; j < split_channelList.number; j++) {
+				    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, " %s", NMXP_LOG_STR(split_channelList.channel[j].name));
+			    }
+			    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\n");
+			    ret = nmxp_sendAddTimeSeriesChannel_raw(isock, &split_channelList, shortTermCompletion, out_format, buffer_flag);
+		    }
+		    /* } */
+		    last_tp_now.tv_sec = tp_now.tv_sec;
+		    last_tp_now.tv_usec = tp_now.tv_usec;
+	    }
+    }
+
     return ret;
 }
 

@@ -11,7 +11,7 @@ m4_define([major_version], [1])
 m4_define([minor_version], [2])
 m4_define([micro_version], [1])
 # Comment build_version for stable release
-m4_define([build_version], [beta2])
+m4_define([build_version], [beta3])
 
 m4_ifdef([build_version], [
 	  m4_define([version],
@@ -238,7 +238,7 @@ AC_FUNC_MALLOC
 AC_FUNC_MKTIME
 AC_FUNC_SELECT_ARGTYPES
 AC_FUNC_STRERROR_R
-AC_CHECK_FUNCS([gethostbyname inet_ntoa memset select socket strcasecmp strchr strdup strerror strtol])
+AC_CHECK_FUNCS([gethostbyname gettimeofday inet_ntoa memset select socket strcasecmp strchr strdup strerror strtol])
 AC_CHECK_FUNCS([timegm], [], [
 		AC_CHECK_FUNCS([getenv setenv unsetenv tzset],
 			       [],
