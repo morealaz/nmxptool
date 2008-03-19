@@ -5,7 +5,7 @@ nmxptool Release History
 * Release 1.2.1-beta4    (2008/03/19) 
     - Added an important improvement to request more efficiently
         and retrieve data buffered by the NaqsServer (option -F and -b).
-        It allows data continuity, to latency's cost,
+        It allows data continuity, to the latency's cost,
         between short disconnections to the NaqsServer (option -f).
     - Option "delay" can be declared in minutes, hours or days (option -d).
     - Fixed bug: argument of function Sleep() on Windows is in milliseconds.
