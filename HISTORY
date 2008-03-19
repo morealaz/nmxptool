@@ -3,33 +3,35 @@ nmxptool Release History
 #########################
 
 * Release 1.2.1-beta4    (2008/03/19) 
-    - Added a big improvement to allow data continuity between program restarts
-          using only buffered data by NaqsServer (option -F).
-    - Option delay can be declared in minutes, hours or days (option -d).
-    - Fixed bug: argument of Windows function Sleep() is in milliseconds.
+    - Added an important improvement to request more efficiently
+        and retrieve data buffered by the NaqsServer (option -F and -b).
+        It allows data continuity, to latency's cost,
+        between short disconnections to the NaqsServer.
+    - Option "delay" can be declared in minutes, hours or days (option -d).
+    - Fixed bug: argument of function Sleep() on Windows is in milliseconds.
     - Changed 'configure' options from --with-PACKAGE to --enable-FEATURE.
     - Fixed minor bugs.
 
 * Release 1.2.0     (2008/03/07)
    - Reorganized structure of directories.
-          Compilation in a single shot of configure and make.
+        Compilation in a single shot of configure and make.
    - Added UserDAP and PassDAP in Earthworm configuration files.
 
 * Release 1.1.8     (2008/03/03)
     - Added management of channel sample sequences.
-          Allow data continuity between program restarts, (option -F)
-          within time defined by MaxDataToRetrieve (option -A)
-          and data buffered by the DataServer and NaqsServer.
+        Allow data continuity between program restarts, (option -F)
+        within time defined by MaxDataToRetrieve (option -A)
+        and data buffered by the DataServer and NaqsServer.
     - Added support for retrieving Data-On-Demand
-          with minimum delay from NaqsServer (option -T).
+        with minimum delay from NaqsServer (option -T).
     - Added option "buffered time" for a single channel (options -b, -B).
     - Added ten thousandth of second in date format (option -s, -e).
     - Added check for duplication in channel pattern declaration (options -F, -C).
     - Added logging of sample values (option -G).
-    - Option interval can be declared in minutes, hours or days (option -t).
+    - Option "interval" can be declared in minutes, hours or days (option -t).
     - Fixed major bug in DAP authentication (options -u and -p).
     - Fixed bug in packet decompression on Big-Endian architecture.
-          Offset +1 count was added when x0 was greater than zero.
+        Offset +1 count was added when x0 was greater than zero.
     - Countless minor bug fixes and improvements.
 
 * Release 1.1.7     (2007/12/11)
