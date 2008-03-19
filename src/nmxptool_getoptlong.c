@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.84 2008-03-19 12:55:46 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.85 2008-03-19 20:42:18 mtheo Exp $
  *
  */
 
@@ -45,7 +45,7 @@ const NMXPTOOL_PARAMS NMXPTOOL_PARAMS_DEFAULT =
     NULL,
     DEFAULT_BUFFERED_TIME,
     DEFAULT_N_CHANNEL,
-    DEFAULT_N_USEC,
+    DEFAULT_USEC,
     DEFAULT_MAX_TIME_TO_RETRIEVE,
     0,
     0,
@@ -171,7 +171,7 @@ Main arguments:\n\
                           into a file with the same name, same directory,\n\
                           appending the suffix '%s'.\n\
                           Allow data continuity between program restarts.\n\
-                          Related to -A and it enables -b.\n\
+                          Related to -A and -f, it enables -b.\n\
                           DO NOT USE with -C.\n",
 			  NMXP_STR_STATE_EXT
 );
@@ -213,7 +213,21 @@ PDS arguments for NaqsServer:\n\
                           >0 for specified sample rate and decompressed data.\n\
   -b, --buffered          Request also recent packets into the past.\n\
   -B, --buff_date=DATE    Request also recent packets into the past\n\
-                          but consider only samples after DATE.\n\
+                          but consider only samples after DATE.\n",
+	    DEFAULT_PORT_PDS,
+	    DEFAULT_STC,
+	    DEFAULT_RATE);
+
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
+  -f, --mschan=mSECs/nC   mSECs are the milliseconds to wait before next request,\n\
+                          nC is the number of channels to request at a time.\n\
+                          This kind of request management makes data buffering\n\
+                          on NaqsServer side more efficient.\n\
+                          Related to -F and -b. (Default %d/%d)\
+\n",
+ DEFAULT_USEC / 1000, DEFAULT_N_CHANNEL);
+
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
   -L, --listchannelsnaqs  List of available Time Series channels on NaqsServer.\n\
   -M, --maxlatency=SECs   Max tolerable latency (default %d) [%d..%d].\n\
   -T, --timeoutrecv=SECs  Time-out for flushing buffered packets.\n\
@@ -223,9 +237,6 @@ PDS arguments for NaqsServer:\n\
                           In general, -M and -T are not used together.\n\
 \n\
 ",
-	    DEFAULT_PORT_PDS,
-	    DEFAULT_STC,
-	    DEFAULT_RATE,
 	    DEFAULT_MAX_TOLERABLE_LATENCY,
 	    DEFAULT_MAX_TOLERABLE_LATENCY_MINIMUM,
 	    DEFAULT_MAX_TOLERABLE_LATENCY_MAXIMUM,
@@ -436,6 +447,8 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
     char str_interval[100];
     */
 
+    char *sep = NULL;
+
     struct option long_options[] =
     {
 	/* These options set a flag. */
@@ -478,12 +491,13 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 	{"slink",        required_argument, NULL, 'k'},
 #endif
 	{"statefile",    required_argument, NULL, 'F'},
+	{"mschan",       required_argument, NULL, 'f'},
 	{"help",         no_argument,       NULL, 'h'},
 	{"version",      no_argument,       NULL, 'V'},
 	{0, 0, 0, 0}
     };
 
-    char optstr[300] = "H:P:D:C:N:n:S:R:s:e:t:d:u:p:M:T:v:B:A:F:gGblLiwhV";
+    char optstr[300] = "H:P:D:C:N:n:S:R:s:e:t:d:u:p:M:T:v:B:A:F:f:gGblLiwhV";
 
     int option_index = 0;
 
@@ -678,6 +692,23 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 			nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY,
 				"Channels have been already defined by option -C!\n");
 		    }
+		    break;
+
+		case 'f':
+		    sep = strstr(optarg, "/");
+		    if(sep) {
+			sep[0] = 0;
+			sep++;
+			params->n_usec = atoi(optarg) * 1000;
+			params->n_channel = atoi(sep);
+		    } else {
+			/*
+			 * TODO ERROR
+			 */
+			ret_errors++;
+		    }
+			nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY,
+				"Channels %d usec %d!\n", params->n_channel, params->n_usec);
 		    break;
 
 		case 'g':
@@ -939,6 +970,8 @@ int nmxptool_check_params(NMXPTOOL_PARAMS *params) {
 		    DEFAULT_TIMEOUTRECV_MINIMUM,
 		    DEFAULT_TIMEOUTRECV_MAXIMUM);
 	}
+
+	/* Follow warning messages only */
     } else if( params->stc != -1 && params->max_tolerable_latency > 0 ){
 	nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "<maxlatency> ignored since not defined --stc=-1.\n");
     } else if(params->stc != -1 && params->timeoutrecv > 0) {
@@ -946,6 +979,16 @@ int nmxptool_check_params(NMXPTOOL_PARAMS *params) {
 	nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "<timeoutrecv> ignored since not defined --stc=-1.\n");
     }
 
+    if(params->n_usec < DEFAULT_USEC_MINIMUM  ||  params->n_usec > DEFAULT_USEC_MAXIMUM) {
+	ret = -1;
+	nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "ms in <mschan> has to be within [%d..%d].\n",
+		DEFAULT_USEC_MINIMUM/1000, DEFAULT_USEC_MAXIMUM/1000);
+    } else if(params->n_channel < DEFAULT_N_CHANNEL_MINIMUM  ||  params->n_channel > DEFAULT_N_CHANNEL_MAXIMUM) {
+	ret = -1;
+	nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "nC in <mschan> has to be within [%d..%d].\n",
+		DEFAULT_N_CHANNEL_MINIMUM, DEFAULT_N_CHANNEL_MAXIMUM);
+    }
+    
     /*
     if( params->stc == -1 ) {
 	nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "<maxlatency> is equal to %d sec.\n", params->max_tolerable_latency);
