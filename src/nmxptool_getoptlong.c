@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.83 2008-03-18 19:05:25 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.84 2008-03-19 12:55:46 mtheo Exp $
  *
  */
 
@@ -248,7 +248,7 @@ DAP arguments for DataServer:\n\
                           TIME is in seconds, otherwise append 'm' for minutes\n\
                           'h' for hours or 'd' for days. [1 sec .. %d days]\n\
                           DO NOT USE with -e.\n\
-  -d, --delay=SECs        Receive continuosly data with delay [%d..%d].\n\
+  -d, --delay=TIME        Receive continuosly data with delay [%d sec .. %d days].\n\
   -u, --username=USER     DataServer username.\n\
   -p, --password=PASS     DataServer password.\n\
   -l, --listchannels      List of available Time Series channels on DataServer.\n\
@@ -258,7 +258,7 @@ DAP arguments for DataServer:\n\
 DEFAULT_PORT_DAP,
 (DEFAULT_INTERVAL_MAXIMUM / 86400),
 DEFAULT_DELAY_MINIMUM,
-DEFAULT_DELAY_MAXIMUM);
+(DEFAULT_DELAY_MAXIMUM / 86400));
 
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
 Other arguments:\n\
@@ -364,6 +364,63 @@ char *get_channel_list_argument_from_state_file(const char *filename) {
     return ret_channel_string;
 }
 
+int nmxptool_read_time(char *str_input, int32_t *pvalue) {
+    char str_value[100];
+    int len_int;
+    int32_t value;
+    int j;
+    char unit = 'X';
+    int ret_errors = 0;
+
+    value = 0;
+    strncpy(str_value, str_input, 100);
+    len_int = strlen(str_value);
+    if(len_int <= 0) {
+	/* ERROR */
+	ret_errors++;
+    } else {
+	j=0;
+	while(j < len_int  && str_value[j] >= '0' && str_value[j] <= '9') {
+	    j++;
+	}
+	if(j < len_int) {
+	    if(j == len_int-1) {
+		unit = str_value[j];
+		str_value[j] = 0;
+		if(unit == 'm' || unit == 'h' || unit == 'd') {
+		    value = atoi(str_value);
+		    switch(unit) {
+			case 'm' :
+			    value *= 60;
+			    break;
+			case 'h' :
+			    value *= ( 60 * 60 );
+			    break;
+			case 'd' :
+			    value *= ( 60 * 60 * 24 );
+			    break;
+		    }
+		} else {
+		    ret_errors++;
+		    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY,
+			    "Syntax of time '%s' is not correct!\n", NMXP_LOG_STR(str_value));
+		}
+	    } else {
+		ret_errors++;
+		nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY,
+			"Syntax of time '%s' is not correct!\n", NMXP_LOG_STR(str_value));
+	    }
+	} else {
+	    /* All numbers, then seconds */
+	    value = atoi(str_value);
+	}
+
+    }
+
+    *pvalue = value;
+    return ret_errors;
+}
+
 int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 {
     int ret_errors = 0;
@@ -373,9 +430,11 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
     char one_time_option[255];
     int c;
 
+    /*
     int len_int, j;
     char unit = 'X';
     char str_interval[100];
+    */
 
     struct option long_options[] =
     {
@@ -547,54 +606,11 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 		    break;
 
 		case 't':
-		    strncpy(str_interval, optarg, 100);
-		    len_int = strlen(str_interval);
-		    if(len_int <= 0) {
-			/* ERROR */
-			ret_errors++;
-		    } else {
-			j=0;
-			while(j < len_int  && str_interval[j] >= '0' && str_interval[j] <= '9') {
-			    j++;
-			}
-			if(j < len_int) {
-			    if(j == len_int-1) {
-				unit = str_interval[j];
-				str_interval[j] = 0;
-				if(unit == 'm' || unit == 'h' || unit == 'd') {
-				    params->interval = atoi(str_interval);
-				    switch(unit) {
-					case 'm' :
-					    params->interval *= 60;
-					    break;
-					case 'h' :
-					    params->interval *= ( 60 * 60 );
-					    break;
-					case 'd' :
-					    params->interval *= ( 60 * 60 * 24 );
-					    break;
-				    }
-				} else {
-				    ret_errors++;
-				    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY,
-					    "Syntax of interval is not correct!\n");
-				}
-			    } else {
-				ret_errors++;
-				nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY,
-					"Syntax of interval is not correct!\n");
-			    }
-			} else {
-			    /* All numbers, then seconds */
-			    params->interval = atoi(str_interval);
-			}
-
-		    }
-
+		    ret_errors += nmxptool_read_time(optarg, &(params->interval) );
 		    break;
 
 		case 'd':
-		    params->delay = atoi(optarg);
+		    ret_errors += nmxptool_read_time(optarg, &(params->delay) );
 		    break;
 
 		case 'u':
