@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.h,v 1.94 2008-03-19 12:55:46 mtheo Exp $
+ * $Id: nmxptool_getoptlong.h,v 1.95 2008-03-19 14:12:41 mtheo Exp $
  *
  */
 
@@ -116,8 +116,18 @@ void nmxptool_usage(struct option long_options[]);
  * \param filename File name of state file
  *
  * \retval Argument string for -C
- * */
+ */
 char *get_channel_list_argument_from_state_file(const char *filename);
+
+/*! \brief Convert a string TIME (ex. 1, 3m, 2h, 10d) in seconds 
+ *
+ * \param str_input input string
+ * \param[out] pvalue value in seconds
+ *
+ * \return number of errors
+ */
+int nmxptool_read_time(char *str_input, int32_t *pvalue);
+
 
 /*! \brief Calls getopt_long and set struct NMXPTOOL_PARAMS
  *
