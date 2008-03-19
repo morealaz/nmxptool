@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp.c,v 1.75 2008-03-18 19:13:37 mtheo Exp $
+ * $Id: nmxp.c,v 1.76 2008-03-19 08:16:03 mtheo Exp $
  *
  */
 
@@ -114,7 +114,7 @@ int nmxp_sendAddTimeSeriesChannel_raw(int isock, NMXP_CHAN_LIST_NET *channelList
     return ret;
 }
 
-int nmxp_sendAddTimeSeriesChannel(int isock, NMXP_CHAN_LIST_NET *channelList, int32_t shortTermCompletion, int32_t out_format, NMXP_BUFFER_FLAG buffer_flag, const int n_channel, const int n_usec) {
+int nmxp_sendAddTimeSeriesChannel(int isock, NMXP_CHAN_LIST_NET *channelList, int32_t shortTermCompletion, int32_t out_format, NMXP_BUFFER_FLAG buffer_flag, const int n_channel, const int n_usec, int flag_restart) {
     static int i = 0;
     static int first_time = 1;
     static struct timeval last_tp_now;
@@ -124,6 +124,11 @@ int nmxp_sendAddTimeSeriesChannel(int isock, NMXP_CHAN_LIST_NET *channelList, in
     NMXP_CHAN_LIST_NET split_channelList;
     long diff_usec;
     struct timeval tp_now;
+
+    if(flag_restart) {
+	first_time = 1;
+	i = 0;
+    }
 
 #ifdef HAVE_GETTIMEOFDAY
     gettimeofday(&tp_now, NULL);
@@ -153,7 +158,8 @@ int nmxp_sendAddTimeSeriesChannel(int isock, NMXP_CHAN_LIST_NET *channelList, in
 		    }
 		    if(split_channelList.number > 0) {
 			    nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY,
-					    "Added %d channels (%d, %d):", split_channelList.number, i, diff_usec);
+					    "%d/%.0f chan %d/%d:", split_channelList.number, (double)diff_usec/1000.0,
+					    i, channelList->number);
 			    for(j=0; j < split_channelList.number; j++) {
 				    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, " %s", NMXP_LOG_STR(split_channelList.channel[j].name));
 			    }

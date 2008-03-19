@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp.h,v 1.47 2008-03-18 15:19:37 mtheo Exp $
+ * $Id: nmxp.h,v 1.48 2008-03-19 08:16:03 mtheo Exp $
  *
  */
 
@@ -1075,12 +1075,13 @@ int nmxp_receiveChannelList(int isock, NMXP_CHAN_LIST **pchannelList);
  * \param buffer_flag Server will send or not buffered packets.
  * \param n_channel number of channels to add any time
  * \param n_usec frequency to add remaining channels (microseconds)
+ * \param flag_restart reset index for requesting channels. In general, first time 1, then 0.
  *
  * \retval SOCKET_OK on success
  * \retval SOCKET_ERROR on error
  * 
  */
-int nmxp_sendAddTimeSeriesChannel(int isock, NMXP_CHAN_LIST_NET *channelList, int32_t shortTermCompletion, int32_t out_format, NMXP_BUFFER_FLAG buffer_flag, const int n_channel, const int n_usec);
+int nmxp_sendAddTimeSeriesChannel(int isock, NMXP_CHAN_LIST_NET *channelList, int32_t shortTermCompletion, int32_t out_format, NMXP_BUFFER_FLAG buffer_flag, const int n_channel, const int n_usec, int flag_restart);
 
 
 /*! \brief Receive Compressed or Decompressed Data message from a socket and launch func_processData() on the extracted data
