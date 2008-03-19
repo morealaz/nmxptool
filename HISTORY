@@ -2,12 +2,13 @@
 nmxptool Release History
 #########################
 
-* Release 1.2.1-beta3    (2008/03/18) 
-   - Added a big improvement to allow data continuity between program restarts
+* Release 1.2.1-beta4    (2008/03/19) 
+    - Added a big improvement to allow data continuity between program restarts
           using only buffered data by NaqsServer (option -F).
-   - Fixed bug: argument of Windows function Sleep() is in milliseconds.
-   - Changed 'configure' options from --with-PACKAGE to --enable-FEATURE.
-   - Fixed minor bugs.
+    - Option delay can be declared in minutes, hours or days (option -d).
+    - Fixed bug: argument of Windows function Sleep() is in milliseconds.
+    - Changed 'configure' options from --with-PACKAGE to --enable-FEATURE.
+    - Fixed minor bugs.
 
 * Release 1.2.0     (2008/03/07)
    - Reorganized structure of directories.
