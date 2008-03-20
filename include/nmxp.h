@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp.h,v 1.48 2008-03-19 08:16:03 mtheo Exp $
+ * $Id: nmxp.h,v 1.49 2008-03-20 12:42:08 mtheo Exp $
  *
  */
 
@@ -989,7 +989,7 @@ Mail bug reports and suggestions to <quintiliani@ingv.it>.
 #include "nmxp_base.h"
 #include "nmxp_crc32.h"
 
-
+#define NMXP_MAX_MSCHAN_MSEC		15000
 
 /*! \brief Flag for buffered packets */
 typedef enum {
@@ -1081,7 +1081,7 @@ int nmxp_receiveChannelList(int isock, NMXP_CHAN_LIST **pchannelList);
  * \retval SOCKET_ERROR on error
  * 
  */
-int nmxp_sendAddTimeSeriesChannel(int isock, NMXP_CHAN_LIST_NET *channelList, int32_t shortTermCompletion, int32_t out_format, NMXP_BUFFER_FLAG buffer_flag, const int n_channel, const int n_usec, int flag_restart);
+int nmxp_sendAddTimeSeriesChannel(int isock, NMXP_CHAN_LIST_NET *channelList, int32_t shortTermCompletion, int32_t out_format, NMXP_BUFFER_FLAG buffer_flag, int n_channel, int n_usec, int flag_restart);
 
 
 /*! \brief Receive Compressed or Decompressed Data message from a socket and launch func_processData() on the extracted data
