@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.h,v 1.97 2008-03-20 06:54:55 mtheo Exp $
+ * $Id: nmxptool_getoptlong.h,v 1.98 2008-03-20 12:43:50 mtheo Exp $
  *
  */
 
@@ -62,7 +62,7 @@
 #define DEFAULT_N_CHANNEL_MINIMUM	3
 #define DEFAULT_N_CHANNEL_MAXIMUM	30
 
-#define DEFAULT_USEC		250000
+#define DEFAULT_USEC		280000
 #define DEFAULT_USEC_MINIMUM	0
 #define DEFAULT_USEC_MAXIMUM	1000000
 
