@@ -81,6 +81,14 @@ ChannelFile   /home/ew/naqs1a.list.txt   # List of channel patterns like 'Channe
                                          # Related to 'MaxDataToRetrieve', it enables request of recent packets.
                                          # It is equivalent to the option -F. Related to 'MaxDataToRetrieve'.
 
+#mschan        250/9                     # mSECs/nC
+                                         # mSECs are the milliseconds to wait before next request,
+                                         # nC is the number of channels to request at a time.
+                                         # This kind of request management makes data buffering
+                                         # on NaqsServer side more efficient. (Default 280/9).
+                                         # Condition: Total number channels * (mSECs/nC) < 15 sec. 
+                                         # Related to -F and -b. 0/0 for disabling.
+
     # DO NOT USE parameters 'Channel' and 'ChannelFile' together.
     # 'ChannelFile' is preferable. At restart you can retrieve data
     # of the past from DataServer. See 'MaxDataToRetrieve'.

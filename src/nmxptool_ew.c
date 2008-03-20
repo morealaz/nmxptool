@@ -284,6 +284,8 @@ int nmxptool_ew_proc_configfile (char * configfile, NMXPTOOL_PARAMS *params) {
     int      		nfiles;
     int      		success;
 
+    char *sep = NULL;
+
     /* Some important initial values or defaults */
     ringName[0]   = '\0';
     myModName[0] = '\0';
@@ -441,6 +443,23 @@ int nmxptool_ew_proc_configfile (char * configfile, NMXPTOOL_PARAMS *params) {
 		}
 	    }
 
+	    else if (k_its ("mschan")) {
+		if ( (str = k_str ()) ) {
+		    sep = strstr(str, "/");
+		    if(sep) {
+			sep[0] = 0;
+			sep++;
+			params->usec = atoi(str) * 1000;
+			params->n_channel = atoi(sep);
+			nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY,
+				"Channels %d usec %d!\n", params->n_channel, params->usec);
+		    } else {
+			nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY,
+				"Syntax error in parameter 'mschan' %s!\n", NMXP_LOG_STR(str));
+			return EW_FAILURE;
+		    }
+		}
+	    }
 
 	    else if (k_its ("ChannelFile")) {
 		if ( (str = k_str ()) ) {
@@ -463,7 +482,6 @@ int nmxptool_ew_proc_configfile (char * configfile, NMXPTOOL_PARAMS *params) {
 		    }
 		}
 	    }
-
 
 
 	    /* Unknown command */ 
