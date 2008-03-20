@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.86 2008-03-20 06:54:55 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.87 2008-03-20 12:44:24 mtheo Exp $
  *
  */
 
@@ -222,10 +222,11 @@ PDS arguments for NaqsServer:\n\
   -f, --mschan=mSECs/nC   mSECs are the milliseconds to wait before next request,\n\
                           nC is the number of channels to request at a time.\n\
                           This kind of request management makes data buffering\n\
-                          on NaqsServer side more efficient.\n\
-                          Related to -F and -b. (Default %d/%d)\
+                          on NaqsServer side more efficient. (Default %d/%d).\n\
+                          Condition: Total number channels * (mSECs/nC) < %d sec. \n\
+                          Related to -F and -b. 0/0 for disabling.\
 \n",
- DEFAULT_USEC / 1000, DEFAULT_N_CHANNEL);
+DEFAULT_USEC / 1000, DEFAULT_N_CHANNEL, NMXP_MAX_MSCHAN_MSEC / 1000);
 
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
   -L, --listchannelsnaqs  List of available Time Series channels on NaqsServer.\n\
@@ -701,14 +702,13 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 			sep++;
 			params->usec = atoi(optarg) * 1000;
 			params->n_channel = atoi(sep);
-		    } else {
-			/*
-			 * TODO ERROR
-			 */
-			ret_errors++;
-		    }
 			nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY,
 				"Channels %d usec %d!\n", params->n_channel, params->usec);
+		    } else {
+			ret_errors++;
+			nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY,
+				"Syntax error in option -%c %s!\n", c, NMXP_LOG_STR(optarg));
+		    }
 		    break;
 
 		case 'g':
@@ -979,13 +979,15 @@ int nmxptool_check_params(NMXPTOOL_PARAMS *params) {
 	nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "<timeoutrecv> ignored since not defined --stc=-1.\n");
     }
 
-    if(params->usec < DEFAULT_USEC_MINIMUM  ||  params->usec > DEFAULT_USEC_MAXIMUM) {
+    if(params->usec == 0  &&  params->n_channel == 0) {
+	/* Do nothing */
+    } else if(params->usec < DEFAULT_USEC_MINIMUM  ||  params->usec > DEFAULT_USEC_MAXIMUM) {
 	ret = -1;
-	nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "ms in <mschan> has to be within [%d..%d].\n",
+	nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "ms in <mschan> has to be within [%d..%d] or equal to zero if 0/0.\n",
 		DEFAULT_USEC_MINIMUM/1000, DEFAULT_USEC_MAXIMUM/1000);
     } else if(params->n_channel < DEFAULT_N_CHANNEL_MINIMUM  ||  params->n_channel > DEFAULT_N_CHANNEL_MAXIMUM) {
 	ret = -1;
-	nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "nC in <mschan> has to be within [%d..%d].\n",
+	nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "nC in <mschan> has to be within [%d..%d] or equal to zero if 0/0.\n",
 		DEFAULT_N_CHANNEL_MINIMUM, DEFAULT_N_CHANNEL_MAXIMUM);
     }
     
