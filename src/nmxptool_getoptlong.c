@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.85 2008-03-19 20:42:18 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.86 2008-03-20 06:54:55 mtheo Exp $
  *
  */
 
@@ -699,7 +699,7 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 		    if(sep) {
 			sep[0] = 0;
 			sep++;
-			params->n_usec = atoi(optarg) * 1000;
+			params->usec = atoi(optarg) * 1000;
 			params->n_channel = atoi(sep);
 		    } else {
 			/*
@@ -708,7 +708,7 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 			ret_errors++;
 		    }
 			nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY,
-				"Channels %d usec %d!\n", params->n_channel, params->n_usec);
+				"Channels %d usec %d!\n", params->n_channel, params->usec);
 		    break;
 
 		case 'g':
@@ -979,7 +979,7 @@ int nmxptool_check_params(NMXPTOOL_PARAMS *params) {
 	nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "<timeoutrecv> ignored since not defined --stc=-1.\n");
     }
 
-    if(params->n_usec < DEFAULT_USEC_MINIMUM  ||  params->n_usec > DEFAULT_USEC_MAXIMUM) {
+    if(params->usec < DEFAULT_USEC_MINIMUM  ||  params->usec > DEFAULT_USEC_MAXIMUM) {
 	ret = -1;
 	nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "ms in <mschan> has to be within [%d..%d].\n",
 		DEFAULT_USEC_MINIMUM/1000, DEFAULT_USEC_MAXIMUM/1000);
