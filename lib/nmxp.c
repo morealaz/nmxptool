@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp.c,v 1.77 2008-03-19 20:42:18 mtheo Exp $
+ * $Id: nmxp.c,v 1.78 2008-03-20 12:42:59 mtheo Exp $
  *
  */
 
@@ -114,7 +114,7 @@ int nmxp_sendAddTimeSeriesChannel_raw(int isock, NMXP_CHAN_LIST_NET *channelList
     return ret;
 }
 
-int nmxp_sendAddTimeSeriesChannel(int isock, NMXP_CHAN_LIST_NET *channelList, int32_t shortTermCompletion, int32_t out_format, NMXP_BUFFER_FLAG buffer_flag, const int n_channel, const int n_usec, int flag_restart) {
+int nmxp_sendAddTimeSeriesChannel(int isock, NMXP_CHAN_LIST_NET *channelList, int32_t shortTermCompletion, int32_t out_format, NMXP_BUFFER_FLAG buffer_flag, int n_channel, int n_usec, int flag_restart) {
     static int i = 0;
     static int first_time = 1;
     static struct timeval last_tp_now;
@@ -124,14 +124,32 @@ int nmxp_sendAddTimeSeriesChannel(int isock, NMXP_CHAN_LIST_NET *channelList, in
     NMXP_CHAN_LIST_NET split_channelList;
     long diff_usec;
     struct timeval tp_now;
+    double estimated_time = 0.0;
+
+    if(n_usec == 0  &&  n_channel == 0) {
+	n_channel = channelList->number;
+    }
+
+    estimated_time = (double) channelList->number * ( ((double) n_usec / 1000000.0) / (double) n_channel);
 
     if(flag_restart) {
 	nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY,
-		"%d * (%.3f/%d) = %.3f sec.\n",
-		channelList->number, n_usec / 1000000.0, n_channel,
-		(double) channelList->number * ( ((double) n_usec / 1000000.0) / (double) n_channel));
+		"Estimated time for channel requests: %d * (%d/%d) = %.3f sec.\n",
+		channelList->number, n_usec / 1000, n_channel,
+		estimated_time);
+
+
 	first_time = 1;
 	i = 0;
+    }
+
+    if(estimated_time > ((double) NMXP_MAX_MSCHAN_MSEC / 1000.0)) {
+	n_usec = ( (double) NMXP_MAX_MSCHAN_MSEC * 1000.0 ) * ( (double) n_channel / (double) channelList->number);
+	estimated_time = (double) channelList->number * ( ((double) n_usec / 1000000.0) / (double) n_channel);
+	if(flag_restart) {
+	    nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "Estimated time exceeds. New values %d/%d and estimated time %.3f sec.\n",
+		    n_usec/1000, n_channel, estimated_time);
+	}
     }
 
 #ifdef HAVE_GETTIMEOFDAY
@@ -162,7 +180,7 @@ int nmxp_sendAddTimeSeriesChannel(int isock, NMXP_CHAN_LIST_NET *channelList, in
 		    }
 		    if(split_channelList.number > 0) {
 			    nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY,
-					    "%.0f/%d chan %d/%d:", (double)diff_usec/1000.0, split_channelList.number,
+					    "%.0f/%d chan %d of %d:", (double)diff_usec/1000.0, split_channelList.number,
 					    i, channelList->number);
 			    for(j=0; j < split_channelList.number; j++) {
 				    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, " %s", NMXP_LOG_STR(split_channelList.channel[j].name));
