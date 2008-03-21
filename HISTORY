@@ -2,8 +2,8 @@
 nmxptool Release History
 #########################
 
-* Release 1.2.1-beta4    (2008/03/19) 
-    - Added very nice improvement to request more efficiently
+* Release 1.2.1-beta4    (2008/03/21) 
+    - Added a very nice improvement to request more efficiently
         and retrieve data buffered by the NaqsServer (option -F and -b).
         It allows data continuity, to the latency's cost,
         between short disconnections to the NaqsServer (option -f).
