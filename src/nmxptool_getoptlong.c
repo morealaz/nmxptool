@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.87 2008-03-20 12:44:24 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.88 2008-03-22 15:47:00 mtheo Exp $
  *
  */
 
@@ -221,8 +221,9 @@ PDS arguments for NaqsServer:\n\
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
   -f, --mschan=mSECs/nC   mSECs are the milliseconds to wait before next request,\n\
                           nC is the number of channels to request at a time.\n\
-                          This kind of request management makes data buffering\n\
-                          on NaqsServer side more efficient. (Default %d/%d).\n\
+                          Delaying and requesting few channels at a time makes\n\
+                          data buffering on NaqsServer side more efficient.\n\
+                          Determined empiric values are default %d/%d.\n\
                           Condition: Total number channels * (mSECs/nC) < %d sec. \n\
                           Related to -F and -b. 0/0 for disabling.\
 \n",
