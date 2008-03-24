@@ -2,7 +2,7 @@
 nmxptool Release History
 #########################
 
-* Release 1.2.1-beta5    (2008/03/22) 
+* Release 1.2.1-beta5    (2008/03/24) 
     - Improved request of channels in order to retrieve more efficiently
         data buffered by the NaqsServer (option -F and -b).
         It allows data continuity, to the latency's cost,
@@ -10,7 +10,7 @@ nmxptool Release History
         Added option --mschan=mSECs/nC, short option -f.
     - Option "delay" can be declared in minutes, hours or days (option -d).
     - Changed 'configure' options from --with-PACKAGE to --enable-FEATURE.
-    - Fixed bug: argument of function Sleep() on Windows is in milliseconds.
+    - Fixed bug: argument of function Sleep() is in milliseconds on Windows.
     - Fixed minor bugs.
 
 * Release 1.2.0     (2008/03/07)
