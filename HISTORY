@@ -10,6 +10,7 @@ nmxptool Release History
         Added option --mschan=mSECs/nC, short option -f.
     - Option "delay" can be declared in minutes, hours or days (option -d).
     - Changed 'configure' options from --with-PACKAGE to --enable-FEATURE.
+    - Improved help and documentation.
     - Fixed bug: argument of function Sleep() is in milliseconds on Windows.
     - Fixed minor bugs.
 
