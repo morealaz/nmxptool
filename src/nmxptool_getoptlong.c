@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.88 2008-03-22 15:47:00 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.89 2008-03-24 14:00:52 mtheo Exp $
  *
  */
 
@@ -68,11 +68,15 @@ Mail bug reports and suggestions to <%s>.\n",
 }
 
 
+#define PDS_VERSION "1.4"
+#define DAP_VERSION "1.0"
+
 void nmxptool_version() {
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
 %s %s, Nanometrics tool\n\
-        (Private Data Stream 1.4, Data Access Protocol 1.0)\n",
-	NMXP_LOG_STR(PACKAGE_NAME), NMXP_LOG_STR(PACKAGE_VERSION)
+         Private Data Stream %s, Data Access Protocol %s\n",
+	NMXP_LOG_STR(PACKAGE_NAME), NMXP_LOG_STR(PACKAGE_VERSION),
+	NMXP_LOG_STR(PDS_VERSION), NMXP_LOG_STR(DAP_VERSION)
 	/*
 	nmxp_log_version()
 	*/
@@ -114,29 +118,38 @@ void nmxptool_usage(struct option long_options[])
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
 \n\
 Usage: %s -H hostname   -l | -L\n\
-             Print list of available Time Series channels\n\
+             Print list of the available Time Series channels\n\
              on DataServer and NaqsServer respectively.\n\
-\n\
+\n",
+NMXP_LOG_STR(PACKAGE_NAME));
+
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
        %s -H hostname -C channellist [...]\n\
-             Receive data in near real-time from NaqsServer by PDS.\n\
+             Receive data in near real-time from NaqsServer by PDS %s\n\
 \n\
        %s -H hostname -F statefile [-A SECs] [...]\n\
-             Receive data from NaqsServer, and from DataServer if is necessary.\n\
-\n\
+             Receive data from NaqsServer and, in case, retrieve previous\n\
+             data from DataServer up to SECs seconds before.\n\
+\n",
+NMXP_LOG_STR(PACKAGE_NAME),
+NMXP_LOG_STR(PDS_VERSION),
+NMXP_LOG_STR(PACKAGE_NAME));
+
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
        %s -H hostname -C channellist -s DATE -e DATE [...]\n\
-       %s -H hostname -C channellist -s DATE -t SECs [...]\n\
-             Receive data from DataServer by DAP.\n\
+       %s -H hostname -C channellist -s DATE -t TIME [...]\n\
+             Receive a temporal interval of data from DataServer by DAP %s\n\
 \n",
 NMXP_LOG_STR(PACKAGE_NAME),
 NMXP_LOG_STR(PACKAGE_NAME),
-NMXP_LOG_STR(PACKAGE_NAME),
-NMXP_LOG_STR(PACKAGE_NAME),
-NMXP_LOG_STR(PACKAGE_NAME));
+NMXP_LOG_STR(DAP_VERSION)
+);
 
 #ifdef HAVE_EARTHWORMOBJS
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
        %s nmxptool.d\n\
              Launched as Earthworm module to redirect data into the EW-Rings.\n\
+             Refer to nmxptool_cmd.html into the Earthworm documentation.\n\
 \n", NMXP_LOG_STR(PACKAGE_NAME));
 #endif
 
@@ -148,29 +161,29 @@ NMXP_LOG_STR(PACKAGE_NAME));
 #endif
 
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
-       %s --help\n\
+       %s --help | -h\n\
              Print this help.\n\
 \n", NMXP_LOG_STR(PACKAGE_NAME));
 
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
 Main arguments:\n\
-  -H, --hostname=HOST     NaqsServer or DataServer hostname.\n\
+  -H, --hostname=HOST     NaqsServer/DataServer hostname or IP address.\n\
   -C, --channels=LIST     List of NET.STA.CHAN separated by comma.\n\
                           NET  is optional and used only for output.\n\
                           STA  can be '*', it stands for all stations.\n\
                           CHAN can contain '?', it stands for any character.\n\
-			  Network code will be assigned from the first\n\
+                          Network code will be assigned from the first\n\
                           pattern that includes station and channel.\n\
                           DO NOT USE with -F.\n\
                                 Example: N1.AAA.HH?,N2.*.HH?,MMM.BH?\n\
                           Second pattern includes the first. Unless AAA, all\n\
                           stations with HH channels will have network to N2.\n\
                           Station MMM will have default network defined by -N.\n\
-  -F, --statefile=FILE    List of channel patterns like -C. One for each line.\n\
+  -F, --statefile=FILE    List of channel patterns as in -C. One for each line.\n\
                           Load/Save time of the last sample of each channel\n\
                           into a file with the same name, same directory,\n\
                           appending the suffix '%s'.\n\
-                          Allow data continuity between program restarts.\n\
+                          Allow data continuity when short disconnections occur.\n\
                           Related to -A and -f, it enables -b.\n\
                           DO NOT USE with -C.\n",
 			  NMXP_STR_STATE_EXT
@@ -212,25 +225,25 @@ PDS arguments for NaqsServer:\n\
                            0 for original sample rate and decompressed data.\n\
                           >0 for specified sample rate and decompressed data.\n\
   -b, --buffered          Request also recent packets into the past.\n\
-  -B, --buff_date=DATE    Request also recent packets into the past\n\
+  -B, --buffdate=DATE     Request also recent packets into the past\n\
                           but consider only samples after DATE.\n",
 	    DEFAULT_PORT_PDS,
 	    DEFAULT_STC,
 	    DEFAULT_RATE);
 
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
-  -f, --mschan=mSECs/nC   mSECs are the milliseconds to wait before next request,\n\
+  -f, --mschan=mSECs/nC   mSECs are milliseconds to wait before the next request,\n\
                           nC is the number of channels to request at a time.\n\
-                          Delaying and requesting few channels at a time makes\n\
+                          Delaying and requesting few channels at a time make\n\
                           data buffering on NaqsServer side more efficient.\n\
                           Determined empiric values are default %d/%d.\n\
-                          Condition: Total number channels * (mSECs/nC) < %d sec. \n\
+                          Condition: TotalNumberOfChannels * (mSECs/nC) < %d sec. \n\
                           Related to -F and -b. 0/0 for disabling.\
 \n",
 DEFAULT_USEC / 1000, DEFAULT_N_CHANNEL, NMXP_MAX_MSCHAN_MSEC / 1000);
 
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
-  -L, --listchannelsnaqs  List of available Time Series channels on NaqsServer.\n\
+  -L, --listchannelsnaqs  List of the available Time Series channels on NaqsServer.\n\
   -M, --maxlatency=SECs   Max tolerable latency (default %d) [%d..%d].\n\
   -T, --timeoutrecv=SECs  Time-out for flushing buffered packets.\n\
                           (default %d, no time-out) [%d..%d].\n\
@@ -264,7 +277,7 @@ DAP arguments for DataServer:\n\
   -d, --delay=TIME        Receive continuosly data with delay [%d sec .. %d days].\n\
   -u, --username=USER     DataServer username.\n\
   -p, --password=PASS     DataServer password.\n\
-  -l, --listchannels      List of available Time Series channels on DataServer.\n\
+  -l, --listchannels      List of the available Time Series channels on DataServer.\n\
   -i, --channelinfo       Print channelinfo (network name) when using -l.\n\
 \n\
 ",
@@ -277,7 +290,7 @@ DEFAULT_DELAY_MINIMUM,
 Other arguments:\n\
   -N, --network=NET       Default output Network code. (default '%s').\n\
   -n, --location=LOC      Default output Location code. DISABLED!\n\
-  -v, --verbose=level     Be verbose. level is a bitmap:\n\
+  -v, --verbose=LEVEL     Be verbose. LEVEL is a bitmap:\n\
                           %d Channel State, %d Channel, %d Raw Stream,\n\
                           %d CRC32, %d Connection flow,\n\
                           %d Packet Management, %d Extra, %d Date,\n\
@@ -310,10 +323,10 @@ Other arguments:\n\
 
 #ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
-  -k, --slink=pluginid    Send received data to SeedLink as a plug-in.\n\
-                          THIS OPTION, INSIDE THE FILE seedlink.ini, MUST BE\n\
-                          THE LAST WITHOUT ADDING VALUE FOR pluginid!\n\
-                          pluginid is set by SeisComP daemon.\n");
+  -k, --slink=PLUGINID    Send received data to SeedLink as a plug-in.\n\
+                          This option, inside the file seedlink.ini, must be\n\
+                          the last without adding value for PLUGINID!\n\
+                          PLUGINID is set by SeisComP daemon.\n");
 #endif
 
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
