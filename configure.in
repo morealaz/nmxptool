@@ -251,20 +251,15 @@ AC_CHECK_FUNCS([timegm], [], [
 AC_CHECK_MEMBERS([struct tm.tm_gmtoff])
 
 # Test whether _timezone is available. (On Windows only)
-AC_CACHE_CHECK([whether _timezone is available],
-ac_cv_timezone_win, [dnl
-			   AC_RUN_IFELSE([AC_LANG_SOURCE([[
-					  int main(void) {
+AC_MSG_CHECKING([for global _timezone variable])
+dnl FIXME: As above, don't want link check
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <time.h>]],
+		  [[long z2 = _timezone;]])],
+		  [AC_DEFINE(HAVE_UNDERSCORE_TIMEZONE, 1,
+		   [Define if your platform has the global _timezone variable.])
+		  AC_MSG_RESULT(yes)],
+		  [AC_MSG_RESULT(no)])
 
-					  printf("%d\n", _timezone);
-
-					  return 0;
-
-				      }
-				      ]])],[ac_cv_timezone_win=no],[ac_cv_timezone_win=yes],[ac_cv_timezone_win=cross])])
-if test x"$ac_cv_timezone_win" = x"yes"; then
-    AC_DEFINE(HAVE_TIMEZONE_WIN, 1, [Define if _timezone is available])
-    fi
 
 
 # Test whether SO_RCVTIMEO is broken. (On Solaris SO_RCVTIMEO is defined but not implemented)

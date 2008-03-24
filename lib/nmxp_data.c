@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_data.c,v 1.57 2008-03-24 19:51:35 mtheo Exp $
+ * $Id: nmxp_data.c,v 1.58 2008-03-24 20:18:23 mtheo Exp $
  *
  */
 
@@ -57,7 +57,7 @@ time_t my_timegm (struct tm *tm) {
     tzset();
 #endif
 
-#ifdef HAVE_TIMEZONE_WIN
+#ifdef HAVE_UNDERSCORE_TIMEZONE
     ret -= _timezone;
 #endif
 
