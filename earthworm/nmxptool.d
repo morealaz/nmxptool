@@ -20,7 +20,7 @@ Verbosity            16                  # Set level of verbosity. Verbosity is 
                                          # 256 Gap, 512 DOD, 1023 All messages.
                                          # It is equivalent to the option -v.
 
-NmxpHost             naqs1a.int.ingv.it  # Host address of NaqsServer/DataServer
+NmxpHost             naqs1a.int.ingv.it  # NaqsServer/DataServer hostname or IP address.
                                          # It is equivalent to the option -H.
 
 NmxpPortPDS          28000               # Port number of NaqsServer (Default 28000)
@@ -37,7 +37,7 @@ MaxTolerableLatency  120                 # Max tolerable latency for each channe
                                          # In general, DO NOT use with parameter TimeoutRecv.
                                          # It is equivalent to the option -M.
 
-#TimeoutRecv          30                 # Time-out in seconds for flushing queued data for each channel.
+#TimeoutRecv          30                 # Time-out in seconds for flushing queued data of each channel.
                                          # (Default 0. No time-out) [10..300].
                                          # Useful for retrieving Data On Demand with minimum delay.
                                          # 'tsec' in nmxptool.desc should be greater than 'TimeoutRecv'.
@@ -51,6 +51,7 @@ DefaultNetworkCode   IV                  # Default network code where in 'Channe
                                          # NET  is optional and used only for output.
                                          # STA  can be '*', stands for all stations.
                                          # CHAN can contain '?', stands for any character.
+                                         # Localtion value is always equal to "--".
                                          # Related to the parameters 'ChannelFile' and 'Channel'.
                                          # Network code will be assigned from the first
                                          # pattern that includes station and channel.
@@ -65,15 +66,15 @@ DefaultNetworkCode   IV                  # Default network code where in 'Channe
                                          # It is equivalent to the option -A. Related to 'ChannelFile'.
                                          # If 'MaxDataToRetrieve' is zero and 'ChannelFile' is used,
                                          # only data buffered by NaqsServer will be retrieved.
-                                         # It is preferable, inside the section Datastream of
-                                         # the file Naqs.ini, setting DataBufferLength to a high
-                                         # value, than using 'MaxDataToRetrieve'.
-                                         # It allows to retrieve much more data of the past when
-                                         # the program restarts but it slows down the execution.
+                                         # Rather than using 'MaxDataToRetrieve', it is preferable,
+                                         # inside the section Datastream of the file Naqs.ini,
+                                         # setting DataBufferLength to a high value.
+                                         # 'MaxDataToRetrieve' allows to retrieve much more data of the past
+                                         # when the program restarts but it considerably slows down the execution.
                                          # It is extremely harmful when you have many channels.
 
 
-ChannelFile   /home/ew/naqs1a.list.txt   # List of channel patterns like 'Channel'. One for each line.
+ChannelFile   /home/ew/naqs1a.list.txt   # List of channel patterns, as in 'Channel'. One for each line.
                                          # This file will not be modified by nmxptool.
                                          # Load/Save time of last sample of each channel in a file
                                          # with the same name, same directory, appending suffix ".nmxpstate"
@@ -81,17 +82,18 @@ ChannelFile   /home/ew/naqs1a.list.txt   # List of channel patterns like 'Channe
                                          # Related to 'MaxDataToRetrieve', it enables request of recent packets.
                                          # It is equivalent to the option -F. Related to 'MaxDataToRetrieve'.
 
-#mschan        250/9                     # mSECs/nC
-                                         # mSECs are the milliseconds to wait before next request,
+#mschan        280/9                     # mSECs/nC
+                                         # mSECs are milliseconds to wait before the next request,
                                          # nC is the number of channels to request at a time.
-                                         # This kind of request management makes data buffering
-                                         # on NaqsServer side more efficient. (Default 280/9).
-                                         # Condition: Total number channels * (mSECs/nC) < 15 sec. 
+                                         # Delaying and requesting few channels at a time make
+                                         # data buffering on NaqsServer side more efficient.
+                                         # Determined empiric values are default 280/9.
+                                         # Condition: TotalNumberOfChannels * (mSECs/nC) < 15 sec. 
                                          # Related to -F and -b. 0/0 for disabling.
 
     # DO NOT USE parameters 'Channel' and 'ChannelFile' together.
-    # 'ChannelFile' is preferable. At restart you can retrieve data
-    # of the past from DataServer. See 'MaxDataToRetrieve'.
+    # 'ChannelFile' is preferable. At restart you can retrieve data of the past
+    # from the NaqsServer and optionally from the DataServer, see 'MaxDataToRetrieve'.
 
 # Example of nmxptool channel definition
 # Channel              ES.BOB.HH?

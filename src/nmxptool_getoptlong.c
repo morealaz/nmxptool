@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.89 2008-03-24 14:00:52 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.90 2008-03-24 14:22:32 mtheo Exp $
  *
  */
 
@@ -179,7 +179,7 @@ Main arguments:\n\
                           Second pattern includes the first. Unless AAA, all\n\
                           stations with HH channels will have network to N2.\n\
                           Station MMM will have default network defined by -N.\n\
-  -F, --statefile=FILE    List of channel patterns as in -C. One for each line.\n\
+  -F, --statefile=FILE    List of channel patterns, as in -C. One for each line.\n\
                           Load/Save time of the last sample of each channel\n\
                           into a file with the same name, same directory,\n\
                           appending the suffix '%s'.\n\
@@ -195,11 +195,11 @@ Main arguments:\n\
                           0 to disable connection to DataServer.\n\
                           If this option is equal to zero and -F is used,\n\
                           only data buffered by NaqsServer will be retrieved.\n\
-                          It is preferable, inside the section Datastream of\n\
-                          the file Naqs.ini, setting DataBufferLength to a high\n\
-                          value, than using -A. It allows to retrieve much more\n\
+                          Rather than using -A, it is preferable, inside the section\n\
+                          Datastream of the file Naqs.ini, setting DataBufferLength \n\
+                          to a high value. -A allows to retrieve much more\n\
                           data of the past when the program restarts but it\n\
-                          slows down the execution.\n\
+                          considerably slows down the execution.\n\
                           It is extremely harmful when you have many channels.\n\
                           Related to -F.\n\
 \n",
@@ -245,9 +245,9 @@ DEFAULT_USEC / 1000, DEFAULT_N_CHANNEL, NMXP_MAX_MSCHAN_MSEC / 1000);
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
   -L, --listchannelsnaqs  List of the available Time Series channels on NaqsServer.\n\
   -M, --maxlatency=SECs   Max tolerable latency (default %d) [%d..%d].\n\
-  -T, --timeoutrecv=SECs  Time-out for flushing buffered packets.\n\
+  -T, --timeoutrecv=SECs  Time-out for flushing queued packets of each channel.\n\
                           (default %d, no time-out) [%d..%d].\n\
-                          -T is useful for retrieving Data On Demand.\n\
+                          -T is useful for retrieving Data On Demand with minimum delay.\n\
                           -M, -T are usable only with Raw Stream, -S=-1.\n\
                           In general, -M and -T are not used together.\n\
 \n\
