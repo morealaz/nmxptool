@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_data.c,v 1.58 2008-03-24 20:18:23 mtheo Exp $
+ * $Id: nmxp_data.c,v 1.59 2008-03-24 20:29:28 mtheo Exp $
  *
  */
 
@@ -35,12 +35,16 @@ UTC, call mktime() and restore the value of TZ.  Something like
 time_t my_timegm (struct tm *tm) {
     time_t ret;
 #ifndef HAVE_SETENV
+#ifndef HAVE_UNDERSCORE_TIMEZONE
+
 #warning Computation of packet latencies could be wrong if local time is not equal to UTC.
     static int first_time = 1;
     if(first_time) {
 	    first_time = 0;
 	    nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "Computation of packet latencies could be wrong if local time is not equal to UTC.\n");
     }
+
+#endif
 #else
     char *tz;
 
