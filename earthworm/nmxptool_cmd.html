@@ -102,7 +102,9 @@ N.B. Network code will be assigned from the first pattern that includes station 
 <blockquote><!-- command description goes here --> Specifies one or more streams
 of data to be requested from the NmxpHost.
 The <font color="red">streamkey</font> is the same for the <a href="#Channel">Channel</a>.
-Allow data continuity between program restarts, within time defined by <a href="#MaxDataToRetrieve">MaxDataToRetrieve</a> and data buffered by the DataServer and NaqsServer.
+Allow data continuity when short disconnections to NaqsServer occur
+requesting data buffered by NaqsServer (read <a href="#advanced_description">Advanced Description</a> for setting DataBufferLength) and, optionally,
+retrieving data from DataServer within seconds defined by <a href="#MaxDataToRetrieve">MaxDataToRetrieve</a>.
 This file is created by the user, nmxptool will update date and time of last sample received for each channel into the file &quot;<font color="red">channel_state_file</font>.nmxpstate&quot;. DO NOT USE WITH <a href="#Channel">Channel</a>!
   <pre>
 Default:  none
@@ -404,7 +406,7 @@ ChannelFile   /home/ew/naqs1a.list.txt   # List of channel patterns, as in 'Chan
                                          # This file will not be modified by nmxptool.
                                          # Load/Save time of last sample of each channel in a file
                                          # with the same name, same directory, appending suffix ".nmxpstate"
-                                         # Allow data continuity between program restarts.
+			                 # Allow data continuity when short disconnections occur.
                                          # Related to 'MaxDataToRetrieve', it enables request of recent packets.
                                          # It is equivalent to the option -F. Related to 'MaxDataToRetrieve'.
 
