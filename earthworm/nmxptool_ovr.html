@@ -28,18 +28,28 @@ nmxptool overview</h1>
 <p>
 Why a new software client for Nanometrics Server?<br>
 When we connect to a NaqsServer by a Short-term data stream connection we get a gap for each retransmitted packet. Unfortunately, previous available software were not able to reorder retransmitted packets.
-nmxptool is capable to manage a buffer of packets and order them chronologically when is needed, that is when a retransmission occurs. The management of this buffer reduce number of gaps in spite of the increment of latency. However, some tests showed that almost all packets are retrivied maximum within 60 seconds.<br>
-<br>
+nmxptool is capable to manage a buffer of packets and order them chronologically when is needed, that is when a retransmission occurs. The management of this buffer reduce number of gaps in spite of the increment of latency. However, some tests showed that almost all packets are retrivied maximum within 60 seconds.
+</p>
+
+<p>
 Main parameter to set for Raw Stream is the max tolerable latency you can accept, a sort of short-term-completion but managed by the client and not by the server.<br>
 </p>
 
 <p>
-The maxium size of the TRACEBUF messages created by nmxptool is
+Moreover, nmxptool is capable of:
+<ul>
+    <li>allowing data continuity when disconnections to NaqsServer occur
+    <li>retrieving &quot;Data On Demand&quot; with minimum delay
+</ul>
+</p>
+
+<p>
+The maximum size of the TRACEBUF messages created by nmxptool is
 limited to the maximum number of samples
 that can fit into a Nanometrics compressed packet
-(17 * N, where N is any odd integer from 1 to 59, that is 17 * 59 = 1003 bytes), 
+(17 * N, where N is any odd integer from 1 to 59, that is 17 * 59 = 1003 samples = 4012 bytes), 
 <!-- (272 samples = 1088 bytes) -->
-plus the size of the TRACEBUF header (64 bytes).  So 1067 bytes
+plus the size of the TRACEBUF header (64 bytes).  So 4076 bytes
 is a good estimate of the maximum size of TRACEBUF messages created by
 nmxptool.</p>
 
@@ -55,7 +65,7 @@ TRACEBUF2.
 
 <p>
 nmxptool is open-source and actively supported by the
-<a href="http://www.ingv.it/">Istituto Nazionale di Geofisica e Vulcanologia</a>.
+<a href="http://www.ingv.it/">Istituto Nazionale di Geofisica e Vulcanologia</a>. (Author: <i>Matteo Quintiliani</i>)
 <br>
 <p> <a href="../modules.html">Module Index</a> | <a
  href="../cmd/nmxptool_cmd.html">nmxptool Commands</a>
