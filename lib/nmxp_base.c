@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_base.c,v 1.65 2008-03-26 09:22:54 mtheo Exp $
+ * $Id: nmxp_base.c,v 1.66 2008-03-26 15:48:38 mtheo Exp $
  *
  */
 
@@ -227,6 +227,9 @@ int nmxp_recv_ctrl(int isock, void *buffer, int length, int timeoutsec, int *rec
   *recv_errno  = 0;
   recvCount = 0;
   while(cc > 0 && *recv_errno == 0  && recvCount < length) {
+
+      /* TODO some operating system could not reset errno */
+      /* errno = 0 */
 
 #ifdef HAVE_BROKEN_SO_RCVTIMEO
       if(timeoutsec == 0) {

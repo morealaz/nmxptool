@@ -158,7 +158,10 @@ int nmxptool_ew_pd2ewring (NMXP_DATA_PROCESS *pd, SHM_INFO *pregionOut, MSG_LOGO
 
     /* TODO : all of the samples
        should always fit into a single TracePacket if MAX_TRACEBUF_SIZ
-       remains defined in Trace_buf.h as 4096 or greater */
+       remains defined in Trace_buf.h as 4096 or greater
+       17 * 59 = 1003 samples = 4012 bytes
+       4012 + 64 = 4076 < 4096
+     */
 
     samples = (int32_t *) ((char *)&tbuf + sizeof(TRACE_HEADER));
     for(i=0; i < pd->nSamp; i++) {
