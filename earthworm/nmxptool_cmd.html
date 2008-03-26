@@ -8,7 +8,7 @@
 <center>
 <h1>Earthworm Modules: <br>
 nmxptool configuration file </h1>
-<i>(last revised 24 March, 2008)</i></center>
+<i>(last revised 26 March, 2008)</i></center>
 Page Index:<br>
 1. <a href="#function">Functional command listing</a><br>
 2. <a href="#alphabet">Alphabetic command listing &amp; description</a><br>
@@ -188,7 +188,7 @@ stdout and stderr is suppressed.
     If this parameter is zero and <a href="#ChannelFile">ChannelFile</a> is used, only data buffered by NaqsServer will be retrieved.
     Rather than using <a href="#MaxDataToRetrieve">MaxDataToRetrieve</a>,
     it is preferable, inside the section Datastream of
-    the file Naqs.ini, setting DataBufferLength to a high value.
+    the file <i>Naqs.ini</i>, setting DataBufferLength to a high value (read <a href="#advanced_description">Advanced Description</a>).
     <a href="#MaxDataToRetrieve">MaxDataToRetrieve</a> allows to retrieve
     much more data of the past when the program restarts but
     it considerably slows down the execution.
@@ -199,7 +199,9 @@ stdout and stderr is suppressed.
 
 <hr><!-- command name as anchor inside quotes -->
 <pre><a name="MaxTolerableLatency"><b>MaxTolerableLatency <font color="red">seconds</font>                                  ReadConfig              nmxptool parameters<br></b><!-- command args ... -->           <br></a></pre>
-<blockquote><!-- command description goes here --> Specifies the max tolerable latency for raw stream connection. Range is [60..600].
+<blockquote><!-- command description goes here --> Specifies the max tolerable latency for raw stream connection. For enabling NaqsServer to send out retransmission requests for missed packets set RetxRequest (read <a href="#advanced_description">Advanced Description</a>).
+If RetxRequest is not enabled then <a href="#MaxTolerableLatency">MaxTolerableLatency</a> is ineffective.\n\
+    Range is [60..600].
   <pre><!-- Default and example go here   --><br>Default:  600<br>Example:  MaxTolerableLatency  200</pre>
 </blockquote>
 
@@ -284,7 +286,33 @@ memory region.
 <hr>
 <h2><a name="advanced_description"></a>3. Advanced Description</h2>
 <p>
-Not yet.
+<h3>Data continuity when short disconnections to NaqsServer occur</h3>
+Inside the section Datastream of the file <i>Naqs.ini</i> set <u>DataBufferLength</u> to a high value.
+
+<pre>
+    [ Datastream ] 
+    Port = 28000              // TCP port for control/data connections to Naqs 
+    Password = none           // access password (not used in version 1.3) 
+    MaxConnections = 10       // maximum number of simultaneous connections 
+    SocketType = Direct       // connection type (Direct or Callback) 
+    <font color="blue">DataBufferLength = 100</font>    // Buffer length for data channels (# packets)
+</pre>
+
+</p>
+
+<p>
+<h3>Packet retransmission</h3>
+Inside the section NetworkInterface of the file <i>Naqs.ini</i> enable <u>RetxRequest</u>.
+If RetxRequest is not enabled then <a href="#MaxTolerableLatency">MaxTolerableLatency</a> is ineffective.\n\
+
+<pre>
+    [ NetworkInterface ] 
+    Port = 32000           // UDP port for incoming NMX data (usually 32000) 
+    SendDelay = 250        // milliseconds to delay after each send 
+    <font color="blue">RetxRequest = Enabled</font>
+    MulticastGroup = 224.1.1.1 
+</pre>
+
 </p>
 
 <h2><a name="sample_config"></a>4. Sample Configuration File </h2>
@@ -326,7 +354,12 @@ NmxpPortDAP          28002               # Port number of DataServer(Default 280
 #PassDAP              mypass             # DataServer password. Commented if 'none'.
                                          # It is equivalent to the option -p.
 
-MaxTolerableLatency  120                 # Max tolerable latency for each channel. (Default 600 sec.)
+MaxTolerableLatency  120                 # Max tolerable latency for each channel.
+                                         # (Default 600 sec.) [60..600].
+                                         # Enable NaqsServer to send out retransmission requests
+                                         # for missed packets. Inside the section NetworkInterface
+                                         # of the file Naqs.ini set RetxRequest to Enabled.
+                                         # If RetxRequest is not enabled then MaxTolerableLatency is ineffective.
                                          # In general, DO NOT use with parameter TimeoutRecv.
                                          # It is equivalent to the option -M.
 
