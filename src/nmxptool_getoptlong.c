@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.91 2008-03-26 08:22:41 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.92 2008-03-26 08:40:48 mtheo Exp $
  *
  */
 
@@ -200,7 +200,9 @@ Main arguments:\n\
                           to a high value. -A allows to retrieve much more\n\
                           data of the past when the program restarts but it\n\
                           considerably slows down the execution.\n\
-                          It is extremely harmful when you have many channels.\n\
+                          It is extremely harmful when you have many channels,\n\
+                          in this case you might consider to subdivide the\n\
+                          channels into different nmxptool instances.\n\
                           Related to -F.\n\
 \n",
 	    DEFAULT_MAX_TIME_TO_RETRIEVE,

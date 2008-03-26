@@ -76,7 +76,9 @@ DefaultNetworkCode   IV                  # Default network code where in 'Channe
                                          # setting DataBufferLength to a high value.
                                          # 'MaxDataToRetrieve' allows to retrieve much more data of the past
                                          # when the program restarts but it considerably slows down the execution.
-                                         # It is extremely harmful when you have many channels.
+                                         # It is extremely harmful when you have many channels,
+                                         # in this case you might consider to subdivide the
+                                         # channels into different nmxptool instances.
 
 
 ChannelFile   /home/ew/naqs1a.list.txt   # List of channel patterns, as in 'Channel'. One for each line.
