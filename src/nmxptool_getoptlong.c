@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.90 2008-03-24 14:22:32 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.91 2008-03-26 08:22:41 mtheo Exp $
  *
  */
 
@@ -245,6 +245,10 @@ DEFAULT_USEC / 1000, DEFAULT_N_CHANNEL, NMXP_MAX_MSCHAN_MSEC / 1000);
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
   -L, --listchannelsnaqs  List of the available Time Series channels on NaqsServer.\n\
   -M, --maxlatency=SECs   Max tolerable latency (default %d) [%d..%d].\n\
+                          Enable NaqsServer to send out retransmission requests\n\
+                          for missed packets. Inside the section NetworkInterface\n\
+                          of the file Naqs.ini set RetxRequest to Enabled.\n\
+                          If RetxRequest is not enabled then -M is ineffective.\n\
   -T, --timeoutrecv=SECs  Time-out for flushing queued packets of each channel.\n\
                           (default %d, no time-out) [%d..%d].\n\
                           -T is useful for retrieving Data On Demand with minimum delay.\n\

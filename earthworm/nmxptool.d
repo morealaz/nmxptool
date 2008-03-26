@@ -33,7 +33,12 @@ NmxpPortDAP          28002               # Port number of DataServer(Default 280
 #PassDAP              mypass             # DataServer password. Commented if 'none'.
                                          # It is equivalent to the option -p.
 
-MaxTolerableLatency  120                 # Max tolerable latency for each channel. (Default 600 sec.)
+MaxTolerableLatency  120                 # Max tolerable latency for each channel.
+                                         # (Default 600 sec.) [60..600].
+                                         # Enable NaqsServer to send out retransmission requests
+                                         # for missed packets. Inside the section NetworkInterface
+                                         # of the file Naqs.ini set RetxRequest to Enabled.
+                                         # If RetxRequest is not enabled then MaxTolerableLatency is ineffective.
                                          # In general, DO NOT use with parameter TimeoutRecv.
                                          # It is equivalent to the option -M.
 
