@@ -7,7 +7,7 @@
 <h1 align="center">Earthworm Modules: <br>
 nmxptool overview</h1>
 <center>
-<p><i>(last revised 03 March, 2008)</i> </p>
+<p><i>(last revised 26 March, 2008)</i> </p>
 </center>
 	<p>
 	The Nanometrics servers <i>NaqsServer</i> and <i>DataServer</i> can provide on-line access to seismic data and state-of-health information accepting TCP/IP connections and forwarding the requested data to each client program. <i>NaqsServer</i> collates and stores in near-real-time incoming data in ringbuffers whereas <i>DataServer</i> provides data of the past stored in <i>NaqsServer</i> ringbuffers. In order to implement the Nanometrics subscription protocols, the author developed a software consisting of a library called libnmxp and a tool called nmxptool. The library exposes a set of documented APIs which allow to communicate with the Nanometrics servers. The tool, based on libnmxp, allows to retrieve or monitor real-time data and data of the past.
@@ -36,8 +36,10 @@ Main parameter to set for Raw Stream is the max tolerable latency you can accept
 <p>
 The maxium size of the TRACEBUF messages created by nmxptool is
 limited to the maximum number of samples
-that can fit into a Nanometrics compressed packet (272 samples = 1088
-bytes) plus the size of the TRACEBUF header (64 bytes).  So 1152 bytes
+that can fit into a Nanometrics compressed packet
+(17 * N, where N is any odd integer from 1 to 59, that is 17 * 59 = 1003 bytes), 
+<!-- (272 samples = 1088 bytes) -->
+plus the size of the TRACEBUF header (64 bytes).  So 1067 bytes
 is a good estimate of the maximum size of TRACEBUF messages created by
 nmxptool.</p>
 
