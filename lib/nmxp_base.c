@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_base.c,v 1.64 2008-03-09 20:23:54 mtheo Exp $
+ * $Id: nmxp_base.c,v 1.65 2008-03-26 09:22:54 mtheo Exp $
  *
  */
 
@@ -616,7 +616,7 @@ NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data
 	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN, "nmx_instr_id       = %d\n", nmx_instr_id);
 	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN, "nmx_seqno          = %d\n", nmx_seqno);
 	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN, "nmx_sample_rate    = %d\n", nmx_sample_rate);
-	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN, "this_sample_rate    = %d\n", this_sample_rate);
+	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN, "this_sample_rate   = %d\n", this_sample_rate);
 
 	pKey = (nmx_instr_id << 16) | ( 1 << 8) | ( chan_code);
 
@@ -640,6 +640,8 @@ NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data
 
 	comp_bytecount = length_data-21;
 	indata = (unsigned char *) buffer_data + 21;
+
+	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN, "comp_bytecount     = %d  (N = %.2f)\n", comp_bytecount, (double) comp_bytecount / 17.0);
 
 	/* Unpack the data bundles, each 17 bytes long. */
 	prev_xn = nmx_x0;
