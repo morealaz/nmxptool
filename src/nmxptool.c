@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.154 2008-03-20 06:54:55 mtheo Exp $
+ * $Id: nmxptool.c,v 1.155 2008-03-27 12:02:37 mtheo Exp $
  *
  */
 
@@ -118,12 +118,12 @@ int main (int argc, char **argv) {
     int span_interval = 10;
     int time_to_sleep = 0;
 
-    char str_start_time[200];
-    char str_end_time[200];
-    char str_pd_time[200];
+    char str_start_time[200] = "";
+    char str_end_time[200] = "";
+    char str_pd_time[200] = "";
 
     NMXP_MSG_SERVER type;
-    void *buffer;
+    void *buffer = NULL;
     int32_t length;
     int ret;
 
@@ -132,8 +132,8 @@ int main (int argc, char **argv) {
 
     int recv_errno = 0;
 
-    char filename[500];
-    char station_code[20], channel_code[20], network_code[20];
+    char filename[500] = "";
+    char station_code[20] = "", channel_code[20] = "", network_code[20] = "";
 
     char cur_after_start_time_str[1024];
     double cur_after_start_time = DEFAULT_BUFFERED_TIME;
@@ -143,7 +143,7 @@ int main (int argc, char **argv) {
     double default_start_time = 0.0;
     char start_time_str[30], end_time_str[30], default_start_time_str[30];
 
-    NMXP_DATA_PROCESS *pd;
+    NMXP_DATA_PROCESS *pd = NULL;
 
 #ifndef HAVE_WINDOWS_H
     /* Signal handling, use POSIX calls with standardized semantics */
