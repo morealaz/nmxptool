@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp.c,v 1.78 2008-03-20 12:42:59 mtheo Exp $
+ * $Id: nmxp.c,v 1.79 2008-03-27 12:03:11 mtheo Exp $
  *
  */
 
@@ -705,6 +705,12 @@ void nmxp_raw_stream_free(NMXP_RAW_STREAM_DATA *raw_stream_buffer) {
     if(raw_stream_buffer->pdlist) {
 	for(j=0; j<raw_stream_buffer->max_pdlist_items; j++) {
 	    if(raw_stream_buffer->pdlist[j]) {
+		if(raw_stream_buffer->pdlist[j]->buffer) {
+		    free(raw_stream_buffer->pdlist[j]->buffer);
+		}
+		if(raw_stream_buffer->pdlist[j]->pDataPtr) {
+		    free(raw_stream_buffer->pdlist[j]->pDataPtr);
+		}
 		free(raw_stream_buffer->pdlist[j]);
 	    }
 	}
@@ -932,7 +938,7 @@ int nmxp_raw_stream_manage(NMXP_RAW_STREAM_DATA *p, NMXP_DATA_PROCESS *a_pd, int
 		(*p_func_pd[i_func_pd])(p->pdlist[j]);
 	    }
 	    if(time_diff > TIME_TOLLERANCE || time_diff < -TIME_TOLLERANCE) {
-		nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_RAWSTREAM,
+		nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY,
 			"%s.%s.%s [%d, %d] (%s + %.2f sec.) * Time is not correct * last_seq_no_sent=%d  seq_no_diff=%d  time_diff=%.2fs  lat. %.1fs\n",
 		    NMXP_LOG_STR(p->pdlist[j]->network), NMXP_LOG_STR(p->pdlist[j]->station), NMXP_LOG_STR(p->pdlist[j]->channel), 
 		    p->pdlist[j]->packet_type, p->pdlist[j]->seq_no,
