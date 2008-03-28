@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.156 2008-03-28 11:44:46 mtheo Exp $
+ * $Id: nmxptool.c,v 1.157 2008-03-28 13:21:24 mtheo Exp $
  *
  */
 
@@ -220,6 +220,8 @@ int main (int argc, char **argv) {
 
     nmxptool_log_params(&params);
 
+    nmxp_mem_print_ptr();
+
 #ifdef HAVE_LIBMSEED
     if(params.flag_writeseed) {
 	ms_loginit((void*)&nmxptool_log_miniseed, NULL, (void*)&nmxptool_logerr_miniseed, "error: ");
@@ -250,7 +252,7 @@ int main (int argc, char **argv) {
     
     /* Free the complete channel list */
     if(channelList) {
-	free(channelList);
+	NMXP_MEM_FREE(channelList);
 	channelList = NULL;
     }
 
@@ -264,7 +266,7 @@ int main (int argc, char **argv) {
 	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CHANNEL, "Init channelList_Seq.\n");
 
 	/* init channelList_Seq */
-	channelList_Seq = (NMXPTOOL_CHAN_SEQ *) malloc(sizeof(NMXPTOOL_CHAN_SEQ) * channelList_subset->number);
+	channelList_Seq = (NMXPTOOL_CHAN_SEQ *) NMXP_MEM_MALLOC(sizeof(NMXPTOOL_CHAN_SEQ) * channelList_subset->number);
 	for(i_chan = 0; i_chan < channelList_subset->number; i_chan++) {
 	    channelList_Seq[i_chan].significant = 0;
 	    channelList_Seq[i_chan].last_time = 0.0;
@@ -624,7 +626,7 @@ int main (int argc, char **argv) {
 
 			/* Free pd->buffer */
 			if(pd->buffer) {
-			    free(pd->buffer);
+			    NMXP_MEM_FREE(pd->buffer);
 			    pd->buffer = NULL;
 			}
 
@@ -731,13 +733,13 @@ int main (int argc, char **argv) {
 
 	/* Free the complete channel list */
 	if(channelList) {
-	    free(channelList);
+	    NMXP_MEM_FREE(channelList);
 	    channelList = NULL;
 	}
 
 	/* TODO check if channelList_subset_waste is equal to channelList_subset and free */
 	if(channelList_subset_waste) {
-	    free(channelList_subset_waste);
+	    NMXP_MEM_FREE(channelList_subset_waste);
 	    channelList_subset_waste = NULL;
 	}
 	
@@ -931,7 +933,7 @@ int main (int argc, char **argv) {
 		}
 		/* Free pd->buffer */
 		if(pd->buffer) {
-		    free(pd->buffer);
+		    NMXP_MEM_FREE(pd->buffer);
 		    pd->buffer = NULL;
 		}
 	    }
@@ -1013,23 +1015,27 @@ int main (int argc, char **argv) {
 	}
 #endif
 
+    nmxp_mem_print_ptr();
+
     if(channelList_Seq  &&  channelList_subset) {
 
 	for(i_chan = 0; i_chan < channelList_subset->number; i_chan++) {
 	    nmxp_raw_stream_free(&(channelList_Seq[i_chan].raw_stream_buffer));
 	}
 
-	free(channelList_Seq);
+	NMXP_MEM_FREE(channelList_Seq);
 	channelList_Seq = NULL;
     }
 
     /* This has to be tha last */
     if(channelList_subset) {
-	free(channelList_subset);
+	NMXP_MEM_FREE(channelList_subset);
 	channelList_subset = NULL;
     }
 
     nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CONNFLOW, "return code %d\n", sigcondition);
+
+    nmxp_mem_print_ptr();
 
     return sigcondition;
 } /* End MAIN */
@@ -1233,6 +1239,8 @@ static void clientShutdown(int sig) {
 
     nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "%s interrupted by signal %d!\n", NMXP_LOG_STR(PACKAGE_NAME), sig);
 
+    nmxp_mem_print_ptr();
+
     times_flow = TIMES_FLOW_EXIT;
     sigcondition = sig;
 
@@ -1299,6 +1307,8 @@ Channel      Ind S      x-1       LastTime            LastTimeCallRaw        Aft
     } else {
 	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY, "Channel list is NULL!\n");
     }
+
+    nmxp_mem_print_ptr();
 }
 
 #endif /* HAVE_WINDOWS_H */

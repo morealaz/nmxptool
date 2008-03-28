@@ -7,12 +7,13 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_base.c,v 1.66 2008-03-26 15:48:38 mtheo Exp $
+ * $Id: nmxp_base.c,v 1.67 2008-03-28 13:21:24 mtheo Exp $
  *
  */
 
 #include "config.h"
 #include "nmxp_base.h"
+#include "nmxp_memory.h"
 #ifdef HAVE_WINDOWS_H
 #include "nmxp_win.h"
 #endif
@@ -402,7 +403,7 @@ int nmxp_receiveMessage(int isock, NMXP_MSG_SERVER *type, void **buffer, int32_t
 
     if( ret == NMXP_SOCKET_OK  ) {
 	if (*length > 0) {
-	    *buffer = malloc(*length);
+	    *buffer = NMXP_MEM_MALLOC(*length);
 	    ret = nmxp_recv_ctrl(isock, *buffer, *length, 0, recv_errno);
 
 	    if(*type == NMXP_MSG_TERMINATESUBSCRIPTION) {

@@ -7,12 +7,13 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_data.c,v 1.59 2008-03-24 20:29:28 mtheo Exp $
+ * $Id: nmxp_data.c,v 1.60 2008-03-28 13:21:24 mtheo Exp $
  *
  */
 
 #include "nmxp_data.h"
 #include "nmxp_log.h"
+#include "nmxp_memory.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -698,7 +699,7 @@ int nmxp_data_msr_pack(NMXP_DATA_PROCESS *pd, NMXP_DATA_SEED *data_seed, void *p
 	msr->sampletype = 'i';      /* declare type to be 32-bit integers */
 
 	msr->numsamples = pd->nSamp;
-	msr->datasamples = malloc (sizeof(int) * (msr->numsamples)); 
+	msr->datasamples = NMXP_MEM_MALLOC (sizeof(int) * (msr->numsamples)); 
 	memcpy(msr->datasamples, pd->pDataPtr, sizeof(int) * pd->nSamp); /* pointer to 32-bit integer data samples */
 
 	msr_srcname (msr, data_seed->srcname, 0);

@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.92 2008-03-26 08:40:48 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.93 2008-03-28 13:21:24 mtheo Exp $
  *
  */
 
@@ -371,7 +371,7 @@ char *get_channel_list_argument_from_state_file(const char *filename) {
 
     /* Read only channel names from state file */
     if(fstatefile) {
-	ret_channel_string = (char *) malloc (MAXSIZECHANNELSTRINGARGUMENT);
+	ret_channel_string = (char *) NMXP_MEM_MALLOC(MAXSIZECHANNELSTRINGARGUMENT);
 	ret_channel_string[0] = 0;
 	while(fgets(line, MAXSIZE_LINE_CHAN_STATE, fstatefile) != NULL) {
 	    k = 0;

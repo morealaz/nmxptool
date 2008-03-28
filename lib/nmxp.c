@@ -7,11 +7,12 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp.c,v 1.80 2008-03-28 07:32:31 mtheo Exp $
+ * $Id: nmxp.c,v 1.81 2008-03-28 13:21:24 mtheo Exp $
  *
  */
 
 #include "nmxp.h"
+#include "nmxp_memory.h"
 
 #include "config.h"
 
@@ -79,7 +80,7 @@ int nmxp_receiveChannelList(int isock, NMXP_CHAN_LIST **pchannelList) {
 int nmxp_sendAddTimeSeriesChannel_raw(int isock, NMXP_CHAN_LIST_NET *channelList, int32_t shortTermCompletion, int32_t out_format, NMXP_BUFFER_FLAG buffer_flag) {
     int ret;
     int32_t buffer_length = 16 + (4 * channelList->number); 
-    char *buffer = malloc(buffer_length);
+    char *buffer = NMXP_MEM_MALLOC(buffer_length);
     int32_t app, i, disp;
 
     disp=0;
@@ -109,7 +110,7 @@ int nmxp_sendAddTimeSeriesChannel_raw(int isock, NMXP_CHAN_LIST_NET *channelList
     ret = nmxp_sendMessage(isock, NMXP_MSG_ADDTIMESERIESCHANNELS, buffer, buffer_length);
 
     if(buffer) {
-	free(buffer);
+	NMXP_MEM_FREE(buffer);
 	buffer = NULL;
     }
     return ret;
@@ -372,7 +373,7 @@ int nmxp_waitReady(int isock) {
 	    if(length > 0) {
 		if(type == NMXP_MSG_TERMINATESUBSCRIPTION) {
 		    char *str_msg = NULL;
-		    char *buf_app = (char *) malloc(sizeof(char) * length);
+		    char *buf_app = (char *) NMXP_MEM_MALLOC(sizeof(char) * length);
 		    int32_t reason;
 		    memcpy(&reason, buf_app, sizeof(reason));
 		    reason = ntohl(reason);
@@ -383,7 +384,7 @@ int nmxp_waitReady(int isock) {
 			    (reason == 0)? "Normal" : (reason == 1)? "Error" : (reason == 2)? "Timeout" : "Unknown",
 			    str_msg);
 		    if(buf_app) {
-			free(buf_app);
+			NMXP_MEM_FREE(buf_app);
 			buf_app = NULL;
 		    }
 		    /* Close the socket*/
@@ -396,10 +397,10 @@ int nmxp_waitReady(int isock) {
 		    app = ntohl(app);
 		    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CONNFLOW, "value = %d\n", app);
 		} else {
-		    char *buf_app = (char *) malloc(sizeof(char) * length);
+		    char *buf_app = (char *) NMXP_MEM_MALLOC(sizeof(char) * length);
 		    rc = nmxp_recv_ctrl(isock, buf_app, length, 0, &recv_errno);
 		    if(buf_app) {
-			free(buf_app);
+			NMXP_MEM_FREE(buf_app);
 			buf_app = NULL;
 		    }
 		}
@@ -495,7 +496,7 @@ NMXP_CHAN_LIST *nmxp_getAvailableChannelList(char * hostname, int portnum, NMXP_
     }
 
     if(channelList) {
-	free(channelList);
+	NMXP_MEM_FREE(channelList);
 	channelList = NULL;
     }
 
@@ -696,7 +697,7 @@ void nmxp_raw_stream_init(NMXP_RAW_STREAM_DATA *raw_stream_buffer, int32_t max_t
     raw_stream_buffer->max_pdlist_items = max_tolerable_latency * 4;
     raw_stream_buffer->timeoutrecv = timeoutrecv;
     raw_stream_buffer->n_pdlist = 0;
-    raw_stream_buffer->pdlist = (NMXP_DATA_PROCESS **) malloc (raw_stream_buffer->max_pdlist_items * sizeof(NMXP_DATA_PROCESS *));
+    raw_stream_buffer->pdlist = (NMXP_DATA_PROCESS **) NMXP_MEM_MALLOC(raw_stream_buffer->max_pdlist_items * sizeof(NMXP_DATA_PROCESS *));
     for(j=0; j<raw_stream_buffer->max_pdlist_items; j++) {
 	raw_stream_buffer->pdlist[j] = NULL;
     }
@@ -711,18 +712,18 @@ void nmxp_raw_stream_free(NMXP_RAW_STREAM_DATA *raw_stream_buffer) {
 	    for(j=0; j<raw_stream_buffer->max_pdlist_items; j++) {
 		if(raw_stream_buffer->pdlist[j]) {
 		    if(raw_stream_buffer->pdlist[j]->buffer) {
-			free(raw_stream_buffer->pdlist[j]->buffer);
+			NMXP_MEM_FREE(raw_stream_buffer->pdlist[j]->buffer);
 			raw_stream_buffer->pdlist[j]->buffer = NULL;
 		    }
 		    if(raw_stream_buffer->pdlist[j]->pDataPtr) {
-			free(raw_stream_buffer->pdlist[j]->pDataPtr);
+			NMXP_MEM_FREE(raw_stream_buffer->pdlist[j]->pDataPtr);
 			raw_stream_buffer->pdlist[j]->pDataPtr = NULL;
 		    }
-		    free(raw_stream_buffer->pdlist[j]);
+		    NMXP_MEM_FREE(raw_stream_buffer->pdlist[j]);
 		    raw_stream_buffer->pdlist[j] = NULL;
 		}
 	    }
-	    free(raw_stream_buffer->pdlist);
+	    NMXP_MEM_FREE(raw_stream_buffer->pdlist);
 	    raw_stream_buffer->pdlist = NULL;
 	}
     }
@@ -752,16 +753,16 @@ int nmxp_raw_stream_manage(NMXP_RAW_STREAM_DATA *p, NMXP_DATA_PROCESS *a_pd, int
 	*/
 
 	/* Allocate memory for pd and copy a_pd */
-	pd = (NMXP_DATA_PROCESS *) malloc (sizeof(NMXP_DATA_PROCESS));
+	pd = (NMXP_DATA_PROCESS *) NMXP_MEM_MALLOC(sizeof(NMXP_DATA_PROCESS));
 	memcpy(pd, a_pd, sizeof(NMXP_DATA_PROCESS));
 	if(a_pd->length > 0) {
-	    pd->buffer = malloc(pd->length);
+	    pd->buffer = NMXP_MEM_MALLOC(pd->length);
 	    memcpy(pd->buffer, a_pd->buffer, a_pd->length);
 	} else {
 	    pd->buffer = NULL;
 	}
 	if(a_pd->nSamp *  sizeof(int) > 0) {
-	    pd->pDataPtr = (int *) malloc(a_pd->nSamp * sizeof(int));
+	    pd->pDataPtr = (int *) NMXP_MEM_MALLOC(a_pd->nSamp * sizeof(int));
 	    memcpy(pd->pDataPtr, a_pd->pDataPtr, a_pd->nSamp * sizeof(int));
 	} else {
 	    pd->pDataPtr = NULL;
@@ -830,15 +831,15 @@ int nmxp_raw_stream_manage(NMXP_RAW_STREAM_DATA *p, NMXP_DATA_PROCESS *a_pd, int
 
 	    /* Free handled packet */
 	    if(p->pdlist[0]->buffer) {
-		free(p->pdlist[0]->buffer);
+		NMXP_MEM_FREE(p->pdlist[0]->buffer);
 		p->pdlist[0]->buffer = NULL;
 	    }
 	    if(p->pdlist[0]->pDataPtr) {
-		free(p->pdlist[0]->pDataPtr);
+		NMXP_MEM_FREE(p->pdlist[0]->pDataPtr);
 		p->pdlist[0]->pDataPtr = NULL;
 	    }
 	    if(p->pdlist[0]) {
-		free(p->pdlist[0]);
+		NMXP_MEM_FREE(p->pdlist[0]);
 		p->pdlist[0] = NULL;
 	    }
 	    if(pd) {
@@ -976,15 +977,15 @@ int nmxp_raw_stream_manage(NMXP_RAW_STREAM_DATA *p, NMXP_DATA_PROCESS *a_pd, int
 	for(k=0; k < p->n_pdlist; k++) {
 	    if(k < j) {
 		if(p->pdlist[k]->buffer) {
-		    free(p->pdlist[k]->buffer);
+		    NMXP_MEM_FREE(p->pdlist[k]->buffer);
 		    p->pdlist[k]->buffer = NULL;
 		}
 		if(p->pdlist[k]->pDataPtr) {
-		    free(p->pdlist[k]->pDataPtr);
+		    NMXP_MEM_FREE(p->pdlist[k]->pDataPtr);
 		    p->pdlist[k]->pDataPtr = NULL;
 		}
 		if(p->pdlist[k]) {
-		    free(p->pdlist[k]);
+		    NMXP_MEM_FREE(p->pdlist[k]);
 		    p->pdlist[k] = NULL;
 		}
 	    }

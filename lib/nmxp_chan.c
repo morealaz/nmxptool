@@ -7,12 +7,13 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_chan.c,v 1.39 2008-03-28 07:32:31 mtheo Exp $
+ * $Id: nmxp_chan.c,v 1.40 2008-03-28 13:21:24 mtheo Exp $
  *
  */
 
 #include "nmxp_chan.h"
 #include "nmxp_base.h"
+#include "nmxp_memory.h"
 
 #include <string.h>
 #include <stdlib.h>
@@ -30,7 +31,7 @@ int nmxp_chan_cpy_sta_chan(const char *net_dot_station_dot_channel, char *statio
 	channel_code[0] = 0;
 	network_code[0] = 0;
 
-	tmp_name = strdup(net_dot_station_dot_channel);
+	tmp_name = NMXP_MEM_STRDUP(net_dot_station_dot_channel);
 	/* count '.' */
 	i=0;
 	while(i < strlen(tmp_name)  && !errors) {
@@ -66,7 +67,7 @@ int nmxp_chan_cpy_sta_chan(const char *net_dot_station_dot_channel, char *statio
 	}
 
 	if(tmp_name) {
-	    free(tmp_name);
+	    NMXP_MEM_FREE(tmp_name);
 	    tmp_name = NULL;
 	}
 
@@ -256,7 +257,7 @@ NMXP_CHAN_LIST *nmxp_chan_getType(NMXP_CHAN_LIST *channelList, NMXP_DATATYPE dat
     int chan_number = channelList->number;
     int i_chan = 0;
 
-    ret_channelList = (NMXP_CHAN_LIST *) malloc(sizeof(NMXP_CHAN_LIST));
+    ret_channelList = (NMXP_CHAN_LIST *) NMXP_MEM_MALLOC(sizeof(NMXP_CHAN_LIST));
     ret_channelList->number = 0;
 
     for (i_chan = 0; i_chan < chan_number; i_chan++)
@@ -285,7 +286,7 @@ NMXP_CHAN_LIST_NET *nmxp_chan_subset(NMXP_CHAN_LIST *channelList, NMXP_DATATYPE 
     char *nmxp_channel_name = NULL;
     char nmxp_channel_name_duplicated[50];
 
-    ret_channelList = (NMXP_CHAN_LIST_NET *) malloc(sizeof(NMXP_CHAN_LIST_NET));
+    ret_channelList = (NMXP_CHAN_LIST_NET *) NMXP_MEM_MALLOC(sizeof(NMXP_CHAN_LIST_NET));
     ret_channelList->number = 0;
 
     istalist = 0;
@@ -437,7 +438,7 @@ void nmxp_meta_chan_free(NMXP_META_CHAN_LIST **chan_list) {
     if(iter) {
 	iter_next = iter->next;
 	while(iter) {
-	    free(iter);
+	    NMXP_MEM_FREE(iter);
 	    iter = iter_next;
 	    iter_next = iter->next;
 	}
@@ -490,7 +491,7 @@ NMXP_META_CHAN_LIST *nmxp_meta_chan_add(NMXP_META_CHAN_LIST **chan_list, int32_t
 	sorttype = NMXP_META_SORT_KEY;
     }
 
-    new_item = (NMXP_META_CHAN_LIST *) malloc(sizeof(NMXP_META_CHAN_LIST));
+    new_item = (NMXP_META_CHAN_LIST *) NMXP_MEM_MALLOC(sizeof(NMXP_META_CHAN_LIST));
     new_item->key = 0;
     new_item->name[0] = 0;
     new_item->start_time = 0;

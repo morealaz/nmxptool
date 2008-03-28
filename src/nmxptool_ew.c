@@ -377,7 +377,7 @@ int nmxptool_ew_proc_configfile (char * configfile, NMXPTOOL_PARAMS *params) {
 				MAXADDRLEN);
 			return EW_FAILURE;
 		    }
-		    params->hostname = strdup(str);
+		    params->hostname = NMXP_MEM_STRDUP(str);
 		}
 	    }
 
@@ -391,13 +391,13 @@ int nmxptool_ew_proc_configfile (char * configfile, NMXPTOOL_PARAMS *params) {
 
 	    else if (k_its ("UserDAP")) {
 		if ( (str = k_str ()) ) {
-		    params->datas_username = strdup(str);
+		    params->datas_username = NMXP_MEM_STRDUP(str);
 		}
 	    }
 
 	    else if (k_its ("PassDAP")) {
 		if ( (str = k_str ()) ) {
-		    params->datas_password = strdup(str);
+		    params->datas_password = NMXP_MEM_STRDUP(str);
 		}
 	    }
 
@@ -423,7 +423,7 @@ int nmxptool_ew_proc_configfile (char * configfile, NMXPTOOL_PARAMS *params) {
 			fprintf(stderr, "DefaultNetworkCode has been replicated!\n");
 			return EW_FAILURE;
 		    } else {
-			params->network = strdup(str);
+			params->network = NMXP_MEM_STRDUP(str);
 		    }
 		}
 	    }
@@ -437,7 +437,7 @@ int nmxptool_ew_proc_configfile (char * configfile, NMXPTOOL_PARAMS *params) {
 		    }
 		    if(!params->channels) {
 #define MAXSIZECHANNELSTRING 8000
-			params->channels = (char *) malloc (MAXSIZECHANNELSTRING);
+			params->channels = (char *) NMXP_MEM_MALLOC(MAXSIZECHANNELSTRING);
 			strncpy(params->channels, str, MAXSIZECHANNELSTRING);
 		    } else {
 			strncat(params->channels, ",", MAXSIZECHANNELSTRING);
@@ -467,7 +467,7 @@ int nmxptool_ew_proc_configfile (char * configfile, NMXPTOOL_PARAMS *params) {
 	    else if (k_its ("ChannelFile")) {
 		if ( (str = k_str ()) ) {
 		    params->flag_buffered = 1;
-		    params->statefile = (char *) malloc(512 * sizeof(char));
+		    params->statefile = (char *) NMXP_MEM_MALLOC(512 * sizeof(char));
 		    strncpy(params->statefile, str, 512);
 		    if(params->channels == NULL) {
 			params->channels = get_channel_list_argument_from_state_file(params->statefile);

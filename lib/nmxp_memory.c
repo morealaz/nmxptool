@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_memory.c,v 1.1 2008-03-28 11:47:06 mtheo Exp $
+ * $Id: nmxp_memory.c,v 1.2 2008-03-28 13:21:24 mtheo Exp $
  *
  */
 
@@ -30,7 +30,7 @@ typedef struct {
     struct timeval tv;
 } NMXP_MEM_STRUCT;
 
-#define MAX_MEM_STRUCTS 4096
+#define MAX_MEM_STRUCTS (4096 * 16)
 
 static NMXP_MEM_STRUCT nms[MAX_MEM_STRUCTS];
 static int i_nms = 0;
@@ -75,9 +75,10 @@ void nmxp_mem_print_ptr() {
 	    
 	    i++;
 	}
-	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "tot %d\n", tot_size);
 	old_tot_size = tot_size;
     }
+
+    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "nmxp_mem_print_ptr() tot %d\n", tot_size);
 }
 
 static int nmxp_mem_rem_ptr(void *ptr, struct timeval *tv, int *size) {

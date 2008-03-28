@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp.h,v 1.49 2008-03-20 12:42:08 mtheo Exp $
+ * $Id: nmxp.h,v 1.50 2008-03-28 13:21:24 mtheo Exp $
  *
  */
 
@@ -988,6 +988,7 @@ Mail bug reports and suggestions to <quintiliani@ingv.it>.
 
 #include "nmxp_base.h"
 #include "nmxp_crc32.h"
+#include "nmxp_memory.h"
 
 #define NMXP_MAX_MSCHAN_MSEC		15000
 
