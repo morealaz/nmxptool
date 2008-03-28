@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.157 2008-03-28 13:21:24 mtheo Exp $
+ * $Id: nmxptool.c,v 1.158 2008-03-28 15:42:19 mtheo Exp $
  *
  */
 
@@ -1027,7 +1027,7 @@ int main (int argc, char **argv) {
 	channelList_Seq = NULL;
     }
 
-    /* This has to be tha last */
+    /* This has to be the last */
     if(channelList_subset) {
 	NMXP_MEM_FREE(channelList_subset);
 	channelList_subset = NULL;
