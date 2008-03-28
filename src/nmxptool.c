@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.155 2008-03-27 12:02:37 mtheo Exp $
+ * $Id: nmxptool.c,v 1.156 2008-03-28 11:44:46 mtheo Exp $
  *
  */
 
@@ -104,6 +104,8 @@ NMXP_DATA_SEED data_seed;
 MSRecord *msr_list_chan[MAX_N_CHAN];
 #endif
 
+int sigcondition = 0;
+int times_flow = 0;
 
 int main (int argc, char **argv) {
     int32_t connection_time;
@@ -139,7 +141,6 @@ int main (int argc, char **argv) {
     double cur_after_start_time = DEFAULT_BUFFERED_TIME;
     int skip_current_packet = 0;
 
-    int times_flow = 0;
     double default_start_time = 0.0;
     char start_time_str[30], end_time_str[30], default_start_time_str[30];
 
@@ -349,7 +350,7 @@ int main (int argc, char **argv) {
 
     times_flow = 0;
 
-    while(times_flow < 2  &&  recv_errno == 0) {
+    while(times_flow < 2  &&  recv_errno == 0 && !sigcondition) {
 
 	if(params.statefile) {
 	    load_channel_states(channelList_subset, channelList_Seq);
@@ -416,14 +417,14 @@ int main (int argc, char **argv) {
 
 	default_start_time = (params.start_time > 0.0)? params.start_time : nmxp_data_gmtime_now() - params.max_data_to_retrieve;
 
-	while(exitdapcondition) {
+	while(exitdapcondition  &&  !sigcondition) {
 
 	    /* Start loop for sending requests */
 	    request_chan=0;
 	    request_SOCKET_OK = NMXP_SOCKET_OK;
 
 	    /* For each channel */
-	    while(request_SOCKET_OK == NMXP_SOCKET_OK  &&  request_chan < channelList_subset->number  &&  exitdapcondition) {
+	    while(request_SOCKET_OK == NMXP_SOCKET_OK  &&  request_chan < channelList_subset->number  &&  exitdapcondition && !sigcondition) {
 
 		if(params.statefile) {
 		    if(channelList_Seq[request_chan].after_start_time > 0) {
@@ -771,7 +772,7 @@ int main (int argc, char **argv) {
 
 	skip_current_packet = 0;
 
-	while(exitpdscondition) {
+	while(exitpdscondition && !sigcondition) {
 
 	    /* Process Compressed or Decompressed Data */
 	    pd = nmxp_receiveData(naqssock, channelList_subset, NETCODE_OR_CURRENT_NETWORK, params.timeoutrecv, &recv_errno);
@@ -992,7 +993,7 @@ int main (int argc, char **argv) {
 	save_channel_states(channelList_subset, channelList_Seq);
     }
 
-    }
+    } /* End times_flow loop */
 
 #ifdef HAVE_EARTHWORMOBJS
 	if(params.ew_configuration_file) {
@@ -1012,20 +1013,25 @@ int main (int argc, char **argv) {
 	}
 #endif
 
-    for(i_chan = 0; i_chan < channelList_subset->number; i_chan++) {
-	nmxp_raw_stream_free(&(channelList_Seq[i_chan].raw_stream_buffer));
-    }
+    if(channelList_Seq  &&  channelList_subset) {
 
-    if(channelList_Seq) {
+	for(i_chan = 0; i_chan < channelList_subset->number; i_chan++) {
+	    nmxp_raw_stream_free(&(channelList_Seq[i_chan].raw_stream_buffer));
+	}
+
 	free(channelList_Seq);
+	channelList_Seq = NULL;
     }
 
     /* This has to be tha last */
     if(channelList_subset) {
 	free(channelList_subset);
+	channelList_subset = NULL;
     }
 
-    return 0;
+    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CONNFLOW, "return code %d\n", sigcondition);
+
+    return sigcondition;
 } /* End MAIN */
 
 
@@ -1223,94 +1229,75 @@ static void flushing_raw_data_stream() {
 #ifndef HAVE_WINDOWS_H
 /* Do any needed cleanup and exit */
 static void clientShutdown(int sig) {
-    int i_chan = 0;
+    /* TODO Safe Thread Synchronization */
 
-    nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "Program interrupted!\n");
+    nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "%s interrupted by signal %d!\n", NMXP_LOG_STR(PACKAGE_NAME), sig);
 
-    flushing_raw_data_stream();
+    times_flow = TIMES_FLOW_EXIT;
+    sigcondition = sig;
 
-    if(params.statefile) {
-	save_channel_states(channelList_subset, channelList_Seq);
-    }
-
-    if(params.flag_writefile  &&  outfile) {
-	/* Close output file */
-	fclose(outfile);
-    }
-
-#ifdef HAVE_EARTHWORMOBJS
-    if(params.ew_configuration_file) {
-	nmxptool_ew_detach();
-    }
-#endif
-
-#ifdef HAVE_LIBMSEED
-    if(params.flag_writeseed  &&  data_seed.outfile_mseed) {
-	/* Close output Mini-SEED file */
-	fclose(data_seed.outfile_mseed);
-    }
-#endif
-
-    /* PDS Step 7: Send Terminate Subscription */
-    nmxp_sendTerminateSubscription(naqssock, NMXP_SHUTDOWN_NORMAL, "Good Bye!");
-
-    /* PDS Step 8: Close the socket */
-    nmxp_closeSocket(naqssock);
-
-    if(channelList_subset && channelList_Seq) {
-#ifdef HAVE_LIBMSEED
-	if(params.flag_writeseed) {
-	    if(*msr_list_chan) {
-		for(i_chan = 0; i_chan < channelList_subset->number; i_chan++) {
-		    if(msr_list_chan[i_chan]) {
-			msr_free(&(msr_list_chan[i_chan]));
-		    }
-		}
-	    }
-	}
-#endif
-
-	for(i_chan = 0; i_chan < channelList_subset->number; i_chan++) {
-	    nmxp_raw_stream_free(&(channelList_Seq[i_chan].raw_stream_buffer));
-	}
-    }
-
-    if(channelList_Seq) {
-	free(channelList_Seq);
-    }
-
-    /* This has to be the last */
-    if(channelList_subset) {
-	free(channelList_subset);
-    }
-
-    exit( sig );
+    /* exit( sig ); */
 } /* End of clientShutdown() */
 
 
-/* Empty signal handler routine */
+/* Signal handler routine */
 static void clientDummyHandler(int sig) {
+    /* TODO Safe Thread Synchronization */
     int chan_index;
-    for(chan_index = 0; chan_index < channelList_subset->number; chan_index++) {
-	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY,
-		"i %2d s %d lt %f ltrs %d x_1 %8d after_st %d ",
-	chan_index,
-	channelList_Seq[chan_index].significant,
-	channelList_Seq[chan_index].last_time,
-	channelList_Seq[chan_index].last_time_call_raw_stream,
-	channelList_Seq[chan_index].x_1,
-	channelList_Seq[chan_index].after_start_time
-		);
+    char last_time_str[30];
+    char last_time_call_raw_stream_str[30];
+    char after_start_time_str[30];
+    char raw_stream_buffer_last_sample_time_str[30];
 
-	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY,
-	    "sqno %d lst %.4f maxit %d maxlat %.2f torv %d nit %d\n",
-	channelList_Seq[chan_index].raw_stream_buffer.last_seq_no_sent,
-	channelList_Seq[chan_index].raw_stream_buffer.last_sample_time,
-	channelList_Seq[chan_index].raw_stream_buffer.max_pdlist_items,
-	channelList_Seq[chan_index].raw_stream_buffer.max_tolerable_latency,
-	channelList_Seq[chan_index].raw_stream_buffer.timeoutrecv,
-	channelList_Seq[chan_index].raw_stream_buffer.n_pdlist
-		);
+
+    nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "%s received signal %d!\n", NMXP_LOG_STR(PACKAGE_NAME), sig);
+
+    if(channelList_subset) {
+
+	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
+Channel      Ind S      x-1       LastTime            LastTimeCallRaw        AfterStartTime          SeqNo   MaxIt   MTL  TO  nIt     LastSampleTime\
+\n");
+
+	chan_index = 0;
+	while(channelList_subset && chan_index < channelList_subset->number) {
+
+	    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "%-12s ", channelList_subset->channel[chan_index].name);
+
+	    nmxp_data_to_str(last_time_str, channelList_Seq[chan_index].last_time);
+	    nmxp_data_to_str(last_time_call_raw_stream_str, channelList_Seq[chan_index].last_time_call_raw_stream);
+	    nmxp_data_to_str(after_start_time_str, channelList_Seq[chan_index].after_start_time);
+	    nmxp_data_to_str(raw_stream_buffer_last_sample_time_str, channelList_Seq[chan_index].raw_stream_buffer.last_sample_time);
+
+	    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY,
+		    "%3d %d %8d ",
+		    chan_index,
+		    channelList_Seq[chan_index].significant,
+		    channelList_Seq[chan_index].x_1
+		    );
+
+	    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "%s ", NMXP_LOG_STR(last_time_str));
+	    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "%s ", NMXP_LOG_STR(last_time_call_raw_stream_str));
+	    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "%s ", NMXP_LOG_STR(after_start_time_str));
+
+	    /*
+	    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\n");
+	    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "            ");
+	    */
+
+	    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY,
+		    "%12d %4d %5.2f %3d %4d ",
+		    channelList_Seq[chan_index].raw_stream_buffer.last_seq_no_sent,
+		    channelList_Seq[chan_index].raw_stream_buffer.max_pdlist_items,
+		    channelList_Seq[chan_index].raw_stream_buffer.max_tolerable_latency,
+		    channelList_Seq[chan_index].raw_stream_buffer.timeoutrecv,
+		    channelList_Seq[chan_index].raw_stream_buffer.n_pdlist
+		    );
+	    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "%s\n", NMXP_LOG_STR(raw_stream_buffer_last_sample_time_str));
+
+	    chan_index++;
+	}
+    } else {
+	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY, "Channel list is NULL!\n");
     }
 }
 
