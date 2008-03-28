@@ -9,9 +9,10 @@ include_HEADERS = $(INCDIR)/nmxp.h \
 		  $(INCDIR)/nmxp_data.h \
 		  $(INCDIR)/nmxp_chan.h \
 		  $(INCDIR)/nmxp_log.h \
-		  $(INCDIR)/nmxp_crc32.h
+		  $(INCDIR)/nmxp_crc32.h \
+		  $(INCDIR)/nmxp_memory.h
 
-libnmxp_a_SOURCES = nmxp.c nmxp_base.c nmxp_data.c nmxp_chan.c nmxp_log.c nmxp_crc32.c
+libnmxp_a_SOURCES = nmxp.c nmxp_base.c nmxp_data.c nmxp_chan.c nmxp_log.c nmxp_crc32.c nmxp_memory.c
 
 
 if ENABLE_WINSOURCES
