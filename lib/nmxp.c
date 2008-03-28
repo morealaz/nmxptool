@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp.c,v 1.81 2008-03-28 13:21:24 mtheo Exp $
+ * $Id: nmxp.c,v 1.82 2008-03-28 14:17:24 mtheo Exp $
  *
  */
 
@@ -709,7 +709,7 @@ void nmxp_raw_stream_free(NMXP_RAW_STREAM_DATA *raw_stream_buffer) {
     int j;
     if(raw_stream_buffer) {
 	if(raw_stream_buffer->pdlist) {
-	    for(j=0; j<raw_stream_buffer->max_pdlist_items; j++) {
+	    for(j=0; j<raw_stream_buffer->n_pdlist; j++) {
 		if(raw_stream_buffer->pdlist[j]) {
 		    if(raw_stream_buffer->pdlist[j]->buffer) {
 			NMXP_MEM_FREE(raw_stream_buffer->pdlist[j]->buffer);
