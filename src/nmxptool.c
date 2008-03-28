@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.159 2008-03-28 16:27:50 mtheo Exp $
+ * $Id: nmxptool.c,v 1.160 2008-03-28 16:51:15 mtheo Exp $
  *
  */
 
@@ -1263,7 +1263,7 @@ static void clientDummyHandler(int sig) {
     if(channelList_subset) {
 
 	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
-Channel      Ind S      x-1       LastTime            LastTimeCallRaw        AfterStartTime          SeqNo   MaxIt   MTL  TO  nIt     LastSampleTime\
+Channel      Ind S      x-1       LastTime            LastTimeCallRaw        AfterStartTime          LastSampleTime         SeqNo   MaxIt   MTL   TO  nIt\
 \n");
 
 	chan_index = 0;
@@ -1287,10 +1287,7 @@ Channel      Ind S      x-1       LastTime            LastTimeCallRaw        Aft
 	    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "%s ", NMXP_LOG_STR(last_time_call_raw_stream_str));
 	    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "%s ", NMXP_LOG_STR(after_start_time_str));
 
-	    /*
-	    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\n");
-	    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "            ");
-	    */
+	    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "%s ", NMXP_LOG_STR(raw_stream_buffer_last_sample_time_str));
 
 	    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY,
 		    "%12d %4d %5.2f %3d %4d ",
@@ -1300,7 +1297,7 @@ Channel      Ind S      x-1       LastTime            LastTimeCallRaw        Aft
 		    channelList_Seq[chan_index].raw_stream_buffer.timeoutrecv,
 		    channelList_Seq[chan_index].raw_stream_buffer.n_pdlist
 		    );
-	    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "%s\n", NMXP_LOG_STR(raw_stream_buffer_last_sample_time_str));
+	    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\n");
 
 	    chan_index++;
 	}
