@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.160 2008-03-28 16:51:15 mtheo Exp $
+ * $Id: nmxptool.c,v 1.161 2008-03-28 20:08:26 mtheo Exp $
  *
  */
 
@@ -62,8 +62,8 @@ typedef struct {
 
 
 #ifndef HAVE_WINDOWS_H
-static void clientShutdown(int sig);
-static void clientDummyHandler(int sig);
+static void ShutdownHandler(int sig);
+static void AlarmHandler(int sig);
 #endif
 
 static void save_channel_states(NMXP_CHAN_LIST_NET *chan_list, NMXPTOOL_CHAN_SEQ *chan_list_seq);
@@ -105,7 +105,6 @@ MSRecord *msr_list_chan[MAX_N_CHAN];
 #endif
 
 int sigcondition = 0;
-int times_flow = 0;
 
 int main (int argc, char **argv) {
     int32_t connection_time;
@@ -132,6 +131,8 @@ int main (int argc, char **argv) {
     int pd_null_count = 0;
     int timeoutrecv_warning = 300; /* 5 minutes */
 
+    int times_flow = 0;
+
     int recv_errno = 0;
 
     char filename[500] = "";
@@ -150,12 +151,12 @@ int main (int argc, char **argv) {
     /* Signal handling, use POSIX calls with standardized semantics */
     struct sigaction sa;
 
-    sa.sa_handler = clientDummyHandler;
+    sa.sa_handler = AlarmHandler;
     sa.sa_flags = SA_RESTART;
     sigemptyset(&sa.sa_mask);
     sigaction(SIGALRM, &sa, NULL);
 
-    sa.sa_handler = clientShutdown;
+    sa.sa_handler = ShutdownHandler;
     sigaction(SIGINT, &sa, NULL);
     sigaction(SIGQUIT, &sa, NULL); 
     sigaction(SIGTERM, &sa, NULL);
@@ -1234,22 +1235,20 @@ static void flushing_raw_data_stream() {
 
 #ifndef HAVE_WINDOWS_H
 /* Do any needed cleanup and exit */
-static void clientShutdown(int sig) {
+static void ShutdownHandler(int sig) {
     /* TODO Safe Thread Synchronization */
+    sigcondition = sig;
 
     nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "%s interrupted by signal %d!\n", NMXP_LOG_STR(PACKAGE_NAME), sig);
 
     NMXP_MEM_PRINT_PTR;
 
-    times_flow = TIMES_FLOW_EXIT;
-    sigcondition = sig;
-
     /* exit( sig ); */
-} /* End of clientShutdown() */
+} /* End of ShutdownHandler() */
 
 
 /* Signal handler routine */
-static void clientDummyHandler(int sig) {
+static void AlarmHandler(int sig) {
     /* TODO Safe Thread Synchronization */
     int chan_index;
     char last_time_str[30];
