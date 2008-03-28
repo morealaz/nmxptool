@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp.c,v 1.79 2008-03-27 12:03:11 mtheo Exp $
+ * $Id: nmxp.c,v 1.80 2008-03-28 07:32:31 mtheo Exp $
  *
  */
 
@@ -110,6 +110,7 @@ int nmxp_sendAddTimeSeriesChannel_raw(int isock, NMXP_CHAN_LIST_NET *channelList
 
     if(buffer) {
 	free(buffer);
+	buffer = NULL;
     }
     return ret;
 }
@@ -383,6 +384,7 @@ int nmxp_waitReady(int isock) {
 			    str_msg);
 		    if(buf_app) {
 			free(buf_app);
+			buf_app = NULL;
 		    }
 		    /* Close the socket*/
 		    nmxp_closeSocket(isock);
@@ -398,6 +400,7 @@ int nmxp_waitReady(int isock) {
 		    rc = nmxp_recv_ctrl(isock, buf_app, length, 0, &recv_errno);
 		    if(buf_app) {
 			free(buf_app);
+			buf_app = NULL;
 		    }
 		}
 	    }
@@ -493,6 +496,7 @@ NMXP_CHAN_LIST *nmxp_getAvailableChannelList(char * hostname, int portnum, NMXP_
 
     if(channelList) {
 	free(channelList);
+	channelList = NULL;
     }
 
     return channelList_subset;
@@ -702,19 +706,25 @@ void nmxp_raw_stream_init(NMXP_RAW_STREAM_DATA *raw_stream_buffer, int32_t max_t
 
 void nmxp_raw_stream_free(NMXP_RAW_STREAM_DATA *raw_stream_buffer) {
     int j;
-    if(raw_stream_buffer->pdlist) {
-	for(j=0; j<raw_stream_buffer->max_pdlist_items; j++) {
-	    if(raw_stream_buffer->pdlist[j]) {
-		if(raw_stream_buffer->pdlist[j]->buffer) {
-		    free(raw_stream_buffer->pdlist[j]->buffer);
+    if(raw_stream_buffer) {
+	if(raw_stream_buffer->pdlist) {
+	    for(j=0; j<raw_stream_buffer->max_pdlist_items; j++) {
+		if(raw_stream_buffer->pdlist[j]) {
+		    if(raw_stream_buffer->pdlist[j]->buffer) {
+			free(raw_stream_buffer->pdlist[j]->buffer);
+			raw_stream_buffer->pdlist[j]->buffer = NULL;
+		    }
+		    if(raw_stream_buffer->pdlist[j]->pDataPtr) {
+			free(raw_stream_buffer->pdlist[j]->pDataPtr);
+			raw_stream_buffer->pdlist[j]->pDataPtr = NULL;
+		    }
+		    free(raw_stream_buffer->pdlist[j]);
+		    raw_stream_buffer->pdlist[j] = NULL;
 		}
-		if(raw_stream_buffer->pdlist[j]->pDataPtr) {
-		    free(raw_stream_buffer->pdlist[j]->pDataPtr);
-		}
-		free(raw_stream_buffer->pdlist[j]);
 	    }
+	    free(raw_stream_buffer->pdlist);
+	    raw_stream_buffer->pdlist = NULL;
 	}
-	free(raw_stream_buffer->pdlist);
     }
 }
 

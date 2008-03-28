@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_chan.c,v 1.38 2008-03-12 08:30:40 mtheo Exp $
+ * $Id: nmxp_chan.c,v 1.39 2008-03-28 07:32:31 mtheo Exp $
  *
  */
 
@@ -67,6 +67,7 @@ int nmxp_chan_cpy_sta_chan(const char *net_dot_station_dot_channel, char *statio
 
 	if(tmp_name) {
 	    free(tmp_name);
+	    tmp_name = NULL;
 	}
 
     } else {
