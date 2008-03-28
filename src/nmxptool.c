@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.158 2008-03-28 15:42:19 mtheo Exp $
+ * $Id: nmxptool.c,v 1.159 2008-03-28 16:27:50 mtheo Exp $
  *
  */
 
@@ -220,7 +220,7 @@ int main (int argc, char **argv) {
 
     nmxptool_log_params(&params);
 
-    nmxp_mem_print_ptr();
+    NMXP_MEM_PRINT_PTR;
 
 #ifdef HAVE_LIBMSEED
     if(params.flag_writeseed) {
@@ -1015,7 +1015,7 @@ int main (int argc, char **argv) {
 	}
 #endif
 
-    nmxp_mem_print_ptr();
+    NMXP_MEM_PRINT_PTR;
 
     if(channelList_Seq  &&  channelList_subset) {
 
@@ -1035,7 +1035,7 @@ int main (int argc, char **argv) {
 
     nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CONNFLOW, "return code %d\n", sigcondition);
 
-    nmxp_mem_print_ptr();
+    NMXP_MEM_PRINT_PTR;
 
     return sigcondition;
 } /* End MAIN */
@@ -1239,7 +1239,7 @@ static void clientShutdown(int sig) {
 
     nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "%s interrupted by signal %d!\n", NMXP_LOG_STR(PACKAGE_NAME), sig);
 
-    nmxp_mem_print_ptr();
+    NMXP_MEM_PRINT_PTR;
 
     times_flow = TIMES_FLOW_EXIT;
     sigcondition = sig;
@@ -1308,7 +1308,7 @@ Channel      Ind S      x-1       LastTime            LastTimeCallRaw        Aft
 	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY, "Channel list is NULL!\n");
     }
 
-    nmxp_mem_print_ptr();
+    NMXP_MEM_PRINT_PTR;
 }
 
 #endif /* HAVE_WINDOWS_H */
