@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.93 2008-03-28 13:21:24 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.94 2008-03-28 20:07:28 mtheo Exp $
  *
  */
 
@@ -339,6 +339,15 @@ Other arguments:\n\
   -V, --version           Print tool version.\n\
   -h, --help              Print this help.\n\
 \n");
+
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
+Signal handling:\n\
+   INT QUIT TERM          Sending these signals to %s causes it\n\
+                          to immediately attempt to gracefully terminate.\n\
+                          It may take several seconds to complete exiting.\n\
+   ALRM                   Report info about data buffer.\n\
+   HUP PIPE               Ignored. (SIG_IGN)\n\
+\n", NMXP_LOG_STR(PACKAGE_NAME));
 
     nmxptool_author_support();
 

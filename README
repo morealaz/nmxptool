@@ -18,6 +18,7 @@ CONTENTS
    INSTALLATION
    SUPPORTED PLATFORMS AND 64-Bit ISSUES
    DOCUMENTATION
+  SIGNAL HANDLING
    HISTORY
    ACKNOWLEDGEMENT
    LICENSE
@@ -239,6 +240,18 @@ architectures.
 
     * Earthworm module: earthworm/nmxptool_cmd.html
                                   nmxptool_ovr.html
+
+- SIGNAL HANDLING
+
+    You can send the following signals to nmxptool:
+
+         Signals INT QUIT TERM : Sending these signals to nmxptool causes it
+                                 to immediately attempt to gracefully terminate. 
+                                 It may take several seconds to complete exiting.
+
+         Signals ALRM          : Report info about data buffer.
+
+         Signals HUP PIPE      : Ignored. (SIG_IGN)
 
 
 - HISTORY
