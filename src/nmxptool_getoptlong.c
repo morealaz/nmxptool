@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.94 2008-03-28 20:07:28 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.95 2008-03-29 12:49:11 mtheo Exp $
  *
  */
 
@@ -252,7 +252,7 @@ DEFAULT_USEC / 1000, DEFAULT_N_CHANNEL, NMXP_MAX_MSCHAN_MSEC / 1000);
                           of the file Naqs.ini set RetxRequest to Enabled.\n\
                           If RetxRequest is not enabled then -M is ineffective.\n\
   -T, --timeoutrecv=SECs  Time-out for flushing queued packets of each channel.\n\
-                          (default %d, no time-out) [%d..%d].\n\
+                          It sets --mschan=0/0 (default %d, no time-out) [%d..%d].\n\
                           -T is useful for retrieving Data On Demand with minimum delay.\n\
                           -M, -T are usable only with Raw Stream, -S=-1.\n\
                           In general, -M and -T are not used together.\n\
@@ -345,7 +345,8 @@ Signal handling:\n\
    INT QUIT TERM          Sending these signals to %s causes it\n\
                           to immediately attempt to gracefully terminate.\n\
                           It may take several seconds to complete exiting.\n\
-   ALRM                   Report info about data buffer.\n\
+                          Using -T, it could wait up to SECs seconds.\n\
+   ALRM                   Print current info about Raw Stream buffer.\n\
    HUP PIPE               Ignored. (SIG_IGN)\n\
 \n", NMXP_LOG_STR(PACKAGE_NAME));
 
@@ -1018,6 +1019,13 @@ int nmxptool_check_params(NMXPTOOL_PARAMS *params) {
 	ret = -1;
 	nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "nC in <mschan> has to be within [%d..%d] or equal to zero if 0/0.\n",
 		DEFAULT_N_CHANNEL_MINIMUM, DEFAULT_N_CHANNEL_MAXIMUM);
+    }
+
+    if(params->timeoutrecv > 0 &&
+	    (params->usec != 0  ||  params->n_channel != 0)) {
+	params->usec = 0;
+	params->n_channel=0;
+	nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "<mschan> can not be used with <timeoutrecv>. <mschan> set to 0/0.\n");
     }
     
     /*

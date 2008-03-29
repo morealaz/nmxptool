@@ -43,7 +43,7 @@ MaxTolerableLatency  120                 # Max tolerable latency for each channe
                                          # It is equivalent to the option -M.
 
 #TimeoutRecv          30                 # Time-out in seconds for flushing queued data of each channel.
-                                         # (Default 0. No time-out) [10..300].
+                                         # It sets mschan to 0/0 ((Default 0. No time-out) [10..300].
                                          # Useful for retrieving Data On Demand with minimum delay.
                                          # 'tsec' in nmxptool.desc should be greater than 'TimeoutRecv'.
                                          # It is equivalent to the option -T.
