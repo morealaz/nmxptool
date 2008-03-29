@@ -18,7 +18,7 @@ CONTENTS
    INSTALLATION
    SUPPORTED PLATFORMS AND 64-Bit ISSUES
    DOCUMENTATION
-  SIGNAL HANDLING
+   SIGNAL HANDLING
    HISTORY
    ACKNOWLEDGEMENT
    LICENSE
@@ -249,7 +249,7 @@ architectures.
                                  to immediately attempt to gracefully terminate. 
                                  It may take several seconds to complete exiting.
 
-         Signals ALRM          : Report info about data buffer.
+         Signals ALRM          : Print current info about Raw Stream buffer.
 
          Signals HUP PIPE      : Ignored. (SIG_IGN)
 
