@@ -57,6 +57,7 @@ Nanometrics server and connection parameters:<br>
 <a href="#DefaultNetworkCode">DefaultNetworkCode</a>	optional<br>
 <a href="#ChannelFile">ChannelFile</a>		required	Xor Channel<br>
 <a href="#Channel">Channel</a>			required	Xor ChannelFile<br>
+<a href="#mschan">mschan</a>		optional<br>
 <br>
 
 Output control:<br>
@@ -219,6 +220,17 @@ listed in earthworm.d) that relates to a unique single-byte number.
 </blockquote>
 
 <hr><!-- command name as anchor inside quotes -->
+<pre><a name="mschan"><b>mschan <font color="red">mSECs/nC</font>                               ReadConfig              nmxptool parameters<br></b><!-- command args ... -->           <br></a></pre>
+<blockquote><!-- command description goes here -->
+    <font color="red">mSECs</font> are milliseconds to wait before the next request,
+    <font color="red">nC</font> is the number of channels to request at a time.
+    Delaying and requesting few channels at a time make data buffering on NaqsServer side more efficient.
+    Determined empiric values are default 280/9.
+    Condition: TotalNumberOfChannels * (mSECs/nC) &lt; 15 sec. 
+<pre><!-- Default and example go here   --><br>Default:  280/9<br>Example:  mschan      350/12<br></pre>
+</blockquote>
+
+<hr><!-- command name as anchor inside quotes -->
 <pre><a name="NmxpHost"><b>NmxpHost <font color="red">address</font>                               ReadConfig              nmxptool parameters<br></b><!-- command args ... -->           <br></a></pre>
 <blockquote><!-- command description goes here --> Specify the <font
  color="red">address</font> of the Nanometrics server. This can be either
@@ -263,7 +275,7 @@ memory region.
 
 <hr><!-- command name as anchor inside quotes -->
 <pre><a name="TimeoutRecv"><b>TimeoutRecv <font color="red">seconds</font>                                  ReadConfig              nmxptool parameters<br></b><!-- command args ... -->           <br></a></pre>
-<blockquote><!-- command description goes here --> Specifies time-out for flushing buffered packets for each channel. Useful for Data On Demand (i.e. channel HL).  Range is [10..300].
+<blockquote><!-- command description goes here --> Specifies time-out for flushing buffered packets for each channel. Useful for Data On Demand (i.e. channel HN? or HL?). It sets <a href="#mschan">mschan</a> to 0/0.   Range is [10..300].
   <pre><!-- Default and example go here   --><br>Default:  0  (No Time-out)<br>Example:  TimeoutRecv  15</pre>
 </blockquote>
 
@@ -368,7 +380,7 @@ MaxTolerableLatency  120                 # Max tolerable latency for each channe
                                          # It is equivalent to the option -M.
 
 #TimeoutRecv          30                 # Time-out in seconds for flushing queued data of each channel.
-                                         # (Default 0. No time-out) [10..300].
+                                         # It sets mschan to 0/0 ((Default 0. No time-out) [10..300].
                                          # Useful for retrieving Data On Demand with minimum delay.
                                          # 'tsec' in nmxptool.desc should be greater than 'TimeoutRecv'.
                                          # It is equivalent to the option -T.
