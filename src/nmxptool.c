@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.161 2008-03-28 20:08:26 mtheo Exp $
+ * $Id: nmxptool.c,v 1.162 2008-03-30 06:07:21 mtheo Exp $
  *
  */
 
@@ -1237,7 +1237,12 @@ static void flushing_raw_data_stream() {
 /* Do any needed cleanup and exit */
 static void ShutdownHandler(int sig) {
     /* TODO Safe Thread Synchronization */
+
     sigcondition = sig;
+
+    if(params.timeoutrecv > 0 && naqssock > 0) {
+	nmxp_setsockopt_RCVTIMEO(naqssock, 1);
+    }
 
     nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "%s interrupted by signal %d!\n", NMXP_LOG_STR(PACKAGE_NAME), sig);
 
