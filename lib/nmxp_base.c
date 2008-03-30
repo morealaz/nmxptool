@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_base.c,v 1.67 2008-03-28 13:21:24 mtheo Exp $
+ * $Id: nmxp_base.c,v 1.68 2008-03-30 06:07:47 mtheo Exp $
  *
  */
 
@@ -170,6 +170,45 @@ int nmxp_recv_select_timeout(int s, char *buf, int len, int timeout)
 }
 #endif
 
+int nmxp_setsockopt_RCVTIMEO(int isock, int timeoutsec) {
+    int ret = 0;
+#ifdef HAVE_WINDOWS_H
+    int timeos;
+#else
+
+#ifndef HAVE_BROKEN_SO_RCVTIMEO
+    struct timeval timeo;
+#endif
+
+#endif
+
+    if(timeoutsec > 0) {
+#ifdef HAVE_WINDOWS_H
+	timeos  = timeoutsec * 1000;
+	ret = setsockopt(isock, SOL_SOCKET, SO_RCVTIMEO, (char *) &timeos, sizeof(timeos));
+	if (ret < 0)
+	{
+	    perror("setsockopt SO_RCVTIMEO");
+	}
+#else
+
+#ifndef HAVE_BROKEN_SO_RCVTIMEO
+	timeo.tv_sec  = timeoutsec;
+	timeo.tv_usec = 0;
+	ret = setsockopt(isock, SOL_SOCKET, SO_RCVTIMEO, &timeo, sizeof(timeo));
+	if (ret < 0) {
+	    perror("setsockopt SO_RCVTIMEO");
+	}
+#else
+#warning nmxp_setsockopt_RCVTIMEO() do nothing for your system.
+#endif
+
+#endif
+    }
+
+    return ret;
+}
+
 int nmxp_recv_ctrl(int isock, void *buffer, int length, int timeoutsec, int *recv_errno )
 {
   int recvCount;
@@ -179,50 +218,17 @@ int nmxp_recv_ctrl(int isock, void *buffer, int length, int timeoutsec, int *rec
 #ifdef HAVE_WINDOWS_H
   char *recv_errno_str;
 #else
+
 #ifdef HAVE_STRERROR_R
 #define MAXLEN_RECV_ERRNO_STR 200
   char recv_errno_str[MAXLEN_RECV_ERRNO_STR];
 #else
   char *recv_errno_str;
 #endif
-#endif
-
-#ifdef HAVE_WINDOWS_H
-  int timeos;
-#else
-
-#ifndef HAVE_BROKEN_SO_RCVTIMEO
-  struct timeval timeo;
-#endif
 
 #endif
 
-
-  /*
-  struct timeval timeout;
-  socklen_t size_timeout = sizeof(timeout);
-  getsockopt(isock, SOL_SOCKET, SO_RCVTIMEO, &timeout, &size_timeout);
-  */
-
-  if(timeoutsec > 0) {
-#ifdef HAVE_WINDOWS_H
-      timeos  = timeoutsec * 1000;
-      if (setsockopt(isock, SOL_SOCKET, SO_RCVTIMEO, (char *) &timeos, sizeof(timeos)) < 0)
-      {
-	  perror("setsockopt SO_RCVTIMEO");
-      }
-#else
-
-#ifndef HAVE_BROKEN_SO_RCVTIMEO
-      timeo.tv_sec  = timeoutsec;
-      timeo.tv_usec = 0;
-      if (setsockopt(isock, SOL_SOCKET, SO_RCVTIMEO, &timeo, sizeof(timeo)) < 0) {
-	  perror("setsockopt SO_RCVTIMEO");
-      }
-#endif
-
-#endif
-  }
+  nmxp_setsockopt_RCVTIMEO(isock, timeoutsec);
   
   cc = 1;
   *recv_errno  = 0;
@@ -263,35 +269,19 @@ int nmxp_recv_ctrl(int isock, void *buffer, int length, int timeoutsec, int *rec
       }
   }
 
-  if(timeoutsec > 0) {
-#ifdef HAVE_WINDOWS_H
-      timeos  = 0;
-      if (setsockopt(isock, SOL_SOCKET, SO_RCVTIMEO, (char *) &timeos, sizeof(timeos))
-	      < 0) {
-	  perror("setsockopt SO_RCVTIMEO");
-      }
-#else
-
-#ifndef HAVE_BROKEN_SO_RCVTIMEO
-      timeo.tv_sec  = 0;
-      timeo.tv_usec = 0;
-      if (setsockopt(isock, SOL_SOCKET, SO_RCVTIMEO, &timeo, sizeof(timeo)) < 0) {
-	  perror("setsockopt SO_RCVTIMEO");
-      }
-#endif
-
-#endif
-  }
+  nmxp_setsockopt_RCVTIMEO(isock, 0);
 
   if (recvCount != length  ||  *recv_errno != 0  ||  cc <= 0) {
 #ifdef HAVE_WINDOWS_H
       recv_errno_str = WSAGetLastErrorMessage(*recv_errno);
 #else
+
 #ifdef HAVE_STRERROR_R
       strerror_r(*recv_errno, recv_errno_str, MAXLEN_RECV_ERRNO_STR);
 #else
       recv_errno_str = strerror(*recv_errno);
 #endif
+
 #endif
 
 #ifdef HAVE_WINDOWS_H

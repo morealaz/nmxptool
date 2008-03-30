@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_base.h,v 1.28 2008-03-11 07:28:55 mtheo Exp $
+ * $Id: nmxp_base.h,v 1.29 2008-03-30 06:07:47 mtheo Exp $
  *
  */
 
@@ -62,6 +62,17 @@ int nmxp_closeSocket(int isock);
  *
  */
 int nmxp_send_ctrl(int isock, void *buffer, int length);
+
+
+/*! \brief Receives length bytes in a buffer from a socket.
+ *
+ * \param isock A descriptor referencing the socket.
+ * \param timeoutsec Time-out in seconds
+ *
+ * \return getsockopt() return value
+ *
+ */
+int nmxp_setsockopt_RCVTIMEO(int isock, int timeoutsec);
 
 
 /*! \brief Receives length bytes in a buffer from a socket.
