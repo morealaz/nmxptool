@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.163 2008-03-31 07:21:03 mtheo Exp $
+ * $Id: nmxptool.c,v 1.164 2008-03-31 07:47:35 mtheo Exp $
  *
  */
 
@@ -17,12 +17,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include <signal.h>
 
 #include <nmxp.h>
-
-#ifndef HAVE_WINDOWS_H
-#include <signal.h>
-#endif
 
 #ifdef HAVE_WINDOWS_H
 #include <windows.h>
@@ -61,10 +58,8 @@ typedef struct {
 } NMXPTOOL_CHAN_SEQ;
 
 
-#ifndef HAVE_WINDOWS_H
 static void ShutdownHandler(int sig);
 static void AlarmHandler(int sig);
-#endif
 
 static void save_channel_states(NMXP_CHAN_LIST_NET *chan_list, NMXPTOOL_CHAN_SEQ *chan_list_seq);
 void load_channel_states(NMXP_CHAN_LIST_NET *chan_list, NMXPTOOL_CHAN_SEQ *chan_list_seq);
@@ -165,14 +160,20 @@ int main (int argc, char **argv) {
     sigaction(SIGHUP, &sa, NULL);
     sigaction(SIGPIPE, &sa, NULL); 
 #else
+    /*
     signal(SIGALRM, AlarmHandler);
+    */
 
     signal(SIGINT, ShutdownHandler);
+    /*
     signal(SIGQUIT, ShutdownHandler);
+    */
     signal(SIGTERM, ShutdownHandler);
 
+    /*
     signal(SIGHUP, SIG_IGN);
     signal(SIGPIPE, SIG_IGN);
+    */
 #endif
 
     /* Default is normal output */
@@ -1242,7 +1243,6 @@ static void flushing_raw_data_stream() {
     }
 }
 
-#ifndef HAVE_WINDOWS_H
 /* Do any needed cleanup and exit */
 static void ShutdownHandler(int sig) {
     /* TODO Safe Thread Synchronization */
@@ -1321,7 +1321,6 @@ Channel      Ind S      x-1       LastTime            LastTimeCallRaw        Aft
     NMXP_MEM_PRINT_PTR;
 }
 
-#endif /* HAVE_WINDOWS_H */
 
 
 
