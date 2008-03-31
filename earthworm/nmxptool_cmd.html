@@ -225,8 +225,8 @@ listed in earthworm.d) that relates to a unique single-byte number.
     <font color="red">mSECs</font> are milliseconds to wait before the next request,
     <font color="red">nC</font> is the number of channels to request at a time.
     Delaying and requesting few channels at a time make data buffering on NaqsServer side more efficient.
-    Determined empiric values are default 280/9.
-    Condition: TotalNumberOfChannels * (mSECs/nC) &lt; 15 sec. 
+    Determined empiric values are default 280/9. 0/0 for disabling.
+    Condition: TotalNumberOfChannels * (mSECs/nC) &lt; 15 sec.
 <pre><!-- Default and example go here   --><br>Default:  280/9<br>Example:  mschan      350/12<br></pre>
 </blockquote>
 
@@ -319,7 +319,7 @@ Inside the section Datastream of the file <i>Naqs.ini</i> set <u>DataBufferLengt
 <p>
 <h3>Packet retransmission</h3>
 Inside the section NetworkInterface of the file <i>Naqs.ini</i> enable <u>RetxRequest</u>.
-If RetxRequest is not enabled then <a href="#MaxTolerableLatency">MaxTolerableLatency</a> is ineffective.\n\
+If RetxRequest is not enabled then <a href="#MaxTolerableLatency">MaxTolerableLatency</a> is ineffective.
 
 <pre>
     [ NetworkInterface ] 
