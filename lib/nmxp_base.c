@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_base.c,v 1.69 2008-03-31 05:09:33 mtheo Exp $
+ * $Id: nmxp_base.c,v 1.70 2008-03-31 07:44:39 mtheo Exp $
  *
  */
 
@@ -161,6 +161,7 @@ int nmxp_recv_select_timeout(int s, char *buf, int len, int timeout)
     tv.tv_usec = 0;
 
     /* wait until timeout or data received*/
+    errno = 0;
     n = select(s+1, &fds, NULL, NULL, &tv);
     if (n == 0) return -2; /* timeout!*/
     if(errno == EINTR) return -2; /* timeout! "Interrupted system call" */
@@ -237,7 +238,7 @@ int nmxp_recv_ctrl(int isock, void *buffer, int length, int timeoutsec, int *rec
   while(cc > 0 && *recv_errno == 0  && recvCount < length) {
 
       /* TODO some operating system could not reset errno */
-      /* errno = 0 */
+      errno = 0;
 
 #ifdef HAVE_BROKEN_SO_RCVTIMEO
       if(timeoutsec == 0) {
