@@ -607,7 +607,7 @@ void nmxptool_ew_send_error(unsigned int ierr, char *message) {
 	} else {
 	    snprintf(complete_message, NMXPTOOL_EW_MAXSZE_MSG, "%s", nmxptool_ew_err_msg[i].message);
 	}
-	nmxptool_ew_report_status ( &errLogo, nmxptool_ew_err_msg[i].error, nmxptool_ew_err_msg[i].message); 
+	nmxptool_ew_report_status ( &errLogo, nmxptool_ew_err_msg[i].error, complete_message); 
     } else {
 	nmxptool_ew_report_status ( &errLogo, 0, "Unknown error"); 
     }
