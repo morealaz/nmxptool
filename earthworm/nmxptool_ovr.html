@@ -7,7 +7,7 @@
 <h1 align="center">Earthworm Modules: <br>
 nmxptool overview</h1>
 <center>
-<p><i>(last revised 26 March, 2008)</i> </p>
+<p><i>(last revised 31 March, 2008)</i> </p>
 </center>
 	<p>
 	The Nanometrics servers <i>NaqsServer</i> and <i>DataServer</i> can provide on-line access to seismic data and state-of-health information accepting TCP/IP connections and forwarding the requested data to each client program. <i>NaqsServer</i> collates and stores in near-real-time incoming data in ringbuffers whereas <i>DataServer</i> provides data of the past stored in <i>NaqsServer</i> ringbuffers. In order to implement the Nanometrics subscription protocols, the author developed a software consisting of a library called libnmxp and a tool called nmxptool. The library exposes a set of documented APIs which allow to communicate with the Nanometrics servers. The tool, based on libnmxp, allows to retrieve or monitor real-time data and data of the past.
