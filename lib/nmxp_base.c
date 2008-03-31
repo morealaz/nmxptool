@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_base.c,v 1.70 2008-03-31 07:44:39 mtheo Exp $
+ * $Id: nmxp_base.c,v 1.71 2008-03-31 11:32:36 mtheo Exp $
  *
  */
 
@@ -211,24 +211,51 @@ int nmxp_setsockopt_RCVTIMEO(int isock, int timeoutsec) {
     return ret;
 }
 
+
+#define MAXLEN_RECV_ERRNO_STR 200
+
+char *nmxp_strerror(int errno_value) {
+    static char ret_recv_errno_str[MAXLEN_RECV_ERRNO_STR];
+#ifdef HAVE_WINDOWS_H
+    char *recv_errno_str;
+#else
+
+#ifdef HAVE_STRERROR_R
+    char recv_errno_str[MAXLEN_RECV_ERRNO_STR];
+#else
+    char *recv_errno_str;
+#endif
+
+#endif
+
+    ret_recv_errno_str[0] = 0;
+
+#ifdef HAVE_WINDOWS_H
+    recv_errno_str = WSAGetLastErrorMessage(errno_value);
+#else
+
+#ifdef HAVE_STRERROR_R
+    strerror_r(errno_value, recv_errno_str, MAXLEN_RECV_ERRNO_STR);
+#else
+    recv_errno_str = strerror(errno_value);
+#endif
+
+#endif
+
+    if(recv_errno_str) {
+	strncpy(ret_recv_errno_str, recv_errno_str, MAXLEN_RECV_ERRNO_STR);
+    }
+
+    return ret_recv_errno_str;
+}
+
+
 int nmxp_recv_ctrl(int isock, void *buffer, int length, int timeoutsec, int *recv_errno )
 {
   int recvCount;
   int cc;
   char *buffer_char = buffer;
-
-#ifdef HAVE_WINDOWS_H
-  char *recv_errno_str;
-#else
-
-#ifdef HAVE_STRERROR_R
-#define MAXLEN_RECV_ERRNO_STR 200
-  char recv_errno_str[MAXLEN_RECV_ERRNO_STR];
-#else
-  char *recv_errno_str;
-#endif
-
-#endif
+  char *recv_errno_str = NULL;
 
   nmxp_setsockopt_RCVTIMEO(isock, timeoutsec);
   
@@ -274,17 +301,8 @@ int nmxp_recv_ctrl(int isock, void *buffer, int length, int timeoutsec, int *rec
   nmxp_setsockopt_RCVTIMEO(isock, 0);
 
   if (recvCount != length  ||  *recv_errno != 0  ||  cc <= 0) {
-#ifdef HAVE_WINDOWS_H
-      recv_errno_str = WSAGetLastErrorMessage(*recv_errno);
-#else
 
-#ifdef HAVE_STRERROR_R
-      strerror_r(*recv_errno, recv_errno_str, MAXLEN_RECV_ERRNO_STR);
-#else
-      recv_errno_str = strerror(*recv_errno);
-#endif
-
-#endif
+      recv_errno_str = nmxp_strerror(*recv_errno);
 
 #ifdef HAVE_WINDOWS_H
       if(*recv_errno != WSAEWOULDBLOCK  &&  *recv_errno != WSAETIMEDOUT)

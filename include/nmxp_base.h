@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_base.h,v 1.29 2008-03-30 06:07:47 mtheo Exp $
+ * $Id: nmxp_base.h,v 1.30 2008-03-31 11:32:36 mtheo Exp $
  *
  */
 
@@ -73,6 +73,14 @@ int nmxp_send_ctrl(int isock, void *buffer, int length);
  *
  */
 int nmxp_setsockopt_RCVTIMEO(int isock, int timeoutsec);
+
+
+/*! \brief Wrapper to strerror, strerror_r or WSAGetLastErrorMessage
+ *
+ * \return String message of errno_value. It is static, not need to be freed.
+ *
+ */
+char *nmxp_strerror(int errno_value);
 
 
 /*! \brief Receives length bytes in a buffer from a socket.
