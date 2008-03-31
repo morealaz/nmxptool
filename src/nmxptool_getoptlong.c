@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.95 2008-03-29 12:49:11 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.96 2008-03-31 05:50:40 mtheo Exp $
  *
  */
 
@@ -256,6 +256,7 @@ DEFAULT_USEC / 1000, DEFAULT_N_CHANNEL, NMXP_MAX_MSCHAN_MSEC / 1000);
                           -T is useful for retrieving Data On Demand with minimum delay.\n\
                           -M, -T are usable only with Raw Stream, -S=-1.\n\
                           In general, -M and -T are not used together.\n\
+                          Receiving signals interrupts the time out.\n\
 \n\
 ",
 	    DEFAULT_MAX_TOLERABLE_LATENCY,
@@ -345,7 +346,6 @@ Signal handling:\n\
    INT QUIT TERM          Sending these signals to %s causes it\n\
                           to immediately attempt to gracefully terminate.\n\
                           It may take several seconds to complete exiting.\n\
-                          Using -T, it could wait up to SECs seconds.\n\
    ALRM                   Print current info about Raw Stream buffer.\n\
    HUP PIPE               Ignored. (SIG_IGN)\n\
 \n", NMXP_LOG_STR(PACKAGE_NAME));
