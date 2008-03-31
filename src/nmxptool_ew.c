@@ -603,7 +603,7 @@ void nmxptool_ew_send_error(unsigned int ierr, char *message) {
     }
     if(i < NMXPTOOL_EW_ERR_MAXVALUE) {
 	if(message) {
-	    snprintf(complete_message, NMXPTOOL_EW_MAXSZE_MSG, "%s %s", nmxptool_ew_err_msg[i].message, message);
+	    snprintf(complete_message, NMXPTOOL_EW_MAXSZE_MSG, "%s %s.", nmxptool_ew_err_msg[i].message, message);
 	} else {
 	    snprintf(complete_message, NMXPTOOL_EW_MAXSZE_MSG, "%s", nmxptool_ew_err_msg[i].message);
 	}
