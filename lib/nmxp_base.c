@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_base.c,v 1.68 2008-03-30 06:07:47 mtheo Exp $
+ * $Id: nmxp_base.c,v 1.69 2008-03-31 05:09:33 mtheo Exp $
  *
  */
 
@@ -163,6 +163,7 @@ int nmxp_recv_select_timeout(int s, char *buf, int len, int timeout)
     /* wait until timeout or data received*/
     n = select(s+1, &fds, NULL, NULL, &tv);
     if (n == 0) return -2; /* timeout!*/
+    if(errno == EINTR) return -2; /* timeout! "Interrupted system call" */
     if (n == -1) return -1; /* error*/
  
     /* data must be here, so do a normal recv()*/
