@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.162 2008-03-30 06:07:21 mtheo Exp $
+ * $Id: nmxptool.c,v 1.163 2008-03-31 07:21:03 mtheo Exp $
  *
  */
 
@@ -164,6 +164,15 @@ int main (int argc, char **argv) {
     sa.sa_handler = SIG_IGN;
     sigaction(SIGHUP, &sa, NULL);
     sigaction(SIGPIPE, &sa, NULL); 
+#else
+    signal(SIGALRM, AlarmHandler);
+
+    signal(SIGINT, ShutdownHandler);
+    signal(SIGQUIT, ShutdownHandler);
+    signal(SIGTERM, ShutdownHandler);
+
+    signal(SIGHUP, SIG_IGN);
+    signal(SIGPIPE, SIG_IGN);
 #endif
 
     /* Default is normal output */
