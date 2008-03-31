@@ -29,9 +29,11 @@
 #define NMXPTOOL_EW_ERR_RECVDATA	1
 #define NMXPTOOL_EW_ERR_TERMREQ		2
 
+#define NMXPTOOL_EW_MAXSZE_MSG 1024
+
 typedef struct {
     unsigned int error;
-    char message[1024];
+    char message[NMXPTOOL_EW_MAXSZE_MSG];
 } NMXPTOOL_EW_ERR_MSG;
 
 void nmxptool_ew_attach();
@@ -49,7 +51,7 @@ void nmxptool_ew_report_status ( MSG_LOGO *pLogo, short code, char * message );
 
 int nmxptool_ew_check_flag_terminate();
 void nmxptool_ew_send_heartbeat_if_needed();
-void nmxptool_ew_send_error(unsigned int ierr);
+void nmxptool_ew_send_error(unsigned int ierr, char *message);
 
 int nmxptool_ew_logit_msg ( char *msg );
 int nmxptool_ew_logit_err (  char *msg );

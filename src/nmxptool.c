@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.164 2008-03-31 07:47:35 mtheo Exp $
+ * $Id: nmxptool.c,v 1.165 2008-03-31 11:31:10 mtheo Exp $
  *
  */
 
@@ -671,7 +671,7 @@ int main (int argc, char **argv) {
 		    /* Check if we are being asked to terminate */
 		    if( nmxptool_ew_check_flag_terminate() ) {
 			logit ("t", "nmxptool terminating on request\n");
-			nmxptool_ew_send_error(NMXPTOOL_EW_ERR_TERMREQ);
+			nmxptool_ew_send_error(NMXPTOOL_EW_ERR_TERMREQ, NULL);
 			exitdapcondition = 0;
 			times_flow = TIMES_FLOW_EXIT;
 		    }
@@ -817,7 +817,7 @@ int main (int argc, char **argv) {
 
 #ifdef HAVE_EARTHWORMOBJS
 		    if(params.ew_configuration_file) {
-			nmxptool_ew_send_error(NMXPTOOL_EW_ERR_RECVDATA);
+			nmxptool_ew_send_error(NMXPTOOL_EW_ERR_RECVDATA, nmxp_strerror(recv_errno));
 		    }
 #endif
 		    exitpdscondition = 0;
@@ -955,7 +955,7 @@ int main (int argc, char **argv) {
 		/* Check if we are being asked to terminate */
 		if( nmxptool_ew_check_flag_terminate() ) {
 		    logit ("t", "nmxptool terminating on request\n");
-		    nmxptool_ew_send_error(NMXPTOOL_EW_ERR_TERMREQ);
+		    nmxptool_ew_send_error(NMXPTOOL_EW_ERR_TERMREQ, NULL);
 		    exitpdscondition = 0;
 		    times_flow = TIMES_FLOW_EXIT;
 		}

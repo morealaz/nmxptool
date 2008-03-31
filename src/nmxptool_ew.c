@@ -593,7 +593,8 @@ void nmxptool_ew_send_heartbeat_if_needed() {
     }
 }
 
-void nmxptool_ew_send_error(unsigned int ierr) {
+void nmxptool_ew_send_error(unsigned int ierr, char *message) {
+    char complete_message[NMXPTOOL_EW_MAXSZE_MSG];
     int i;
 
     i=0;
@@ -601,6 +602,11 @@ void nmxptool_ew_send_error(unsigned int ierr) {
 	i++;
     }
     if(i < NMXPTOOL_EW_ERR_MAXVALUE) {
+	if(message) {
+	    snprintf(complete_message, NMXPTOOL_EW_MAXSZE_MSG, "%s %s", nmxptool_ew_err_msg[i].message, message);
+	} else {
+	    snprintf(complete_message, NMXPTOOL_EW_MAXSZE_MSG, "%s", nmxptool_ew_err_msg[i].message);
+	}
 	nmxptool_ew_report_status ( &errLogo, nmxptool_ew_err_msg[i].error, nmxptool_ew_err_msg[i].message); 
     } else {
 	nmxptool_ew_report_status ( &errLogo, 0, "Unknown error"); 
