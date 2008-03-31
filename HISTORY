@@ -2,20 +2,20 @@
 nmxptool Release History
 #########################
 
-* Release 1.2.1-beta6    (2008/03/28) 
+* Release 1.2.1-beta6    (2008/03/31) 
     - Improved request of channels in order to retrieve more efficiently
         data buffered by the NaqsServer (option -F and -b).
         It allows data continuity, to the latency's cost,
         when short disconnections to the NaqsServer occur.
         Added option --mschan=mSECs/nC, short option -f.
-    - Option "delay" can be declared in minutes, hours or days (option -d).
+    - Added on Windows system, computation of the packet latencies
+        when timezone is different from GMT/UTC.
     - Changed 'configure' options from --with-PACKAGE to --enable-FEATURE.
-    - Added correct computation of the latency on Windows
-        for timezones different from GMT/UTC.
     - Improved signal handling.
     - Improved help and documentation.
-    - Fixed bug: before exiting, sometimes "double free" error message occurred.
-    - Fixed bug: argument of function Sleep() is in milliseconds on Windows.
+    - Option "delay" can be declared in minutes, hours or days (option -d).
+    - Fixed bug: before exiting, error message "double free" rarely occurred.
+    - Fixed bug: on Windows, argument of function Sleep() is in milliseconds.
     - Fixed minor bugs.
 
 * Release 1.2.0     (2008/03/07)
