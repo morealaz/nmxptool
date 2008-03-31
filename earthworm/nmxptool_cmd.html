@@ -417,15 +417,6 @@ DefaultNetworkCode   IV                  # Default network code where in 'Channe
                                          # in this case you might consider to subdivide the
                                          # channels into different nmxptool instances.
 
-
-ChannelFile   /home/ew/naqs1a.list.txt   # List of channel patterns, as in 'Channel'. One for each line.
-                                         # This file will not be modified by nmxptool.
-                                         # Load/Save time of last sample of each channel in a file
-                                         # with the same name, same directory, appending suffix ".nmxpstate"
-			                 # Allow data continuity when short disconnections occur.
-                                         # Related to 'MaxDataToRetrieve', it enables request of recent packets.
-                                         # It is equivalent to the option -F. Related to 'MaxDataToRetrieve'.
-
 #mschan        280/9                     # mSECs/nC
                                          # mSECs are milliseconds to wait before the next request,
                                          # nC is the number of channels to request at a time.
@@ -434,6 +425,14 @@ ChannelFile   /home/ew/naqs1a.list.txt   # List of channel patterns, as in 'Chan
                                          # Determined empiric values are default 280/9.
                                          # Condition: TotalNumberOfChannels * (mSECs/nC) < 15 sec. 
                                          # Related to -F and -b. 0/0 for disabling.
+
+ChannelFile   /home/ew/naqs1a.list.txt   # List of channel patterns, as in 'Channel'. One for each line.
+                                         # This file will not be modified by nmxptool.
+                                         # Load/Save time of last sample of each channel in a file
+                                         # with the same name, same directory, appending suffix ".nmxpstate"
+                                         # Allow data continuity between program restarts.
+                                         # Related to 'MaxDataToRetrieve', it enables request of recent packets.
+                                         # It is equivalent to the option -F. Related to 'MaxDataToRetrieve'.
 
     # DO NOT USE parameters 'Channel' and 'ChannelFile' together.
     # 'ChannelFile' is preferable. At restart you can retrieve data of the past
