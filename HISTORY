@@ -2,6 +2,9 @@
 nmxptool Release History
 #########################
 
+* Release 1.2.2-beta1    (2008/04/01) 
+    - Improved printing of info about Raw Stream data buffer. (Signal -ALRM).
+
 * Release 1.2.1    (2008/03/31) 
     - Improved request of channels in order to retrieve more efficiently
         data buffered by the NaqsServer (option -F and -b).
