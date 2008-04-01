@@ -3,6 +3,7 @@ nmxptool Release History
 #########################
 
 * Release 1.2.2-beta1    (2008/04/01) 
+    - Improved request of channels using threads.
     - Improved printing of info about Raw Stream data buffer. (Signal -ALRM).
 
 * Release 1.2.1    (2008/03/31) 
