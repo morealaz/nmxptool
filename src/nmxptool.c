@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.167 2008-04-01 08:10:48 mtheo Exp $
+ * $Id: nmxptool.c,v 1.168 2008-04-01 10:45:11 mtheo Exp $
  *
  */
 
@@ -758,6 +758,7 @@ int main (int argc, char **argv) {
 
 	/* PDS Step 5: Send AddChannels */
 	/* Request Data */
+	/* TODO better using a Thread */
 	nmxp_sendAddTimeSeriesChannel(naqssock, channelList_subset, params.stc, params.rate,
 		(params.flag_buffered)? NMXP_BUFFER_YES : NMXP_BUFFER_NO, params.n_channel, params.usec, 1);
 
