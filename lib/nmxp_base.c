@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_base.c,v 1.71 2008-03-31 11:32:36 mtheo Exp $
+ * $Id: nmxp_base.c,v 1.72 2008-04-01 14:10:05 mtheo Exp $
  *
  */
 
@@ -728,6 +728,15 @@ unsigned int nmxp_sleep(unsigned int sleep_time) {
     return 0;
 #else
     return sleep(sleep_time);
+#endif
+}
+
+unsigned int nmxp_usleep(unsigned int usleep_time) {
+#ifdef HAVE_WINDOWS_H
+    Sleep((usleep_time+500)/1000);
+    return 0;
+#else
+    return usleep(usleep_time);
 #endif
 }
 
