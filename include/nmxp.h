@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp.h,v 1.50 2008-03-28 13:21:24 mtheo Exp $
+ * $Id: nmxp.h,v 1.51 2008-04-01 08:09:13 mtheo Exp $
  *
  */
 
@@ -1020,6 +1020,7 @@ typedef struct {
 typedef struct {
     int32_t last_seq_no_sent;
     double last_sample_time;
+    double last_latency;
     int32_t max_pdlist_items;
     double max_tolerable_latency;
     int timeoutrecv;

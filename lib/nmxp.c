@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp.c,v 1.82 2008-03-28 14:17:24 mtheo Exp $
+ * $Id: nmxp.c,v 1.83 2008-04-01 08:09:10 mtheo Exp $
  *
  */
 
@@ -691,6 +691,7 @@ void nmxp_raw_stream_init(NMXP_RAW_STREAM_DATA *raw_stream_buffer, int32_t max_t
 
     raw_stream_buffer->last_seq_no_sent = -1;
     raw_stream_buffer->last_sample_time = -1.0;
+    raw_stream_buffer->last_latency = 0.0;
     /* TODO 
      * Suppose a packet can contain 1/4 secs of data (that is, minimum packet length is 0.25 secs of data) */
     raw_stream_buffer->max_tolerable_latency = max_tolerable_latency;
@@ -778,9 +779,11 @@ int nmxp_raw_stream_manage(NMXP_RAW_STREAM_DATA *p, NMXP_DATA_PROCESS *a_pd, int
 	if(p->timeoutrecv == 0) {
 	    p->last_seq_no_sent = pd->seq_no - 1;
 	    p->last_sample_time = pd->time;
+	    p->last_latency = nmxp_data_latency(pd);;
 	} else {
 	    p->last_seq_no_sent = 0;
-	    p->last_sample_time = 0;
+	    p->last_sample_time = 0.0;
+	    p->last_latency = 0.0;
 	}
 	nmxp_data_to_str(str_time, pd->time);
 	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_RAWSTREAM,
@@ -818,6 +821,7 @@ int nmxp_raw_stream_manage(NMXP_RAW_STREAM_DATA *p, NMXP_DATA_PROCESS *a_pd, int
 		}
 		p->last_seq_no_sent = (p->pdlist[0]->seq_no);
 		p->last_sample_time = (p->pdlist[0]->time + ((double) p->pdlist[0]->nSamp / (double) p->pdlist[0]->sampRate ));
+		p->last_latency = nmxp_data_latency(p->pdlist[0]);
 	    } else {
 		/* It should not occur */
 		nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_RAWSTREAM,
@@ -922,6 +926,7 @@ int nmxp_raw_stream_manage(NMXP_RAW_STREAM_DATA *p, NMXP_DATA_PROCESS *a_pd, int
 	/* Changing values */
 	p->last_seq_no_sent = p->pdlist[0]->seq_no - 1;
 	p->last_sample_time = p->pdlist[0]->time;
+	p->last_latency = nmxp_data_latency(p->pdlist[0]);
     }
 
     /* Manage array and execute func_pd() */
@@ -959,6 +964,7 @@ int nmxp_raw_stream_manage(NMXP_RAW_STREAM_DATA *p, NMXP_DATA_PROCESS *a_pd, int
 	    }
 	    p->last_seq_no_sent = p->pdlist[j]->seq_no;
 	    p->last_sample_time = (p->pdlist[j]->time + ((double) p->pdlist[j]->nSamp / (double) p->pdlist[j]->sampRate ));
+	    p->last_latency = nmxp_data_latency(p->pdlist[j]);
 	    send_again = 1;
 	    j++;
 	} else {
