@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.170 2008-04-01 14:10:15 mtheo Exp $
+ * $Id: nmxptool.c,v 1.171 2008-04-01 14:12:03 mtheo Exp $
  *
  */
 
@@ -1483,9 +1483,9 @@ static void *p_nmxp_sendAddTimeSeriesChannel(void *arg) {
     while(times_channel > 0) {
 	nmxp_sendAddTimeSeriesChannel(naqssock, channelList_subset, params.stc, params.rate,
 		(params.flag_buffered)? NMXP_BUFFER_YES : NMXP_BUFFER_NO, params.n_channel, params.usec, (i==0)? 1 : 0);
-	nmxp_usleep(params.usec+1);
 	times_channel--;
 	i++;
+	nmxp_usleep(params.usec+1);
     }
     nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "End requests of channels!\n");
 
