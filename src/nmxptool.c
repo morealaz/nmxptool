@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.165 2008-03-31 11:31:10 mtheo Exp $
+ * $Id: nmxptool.c,v 1.166 2008-04-01 05:47:38 mtheo Exp $
  *
  */
 
@@ -1249,7 +1249,8 @@ static void ShutdownHandler(int sig) {
 
     sigcondition = sig;
 
-    if(params.timeoutrecv > 0 && naqssock > 0) {
+    /* If nmxptool is not receiving data then unblock recv() */
+    if(naqssock > 0) {
 	nmxp_setsockopt_RCVTIMEO(naqssock, 1);
     }
 

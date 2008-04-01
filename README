@@ -148,8 +148,8 @@ architectures.
 
      src/nmxptool --version
 
-     nmxptool 1.2.1, Nanometrics tool
-             (Private Data Stream 1.4, Data Access Protocol 1.0)
+     nmxptool 1.2.2, Nanometrics tool
+              Private Data Stream 1.4, Data Access Protocol 1.0
               Enabled features: libmseed YES, SeedLink YES, Earthworm YES.
 
   * libmseed, The Mini-SEED library - http://www.iris.edu/manuals/
