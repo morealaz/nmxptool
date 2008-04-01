@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.168 2008-04-01 10:45:11 mtheo Exp $
+ * $Id: nmxptool.c,v 1.169 2008-04-01 13:36:00 mtheo Exp $
  *
  */
 
@@ -18,6 +18,12 @@
 #include <string.h>
 #include <errno.h>
 #include <signal.h>
+
+#ifdef HAVE_PTHREAD_H
+#include <pthread.h>
+#else
+#warning Request of channels do not use thread.
+#endif
 
 #include <nmxp.h>
 
@@ -100,6 +106,13 @@ MSRecord *msr_list_chan[MAX_N_CHAN];
 #endif
 
 int sigcondition = 0;
+
+#ifdef HAVE_PTHREAD_H
+pthread_t thread_request_channels;
+pthread_attr_t pthread_custom_attr;
+
+static void *p_nmxp_sendAddTimeSeriesChannel(void *arg);
+#endif
 
 int main (int argc, char **argv) {
     int32_t connection_time;
@@ -758,9 +771,15 @@ int main (int argc, char **argv) {
 
 	/* PDS Step 5: Send AddChannels */
 	/* Request Data */
+
 	/* TODO better using a Thread */
+#ifdef HAVE_PTHREAD_H
+	pthread_attr_init(&pthread_custom_attr);
+	pthread_create(&thread_request_channels, &pthread_custom_attr, p_nmxp_sendAddTimeSeriesChannel, (void *)NULL);
+#else
 	nmxp_sendAddTimeSeriesChannel(naqssock, channelList_subset, params.stc, params.rate,
 		(params.flag_buffered)? NMXP_BUFFER_YES : NMXP_BUFFER_NO, params.n_channel, params.usec, 1);
+#endif
 
 	/* PDS Step 6: Repeat until finished: receive and handle packets */
 
@@ -966,8 +985,12 @@ int main (int argc, char **argv) {
 
 	    }
 #endif
+
+	    /* TODO better using a Thread */
+#ifndef HAVE_PTHREAD_H
 	    nmxp_sendAddTimeSeriesChannel(naqssock, channelList_subset, params.stc, params.rate,
 		    (params.flag_buffered)? NMXP_BUFFER_YES : NMXP_BUFFER_NO, params.n_channel, params.usec, 0);
+#endif
 
 	} /* End main PDS loop */
 
@@ -1441,6 +1464,32 @@ int nmxptool_log_miniseed(const char *s) {
 
 int nmxptool_logerr_miniseed(const char *s) {
     return nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY, "%s", s);
+}
+#endif
+
+
+#ifdef HAVE_PTHREAD_H
+static void *p_nmxp_sendAddTimeSeriesChannel(void *arg) {
+    int i = 0;
+    int times_channel = 0;
+
+    if(params.n_channel == 0) {
+	times_channel = 1;
+    } else {
+	times_channel = (channelList_subset->number / params.n_channel) + 1;
+    }
+
+    nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "Begin requests of channels!\n");
+    while(times_channel > 0) {
+	nmxp_sendAddTimeSeriesChannel(naqssock, channelList_subset, params.stc, params.rate,
+		(params.flag_buffered)? NMXP_BUFFER_YES : NMXP_BUFFER_NO, params.n_channel, params.usec, (i==0)? 1 : 0);
+	usleep(params.usec+1);
+	times_channel--;
+	i++;
+    }
+    nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "End requests of channels!\n");
+
+    pthread_exit((void*) 0);
 }
 #endif
 
