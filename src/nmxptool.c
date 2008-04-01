@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.166 2008-04-01 05:47:38 mtheo Exp $
+ * $Id: nmxptool.c,v 1.167 2008-04-01 08:10:48 mtheo Exp $
  *
  */
 
@@ -1243,7 +1243,7 @@ static void flushing_raw_data_stream() {
     }
 }
 
-/* Do any needed cleanup and exit */
+/* Set sigcondition to received signal value  */
 static void ShutdownHandler(int sig) {
     /* TODO Safe Thread Synchronization */
 
@@ -1262,7 +1262,7 @@ static void ShutdownHandler(int sig) {
 } /* End of ShutdownHandler() */
 
 
-/* Signal handler routine */
+/* Signal handler routine, print info about Raw Stream data buffer */
 static void AlarmHandler(int sig) {
     /* TODO Safe Thread Synchronization */
     int chan_index;
@@ -1277,7 +1277,7 @@ static void AlarmHandler(int sig) {
     if(channelList_subset) {
 
 	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
-Channel      Ind S      x-1       LastTime            LastTimeCallRaw        AfterStartTime          LastSampleTime         SeqNo   MaxIt   MTL   TO  nIt\
+Channel      Ind S      SeqNo        x-1  nIt    lat     LastSampleTime            LastTime            LastTimeCallRaw        AfterStartTime     MaxIt   MTL   TO\
 \n");
 
 	chan_index = 0;
@@ -1291,26 +1291,50 @@ Channel      Ind S      x-1       LastTime            LastTimeCallRaw        Aft
 	    nmxp_data_to_str(raw_stream_buffer_last_sample_time_str, channelList_Seq[chan_index].raw_stream_buffer.last_sample_time);
 
 	    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY,
-		    "%3d %d %8d ",
-		    chan_index,
-		    channelList_Seq[chan_index].significant,
+		    "%3d ",
+		    chan_index);
+
+	    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY,
+		    "%d ",
+		    channelList_Seq[chan_index].significant);
+
+	    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY,
+		    "%12d ",
+		    channelList_Seq[chan_index].raw_stream_buffer.last_seq_no_sent);
+
+	    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY,
+		    "%8d ",
 		    channelList_Seq[chan_index].x_1
 		    );
+
+	    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY,
+		    "%4d ",
+		    channelList_Seq[chan_index].raw_stream_buffer.n_pdlist
+		    );
+
+	    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY,
+		    "%6.1f ",
+		    channelList_Seq[chan_index].raw_stream_buffer.last_latency
+		    );
+
+	    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "%s ", NMXP_LOG_STR(raw_stream_buffer_last_sample_time_str));
 
 	    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "%s ", NMXP_LOG_STR(last_time_str));
 	    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "%s ", NMXP_LOG_STR(last_time_call_raw_stream_str));
 	    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "%s ", NMXP_LOG_STR(after_start_time_str));
 
-	    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "%s ", NMXP_LOG_STR(raw_stream_buffer_last_sample_time_str));
+	    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY,
+		    "%5d ",
+		    channelList_Seq[chan_index].raw_stream_buffer.max_pdlist_items);
 
 	    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY,
-		    "%12d %4d %5.2f %3d %4d ",
-		    channelList_Seq[chan_index].raw_stream_buffer.last_seq_no_sent,
-		    channelList_Seq[chan_index].raw_stream_buffer.max_pdlist_items,
-		    channelList_Seq[chan_index].raw_stream_buffer.max_tolerable_latency,
-		    channelList_Seq[chan_index].raw_stream_buffer.timeoutrecv,
-		    channelList_Seq[chan_index].raw_stream_buffer.n_pdlist
-		    );
+		    "%5.2f ",
+		    channelList_Seq[chan_index].raw_stream_buffer.max_tolerable_latency);
+
+	    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY,
+		    "%3d ",
+		    channelList_Seq[chan_index].raw_stream_buffer.timeoutrecv);
+
 	    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\n");
 
 	    chan_index++;
