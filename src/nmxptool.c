@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.179 2008-04-02 07:49:39 mtheo Exp $
+ * $Id: nmxptool.c,v 1.180 2008-04-02 08:49:05 mtheo Exp $
  *
  */
 
@@ -89,7 +89,7 @@ int nmxptool_send_raw_depoch(NMXP_DATA_PROCESS *pd);
 
 #ifdef HAVE_PTHREAD_H
 pthread_t thread_request_channels;
-pthread_attr_t pthread_custom_attr;
+pthread_attr_t attr_request_channels;
 void *status_thread;
 void *p_nmxp_sendAddTimeSeriesChannel(void *arg);
 #endif
@@ -814,10 +814,10 @@ int main (int argc, char **argv) {
 	nmxp_sendAddTimeSeriesChannel(naqssock, channelList_subset, params.stc, params.rate,
 		(params.flag_buffered)? NMXP_BUFFER_YES : NMXP_BUFFER_NO, params.n_channel, params.usec, 1);
 #else
-	pthread_attr_init(&pthread_custom_attr);
-	pthread_attr_setdetachstate(&pthread_custom_attr, PTHREAD_CREATE_JOINABLE);
-	pthread_create(&thread_request_channels, &pthread_custom_attr, p_nmxp_sendAddTimeSeriesChannel, (void *)NULL);
-	pthread_attr_destroy(&pthread_custom_attr);
+	pthread_attr_init(&attr_request_channels);
+	pthread_attr_setdetachstate(&attr_request_channels, PTHREAD_CREATE_JOINABLE);
+	pthread_create(&thread_request_channels, &attr_request_channels, p_nmxp_sendAddTimeSeriesChannel, (void *)NULL);
+	pthread_attr_destroy(&attr_request_channels);
 #endif
 
 	/* PDS Step 6: Repeat until finished: receive and handle packets */
@@ -1533,7 +1533,7 @@ void *p_nmxp_sendAddTimeSeriesChannel(void *arg) {
     }
     nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "End requests of channels!\n");
 
-    pthread_exit((void*) 0);
+    pthread_exit(NULL);
 }
 #endif
 
