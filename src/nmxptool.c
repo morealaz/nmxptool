@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.173 2008-04-01 14:25:32 mtheo Exp $
+ * $Id: nmxptool.c,v 1.174 2008-04-02 05:44:05 mtheo Exp $
  *
  */
 
@@ -67,9 +67,14 @@ typedef struct {
 static void ShutdownHandler(int sig);
 static void AlarmHandler(int sig);
 
-static void save_channel_states(NMXP_CHAN_LIST_NET *chan_list, NMXPTOOL_CHAN_SEQ *chan_list_seq);
+void save_channel_states(NMXP_CHAN_LIST_NET *chan_list, NMXPTOOL_CHAN_SEQ *chan_list_seq);
 void load_channel_states(NMXP_CHAN_LIST_NET *chan_list, NMXPTOOL_CHAN_SEQ *chan_list_seq);
-static void flushing_raw_data_stream();
+void flushing_raw_data_stream();
+
+void *nmxptool_print_info_raw_stream(void *arg);
+int nmxptool_print_seq_no(NMXP_DATA_PROCESS *pd);
+int nmxptool_check_and_log_gap(double time1, double time2, const double gap_tollerance, const char *station, const char *channel);
+void nmxptool_str_time_to_filename(char *str_time);
 
 #ifdef HAVE_LIBMSEED
 int nmxptool_write_miniseed(NMXP_DATA_PROCESS *pd);
@@ -81,10 +86,11 @@ int nmxptool_logerr_miniseed(const char *s);
 int nmxptool_send_raw_depoch(NMXP_DATA_PROCESS *pd);
 #endif
 
-int nmxptool_print_seq_no(NMXP_DATA_PROCESS *pd);
-
-int nmxptool_check_and_log_gap(double time1, double time2, const double gap_tollerance, const char *station, const char *channel);
-void nmxptool_str_time_to_filename(char *str_time);
+#ifdef HAVE_PTHREAD_H
+pthread_t thread_request_channels;
+pthread_attr_t pthread_custom_attr;
+void *p_nmxp_sendAddTimeSeriesChannel(void *arg);
+#endif
 
 
 /* Global variable for main program and handling terminitation program */
@@ -106,13 +112,6 @@ MSRecord *msr_list_chan[MAX_N_CHAN];
 #endif
 
 int sigcondition = 0;
-
-#ifdef HAVE_PTHREAD_H
-pthread_t thread_request_channels;
-pthread_attr_t pthread_custom_attr;
-
-static void *p_nmxp_sendAddTimeSeriesChannel(void *arg);
-#endif
 
 int main (int argc, char **argv) {
     int32_t connection_time;
@@ -1078,7 +1077,7 @@ int main (int argc, char **argv) {
 
 #define MAX_LEN_FILENAME 4096
 
-static void save_channel_states(NMXP_CHAN_LIST_NET *chan_list, NMXPTOOL_CHAN_SEQ *chan_list_seq) {
+void save_channel_states(NMXP_CHAN_LIST_NET *chan_list, NMXPTOOL_CHAN_SEQ *chan_list_seq) {
     int to_cur_chan;
     char last_time_str[30];
     char raw_last_sample_time_str[30];
@@ -1247,7 +1246,7 @@ void load_channel_states(NMXP_CHAN_LIST_NET *chan_list, NMXPTOOL_CHAN_SEQ *chan_
 }
 
 
-static void flushing_raw_data_stream() {
+void flushing_raw_data_stream() {
     int to_cur_chan;
 
     if(channelList_subset == NULL  || channelList_Seq == NULL) {
@@ -1267,36 +1266,13 @@ static void flushing_raw_data_stream() {
     }
 }
 
-/* Set sigcondition to received signal value  */
-static void ShutdownHandler(int sig) {
-    /* TODO Safe Thread Synchronization */
 
-    sigcondition = sig;
-
-    /* If nmxptool is not receiving data then unblock recv() */
-    if(naqssock > 0) {
-	nmxp_setsockopt_RCVTIMEO(naqssock, 1);
-    }
-
-    nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "%s interrupted by signal %d!\n", NMXP_LOG_STR(PACKAGE_NAME), sig);
-
-    NMXP_MEM_PRINT_PTR;
-
-    /* exit( sig ); */
-} /* End of ShutdownHandler() */
-
-
-/* Signal handler routine, print info about Raw Stream data buffer */
-static void AlarmHandler(int sig) {
-    /* TODO Safe Thread Synchronization */
+void *nmxptool_print_info_raw_stream(void *arg) {
     int chan_index;
     char last_time_str[30];
     char last_time_call_raw_stream_str[30];
     char after_start_time_str[30];
     char raw_stream_buffer_last_sample_time_str[30];
-
-
-    nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "%s received signal %d!\n", NMXP_LOG_STR(PACKAGE_NAME), sig);
 
     if(channelList_subset) {
 
@@ -1366,6 +1342,37 @@ Channel      Ind S      SeqNo        x-1  nIt    lat     LastSampleTime         
     } else {
 	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY, "Channel list is NULL!\n");
     }
+
+    return NULL;
+}
+
+
+/* Set sigcondition to received signal value  */
+static void ShutdownHandler(int sig) {
+    /* TODO Safe Thread Synchronization */
+
+    sigcondition = sig;
+
+    /* If nmxptool is not receiving data then unblock recv() */
+    if(naqssock > 0) {
+	nmxp_setsockopt_RCVTIMEO(naqssock, 1);
+    }
+
+    nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "%s interrupted by signal %d!\n", NMXP_LOG_STR(PACKAGE_NAME), sig);
+
+    NMXP_MEM_PRINT_PTR;
+
+    /* exit( sig ); */
+} /* End of ShutdownHandler() */
+
+
+/* Signal handler routine, print info about Raw Stream data buffer */
+static void AlarmHandler(int sig) {
+    /* TODO Safe Thread Synchronization */
+
+    nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "%s received signal %d!\n", NMXP_LOG_STR(PACKAGE_NAME), sig);
+
+    nmxptool_print_info_raw_stream(NULL);
 
     NMXP_MEM_PRINT_PTR;
 }
@@ -1469,7 +1476,7 @@ int nmxptool_logerr_miniseed(const char *s) {
 
 
 #ifdef HAVE_PTHREAD_H
-static void *p_nmxp_sendAddTimeSeriesChannel(void *arg) {
+void *p_nmxp_sendAddTimeSeriesChannel(void *arg) {
     int i = 0;
     int times_channel = 0;
 
