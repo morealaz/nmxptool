@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_log.h,v 1.13 2008-03-01 22:32:44 mtheo Exp $
+ * $Id: nmxp_log.h,v 1.14 2008-04-02 09:18:21 mtheo Exp $
  *
  */
 
@@ -52,6 +52,12 @@
 ( NMXP_LOG_D_CHANSTATE | NMXP_LOG_D_CHANNEL | NMXP_LOG_D_RAWSTREAM | NMXP_LOG_D_CRC | NMXP_LOG_D_CONNFLOW | \
   NMXP_LOG_D_PACKETMAN | NMXP_LOG_D_EXTRA | NMXP_LOG_D_DATE | NMXP_LOG_D_GAP | NMXP_LOG_D_DOD )
 
+/*! \brief  Add prefix string for logging
+ *
+ * \param prefix string message
+ *
+ */
+void nmxp_log_set_prefix(char *prefix);
 
 /*! \brief  Print value of PACKAGE_NAME and PACKAGE_VERSION
  */

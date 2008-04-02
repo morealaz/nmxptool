@@ -6,6 +6,7 @@ nmxptool Release History
     - Improved signal handling using safe threads.
     - Improved request of channels using threads.
     - Improved printing of info about Raw Stream data buffer. (Signal -ALRM).
+    - Added 'pluginid' to prefix log messages when launched as Seedlink plug-in.
 
 * Release 1.2.1    (2008/03/31) 
     - Improved request of channels in order to retrieve more efficiently
