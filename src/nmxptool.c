@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.176 2008-04-02 06:35:50 mtheo Exp $
+ * $Id: nmxptool.c,v 1.177 2008-04-02 06:59:20 mtheo Exp $
  *
  */
 
@@ -226,6 +226,9 @@ int main (int argc, char **argv) {
 	    return 1;
 	}
 
+#else
+	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY, "Earthworm feature has not been enabled in compilation!\n");
+	return 1;
 #endif
 
     } else {
