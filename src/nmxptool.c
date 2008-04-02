@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.175 2008-04-02 06:35:21 mtheo Exp $
+ * $Id: nmxptool.c,v 1.176 2008-04-02 06:35:50 mtheo Exp $
  *
  */
 
@@ -185,7 +185,8 @@ int main (int argc, char **argv) {
     sigaction(SIGHUP, &sa, NULL);
     sigaction(SIGPIPE, &sa, NULL); 
 #else
-    /* Signal handling, using function signal() */
+    /* Signal handling, use function signal() */
+
     /*
     signal(SIGALRM, AlarmHandler);
     */
