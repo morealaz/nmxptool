@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.177 2008-04-02 06:59:20 mtheo Exp $
+ * $Id: nmxptool.c,v 1.178 2008-04-02 07:38:04 mtheo Exp $
  *
  */
 
@@ -90,6 +90,7 @@ int nmxptool_send_raw_depoch(NMXP_DATA_PROCESS *pd);
 #ifdef HAVE_PTHREAD_H
 pthread_t thread_request_channels;
 pthread_attr_t pthread_custom_attr;
+void *status_thread;
 void *p_nmxp_sendAddTimeSeriesChannel(void *arg);
 #endif
 
@@ -785,23 +786,6 @@ int main (int argc, char **argv) {
 	    NMXP_MEM_FREE(channelList_subset_waste);
 	    channelList_subset_waste = NULL;
 	}
-	
-	/* PDS Step 4: Send a Request Pending (optional) */
-
-	/* PDS Step 5: Send AddChannels */
-	/* Request Data */
-
-	/* TODO better using a Thread */
-#ifdef HAVE_PTHREAD_H
-	pthread_attr_init(&pthread_custom_attr);
-	pthread_create(&thread_request_channels, &pthread_custom_attr, p_nmxp_sendAddTimeSeriesChannel, (void *)NULL);
-	pthread_attr_destroy(&pthread_custom_attr);
-#else
-	nmxp_sendAddTimeSeriesChannel(naqssock, channelList_subset, params.stc, params.rate,
-		(params.flag_buffered)? NMXP_BUFFER_YES : NMXP_BUFFER_NO, params.n_channel, params.usec, 1);
-#endif
-
-	/* PDS Step 6: Repeat until finished: receive and handle packets */
 
 #ifdef HAVE_LIBMSEED
 	if(params.flag_writeseed) {
@@ -819,6 +803,24 @@ int main (int argc, char **argv) {
 	    }
 	}
 #endif
+	
+	/* PDS Step 4: Send a Request Pending (optional) */
+
+	/* PDS Step 5: Send AddChannels */
+	/* Request Data */
+
+	/* Better using a Thread */
+#ifndef HAVE_PTHREAD_H
+	nmxp_sendAddTimeSeriesChannel(naqssock, channelList_subset, params.stc, params.rate,
+		(params.flag_buffered)? NMXP_BUFFER_YES : NMXP_BUFFER_NO, params.n_channel, params.usec, 1);
+#else
+	pthread_attr_init(&pthread_custom_attr);
+	pthread_attr_setdetachstate(&pthread_custom_attr, PTHREAD_CREATE_JOINABLE);
+	pthread_create(&thread_request_channels, &pthread_custom_attr, p_nmxp_sendAddTimeSeriesChannel, (void *)NULL);
+	pthread_attr_destroy(&pthread_custom_attr);
+#endif
+
+	/* PDS Step 6: Repeat until finished: receive and handle packets */
 
 	/* TODO*/
 	exitpdscondition = 1;
@@ -1006,13 +1008,17 @@ int main (int argc, char **argv) {
 	    }
 #endif
 
-	    /* TODO better using a Thread */
+	    /* Better using a Thread */
 #ifndef HAVE_PTHREAD_H
 	    nmxp_sendAddTimeSeriesChannel(naqssock, channelList_subset, params.stc, params.rate,
 		    (params.flag_buffered)? NMXP_BUFFER_YES : NMXP_BUFFER_NO, params.n_channel, params.usec, 0);
 #endif
 
 	} /* End main PDS loop */
+
+#ifdef HAVE_PTHREAD_H
+	pthread_join(thread_request_channels, &status_thread);
+#endif
 
 	/* Flush raw data stream for each channel */
 	flushing_raw_data_stream();
@@ -1023,7 +1029,6 @@ int main (int argc, char **argv) {
 	    fclose(data_seed.outfile_mseed);
 	}
 #endif
-
 
 	/* PDS Step 7: Send Terminate Subscription */
 	nmxp_sendTerminateSubscription(naqssock, NMXP_SHUTDOWN_NORMAL, "Good Bye!");
