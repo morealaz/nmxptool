@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp.c,v 1.83 2008-04-01 08:09:10 mtheo Exp $
+ * $Id: nmxp.c,v 1.84 2008-04-02 06:34:04 mtheo Exp $
  *
  */
 
@@ -145,6 +145,7 @@ int nmxp_sendAddTimeSeriesChannel(int isock, NMXP_CHAN_LIST_NET *channelList, in
 	i = 0;
     }
 
+    /* Check if requests could be satisfied within NMXP_MAX_MSCHAN_MSEC */
     if(estimated_time > ((double) NMXP_MAX_MSCHAN_MSEC / 1000.0)) {
 	n_usec = ( (double) NMXP_MAX_MSCHAN_MSEC * 1000.0 ) * ( (double) n_channel / (double) channelList->number);
 	estimated_time = (double) channelList->number * ( ((double) n_usec / 1000000.0) / (double) n_channel);
