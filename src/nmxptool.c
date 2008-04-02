@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.174 2008-04-02 05:44:05 mtheo Exp $
+ * $Id: nmxptool.c,v 1.175 2008-04-02 06:35:21 mtheo Exp $
  *
  */
 
@@ -22,7 +22,8 @@
 #ifdef HAVE_PTHREAD_H
 #include <pthread.h>
 #else
-#warning Request of channels do not use thread.
+#warning Requests of channels could not be efficient because they do not use a separate thread. 
+#warning Management of 'sigcondition' is not thread safe. Anyway, it is not so bad presently.
 #endif
 
 #include <nmxp.h>
@@ -113,6 +114,17 @@ MSRecord *msr_list_chan[MAX_N_CHAN];
 
 int sigcondition = 0;
 
+/* Safe Thread Synchronization for sigcondition if defined HAVE_PTHREAD_H */
+#ifdef HAVE_PTHREAD_H
+pthread_mutex_t mutexsig;
+#endif
+
+void nmxptool_init_sigcondition();
+void nmxptool_destroy_sigcondition();
+int nmxptool_read_sigcondition();
+void nmxptool_write_sigcondition(int new_sig);
+
+
 int main (int argc, char **argv) {
     int32_t connection_time;
     int request_SOCKET_OK;
@@ -134,6 +146,7 @@ int main (int argc, char **argv) {
     void *buffer = NULL;
     int32_t length;
     int ret;
+    int main_ret = 0;
 
     int pd_null_count = 0;
     int timeoutrecv_warning = 300; /* 5 minutes */
@@ -172,6 +185,7 @@ int main (int argc, char **argv) {
     sigaction(SIGHUP, &sa, NULL);
     sigaction(SIGPIPE, &sa, NULL); 
 #else
+    /* Signal handling, using function signal() */
     /*
     signal(SIGALRM, AlarmHandler);
     */
@@ -187,6 +201,8 @@ int main (int argc, char **argv) {
     signal(SIGPIPE, SIG_IGN);
     */
 #endif
+
+    nmxptool_init_sigcondition();
 
     /* Default is normal output */
     nmxp_log(NMXP_LOG_SET, NMXP_LOG_D_NULL);
@@ -375,7 +391,7 @@ int main (int argc, char **argv) {
 
     times_flow = 0;
 
-    while(times_flow < 2  &&  recv_errno == 0 && !sigcondition) {
+    while(times_flow < 2  &&  recv_errno == 0 && !nmxptool_read_sigcondition()) {
 
 	if(params.statefile) {
 	    load_channel_states(channelList_subset, channelList_Seq);
@@ -442,14 +458,14 @@ int main (int argc, char **argv) {
 
 	default_start_time = (params.start_time > 0.0)? params.start_time : nmxp_data_gmtime_now() - params.max_data_to_retrieve;
 
-	while(exitdapcondition  &&  !sigcondition) {
+	while(exitdapcondition  &&  !nmxptool_read_sigcondition()) {
 
 	    /* Start loop for sending requests */
 	    request_chan=0;
 	    request_SOCKET_OK = NMXP_SOCKET_OK;
 
 	    /* For each channel */
-	    while(request_SOCKET_OK == NMXP_SOCKET_OK  &&  request_chan < channelList_subset->number  &&  exitdapcondition && !sigcondition) {
+	    while(request_SOCKET_OK == NMXP_SOCKET_OK  &&  request_chan < channelList_subset->number  &&  exitdapcondition && !nmxptool_read_sigcondition()) {
 
 		if(params.statefile) {
 		    if(channelList_Seq[request_chan].after_start_time > 0) {
@@ -775,6 +791,7 @@ int main (int argc, char **argv) {
 #ifdef HAVE_PTHREAD_H
 	pthread_attr_init(&pthread_custom_attr);
 	pthread_create(&thread_request_channels, &pthread_custom_attr, p_nmxp_sendAddTimeSeriesChannel, (void *)NULL);
+	pthread_attr_destroy(&pthread_custom_attr);
 #else
 	nmxp_sendAddTimeSeriesChannel(naqssock, channelList_subset, params.stc, params.rate,
 		(params.flag_buffered)? NMXP_BUFFER_YES : NMXP_BUFFER_NO, params.n_channel, params.usec, 1);
@@ -804,7 +821,7 @@ int main (int argc, char **argv) {
 
 	skip_current_packet = 0;
 
-	while(exitpdscondition && !sigcondition) {
+	while(exitpdscondition && !nmxptool_read_sigcondition()) {
 
 	    /* Process Compressed or Decompressed Data */
 	    pd = nmxp_receiveData(naqssock, channelList_subset, NETCODE_OR_CURRENT_NETWORK, params.timeoutrecv, &recv_errno);
@@ -1067,11 +1084,13 @@ int main (int argc, char **argv) {
 	channelList_subset = NULL;
     }
 
-    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CONNFLOW, "return code %d\n", sigcondition);
+    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CONNFLOW, "return code %d\n", nmxptool_read_sigcondition());
 
     NMXP_MEM_PRINT_PTR;
 
-    return sigcondition;
+    main_ret = nmxptool_read_sigcondition();
+    nmxptool_destroy_sigcondition();
+    return main_ret;
 } /* End MAIN */
 
 
@@ -1349,9 +1368,9 @@ Channel      Ind S      SeqNo        x-1  nIt    lat     LastSampleTime         
 
 /* Set sigcondition to received signal value  */
 static void ShutdownHandler(int sig) {
-    /* TODO Safe Thread Synchronization */
 
-    sigcondition = sig;
+    /* Safe Thread Synchronization */
+    nmxptool_write_sigcondition(sig);
 
     /* If nmxptool is not receiving data then unblock recv() */
     if(naqssock > 0) {
@@ -1362,7 +1381,6 @@ static void ShutdownHandler(int sig) {
 
     NMXP_MEM_PRINT_PTR;
 
-    /* exit( sig ); */
 } /* End of ShutdownHandler() */
 
 
@@ -1376,8 +1394,6 @@ static void AlarmHandler(int sig) {
 
     NMXP_MEM_PRINT_PTR;
 }
-
-
 
 
 
@@ -1479,6 +1495,7 @@ int nmxptool_logerr_miniseed(const char *s) {
 void *p_nmxp_sendAddTimeSeriesChannel(void *arg) {
     int i = 0;
     int times_channel = 0;
+    double estimated_time = 0.0;
 
     if(params.n_channel == 0) {
 	times_channel = 1;
@@ -1487,14 +1504,21 @@ void *p_nmxp_sendAddTimeSeriesChannel(void *arg) {
 	times_channel += (((channelList_subset->number % params.n_channel) == 0)? 0 : 1);
     }
 
+    /* Check if requests could be satisfied within NMXP_MAX_MSCHAN_MSEC */
+    estimated_time = (double) channelList_subset->number * ( ((double) params.usec / 1000000.0) / (double) params.n_channel);
+    if(estimated_time > ((double) NMXP_MAX_MSCHAN_MSEC / 1000.0)) {
+	params.usec = ( (double) NMXP_MAX_MSCHAN_MSEC * 1000.0 ) * ( (double) params.n_channel / (double) channelList_subset->number);
+	estimated_time = (double) channelList_subset->number * ( ((double) params.usec / 1000000.0) / (double) params.n_channel);
+    }
+
     nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "Begin requests of channels!\n");
-    while(times_channel > 0) {
+    while(times_channel > 0  &&  !nmxptool_read_sigcondition()) {
 	nmxp_sendAddTimeSeriesChannel(naqssock, channelList_subset, params.stc, params.rate,
 		(params.flag_buffered)? NMXP_BUFFER_YES : NMXP_BUFFER_NO, params.n_channel, params.usec, (i==0)? 1 : 0);
 	times_channel--;
 	i++;
 	if(times_channel > 0) {
-	    nmxp_usleep(params.usec+1);
+	    nmxp_usleep(params.usec);
 	}
     }
     nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "End requests of channels!\n");
@@ -1502,4 +1526,40 @@ void *p_nmxp_sendAddTimeSeriesChannel(void *arg) {
     pthread_exit((void*) 0);
 }
 #endif
+
+
+void nmxptool_init_sigcondition() {
+#ifdef HAVE_PTHREAD_H
+    pthread_mutex_init(&mutexsig, NULL);
+#endif
+}
+
+void nmxptool_destroy_sigcondition() {
+#ifdef HAVE_PTHREAD_H
+    pthread_mutex_destroy(&mutexsig);
+#endif
+}
+
+int nmxptool_read_sigcondition() {
+    int ret = 0;
+#ifdef HAVE_PTHREAD_H
+    pthread_mutex_lock (&mutexsig);
+#endif
+    ret = sigcondition;
+#ifdef HAVE_PTHREAD_H
+    pthread_mutex_unlock (&mutexsig);
+#endif
+    return ret;
+}
+
+void nmxptool_write_sigcondition(int new_sig) {
+#ifdef HAVE_PTHREAD_H
+    pthread_mutex_lock (&mutexsig);
+#endif
+    sigcondition = new_sig;
+#ifdef HAVE_PTHREAD_H
+    pthread_mutex_unlock (&mutexsig);
+#endif
+}
+
 
