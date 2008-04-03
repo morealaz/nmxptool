@@ -51,7 +51,7 @@ void nmxptool_ew_report_status ( MSG_LOGO *pLogo, short code, char * message );
 
 int nmxptool_ew_check_flag_terminate();
 void nmxptool_ew_send_heartbeat_if_needed();
-void nmxptool_ew_send_error(unsigned int ierr, char *message);
+void nmxptool_ew_send_error(unsigned int ierr, char *message, const char *hostname);
 
 int nmxptool_ew_logit_msg ( char *msg );
 int nmxptool_ew_logit_err (  char *msg );
