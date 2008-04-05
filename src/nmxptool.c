@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.183 2008-04-05 05:28:48 mtheo Exp $
+ * $Id: nmxptool.c,v 1.184 2008-04-05 06:56:33 mtheo Exp $
  *
  */
 
@@ -48,7 +48,10 @@
 
 #define TIMES_FLOW_EXIT 100
 
+int if_dap_condition_only_one_time = 0;
+
 #define DAP_CONDITION(params_struct) ( params_struct.start_time != 0.0 || params_struct.delay > 0 )
+#define EXIT_CONDITION (!nmxptool_read_sigcondition()  &&  !ew_check_flag_terminate  &&  !if_dap_condition_only_one_time)
 
 #define CURRENT_NETWORK ( (params.network)? params.network : DEFAULT_NETWORK )
 #define NETCODE_OR_CURRENT_NETWORK ( (network_code[0] != 0)? network_code : CURRENT_NETWORK )
@@ -308,12 +311,13 @@ int main (int argc, char **argv) {
 #endif
 
     /* Exit only on request */
-    while(!nmxptool_read_sigcondition()  &&  !ew_check_flag_terminate) {
+    while(EXIT_CONDITION) {
 
     NMXP_MEM_PRINT_PTR;
 
     /* Get list of available channels and get a subset list of params.channels */
     if( DAP_CONDITION(params) ) {
+	if_dap_condition_only_one_time = 1;
 	/* From DataServer */
 	if(!nmxp_getMetaChannelList(params.hostname, params.portnumberdap, NMXP_DATA_TIMESERIES,
 		    params.flag_request_channelinfo, params.datas_username, params.datas_password, &channelList)) {
@@ -742,6 +746,7 @@ int main (int argc, char **argv) {
 
 	/* DAP Step 9: Close the socket */
 	nmxp_closeSocket(naqssock);
+	naqssock = 0;
 
 	/* ************************************************************ */
 	/* End subscription protocol "DATA ACCESS PROTOCOL" version 1.0 */
@@ -1038,6 +1043,7 @@ int main (int argc, char **argv) {
 
 	/* PDS Step 8: Close the socket */
 	nmxp_closeSocket(naqssock);
+	naqssock = 0;
 
 	/* *********************************************************** */
 	/* End subscription protocol "PRIVATE DATA STREAM" version 1.4 */
@@ -1095,7 +1101,7 @@ int main (int argc, char **argv) {
     NMXP_MEM_PRINT_PTR;
 
     /* Same condition of while 'Exit only on request' */
-    if(!nmxptool_read_sigcondition()  &&  !ew_check_flag_terminate) {
+    if(EXIT_CONDITION) {
 	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CONNFLOW, "Sleep %d seconds before re-conect.\n", params.networkdelay);
 	nmxp_sleep(params.networkdelay);
     }
