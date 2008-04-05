@@ -23,10 +23,13 @@
 
 #else
 
+/* Uncomment following line for logging malloc(), strdup() and free() calls */
+/* #define NMXP_MEM_DEBUG_LOG_SINGLE 1 */
+
 #define NMXP_MEM_MALLOC(size) nmxp_mem_malloc(size, __FILE__, __LINE__)
 #define NMXP_MEM_STRDUP(str) nmxp_mem_strdup(str, __FILE__, __LINE__)
 #define NMXP_MEM_FREE(ptr) nmxp_mem_free(ptr, __FILE__, __LINE__)
-#define NMXP_MEM_PRINT_PTR nmxp_mem_print_ptr()
+#define NMXP_MEM_PRINT_PTR nmxp_mem_print_ptr(__FILE__, __LINE__)
 
 
 #include <stdlib.h>
@@ -62,7 +65,7 @@ void nmxp_mem_free(void *ptr, char *source_file, int line);
  * \param 
  *
  */
-void nmxp_mem_print_ptr();
+void nmxp_mem_print_ptr(char *source_file, int line);
 
 #endif
 

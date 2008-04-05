@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_memory.c,v 1.3 2008-03-28 16:27:15 mtheo Exp $
+ * $Id: nmxp_memory.c,v 1.4 2008-04-05 21:36:22 mtheo Exp $
  *
  */
 
@@ -53,7 +53,7 @@ static int nmxp_mem_add_ptr(void *ptr, size_t size, char *source_file_line, stru
     return ret;
 }
 
-void nmxp_mem_print_ptr() {
+void nmxp_mem_print_ptr(char *source_file, int line) {
     int i;
     static int old_tot_size = 0;
     int tot_size;
@@ -80,7 +80,7 @@ void nmxp_mem_print_ptr() {
 	old_tot_size = tot_size;
     }
 
-    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "nmxp_mem_print_ptr() tot %d\n", tot_size);
+    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "nmxp_mem_print_ptr() tot %d  %s:%d\n", tot_size, source_file, line);
 }
 
 static int nmxp_mem_rem_ptr(void *ptr, struct timeval *tv, int *size) {
@@ -132,7 +132,9 @@ void *nmxp_mem_malloc(size_t size, char *source_file, int line) {
     ret = malloc(size);
     strncpy(source_file_line, nmxp_mem_source_file_line(source_file, line), MAX_LEN_SOURCE_FILE_LINE);
     i = nmxp_mem_add_ptr(ret, size, source_file_line, &tv);
+#ifdef NMXP_MEM_DEBUG_LOG_SINGLE
     nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "nmxp_mem_malloc %d.%d %010p+%d %s_%d\n", tv.tv_sec, tv.tv_usec, ret, size, source_file_line, i);
+#endif
     return ret;
 }
 
@@ -152,7 +154,9 @@ char *nmxp_mem_strdup(const char *str, char *source_file, int line) {
     }
     strncpy(source_file_line, nmxp_mem_source_file_line(source_file, line), MAX_LEN_SOURCE_FILE_LINE);
     i = nmxp_mem_add_ptr(ret, size, source_file_line, &tv);
+#ifdef NMXP_MEM_DEBUG_LOG_SINGLE
     nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "nmxp_mem_strdup %d.%d %010p+%d %s_%d\n", tv.tv_sec, tv.tv_usec, ret, size, source_file_line, i);
+#endif
     return ret;
 }
 
@@ -166,7 +170,9 @@ void nmxp_mem_free(void *ptr, char *source_file, int line) {
     if(ptr) {
 	i = nmxp_mem_rem_ptr(ptr, &tv, &size);
 	strncpy(source_file_line, nmxp_mem_source_file_line(source_file, line), MAX_LEN_SOURCE_FILE_LINE);
+#ifdef NMXP_MEM_DEBUG_LOG_SINGLE
 	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "nmxp_mem_free   %d.%d %010p+%d %s_%d\n", tv.tv_sec, tv.tv_usec, ptr, size, source_file_line, i);
+#endif
 	free(ptr);
     }
 }
