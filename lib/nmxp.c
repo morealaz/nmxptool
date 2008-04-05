@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp.c,v 1.85 2008-04-05 13:50:45 mtheo Exp $
+ * $Id: nmxp.c,v 1.86 2008-04-05 14:08:00 mtheo Exp $
  *
  */
 
@@ -121,6 +121,7 @@ int nmxp_sendAddTimeSeriesChannel(int isock, NMXP_CHAN_LIST_NET *channelList, in
     static int first_time = 1;
     static struct timeval last_tp_now;
 
+    char s_channels[1024];
     int j;
     int ret = 0;
     NMXP_CHAN_LIST_NET split_channelList;
@@ -182,13 +183,13 @@ int nmxp_sendAddTimeSeriesChannel(int isock, NMXP_CHAN_LIST_NET *channelList, in
 			    i++;
 		    }
 		    if(split_channelList.number > 0) {
-			    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CONNFLOW,
-					    "%.0f/%d chan %d of %d:", (double)diff_usec/1000.0, split_channelList.number,
-					    i, channelList->number);
+			snprintf(s_channels, 1024, "%.0f/%d chan %d of %d:",
+				(double)diff_usec/1000.0, split_channelList.number, i, channelList->number);
 			    for(j=0; j < split_channelList.number; j++) {
-				    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, " %s", NMXP_LOG_STR(split_channelList.channel[j].name));
+				strncat(s_channels," ", 1024);
+				strncat(s_channels, NMXP_LOG_STR(split_channelList.channel[j].name), 1024);
 			    }
-			    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\n");
+			    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CONNFLOW, "%s\n", s_channels);
 			    ret = nmxp_sendAddTimeSeriesChannel_raw(isock, &split_channelList, shortTermCompletion, out_format, buffer_flag);
 		    }
 		    /* } */
