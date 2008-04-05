@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.185 2008-04-05 13:10:33 mtheo Exp $
+ * $Id: nmxptool.c,v 1.186 2008-04-05 13:50:25 mtheo Exp $
  *
  */
 
@@ -398,7 +398,7 @@ int main (int argc, char **argv) {
 
     }
 
-    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CONNFLOW, "Starting comunication.\n");
+    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CONNFLOW, "Begin communication.\n");
 
     times_flow = 0;
     recv_errno = 0;
@@ -1066,7 +1066,7 @@ int main (int argc, char **argv) {
 
     } /* End times_flow loop */
 
-    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CONNFLOW, "End comunication.\n");
+    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CONNFLOW, "End communication.\n");
 
 #ifdef HAVE_LIBMSEED
 	if(params.flag_writeseed) {
@@ -1540,7 +1540,7 @@ void *p_nmxp_sendAddTimeSeriesChannel(void *arg) {
 	nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "New value for mschan is %d/%d!\n", params.usec / 1000, params.n_channel);
     }
 
-    nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "Begin requests of channels!\n");
+    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CONNFLOW, "Begin requests of channels!\n");
     while(times_channel > 0  &&  !nmxptool_read_sigcondition()) {
 	nmxp_sendAddTimeSeriesChannel(naqssock, channelList_subset, params.stc, params.rate,
 		(params.flag_buffered)? NMXP_BUFFER_YES : NMXP_BUFFER_NO, params.n_channel, params.usec, (i==0)? 1 : 0);
@@ -1550,7 +1550,7 @@ void *p_nmxp_sendAddTimeSeriesChannel(void *arg) {
 	    nmxp_usleep(params.usec);
 	}
     }
-    nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "End requests of channels!\n");
+    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CONNFLOW, "End requests of channels!\n");
 
     pthread_exit(NULL);
 }

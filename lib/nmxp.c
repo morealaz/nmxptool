@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp.c,v 1.84 2008-04-02 06:34:04 mtheo Exp $
+ * $Id: nmxp.c,v 1.85 2008-04-05 13:50:45 mtheo Exp $
  *
  */
 
@@ -135,7 +135,7 @@ int nmxp_sendAddTimeSeriesChannel(int isock, NMXP_CHAN_LIST_NET *channelList, in
     estimated_time = (double) channelList->number * ( ((double) n_usec / 1000000.0) / (double) n_channel);
 
     if(flag_restart) {
-	nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY,
+	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CONNFLOW,
 		"Estimated time for channel requests: %d * (%d/%d) = %.3f sec.\n",
 		channelList->number, n_usec / 1000, n_channel,
 		estimated_time);
@@ -182,7 +182,7 @@ int nmxp_sendAddTimeSeriesChannel(int isock, NMXP_CHAN_LIST_NET *channelList, in
 			    i++;
 		    }
 		    if(split_channelList.number > 0) {
-			    nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY,
+			    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CONNFLOW,
 					    "%.0f/%d chan %d of %d:", (double)diff_usec/1000.0, split_channelList.number,
 					    i, channelList->number);
 			    for(j=0; j < split_channelList.number; j++) {
