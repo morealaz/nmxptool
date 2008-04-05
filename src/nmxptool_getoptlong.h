@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.h,v 1.98 2008-03-20 12:43:50 mtheo Exp $
+ * $Id: nmxptool_getoptlong.h,v 1.99 2008-04-05 05:28:48 mtheo Exp $
  *
  */
 
@@ -57,6 +57,10 @@
 #define DEFAULT_MAX_TIME_TO_RETRIEVE_MAXIMUM	86400
 #define DEFAULT_MAX_TIME_TO_RETRIEVE 		0
 
+#define DEFAULT_NETWORKDELAY	5
+#define DEFAULT_NETWORKDELAY_MINIMUM	3
+#define DEFAULT_NETWORKDELAY_MAXIMUM	60
+
 /* Empiric constant values TODO */
 #define DEFAULT_N_CHANNEL		9
 #define DEFAULT_N_CHANNEL_MINIMUM	3
@@ -92,6 +96,7 @@ typedef struct {
     int n_channel;
     int usec;
     int32_t max_data_to_retrieve;
+    int networkdelay;  /* sleep 'networkdelay' seconds before reconnect */
     int flag_writeseed;
     int flag_listchannels;
     int flag_listchannelsnaqs;

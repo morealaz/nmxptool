@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.97 2008-04-02 09:18:21 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.98 2008-04-05 05:28:48 mtheo Exp $
  *
  */
 
@@ -47,6 +47,7 @@ const NMXPTOOL_PARAMS NMXPTOOL_PARAMS_DEFAULT =
     DEFAULT_N_CHANNEL,
     DEFAULT_USEC,
     DEFAULT_MAX_TIME_TO_RETRIEVE,
+    DEFAULT_NETWORKDELAY,
     0,
     0,
     0,
@@ -1003,6 +1004,14 @@ int nmxptool_check_params(NMXPTOOL_PARAMS *params) {
 		    DEFAULT_TIMEOUTRECV_MINIMUM,
 		    DEFAULT_TIMEOUTRECV_MAXIMUM);
 	}
+
+    } else if(
+	    (params->networkdelay < DEFAULT_NETWORKDELAY_MINIMUM  ||
+	     params->networkdelay > DEFAULT_NETWORKDELAY_MAXIMUM)) {
+	ret = -1;
+	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "<networkdelay> has to be within [%d..%d].\n",
+		DEFAULT_NETWORKDELAY_MINIMUM,
+		DEFAULT_NETWORKDELAY_MAXIMUM);
 
 	/* Follow warning messages only */
     } else if( params->stc != -1 && params->max_tolerable_latency > 0 ){
