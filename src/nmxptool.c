@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.181 2008-04-03 22:12:58 mtheo Exp $
+ * $Id: nmxptool.c,v 1.182 2008-04-05 04:42:35 mtheo Exp $
  *
  */
 
@@ -113,6 +113,7 @@ NMXP_DATA_SEED data_seed;
 MSRecord *msr_list_chan[MAX_N_CHAN];
 #endif
 
+int ew_check_flag_terminate = 0;
 int sigcondition = 0;
 
 /* Safe Thread Synchronization for sigcondition if defined HAVE_PTHREAD_H */
@@ -151,6 +152,9 @@ int main (int argc, char **argv) {
 
     int pd_null_count = 0;
     int timeoutrecv_warning = 300; /* 5 minutes */
+
+    /* TODO moved in params */
+    int networkdelay = 3; /* sleep 'networkdelay' seconds before reconnect */
 
     int times_flow = 0;
 
@@ -262,10 +266,6 @@ int main (int argc, char **argv) {
 	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "verbose_level %d\n", params.verbose_level);
     }
 
-    nmxptool_log_params(&params);
-
-    NMXP_MEM_PRINT_PTR;
-
 #ifdef HAVE_LIBMSEED
     if(params.flag_writeseed) {
 	ms_loginit((void*)&nmxptool_log_miniseed, NULL, (void*)&nmxptool_logerr_miniseed, "error: ");
@@ -274,6 +274,46 @@ int main (int argc, char **argv) {
     }
 #endif
 
+    nmxptool_log_params(&params);
+
+    if(params.stc == -1) {
+
+	if(params.flag_logdata) {
+	    p_func_pd[n_func_pd++] = nmxptool_print_seq_no;
+	}
+
+#ifdef HAVE_LIBMSEED
+	/* Write Mini-SEED record */
+	if(params.flag_writeseed) {
+	    p_func_pd[n_func_pd++] = nmxptool_write_miniseed;
+	}
+#endif
+
+#ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
+	/* Send data to SeedLink Server */
+	if(params.flag_slink) {
+	    p_func_pd[n_func_pd++] = nmxptool_send_raw_depoch;
+	}
+#endif
+
+#ifdef HAVE_EARTHWORMOBJS
+	if(params.ew_configuration_file) {
+	    p_func_pd[n_func_pd++] = nmxptool_ew_nmx2ew;
+	}
+#endif
+
+    }
+
+#ifdef HAVE_EARTHWORMOBJS
+    if(params.ew_configuration_file) {
+	nmxptool_ew_attach();
+    }
+#endif
+
+    /* Exit only on request */
+    while(!nmxptool_read_sigcondition()  &&  !ew_check_flag_terminate) {
+
+    NMXP_MEM_PRINT_PTR;
 
     /* Get list of available channels and get a subset list of params.channels */
     if( DAP_CONDITION(params) ) {
@@ -357,44 +397,10 @@ int main (int argc, char **argv) {
 
     }
 
-#ifdef HAVE_EARTHWORMOBJS
-    if(params.ew_configuration_file) {
-	nmxptool_ew_attach();
-    }
-#endif
-
-    if(params.stc == -1) {
-
-	if(params.flag_logdata) {
-	    p_func_pd[n_func_pd++] = nmxptool_print_seq_no;
-	}
-
-#ifdef HAVE_LIBMSEED
-	/* Write Mini-SEED record */
-	if(params.flag_writeseed) {
-	    p_func_pd[n_func_pd++] = nmxptool_write_miniseed;
-	}
-#endif
-
-#ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
-	/* Send data to SeedLink Server */
-	if(params.flag_slink) {
-	    p_func_pd[n_func_pd++] = nmxptool_send_raw_depoch;
-	}
-#endif
-
-#ifdef HAVE_EARTHWORMOBJS
-	if(params.ew_configuration_file) {
-	    p_func_pd[n_func_pd++] = nmxptool_ew_nmx2ew;
-	}
-#endif
-
-    }
-
-
     nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CONNFLOW, "Starting comunication.\n");
 
     times_flow = 0;
+    recv_errno = 0;
 
     while(times_flow < 2  &&  recv_errno == 0 && !nmxptool_read_sigcondition()) {
 
@@ -702,7 +708,7 @@ int main (int argc, char **argv) {
 		if(params.ew_configuration_file) {
 
 		    /* Check if we are being asked to terminate */
-		    if( nmxptool_ew_check_flag_terminate() ) {
+		    if( (ew_check_flag_terminate = nmxptool_ew_check_flag_terminate()) ) {
 			logit ("t", "nmxptool terminating on request\n");
 			nmxptool_ew_send_error(NMXPTOOL_EW_ERR_TERMREQ, NULL, params.hostname);
 			exitdapcondition = 0;
@@ -995,7 +1001,7 @@ int main (int argc, char **argv) {
 	    if(params.ew_configuration_file) {
 
 		/* Check if we are being asked to terminate */
-		if( nmxptool_ew_check_flag_terminate() ) {
+		if( (ew_check_flag_terminate = nmxptool_ew_check_flag_terminate()) ) {
 		    logit ("t", "nmxptool terminating on request\n");
 		    nmxptool_ew_send_error(NMXPTOOL_EW_ERR_TERMREQ, NULL, params.hostname);
 		    exitpdscondition = 0;
@@ -1057,11 +1063,7 @@ int main (int argc, char **argv) {
 
     } /* End times_flow loop */
 
-#ifdef HAVE_EARTHWORMOBJS
-	if(params.ew_configuration_file) {
-	    nmxptool_ew_detach();
-	}
-#endif
+    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CONNFLOW, "End comunication.\n");
 
 #ifdef HAVE_LIBMSEED
 	if(params.flag_writeseed) {
@@ -1093,12 +1095,26 @@ int main (int argc, char **argv) {
 	channelList_subset = NULL;
     }
 
-    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CONNFLOW, "return code %d\n", nmxptool_read_sigcondition());
-
     NMXP_MEM_PRINT_PTR;
+
+    /* Same condition of while 'Exit only on request' */
+    if(!nmxptool_read_sigcondition()  &&  !ew_check_flag_terminate) {
+	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CONNFLOW, "Sleep %d seconds before re-conect.\n", networkdelay);
+	nmxp_sleep(networkdelay);
+    }
+
+    } /* End 'exit only on request' loop */
+
+#ifdef HAVE_EARTHWORMOBJS
+    if(params.ew_configuration_file) {
+	nmxptool_ew_detach();
+    }
+#endif
 
     main_ret = nmxptool_read_sigcondition();
     nmxptool_destroy_sigcondition();
+
+    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CONNFLOW, "return code %d\n", main_ret);
     return main_ret;
 } /* End MAIN */
 
