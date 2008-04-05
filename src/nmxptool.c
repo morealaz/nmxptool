@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.184 2008-04-05 06:56:33 mtheo Exp $
+ * $Id: nmxptool.c,v 1.185 2008-04-05 13:10:33 mtheo Exp $
  *
  */
 
@@ -1102,7 +1102,7 @@ int main (int argc, char **argv) {
 
     /* Same condition of while 'Exit only on request' */
     if(EXIT_CONDITION) {
-	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CONNFLOW, "Sleep %d seconds before re-conect.\n", params.networkdelay);
+	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CONNFLOW, "Sleep %d seconds before re-connect.\n", params.networkdelay);
 	nmxp_sleep(params.networkdelay);
     }
 
