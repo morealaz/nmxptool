@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.187 2008-04-05 21:35:53 mtheo Exp $
+ * $Id: nmxptool.c,v 1.188 2008-04-06 11:32:48 mtheo Exp $
  *
  */
 
@@ -313,7 +313,7 @@ int main (int argc, char **argv) {
     /* Exit only on request */
     while(EXIT_CONDITION) {
 
-    NMXP_MEM_PRINT_PTR;
+    NMXP_MEM_PRINT_PTR(0);
 
     /* Get list of available channels and get a subset list of params.channels */
     if( DAP_CONDITION(params) ) {
@@ -1080,8 +1080,6 @@ int main (int argc, char **argv) {
 	}
 #endif
 
-    NMXP_MEM_PRINT_PTR;
-
     if(channelList_Seq  &&  channelList_subset) {
 
 	for(i_chan = 0; i_chan < channelList_subset->number; i_chan++) {
@@ -1097,8 +1095,6 @@ int main (int argc, char **argv) {
 	NMXP_MEM_FREE(channelList_subset);
 	channelList_subset = NULL;
     }
-
-    NMXP_MEM_PRINT_PTR;
 
     /* Same condition of while 'Exit only on request' */
     if(EXIT_CONDITION) {
@@ -1119,7 +1115,7 @@ int main (int argc, char **argv) {
 	params.channels = NULL;
     }
 
-    NMXP_MEM_PRINT_PTR;
+    NMXP_MEM_PRINT_PTR(1);
 
     main_ret = nmxptool_read_sigcondition();
     nmxptool_destroy_sigcondition();
@@ -1404,6 +1400,8 @@ Channel      Ind S      SeqNo        x-1  nIt    lat     LastSampleTime         
 /* Set sigcondition to received signal value  */
 static void ShutdownHandler(int sig) {
 
+    NMXP_MEM_PRINT_PTR(0);
+
     /* Safe Thread Synchronization */
     nmxptool_write_sigcondition(sig);
 
@@ -1413,8 +1411,6 @@ static void ShutdownHandler(int sig) {
     }
 
     nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "%s interrupted by signal %d!\n", NMXP_LOG_STR(PACKAGE_NAME), sig);
-
-    NMXP_MEM_PRINT_PTR;
 
 } /* End of ShutdownHandler() */
 
@@ -1426,8 +1422,6 @@ static void AlarmHandler(int sig) {
     nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "%s received signal %d!\n", NMXP_LOG_STR(PACKAGE_NAME), sig);
 
     nmxptool_print_info_raw_stream(NULL);
-
-    NMXP_MEM_PRINT_PTR;
 }
 
 

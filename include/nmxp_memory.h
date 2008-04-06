@@ -19,7 +19,7 @@
 #define NMXP_MEM_MALLOC(size) malloc(size)
 #define NMXP_MEM_STRDUP(str) strdup(str)
 #define NMXP_MEM_FREE(ptr) free(ptr)
-#define NMXP_MEM_PRINT_PTR { }
+#define NMXP_MEM_PRINT_PTR(print_items) { }
 
 #else
 
@@ -29,7 +29,7 @@
 #define NMXP_MEM_MALLOC(size) nmxp_mem_malloc(size, __FILE__, __LINE__)
 #define NMXP_MEM_STRDUP(str) nmxp_mem_strdup(str, __FILE__, __LINE__)
 #define NMXP_MEM_FREE(ptr) nmxp_mem_free(ptr, __FILE__, __LINE__)
-#define NMXP_MEM_PRINT_PTR nmxp_mem_print_ptr(__FILE__, __LINE__)
+#define NMXP_MEM_PRINT_PTR(print_items) nmxp_mem_print_ptr(print_items, __FILE__, __LINE__)
 
 
 #include <stdlib.h>
@@ -65,7 +65,7 @@ void nmxp_mem_free(void *ptr, char *source_file, int line);
  * \param 
  *
  */
-void nmxp_mem_print_ptr(char *source_file, int line);
+void nmxp_mem_print_ptr(int print_items, char *source_file, int line);
 
 #endif
 
