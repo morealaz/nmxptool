@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_memory.c,v 1.5 2008-04-06 11:32:48 mtheo Exp $
+ * $Id: nmxp_memory.c,v 1.6 2008-04-08 13:27:10 mtheo Exp $
  *
  */
 
@@ -64,9 +64,9 @@ void nmxp_mem_print_ptr(int print_items, char *source_file, int line) {
     }
 
     if(tot_size != old_tot_size) {
-	i=0;
-	while(i<i_nms  && i_nms < MAX_MEM_STRUCTS) {
-	    if(print_items) {
+	if(print_items) {
+	    i=0;
+	    while(i<i_nms  && i_nms < MAX_MEM_STRUCTS) {
 		nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "%d %d.%d %010p %d %s\n",
 			i,
 			nms[i].tv.tv_sec,
@@ -75,9 +75,8 @@ void nmxp_mem_print_ptr(int print_items, char *source_file, int line) {
 			nms[i].size,
 			nms[i].source_file_line
 			);
+		i++;
 	    }
-	    
-	    i++;
 	}
 	old_tot_size = tot_size;
     }
