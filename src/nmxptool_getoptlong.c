@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.98 2008-04-05 05:28:48 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.99 2008-04-08 06:30:57 mtheo Exp $
  *
  */
 
@@ -608,7 +608,7 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 				"Channels have been already defined by State File (option -F)!\n");
 			ret_errors++;
 		    } else {
-			params->channels = optarg;
+			params->channels = NMXP_MEM_STRDUP(optarg);
 		    }
 		    break;
 
