@@ -4,6 +4,8 @@ bin_PROGRAMS = nmxptool
 nmxptool_SOURCES  = nmxptool.c
 nmxptool_SOURCES += nmxptool_getoptlong.c nmxptool_getoptlong.h
 nmxptool_SOURCES += nmxptool_ew.c nmxptool_ew.h
+nmxptool_SOURCES += nmxptool_chanseq.c nmxptool_chanseq.h
+nmxptool_SOURCES += nmxptool_sigcondition.c nmxptool_sigcondition.h
 
 nmxptool_CFLAGS= -I../include
 nmxptool_LDADD= ../lib/libnmxp.a

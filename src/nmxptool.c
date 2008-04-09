@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.188 2008-04-06 11:32:48 mtheo Exp $
+ * $Id: nmxptool.c,v 1.189 2008-04-09 07:59:11 mtheo Exp $
  *
  */
 
@@ -19,20 +19,20 @@
 #include <errno.h>
 #include <signal.h>
 
+#include <nmxp.h>
+#include "nmxptool_getoptlong.h"
+#include "nmxptool_chanseq.h"
+#include "nmxptool_sigcondition.h"
+
 #ifdef HAVE_PTHREAD_H
 #include <pthread.h>
 #else
 #warning Requests of channels could not be efficient because they do not use a separate thread. 
-#warning Management of 'sigcondition' is not thread safe. Anyway, it is not so bad presently.
 #endif
-
-#include <nmxp.h>
 
 #ifdef HAVE_WINDOWS_H
 #include <windows.h>
 #endif
-
-#include "nmxptool_getoptlong.h"
 
 #ifdef HAVE_EARTHWORMOBJS
 #include "nmxptool_ew.h"
@@ -51,33 +51,18 @@
 int if_dap_condition_only_one_time = 0;
 
 #define DAP_CONDITION(params_struct) ( params_struct.start_time != 0.0 || params_struct.delay > 0 )
-#define EXIT_CONDITION (!nmxptool_read_sigcondition()  &&  !ew_check_flag_terminate  &&  !if_dap_condition_only_one_time)
+#define EXIT_CONDITION (!nmxptool_sigcondition_read()  &&  !ew_check_flag_terminate  &&  !if_dap_condition_only_one_time)
 
 #define CURRENT_NETWORK ( (params.network)? params.network : DEFAULT_NETWORK )
 #define NETCODE_OR_CURRENT_NETWORK ( (network_code[0] != 0)? network_code : CURRENT_NETWORK )
 
-#define GAP_TOLLERANCE 0.001
-
-typedef struct {
-    int significant;
-    double last_time;
-    time_t last_time_call_raw_stream;
-    int32_t x_1;
-    double after_start_time;
-    NMXP_RAW_STREAM_DATA raw_stream_buffer;
-} NMXPTOOL_CHAN_SEQ;
-
-
 static void ShutdownHandler(int sig);
 static void AlarmHandler(int sig);
 
-void save_channel_states(NMXP_CHAN_LIST_NET *chan_list, NMXPTOOL_CHAN_SEQ *chan_list_seq);
-void load_channel_states(NMXP_CHAN_LIST_NET *chan_list, NMXPTOOL_CHAN_SEQ *chan_list_seq);
 void flushing_raw_data_stream();
 
 void *nmxptool_print_info_raw_stream(void *arg);
 int nmxptool_print_seq_no(NMXP_DATA_PROCESS *pd);
-int nmxptool_check_and_log_gap(double time1, double time2, const double gap_tollerance, const char *station, const char *channel);
 void nmxptool_str_time_to_filename(char *str_time);
 
 #ifdef HAVE_LIBMSEED
@@ -117,18 +102,6 @@ MSRecord *msr_list_chan[MAX_N_CHAN];
 #endif
 
 int ew_check_flag_terminate = 0;
-int sigcondition = 0;
-
-/* Safe Thread Synchronization for sigcondition if defined HAVE_PTHREAD_H */
-#ifdef HAVE_PTHREAD_H
-pthread_mutex_t mutexsig;
-#endif
-
-void nmxptool_init_sigcondition();
-void nmxptool_destroy_sigcondition();
-int nmxptool_read_sigcondition();
-void nmxptool_write_sigcondition(int new_sig);
-
 
 int main (int argc, char **argv) {
     int32_t connection_time;
@@ -145,7 +118,6 @@ int main (int argc, char **argv) {
 
     char str_start_time[200] = "";
     char str_end_time[200] = "";
-    char str_pd_time[200] = "";
 
     NMXP_MSG_SERVER type;
     void *buffer = NULL;
@@ -208,7 +180,7 @@ int main (int argc, char **argv) {
     */
 #endif
 
-    nmxptool_init_sigcondition();
+    nmxptool_sigcondition_init();
 
     /* Default is normal output */
     nmxp_log(NMXP_LOG_SET, NMXP_LOG_D_NULL);
@@ -348,18 +320,7 @@ int main (int argc, char **argv) {
     } else {
 	nmxp_chan_print_netchannelList(channelList_subset);
 
-	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CHANNEL, "Init channelList_Seq.\n");
-
-	/* init channelList_Seq */
-	channelList_Seq = (NMXPTOOL_CHAN_SEQ *) NMXP_MEM_MALLOC(sizeof(NMXPTOOL_CHAN_SEQ) * channelList_subset->number);
-	for(i_chan = 0; i_chan < channelList_subset->number; i_chan++) {
-	    channelList_Seq[i_chan].significant = 0;
-	    channelList_Seq[i_chan].last_time = 0.0;
-	    channelList_Seq[i_chan].last_time_call_raw_stream = 0;
-	    channelList_Seq[i_chan].x_1 = 0;
-	    channelList_Seq[i_chan].after_start_time = DEFAULT_BUFFERED_TIME;
-	    nmxp_raw_stream_init(&(channelList_Seq[i_chan].raw_stream_buffer), params.max_tolerable_latency, params.timeoutrecv);
-	}
+	nmxptool_chanseq_init(&channelList_Seq, channelList_subset->number, DEFAULT_BUFFERED_TIME, params.max_tolerable_latency, params.timeoutrecv);
 
 #ifdef HAVE_LIBMSEED
 	if(params.flag_writeseed) {
@@ -403,10 +364,10 @@ int main (int argc, char **argv) {
     times_flow = 0;
     recv_errno = 0;
 
-    while(times_flow < 2  &&  recv_errno == 0 && !nmxptool_read_sigcondition()) {
+    while(times_flow < 2  &&  recv_errno == 0 && !nmxptool_sigcondition_read()) {
 
 	if(params.statefile) {
-	    load_channel_states(channelList_subset, channelList_Seq);
+	    nmxptool_chanseq_load_states(channelList_subset, channelList_Seq, params.statefile);
 	}
 
 	if(times_flow == 0) {
@@ -470,14 +431,14 @@ int main (int argc, char **argv) {
 
 	default_start_time = (params.start_time > 0.0)? params.start_time : nmxp_data_gmtime_now() - params.max_data_to_retrieve;
 
-	while(exitdapcondition  &&  !nmxptool_read_sigcondition()) {
+	while(exitdapcondition  &&  !nmxptool_sigcondition_read()) {
 
 	    /* Start loop for sending requests */
 	    request_chan=0;
 	    request_SOCKET_OK = NMXP_SOCKET_OK;
 
 	    /* For each channel */
-	    while(request_SOCKET_OK == NMXP_SOCKET_OK  &&  request_chan < channelList_subset->number  &&  exitdapcondition && !nmxptool_read_sigcondition()) {
+	    while(request_SOCKET_OK == NMXP_SOCKET_OK  &&  request_chan < channelList_subset->number  &&  exitdapcondition && !nmxptool_sigcondition_read()) {
 
 		if(params.statefile) {
 		    if(channelList_Seq[request_chan].after_start_time > 0) {
@@ -619,21 +580,7 @@ int main (int argc, char **argv) {
 			} else {
 
 			/* Management of gaps */
-			if(!channelList_Seq[cur_chan].significant && pd->nSamp > 0) {
-			    channelList_Seq[cur_chan].significant = 1;
-			} else {
-			    if(channelList_Seq[cur_chan].significant && pd->nSamp > 0) {
-				if(nmxptool_check_and_log_gap(pd->time, channelList_Seq[cur_chan].last_time, GAP_TOLLERANCE, pd->station, pd->channel)) {
-				    channelList_Seq[cur_chan].x_1 = 0;
-				    nmxp_data_to_str(str_pd_time, pd->time);
-				    nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_EXTRA, "%s.%s x0 set to zero at %s!\n",
-					    NMXP_LOG_STR(pd->station), NMXP_LOG_STR(pd->channel), NMXP_LOG_STR(str_pd_time));
-				}
-			    }
-			}
-			if(channelList_Seq[cur_chan].significant && pd->nSamp > 0) {
-			    channelList_Seq[cur_chan].last_time = pd->time + ((double) pd->nSamp / (double) pd->sampRate);
-			}
+			nmxptool_chanseq_gap(&(channelList_Seq[cur_chan]), pd);
 
 #ifdef HAVE_LIBMSEED
 			/* Write Mini-SEED record */
@@ -835,7 +782,7 @@ int main (int argc, char **argv) {
 
 	skip_current_packet = 0;
 
-	while(exitpdscondition && !nmxptool_read_sigcondition()) {
+	while(exitpdscondition && !nmxptool_sigcondition_read()) {
 
 	    /* Process Compressed or Decompressed Data */
 	    pd = nmxp_receiveData(naqssock, channelList_subset, NETCODE_OR_CURRENT_NETWORK, params.timeoutrecv, &recv_errno);
@@ -953,22 +900,7 @@ int main (int argc, char **argv) {
 
 		    if(pd) {
 			/* Management of gaps */
-			if(!channelList_Seq[cur_chan].significant && pd->nSamp > 0) {
-			    channelList_Seq[cur_chan].significant = 1;
-			} else {
-			    if(channelList_Seq[cur_chan].significant && pd->nSamp > 0) {
-				if(nmxptool_check_and_log_gap(pd->time, channelList_Seq[cur_chan].last_time, GAP_TOLLERANCE, pd->station, pd->channel)) {
-				    channelList_Seq[cur_chan].x_1 = 0;
-				    nmxp_data_to_str(str_pd_time, pd->time);
-				    nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_EXTRA, "%s.%s x0 set to zero at %s!\n",
-					    NMXP_LOG_STR(pd->station), NMXP_LOG_STR(pd->channel), NMXP_LOG_STR(str_pd_time));
-				}
-			    }
-			}
-			if(channelList_Seq[cur_chan].significant && pd->nSamp > 0) {
-			    channelList_Seq[cur_chan].last_time = pd->time + ((double) pd->nSamp / (double) pd->sampRate);
-			}
-
+			nmxptool_chanseq_gap(&(channelList_Seq[cur_chan]), pd);
 
 #ifdef HAVE_LIBMSEED
 			/* Write Mini-SEED record */
@@ -1061,7 +993,7 @@ int main (int argc, char **argv) {
     }
 
     if(params.statefile) {
-	save_channel_states(channelList_subset, channelList_Seq);
+	nmxptool_chanseq_save_states(channelList_subset, channelList_Seq, params.statefile);
     }
 
     } /* End times_flow loop */
@@ -1081,13 +1013,7 @@ int main (int argc, char **argv) {
 #endif
 
     if(channelList_Seq  &&  channelList_subset) {
-
-	for(i_chan = 0; i_chan < channelList_subset->number; i_chan++) {
-	    nmxp_raw_stream_free(&(channelList_Seq[i_chan].raw_stream_buffer));
-	}
-
-	NMXP_MEM_FREE(channelList_Seq);
-	channelList_Seq = NULL;
+	nmxptool_chanseq_free(&channelList_Seq, channelList_subset->number);
     }
 
     /* This has to be the last */
@@ -1117,183 +1043,12 @@ int main (int argc, char **argv) {
 
     NMXP_MEM_PRINT_PTR(1);
 
-    main_ret = nmxptool_read_sigcondition();
-    nmxptool_destroy_sigcondition();
+    main_ret = nmxptool_sigcondition_read();
+    nmxptool_sigocondition_destroy();
 
     nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CONNFLOW, "return code %d\n", main_ret);
     return main_ret;
 } /* End MAIN */
-
-
-#define MAX_LEN_FILENAME 4096
-
-void save_channel_states(NMXP_CHAN_LIST_NET *chan_list, NMXPTOOL_CHAN_SEQ *chan_list_seq) {
-    int to_cur_chan;
-    char last_time_str[30];
-    char raw_last_sample_time_str[30];
-    char state_line_str[1000];
-    FILE *fstatefile = NULL;
-    char statefilefilename[MAX_LEN_FILENAME] = "";
-
-    if(chan_list == NULL  ||  chan_list_seq == NULL) {
-	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANSTATE, "save_channel_states() channel lists are NULL!\n");
-	return;
-    }
-
-    if(params.statefile) {
-	strncpy(statefilefilename, params.statefile, MAX_LEN_FILENAME);
-	strncat(statefilefilename, NMXP_STR_STATE_EXT, MAX_LEN_FILENAME);
-	fstatefile = fopen(statefilefilename, "w");
-	if(fstatefile == NULL) {
-	    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANSTATE, "Unable to write channel states into %s!\n",
-		    NMXP_LOG_STR(statefilefilename));
-	} else {
-	    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CHANSTATE, "Writing channel states into %s!\n",
-		    NMXP_LOG_STR(statefilefilename));
-	}
-
-	/* Save state for each channel */
-	/* if(params.stc == -1)*/
-	to_cur_chan = 0;
-	while(to_cur_chan < chan_list->number) {
-	    nmxp_data_to_str(last_time_str, chan_list_seq[to_cur_chan].last_time);
-	    nmxp_data_to_str(raw_last_sample_time_str, chan_list_seq[to_cur_chan].raw_stream_buffer.last_sample_time);
-	    sprintf(state_line_str, "%10d %s %s %s",
-		    chan_list->channel[to_cur_chan].key,
-		    chan_list->channel[to_cur_chan].name,
-		    last_time_str,
-		    raw_last_sample_time_str
-		   );
-	    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CHANSTATE, "%s\n", NMXP_LOG_STR(state_line_str));
-	    if(fstatefile) {
-		fprintf(fstatefile, "%s\n", state_line_str);
-		if( (chan_list_seq[to_cur_chan].last_time != 0) || (chan_list_seq[to_cur_chan].raw_stream_buffer.last_sample_time != -1.0) ) {
-		    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CHANSTATE, "%s %d %d %f %f\n",
-			    NMXP_LOG_STR(state_line_str), to_cur_chan, chan_list->channel[to_cur_chan].key,
-			    chan_list_seq[to_cur_chan].last_time, chan_list_seq[to_cur_chan].raw_stream_buffer.last_sample_time);
-		} else {
-		    /* Do nothing */
-		}
-	    }
-	    to_cur_chan++;
-	}
-	if(fstatefile) {
-	    fclose(fstatefile);
-	}
-    }
-}
-
-void load_channel_states(NMXP_CHAN_LIST_NET *chan_list, NMXPTOOL_CHAN_SEQ *chan_list_seq) {
-    FILE *fstatefile = NULL;
-    FILE *fstatefileINPUT = NULL;
-#define MAXSIZE_LINE 2048
-    char line[MAXSIZE_LINE];
-    char s_chan[128];
-    char s_noraw_time_s[128];
-    char s_rawtime_s[128];
-    double s_noraw_time_f_calc, s_rawtime_f_calc;
-    int cur_chan;
-    int n_scanf;
-    int32_t key_chan;
-    NMXP_TM_T tmp_tmt;
-    char statefilefilename[MAX_LEN_FILENAME] = "";
-
-    if(params.statefile) {
-	strncpy(statefilefilename, params.statefile, MAX_LEN_FILENAME);
-	strncat(statefilefilename, NMXP_STR_STATE_EXT, MAX_LEN_FILENAME);
-	fstatefile = fopen(statefilefilename, "r");
-	if(fstatefile == NULL) {
-	    fstatefileINPUT = fopen(params.statefile, "r");
-	    if(fstatefileINPUT == NULL) {
-		nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANSTATE, "Unable to read channel states from %s!\n",
-			NMXP_LOG_STR(params.statefile));
-	    } else {
-		fstatefile = fopen(statefilefilename, "w");
-		if(fstatefile == NULL) {
-		    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANSTATE, "Unable to write channel states into %s!\n",
-			    NMXP_LOG_STR(statefilefilename));
-		} else {
-		    /*
-		    while(fgets(line, MAXSIZE_LINE, fstatefileINPUT) != NULL) {
-			fputs(line, fstatefile);
-		    }
-		    */
-		    fclose(fstatefile);
-		}
-		fclose(fstatefileINPUT);
-	    }
-	}
-    }
-
-    if(params.statefile) {
-	strncpy(statefilefilename, params.statefile, MAX_LEN_FILENAME);
-	strncat(statefilefilename, NMXP_STR_STATE_EXT, MAX_LEN_FILENAME);
-	fstatefile = fopen(statefilefilename, "r");
-	if(fstatefile == NULL) {
-	    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANSTATE, "Unable to read channel states from %s!\n",
-		    NMXP_LOG_STR(statefilefilename));
-	} else {
-	    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CHANSTATE, "Loading channel states from %s!\n",
-		    NMXP_LOG_STR(statefilefilename));
-	    while(fgets(line, MAXSIZE_LINE, fstatefile) != NULL) {
-		s_chan[0] = 0;
-		s_noraw_time_s[0] = 0;
-		s_rawtime_s[0] = 0;
-		n_scanf = sscanf(line, "%d %s %s %s", &key_chan, s_chan, s_noraw_time_s, s_rawtime_s); 
-
-		s_noraw_time_f_calc = DEFAULT_BUFFERED_TIME;
-		s_rawtime_f_calc = DEFAULT_BUFFERED_TIME;
-		if(n_scanf == 4) {
-		    if(nmxp_data_parse_date(s_noraw_time_s, &tmp_tmt) == -1) {
-			nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANSTATE, "Parsing time '%s'\n", NMXP_LOG_STR(s_noraw_time_s)); 
-		    } else {
-			s_noraw_time_f_calc = nmxp_data_tm_to_time(&tmp_tmt);
-		    }
-		    if(nmxp_data_parse_date(s_rawtime_s, &tmp_tmt) == -1) {
-			nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANSTATE, "Parsing time '%s'\n", NMXP_LOG_STR(s_rawtime_s)); 
-		    } else {
-			s_rawtime_f_calc = nmxp_data_tm_to_time(&tmp_tmt);
-		    }
-		}
-
-		nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CHANSTATE, "%d %12d %-14s %16.4f %s %16.4f %s\n",
-			n_scanf, key_chan, s_chan,
-			s_noraw_time_f_calc, NMXP_LOG_STR(s_noraw_time_s),
-			s_rawtime_f_calc, NMXP_LOG_STR(s_rawtime_s)); 
-
-		cur_chan = 0;
-		while(cur_chan < chan_list->number  &&  strcasecmp(s_chan, chan_list->channel[cur_chan].name) != 0) {
-		    cur_chan++;
-		}
-		if(cur_chan < chan_list->number) {
-		    if( s_rawtime_f_calc != DEFAULT_BUFFERED_TIME  && s_rawtime_f_calc != 0.0 ) {
-			chan_list_seq[cur_chan].after_start_time                   = s_rawtime_f_calc;
-			chan_list_seq[cur_chan].last_time                          = s_rawtime_f_calc;
-			chan_list_seq[cur_chan].raw_stream_buffer.last_sample_time = s_rawtime_f_calc;
-			nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CHANSTATE, "For channel %s (%d %d) starting from %s. %f.\n",
-				NMXP_LOG_STR(s_chan), cur_chan, chan_list->channel[cur_chan].key,
-				NMXP_LOG_STR(s_rawtime_s), s_rawtime_f_calc); 
-		    } else if( s_noraw_time_f_calc != DEFAULT_BUFFERED_TIME ) {
-			chan_list_seq[cur_chan].after_start_time                   = s_noraw_time_f_calc;
-			chan_list_seq[cur_chan].last_time                          = s_noraw_time_f_calc;
-			chan_list_seq[cur_chan].raw_stream_buffer.last_sample_time = s_noraw_time_f_calc;
-			nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CHANSTATE, "For channel %s (%d %d) starting from %s. %f.\n",
-				NMXP_LOG_STR(s_chan), cur_chan, chan_list->channel[cur_chan].key,
-				NMXP_LOG_STR(s_noraw_time_s), s_noraw_time_f_calc); 
-		    } else {
-			nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANSTATE, "For channel %s there is not valid start_time.\n",
-				NMXP_LOG_STR(s_chan)); 
-		    }
-		} else {
-		    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANSTATE, "Channel %s not found! (%d %s)\n",
-			    NMXP_LOG_STR(s_chan), strlen(line), NMXP_LOG_STR(line)); 
-		}
-	    }
-	    fclose(fstatefile);
-	}
-    }
-    errno = 0;
-}
 
 
 void flushing_raw_data_stream() {
@@ -1403,7 +1158,7 @@ static void ShutdownHandler(int sig) {
     NMXP_MEM_PRINT_PTR(0);
 
     /* Safe Thread Synchronization */
-    nmxptool_write_sigcondition(sig);
+    nmxptool_sigcondition_write(sig);
 
     /* If nmxptool is not receiving data then unblock recv() */
     if(naqssock > 0) {
@@ -1420,6 +1175,8 @@ static void AlarmHandler(int sig) {
     /* TODO Safe Thread Synchronization */
 
     nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "%s received signal %d!\n", NMXP_LOG_STR(PACKAGE_NAME), sig);
+
+    NMXP_MEM_PRINT_PTR(0);
 
     nmxptool_print_info_raw_stream(NULL);
 }
@@ -1475,25 +1232,6 @@ int nmxptool_send_raw_depoch(NMXP_DATA_PROCESS *pd) {
 
 
 
-int nmxptool_check_and_log_gap(double time1, double time2, const double gap_tollerance, const char *station, const char *channel) {
-    char str_time1[200];
-    char str_time2[200];
-    int ret = 0;
-    double gap = time1 - time2 ;
-    nmxp_data_to_str(str_time1, time1);
-    nmxp_data_to_str(str_time2, time2);
-    if(gap > gap_tollerance) {
-	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_GAP, "Gap %.2f sec. for %s.%s from %s to %s!\n",
-		gap, NMXP_LOG_STR(station), NMXP_LOG_STR(channel), NMXP_LOG_STR(str_time2), NMXP_LOG_STR(str_time1));
-	ret = 1;
-    } else if (gap < -gap_tollerance) {
-	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_GAP, "Overlap %.2f sec. for %s.%s from %s to %s!\n",
-		gap, NMXP_LOG_STR(station), NMXP_LOG_STR(channel), NMXP_LOG_STR(str_time1), NMXP_LOG_STR(str_time2));
-	ret = 1;
-    }
-    return ret;
-}
-
 void nmxptool_str_time_to_filename(char *str_time) {
     int i;
     for(i=0; i<strlen(str_time); i++) {
@@ -1542,7 +1280,7 @@ void *p_nmxp_sendAddTimeSeriesChannel(void *arg) {
     }
 
     nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CONNFLOW, "Begin requests of channels!\n");
-    while(times_channel > 0  &&  !nmxptool_read_sigcondition()) {
+    while(times_channel > 0  &&  !nmxptool_sigcondition_read()) {
 	nmxp_sendAddTimeSeriesChannel(naqssock, channelList_subset, params.stc, params.rate,
 		(params.flag_buffered)? NMXP_BUFFER_YES : NMXP_BUFFER_NO, params.n_channel, params.usec, (i==0)? 1 : 0);
 	times_channel--;
@@ -1556,40 +1294,5 @@ void *p_nmxp_sendAddTimeSeriesChannel(void *arg) {
     pthread_exit(NULL);
 }
 #endif
-
-
-void nmxptool_init_sigcondition() {
-#ifdef HAVE_PTHREAD_H
-    pthread_mutex_init(&mutexsig, NULL);
-#endif
-}
-
-void nmxptool_destroy_sigcondition() {
-#ifdef HAVE_PTHREAD_H
-    pthread_mutex_destroy(&mutexsig);
-#endif
-}
-
-int nmxptool_read_sigcondition() {
-    int ret = 0;
-#ifdef HAVE_PTHREAD_H
-    pthread_mutex_lock (&mutexsig);
-#endif
-    ret = sigcondition;
-#ifdef HAVE_PTHREAD_H
-    pthread_mutex_unlock (&mutexsig);
-#endif
-    return ret;
-}
-
-void nmxptool_write_sigcondition(int new_sig) {
-#ifdef HAVE_PTHREAD_H
-    pthread_mutex_lock (&mutexsig);
-#endif
-    sigcondition = new_sig;
-#ifdef HAVE_PTHREAD_H
-    pthread_mutex_unlock (&mutexsig);
-#endif
-}
 
 
