@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp.c,v 1.87 2008-04-08 07:57:23 mtheo Exp $
+ * $Id: nmxp.c,v 1.88 2008-04-09 07:57:01 mtheo Exp $
  *
  */
 
@@ -78,41 +78,49 @@ int nmxp_receiveChannelList(int isock, NMXP_CHAN_LIST **pchannelList) {
 
 
 int nmxp_sendAddTimeSeriesChannel_raw(int isock, NMXP_CHAN_LIST_NET *channelList, int32_t shortTermCompletion, int32_t out_format, NMXP_BUFFER_FLAG buffer_flag) {
-    int ret;
+    int ret = NMXP_SOCKET_OK;
     int32_t buffer_length = 16 + (4 * channelList->number); 
-    char *buffer = NMXP_MEM_MALLOC(buffer_length);
+    char *buffer = NULL;
     int32_t app, i, disp;
 
-    disp=0;
+    if(buffer_length > 0) {
 
-    app = htonl(channelList->number);
-    memcpy(&buffer[disp], &app, 4);
-    disp+=4;
+	buffer = NMXP_MEM_MALLOC(buffer_length);
 
-    for(i=0; i < channelList->number; i++) {
-	app = htonl(channelList->channel[i].key);
+	disp=0;
+
+	app = htonl(channelList->number);
 	memcpy(&buffer[disp], &app, 4);
 	disp+=4;
+
+	for(i=0; i < channelList->number; i++) {
+	    app = htonl(channelList->channel[i].key);
+	    memcpy(&buffer[disp], &app, 4);
+	    disp+=4;
+	}
+
+	app = htonl(shortTermCompletion);
+	memcpy(&buffer[disp], &app, 4);
+	disp+=4;
+
+	app = htonl(out_format);
+	memcpy(&buffer[disp], &app, 4);
+	disp+=4;
+
+	app = htonl(buffer_flag);
+	memcpy(&buffer[disp], &app, 4);
+	disp+=4;
+
+	ret = nmxp_sendMessage(isock, NMXP_MSG_ADDTIMESERIESCHANNELS, buffer, buffer_length);
+
+	if(buffer) {
+	    NMXP_MEM_FREE(buffer);
+	    buffer = NULL;
+	}
+    } else {
+	nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "nmxp_sendAddTimeSeriesChannel_raw() buffer length = %d.\n", buffer_length);
     }
-    
-    app = htonl(shortTermCompletion);
-    memcpy(&buffer[disp], &app, 4);
-    disp+=4;
 
-    app = htonl(out_format);
-    memcpy(&buffer[disp], &app, 4);
-    disp+=4;
-
-    app = htonl(buffer_flag);
-    memcpy(&buffer[disp], &app, 4);
-    disp+=4;
-
-    ret = nmxp_sendMessage(isock, NMXP_MSG_ADDTIMESERIESCHANNELS, buffer, buffer_length);
-
-    if(buffer) {
-	NMXP_MEM_FREE(buffer);
-	buffer = NULL;
-    }
     return ret;
 }
 
