@@ -40,7 +40,7 @@
  * \param 
  *
  */
-void *nmxp_mem_malloc(size_t size, char *source_file, int line);
+inline void *nmxp_mem_malloc(size_t size, char *source_file, int line);
 
 
 /*! \brief 
@@ -49,7 +49,8 @@ void *nmxp_mem_malloc(size_t size, char *source_file, int line);
  * \param 
  *
  */
-char *nmxp_mem_strdup(const char *str, char *source_file, int line);
+inline char *nmxp_mem_strdup(const char *str, char *source_file, int line);
+
 
 /*! \brief 
  *
@@ -57,7 +58,8 @@ char *nmxp_mem_strdup(const char *str, char *source_file, int line);
  * \param 
  *
  */
-void nmxp_mem_free(void *ptr, char *source_file, int line);
+inline void nmxp_mem_free(void *ptr, char *source_file, int line);
+
 
 /*! \brief 
  *
@@ -65,7 +67,7 @@ void nmxp_mem_free(void *ptr, char *source_file, int line);
  * \param 
  *
  */
-void nmxp_mem_print_ptr(int print_items, char *source_file, int line);
+inline void nmxp_mem_print_ptr(int print_items, char *source_file, int line);
 
 #endif
 

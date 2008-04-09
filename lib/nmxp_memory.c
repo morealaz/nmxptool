@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_memory.c,v 1.6 2008-04-08 13:27:10 mtheo Exp $
+ * $Id: nmxp_memory.c,v 1.7 2008-04-09 06:06:53 mtheo Exp $
  *
  */
 
@@ -37,7 +37,7 @@ typedef struct {
 static NMXP_MEM_STRUCT nms[MAX_MEM_STRUCTS];
 static int i_nms = 0;
 
-static int nmxp_mem_add_ptr(void *ptr, size_t size, char *source_file_line, struct timeval *tv) {
+inline int nmxp_mem_add_ptr(void *ptr, size_t size, char *source_file_line, struct timeval *tv) {
     int ret = -1;
     if(i_nms < MAX_MEM_STRUCTS) {
 	nms[i_nms].p = ptr;
@@ -53,7 +53,7 @@ static int nmxp_mem_add_ptr(void *ptr, size_t size, char *source_file_line, stru
     return ret;
 }
 
-void nmxp_mem_print_ptr(int print_items, char *source_file, int line) {
+inline void nmxp_mem_print_ptr(int print_items, char *source_file, int line) {
     int i;
     static int old_tot_size = 0;
     int tot_size;
@@ -84,7 +84,7 @@ void nmxp_mem_print_ptr(int print_items, char *source_file, int line) {
     nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "nmxp_mem_print_ptr() tot %d  %s:%d\n", tot_size, source_file, line);
 }
 
-static int nmxp_mem_rem_ptr(void *ptr, struct timeval *tv, int *size) {
+inline int nmxp_mem_rem_ptr(void *ptr, struct timeval *tv, int *size) {
     int i, j;
 
     tv->tv_sec = 0;
@@ -117,13 +117,13 @@ static int nmxp_mem_rem_ptr(void *ptr, struct timeval *tv, int *size) {
     return i;
 }
 
-static char *nmxp_mem_source_file_line(char *source_file, int line) {
+inline char *nmxp_mem_source_file_line(char *source_file, int line) {
     static char source_file_line[MAX_LEN_SOURCE_FILE_LINE];
     snprintf(source_file_line, MAX_LEN_SOURCE_FILE_LINE, "%s:%d", source_file, line);
     return source_file_line;
 }
 
-void *nmxp_mem_malloc(size_t size, char *source_file, int line) {
+inline void *nmxp_mem_malloc(size_t size, char *source_file, int line) {
     void *ret = NULL;
     struct timeval tv;
     int i;
@@ -139,7 +139,7 @@ void *nmxp_mem_malloc(size_t size, char *source_file, int line) {
     return ret;
 }
 
-char *nmxp_mem_strdup(const char *str, char *source_file, int line) {
+inline char *nmxp_mem_strdup(const char *str, char *source_file, int line) {
     char *ret = NULL;
     int size;
     struct timeval tv;
@@ -162,7 +162,7 @@ char *nmxp_mem_strdup(const char *str, char *source_file, int line) {
 }
 
 
-void nmxp_mem_free(void *ptr, char *source_file, int line) {
+inline void nmxp_mem_free(void *ptr, char *source_file, int line) {
     int i;
     struct timeval tv;
     int size;
