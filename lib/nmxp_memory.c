@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_memory.c,v 1.7 2008-04-09 06:06:53 mtheo Exp $
+ * $Id: nmxp_memory.c,v 1.8 2008-04-09 07:56:37 mtheo Exp $
  *
  */
 
@@ -23,6 +23,9 @@
 
 #include "config.h"
 
+/* Set debug_log_single to 1 for logging malloc(), strdup() and free() calls */
+static int debug_log_single = 0;
+
 #define MAX_LEN_SOURCE_FILE_LINE 100
 
 typedef struct {
@@ -37,6 +40,7 @@ typedef struct {
 static NMXP_MEM_STRUCT nms[MAX_MEM_STRUCTS];
 static int i_nms = 0;
 
+
 inline int nmxp_mem_add_ptr(void *ptr, size_t size, char *source_file_line, struct timeval *tv) {
     int ret = -1;
     if(i_nms < MAX_MEM_STRUCTS) {
@@ -49,11 +53,48 @@ inline int nmxp_mem_add_ptr(void *ptr, size_t size, char *source_file_line, stru
 	i_nms++;
     } else {
 	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY, "nmxp_mem_add_ptr i_nms > MAX_MEM_STRUCTS %d > %d\n", i_nms, MAX_MEM_STRUCTS);
+	ret = -1;
     }
     return ret;
 }
 
-inline void nmxp_mem_print_ptr(int print_items, char *source_file, int line) {
+
+inline int nmxp_mem_rem_ptr(void *ptr, struct timeval *tv, int *size) {
+    int i, j;
+
+    tv->tv_sec = 0;
+    tv->tv_usec = 0;
+    *size = 0;
+
+    i = 0;
+    while(i < i_nms && nms[i].p != ptr) {
+	i++;
+    }
+
+    if(i >= i_nms  ||  i > MAX_MEM_STRUCTS) {
+	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY, "nmxp_mem_rem_ptr %010p not found i=%d\n", ptr, i);
+	i = -1;
+    } else {
+	/* shift */
+	tv->tv_sec = nms[i].tv.tv_sec;
+	tv->tv_usec = nms[i].tv.tv_usec;
+	*size = nms[i].size;
+	j = i;
+	while(j < i_nms-1) {
+	    nms[j].p = nms[j+1].p;
+	    nms[j].size = nms[j+1].size;
+	    strncpy(nms[j].source_file_line, nms[j+1].source_file_line, MAX_LEN_SOURCE_FILE_LINE);;
+	    nms[j].tv.tv_sec = nms[j+1].tv.tv_sec;
+	    nms[j].tv.tv_usec = nms[j+1].tv.tv_usec;
+	    j++;
+	}
+	i_nms--;
+    }
+    return i;
+}
+
+
+inline int nmxp_mem_print_ptr(int print_items, char *source_file, int line) {
     int i;
     static int old_tot_size = 0;
     int tot_size;
@@ -82,46 +123,17 @@ inline void nmxp_mem_print_ptr(int print_items, char *source_file, int line) {
     }
 
     nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "nmxp_mem_print_ptr() tot %d  %s:%d\n", tot_size, source_file, line);
+
+    return tot_size;
 }
 
-inline int nmxp_mem_rem_ptr(void *ptr, struct timeval *tv, int *size) {
-    int i, j;
-
-    tv->tv_sec = 0;
-    tv->tv_usec = 0;
-    *size = 0;
-
-    i = 0;
-    while(i < i_nms && nms[i].p != ptr) {
-	i++;
-    }
-
-    if(i >= i_nms  ||  i > MAX_MEM_STRUCTS) {
-	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY, "nmxp_mem_rem_ptr %010p not found i=%d\n", ptr, i);
-    } else {
-	/* shift */
-	tv->tv_sec = nms[i].tv.tv_sec;
-	tv->tv_usec = nms[i].tv.tv_usec;
-	*size = nms[i].size;
-	j = i;
-	while(j < i_nms-1) {
-	    nms[j].p = nms[j+1].p;
-	    nms[j].size = nms[j+1].size;
-	    strncpy(nms[j].source_file_line, nms[j+1].source_file_line, MAX_LEN_SOURCE_FILE_LINE);;
-	    nms[j].tv.tv_sec = nms[j+1].tv.tv_sec;
-	    nms[j].tv.tv_usec = nms[j+1].tv.tv_usec;
-	    j++;
-	}
-	i_nms--;
-    }
-    return i;
-}
 
 inline char *nmxp_mem_source_file_line(char *source_file, int line) {
     static char source_file_line[MAX_LEN_SOURCE_FILE_LINE];
     snprintf(source_file_line, MAX_LEN_SOURCE_FILE_LINE, "%s:%d", source_file, line);
     return source_file_line;
 }
+
 
 inline void *nmxp_mem_malloc(size_t size, char *source_file, int line) {
     void *ret = NULL;
@@ -133,11 +145,12 @@ inline void *nmxp_mem_malloc(size_t size, char *source_file, int line) {
     ret = malloc(size);
     strncpy(source_file_line, nmxp_mem_source_file_line(source_file, line), MAX_LEN_SOURCE_FILE_LINE);
     i = nmxp_mem_add_ptr(ret, size, source_file_line, &tv);
-#ifdef NMXP_MEM_DEBUG_LOG_SINGLE
-    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "nmxp_mem_malloc %d.%d %010p+%d %s_%d\n", tv.tv_sec, tv.tv_usec, ret, size, source_file_line, i);
-#endif
+    if(debug_log_single  ||  i == -1) {
+	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "nmxp_mem_malloc %d.%d %010p+%d %s_%d\n", tv.tv_sec, tv.tv_usec, ret, size, source_file_line, i);
+    }
     return ret;
 }
+
 
 inline char *nmxp_mem_strdup(const char *str, char *source_file, int line) {
     char *ret = NULL;
@@ -155,9 +168,9 @@ inline char *nmxp_mem_strdup(const char *str, char *source_file, int line) {
     }
     strncpy(source_file_line, nmxp_mem_source_file_line(source_file, line), MAX_LEN_SOURCE_FILE_LINE);
     i = nmxp_mem_add_ptr(ret, size, source_file_line, &tv);
-#ifdef NMXP_MEM_DEBUG_LOG_SINGLE
-    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "nmxp_mem_strdup %d.%d %010p+%d %s_%d\n", tv.tv_sec, tv.tv_usec, ret, size, source_file_line, i);
-#endif
+    if(debug_log_single  ||  i == -1) {
+	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "nmxp_mem_strdup %d.%d %010p+%d %s_%d\n", tv.tv_sec, tv.tv_usec, ret, size, source_file_line, i);
+    }
     return ret;
 }
 
@@ -171,9 +184,9 @@ inline void nmxp_mem_free(void *ptr, char *source_file, int line) {
     if(ptr) {
 	i = nmxp_mem_rem_ptr(ptr, &tv, &size);
 	strncpy(source_file_line, nmxp_mem_source_file_line(source_file, line), MAX_LEN_SOURCE_FILE_LINE);
-#ifdef NMXP_MEM_DEBUG_LOG_SINGLE
-	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "nmxp_mem_free   %d.%d %010p+%d %s_%d\n", tv.tv_sec, tv.tv_usec, ptr, size, source_file_line, i);
-#endif
+	if(debug_log_single  ||  i == -1) {
+	    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "nmxp_mem_free   %d.%d %010p+%d %s_%d\n", tv.tv_sec, tv.tv_usec, ptr, size, source_file_line, i);
+	}
 	free(ptr);
     }
 }
