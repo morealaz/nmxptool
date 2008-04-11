@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.189 2008-04-09 07:59:11 mtheo Exp $
+ * $Id: nmxptool.c,v 1.190 2008-04-11 12:09:04 mtheo Exp $
  *
  */
 
@@ -23,6 +23,7 @@
 #include "nmxptool_getoptlong.h"
 #include "nmxptool_chanseq.h"
 #include "nmxptool_sigcondition.h"
+#include <nmxptool_listen.h>
 
 #ifdef HAVE_PTHREAD_H
 #include <pthread.h>
@@ -80,6 +81,12 @@ pthread_t thread_request_channels;
 pthread_attr_t attr_request_channels;
 void *status_thread;
 void *p_nmxp_sendAddTimeSeriesChannel(void *arg);
+#endif
+
+#ifdef HAVE_PTHREAD_H
+pthread_t thread_socket_listen;
+pthread_attr_t attr_socket_listen;
+void *status_thread_socket_listen;
 #endif
 
 
@@ -249,6 +256,8 @@ int main (int argc, char **argv) {
     nmxptool_log_params(&params);
 
     if(params.stc == -1) {
+
+	p_func_pd[n_func_pd++] = nmxptool_listen_print_seq_no;
 
 	if(params.flag_logdata) {
 	    p_func_pd[n_func_pd++] = nmxptool_print_seq_no;
@@ -773,6 +782,13 @@ int main (int argc, char **argv) {
 	pthread_attr_setdetachstate(&attr_request_channels, PTHREAD_CREATE_JOINABLE);
 	pthread_create(&thread_request_channels, &attr_request_channels, p_nmxp_sendAddTimeSeriesChannel, (void *)NULL);
 	pthread_attr_destroy(&attr_request_channels);
+#endif
+
+#ifdef HAVE_PTHREAD_H
+	pthread_attr_init(&attr_socket_listen);
+	pthread_attr_setdetachstate(&attr_socket_listen, PTHREAD_CREATE_DETACHED);
+	pthread_create(&thread_socket_listen, &attr_socket_listen, nmxptool_listen, (void *)NULL);
+	pthread_attr_destroy(&attr_socket_listen);
 #endif
 
 	/* PDS Step 6: Repeat until finished: receive and handle packets */
