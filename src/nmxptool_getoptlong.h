@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.h,v 1.99 2008-04-05 05:28:48 mtheo Exp $
+ * $Id: nmxptool_getoptlong.h,v 1.100 2008-04-11 12:21:23 mtheo Exp $
  *
  */
 
@@ -70,6 +70,8 @@
 #define DEFAULT_USEC_MINIMUM	0
 #define DEFAULT_USEC_MAXIMUM	1000000
 
+#define DEFAULT_SOCKETLISTEN_PORT	-1
+
 /*! \brief Struct that stores information about parameter of the program */
 typedef struct {
     char *hostname;
@@ -97,6 +99,7 @@ typedef struct {
     int usec;
     int32_t max_data_to_retrieve;
     int networkdelay;  /* sleep 'networkdelay' seconds before reconnect */
+    int port_socket_listen;  /*  */
     int flag_writeseed;
     int flag_listchannels;
     int flag_listchannelsnaqs;

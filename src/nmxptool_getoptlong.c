@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.99 2008-04-08 06:30:57 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.100 2008-04-11 12:21:23 mtheo Exp $
  *
  */
 
@@ -48,6 +48,7 @@ const NMXPTOOL_PARAMS NMXPTOOL_PARAMS_DEFAULT =
     DEFAULT_USEC,
     DEFAULT_MAX_TIME_TO_RETRIEVE,
     DEFAULT_NETWORKDELAY,
+    DEFAULT_SOCKETLISTEN_PORT,
     0,
     0,
     0,
@@ -338,6 +339,9 @@ Other arguments:\n\
 #endif
 
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
+  -K, --socketport=PORT   Listen from socket PORT.\n");
+
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
   -V, --version           Print tool version.\n\
   -h, --help              Print this help.\n\
 \n");
@@ -522,6 +526,7 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 #ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
 	{"slink",        required_argument, NULL, 'k'},
 #endif
+	{"socketport",   required_argument, NULL, 'K'},
 	{"statefile",    required_argument, NULL, 'F'},
 	{"mschan",       required_argument, NULL, 'f'},
 	{"help",         no_argument,       NULL, 'h'},
@@ -529,7 +534,7 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 	{0, 0, 0, 0}
     };
 
-    char optstr[300] = "H:P:D:C:N:n:S:R:s:e:t:d:u:p:M:T:v:B:A:F:f:gGblLiwhV";
+    char optstr[300] = "H:P:D:C:N:n:S:R:s:e:t:d:u:p:M:T:v:B:A:F:f:K:gGblLiwhV";
 
     int option_index = 0;
 
@@ -709,6 +714,10 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 		    }
 		    break;
 #endif
+
+		case 'K':
+		    params->port_socket_listen = atoi(optarg);
+		    break;
 
 		case 'F':
 		    params->flag_buffered = 1;

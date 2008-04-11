@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_listen.c,v 1.2 2008-04-11 12:09:04 mtheo Exp $
+ * $Id: nmxptool_listen.c,v 1.3 2008-04-11 12:21:23 mtheo Exp $
  *
  */
 
@@ -35,7 +35,7 @@
 #include <nmxp.h>
 #include <nmxptool_listen.h>
 
-#define MYPORT 3490	// the port users will be connecting to
+/* #define MYPORT 3490	// the port users will be connecting to */
 
 #define BACKLOG 3	 // how many pending connections queue will hold
 
@@ -317,6 +317,7 @@ int nmxptool_listen_print_seq_no(NMXP_DATA_PROCESS *pd) {
 
 void *nmxptool_listen(void *arg)
 {
+	int port_socket_listen = (int) arg;
 	int sockfd, new_fd;  // listen on sock_fd, new connection on new_fd
 	struct sockaddr_in my_addr;	// my address information
 	struct sockaddr_in their_addr; // connector's address information
@@ -339,7 +340,7 @@ void *nmxptool_listen(void *arg)
 	}
 	
 	my_addr.sin_family = AF_INET;		 // host byte order
-	my_addr.sin_port = htons(MYPORT);	 // short, network byte order
+	my_addr.sin_port = htons(port_socket_listen);	 // short, network byte order
 	my_addr.sin_addr.s_addr = INADDR_ANY; // automatically fill with my IP
 	memset(my_addr.sin_zero, '\0', sizeof my_addr.sin_zero);
 
