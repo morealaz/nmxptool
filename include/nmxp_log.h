@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_log.h,v 1.14 2008-04-02 09:18:21 mtheo Exp $
+ * $Id: nmxp_log.h,v 1.15 2008-04-11 07:50:32 mtheo Exp $
  *
  */
 
@@ -78,8 +78,18 @@ void nmxp_log_init(int (*func_log)(char *), int (*func_log_err)(char *));
  * \param func_log Function pointer to the the function for "normal logging"
  * \param func_log_err Function pointer to the the function for "error logging"
  *
+ *
  */
 void nmxp_log_add(int (*func_log)(char *), int (*func_log_err)(char *));
+
+
+/*! \brief Remove function pointers from "normal logging" and "error_logging"
+ *
+ * \param func_log Function pointer to the the function for "normal logging"
+ * \param func_log_err Function pointer to the the function for "error logging"
+ *
+ */
+void nmxp_log_rem(int (*func_log)(char *), int (*func_log_err)(char *));
 
 
 /*! \brief Wrapper for fprintf to stdout and flushing

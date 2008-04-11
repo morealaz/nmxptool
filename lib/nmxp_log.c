@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_log.c,v 1.19 2008-04-02 09:18:21 mtheo Exp $
+ * $Id: nmxp_log.c,v 1.20 2008-04-11 07:50:32 mtheo Exp $
  *
  */
 
@@ -80,6 +80,41 @@ void nmxp_log_add(int (*func_log)(char *), int (*func_log_err)(char *)) {
     }
     if(func_log_err != NULL) {
 	p_func_log_err[n_func_log_err++] = func_log_err;
+    }
+
+}
+
+void nmxp_log_rem(int (*func_log)(char *), int (*func_log_err)(char *)) {
+    int i = 0;
+    int j = 0;
+    if(func_log != NULL) {
+	i = 0;
+	while(i < n_func_log  &&  p_func_log[i] != func_log) {
+	    i++;
+	}
+	if(i < n_func_log) {
+	    for(j=i; j < n_func_log-1; j++) {
+		 p_func_log[j] = p_func_log[j+1];
+	    }
+	    n_func_log--;
+	} else {
+	    /* TODO not found */
+	}
+    }
+
+    if(func_log_err != NULL) {
+	i = 0;
+	while(i < n_func_log_err  &&  p_func_log_err[i] != func_log_err) {
+	    i++;
+	}
+	if(i < n_func_log_err) {
+	    for(j=i; j < n_func_log_err-1; j++) {
+		 p_func_log_err[j] = p_func_log_err[j+1];
+	    }
+	    n_func_log_err--;
+	} else {
+	    /* TODO not found */
+	}
     }
 
 }
