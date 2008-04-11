@@ -2,7 +2,8 @@
 nmxptool Release History
 #########################
 
-* Release 1.2.2-beta3    (2008/04/05) 
+* Release 1.2.2-beta5    (2008/04/11) 
+    - Added feature: monitoring data flow connecting to socket port. (option -K)
     - Improved connection management. Exit from program only on request,
         that is, receving termination signal or ew-flag-terminate.
     - Improved signal handling using safe threads.
