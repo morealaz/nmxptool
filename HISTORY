@@ -7,7 +7,7 @@ nmxptool Release History
     - Improved connection management. Exit from program only on request,
         that is, receving termination signal or ew-flag-terminate.
     - Improved signal handling using safe threads.
-    - Improved request of channels using threads.
+    - Improved request of channels using a separate thread.
     - Improved printing of info about Raw Stream data buffer. (Signal -ALRM).
     - Added 'pluginid' to prefix log messages when launched as Seedlink plug-in.
 
