@@ -2,13 +2,15 @@
 nmxptool Release History
 #########################
 
-* Release 1.2.2-beta5    (2008/04/11) 
-    - Added feature: monitoring data flow connecting to socket port. (option -K)
+* Release 1.2.2-beta5    (2008/04/22) 
+    - Added feature: accept 'telnet' connection for monitoring data
+        and diagnostic purposes. (option -E)
     - Improved connection management. Exit from program only on request,
         that is, receving termination signal or ew-flag-terminate.
     - Improved signal handling using safe threads.
     - Improved request of channels using a separate thread.
     - Improved printing of info about Raw Stream data buffer. (Signal -ALRM).
+    - Improved function nmxp_openSocket().
     - Added 'pluginid' to prefix log messages when launched as Seedlink plug-in.
 
 * Release 1.2.1    (2008/03/31) 
