@@ -1,5 +1,7 @@
 TODO LIST:
 
+- Improved nmxp_openSocket() in nmxp_base.c
+
 - Add option for output directory dump and mini-seed
 
 - Location code
