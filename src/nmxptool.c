@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.193 2008-04-22 13:13:41 mtheo Exp $
+ * $Id: nmxptool.c,v 1.194 2008-04-22 13:37:50 mtheo Exp $
  *
  */
 
@@ -1089,6 +1089,101 @@ void flushing_raw_data_stream() {
     }
 }
 
+
+void *nmxptool_print_params(void *arg) {
+    /* nmxptool_log_params(&params); */
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
+    char *hostname: %s\n\
+    int portnumberdap: %d\n\
+    int portnumberpds: %d\n\
+",
+    NMXP_LOG_STR(params.hostname),
+    params.portnumberdap,
+    params.portnumberpds
+);
+
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
+    char *channels: %s\n\
+",
+    NMXP_LOG_STR(params.channels)
+);
+
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
+    char *network: %s\n\
+    char *location: %s\n\
+    double start_time: %f\n\
+    double end_time: %f\n\
+    int32_t interval: %d\n\
+",
+    NMXP_LOG_STR(params.network),
+    NMXP_LOG_STR(params.location),
+    params.start_time,
+    params.end_time,
+    params.interval
+);
+
+
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
+    char *datas_username: %s\n\
+    char *datas_password: %s\n\
+",
+    NMXP_LOG_STR(params.datas_username),
+    NMXP_LOG_STR(params.datas_password)
+);
+
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
+    int32_t stc: %d\n\
+    int32_t rate: %d\n\
+    char *plugin_slink: %s\n\
+    int32_t delay: %d\n\
+    int32_t max_tolerable_latency: %d\n\
+    int32_t timeoutrecv: %d\n\
+    int32_t verbose_level: %d\n\
+",
+    params.stc,
+    params.rate,
+    NMXP_LOG_STR(params.plugin_slink),
+    params.delay,
+    params.max_tolerable_latency,
+    params.timeoutrecv,
+    params.verbose_level
+);
+
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
+    char *ew_configuration_file: %s\n\
+    char *statefile: %s\n\
+    int32_t max_data_to_retrieve: %d\n\
+",
+    NMXP_LOG_STR(params.ew_configuration_file),
+    NMXP_LOG_STR(params.statefile),
+    params.max_data_to_retrieve
+);
+
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
+    double buffered_time: %f\n\
+    int flag_writeseed: %d\n\
+    int flag_listchannels: %d\n\
+    int flag_listchannelsnaqs: %d\n\
+    int flag_request_channelinfo: %d\n\
+    int flag_writefile: %d\n\
+    int flag_slink: %d\n\
+    int flag_buffered: %d\n\
+    int flag_logdata: %d\n\
+    int flag_logsample: %d\n\
+",
+    params.buffered_time,
+    params.flag_writeseed,
+    params.flag_listchannels,
+    params.flag_listchannelsnaqs,
+    params.flag_request_channelinfo,
+    params.flag_writefile,
+    params.flag_slink,
+    params.flag_buffered,
+    params.flag_logdata,
+    params.flag_logsample
+    );
+    return NULL;
+}
 
 void *nmxptool_print_info_raw_stream(void *arg) {
     int chan_index;

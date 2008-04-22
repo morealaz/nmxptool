@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_listen.c,v 1.4 2008-04-11 13:03:32 mtheo Exp $
+ * $Id: nmxptool_listen.c,v 1.5 2008-04-22 13:37:50 mtheo Exp $
  *
  */
 
@@ -83,21 +83,25 @@ typedef struct {
     char str_command_desc[MAX_LEN_COMMAND_DESC];
 } COMMAND_ITEM;
 
-#define N_COMMAND 7
 #define COMMAND_NULL    1
 #define COMMAND_LIST    2
 #define COMMAND_PRINT   3
 #define COMMAND_EXIT    4
 #define COMMAND_MEM     5
 #define COMMAND_RAW     6
-#define COMMAND_HELP    7
+#define COMMAND_PARAMS  7
+#define COMMAND_HELP    8
+
+#define N_COMMAND       8
+
 const COMMAND_ITEM list_cmd[N_COMMAND] = {
     {COMMAND_NULL,      "", 	""},
-    {COMMAND_LIST,      "list", 	"List....."},
+    {COMMAND_LIST,      "list", 	"List of the channels."},
     {COMMAND_PRINT,     "print", 	"Print processed packets."},
     {COMMAND_HELP,      "help", 	"Print this help"},
-    {COMMAND_MEM,       "mem", 	"Print memory size used."},
-    {COMMAND_RAW,       "raw", 	"Print info about data buffer."},
+    {COMMAND_MEM,       "mem",		"Print memory size used."},
+    {COMMAND_RAW,       "raw",		"Print info about data buffer."},
+    {COMMAND_PARAMS,    "params", 	"Print parameter values."},
     {COMMAND_EXIT,      "exit", 	"Exit."}
 };
 
@@ -192,6 +196,7 @@ int nmxp_log_send_socket(char *msg) {
 int nmxptool_fd_command(int new_fd, int command) {
     int ret_occ;
     int i;
+    char str_command_not_found[] = "Command not found!\n";
     char str_tot_mem[30];
     char msg[1024];
 
@@ -208,19 +213,30 @@ int nmxptool_fd_command(int new_fd, int command) {
     pthread_mutex_unlock (&mutex_occ);
 
     switch(command) {
+
 	case COMMAND_MEM:
 	    snprintf(str_tot_mem, 30, "%d\n", NMXP_MEM_PRINT_PTR(0));
 	    nmxptool_send_ctrl(new_fd, str_tot_mem);
 	    break;
+
+	case COMMAND_LIST:
+	    break;
+
 	case COMMAND_RAW:
+	case COMMAND_PARAMS:
 	    pthread_mutex_lock (&mutex_cur_fd);
 	    cur_fd = new_fd;
 	    nmxp_log_add(nmxp_log_send_socket, nmxp_log_send_socket);
-	    nmxptool_print_info_raw_stream(NULL);
+	    if(command == COMMAND_RAW) {
+		nmxptool_print_info_raw_stream(NULL);
+	    } else {
+		nmxptool_print_params(NULL);
+	    }
 	    nmxp_log_rem(nmxp_log_send_socket, nmxp_log_send_socket);
 	    cur_fd = 0;
 	    pthread_mutex_unlock (&mutex_cur_fd);
 	    break;
+
 	case COMMAND_HELP:
 	    for(i=0; i<N_COMMAND; i++) {
 		if(list_cmd[i].command != COMMAND_NULL) {
@@ -229,7 +245,9 @@ int nmxptool_fd_command(int new_fd, int command) {
 		}
 	    }
 	    break;
+
 	default:
+	    nmxptool_send_ctrl(new_fd, str_command_not_found);
 	    break;
     }
 
@@ -247,11 +265,16 @@ void *nmxptool_p_man_sockfd(void *arg) {
     char command[100];
     int last_command = -1;
     char *prompt = "> ";
+    char *welcome_message = "Welcome aboard nmxptool!\n";
     char *last_str_command = NULL;
 
     nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY,
 			"server: got connection from %s (%d) (%d)\n", fd_hc->hostclient, fd_hc->fd, nmxptool_fd_add(fd_hc->fd));
 
+    pthread_mutex_lock (&mutex_occ);
+    nmxptool_send_ctrl(fd_hc->fd, welcome_message);
+    pthread_mutex_unlock (&mutex_occ);
+	
     while(last_command != COMMAND_EXIT) {
 
 	pthread_mutex_lock (&mutex_occ);
