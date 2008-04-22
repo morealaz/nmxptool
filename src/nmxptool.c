@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.191 2008-04-11 12:21:23 mtheo Exp $
+ * $Id: nmxptool.c,v 1.192 2008-04-22 12:53:42 mtheo Exp $
  *
  */
 
@@ -227,13 +227,13 @@ int main (int argc, char **argv) {
 	/* List available channels on server */
 	if(params.flag_listchannels) {
 
-	    nmxp_meta_chan_print(nmxp_getMetaChannelList(params.hostname, params.portnumberdap, NMXP_DATA_TIMESERIES, params.flag_request_channelinfo, params.datas_username, params.datas_password, &channelList));
+	    nmxp_meta_chan_print(nmxp_getMetaChannelList(params.hostname, params.portnumberdap, NMXP_DATA_TIMESERIES, params.flag_request_channelinfo, params.datas_username, params.datas_password, &channelList, nmxptool_sigcondition_read));
 
 	    return 1;
 
 	} else if(params.flag_listchannelsnaqs) {
 
-	    channelList = nmxp_getAvailableChannelList(params.hostname, params.portnumberpds, NMXP_DATA_TIMESERIES);
+	    channelList = nmxp_getAvailableChannelList(params.hostname, params.portnumberpds, NMXP_DATA_TIMESERIES, nmxptool_sigcondition_read);
 	    nmxp_chan_print_channelList(channelList);
 	    return 1;
 
@@ -301,12 +301,12 @@ int main (int argc, char **argv) {
 	if_dap_condition_only_one_time = 1;
 	/* From DataServer */
 	if(!nmxp_getMetaChannelList(params.hostname, params.portnumberdap, NMXP_DATA_TIMESERIES,
-		    params.flag_request_channelinfo, params.datas_username, params.datas_password, &channelList)) {
+		    params.flag_request_channelinfo, params.datas_username, params.datas_password, &channelList, nmxptool_sigcondition_read)) {
 	    return -1;
 	}
     } else {
 	/* From NaqsServer */
-	channelList = nmxp_getAvailableChannelList(params.hostname, params.portnumberpds, NMXP_DATA_TIMESERIES);
+	channelList = nmxp_getAvailableChannelList(params.hostname, params.portnumberpds, NMXP_DATA_TIMESERIES, nmxptool_sigcondition_read);
     }
 
     if(!channelList) {
@@ -413,7 +413,7 @@ int main (int argc, char **argv) {
 	/* ************************************************************** */
 
 	/* DAP Step 1: Open a socket */
-	if( (naqssock = nmxp_openSocket(params.hostname, params.portnumberdap)) == NMXP_SOCKET_ERROR) {
+	if( (naqssock = nmxp_openSocket(params.hostname, params.portnumberdap, nmxptool_sigcondition_read)) == NMXP_SOCKET_ERROR) {
 	    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CONNFLOW, "Error opening socket!\n");
 	    return 1;
 	}
@@ -719,7 +719,7 @@ int main (int argc, char **argv) {
 	/* ************************************************************* */
 
 	/* PDS Step 1: Open a socket */
-	naqssock = nmxp_openSocket(params.hostname, params.portnumberpds);
+	naqssock = nmxp_openSocket(params.hostname, params.portnumberpds, nmxptool_sigcondition_read);
 
 	if(naqssock == NMXP_SOCKET_ERROR) {
 	    return 1;

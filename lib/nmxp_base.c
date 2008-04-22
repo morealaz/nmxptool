@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_base.c,v 1.72 2008-04-01 14:10:05 mtheo Exp $
+ * $Id: nmxp_base.c,v 1.73 2008-04-22 12:53:42 mtheo Exp $
  *
  */
 
@@ -39,10 +39,10 @@
 #define MAX_OUTDATA 4096
 
 
-int nmxp_openSocket(char *hostname, int portNum)
+int nmxp_openSocket(char *hostname, int portNum, int (*func_cond)(void))
 {
   static int sleepTime = 1;
-  int isock = 0;
+  int isock = -1;
   struct hostent *hostinfo = NULL;
   struct sockaddr_in psServAddr;
   struct in_addr hostaddr;
@@ -63,7 +63,7 @@ int nmxp_openSocket(char *hostname, int portNum)
     return -1;
   }
 
-  while(1)
+  while(!func_cond())
   {
     isock = socket (AF_INET, SOCK_STREAM, 0);
 
@@ -100,24 +100,27 @@ int nmxp_openSocket(char *hostname, int portNum)
     nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CONNFLOW, "Attempting to connect to %s port %d\n",
 	    NMXP_LOG_STR(inet_ntoa(hostaddr)), portNum);
 
-    if (connect(isock, (struct sockaddr *)&psServAddr, sizeof(psServAddr)) >= 0)
-    {
-      sleepTime = 1;
-      nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CONNFLOW, "Connection established: socket=%i,IP=%s,port=%d\n",
-	      isock, NMXP_LOG_STR(inet_ntoa(hostaddr)), portNum);
-      return isock;
+    if(connect(isock, (struct sockaddr *)&psServAddr, sizeof(psServAddr)) >= 0) {
+	sleepTime = 1;
+	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CONNFLOW, "Connection established: socket=%i,IP=%s,port=%d\n",
+		isock, NMXP_LOG_STR(inet_ntoa(hostaddr)), portNum);
+	return isock;
+    } else {
+	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CONNFLOW, "Connecting to %s port %d. Trying again after %d seconds...\n",
+		NMXP_LOG_STR(inet_ntoa(hostaddr)), portNum, sleepTime);
+	nmxp_closeSocket(isock);
+	isock = -1;
+
+	if(!func_cond()) {
+	    nmxp_sleep (sleepTime);
+	    sleepTime *= 2;
+	    if (sleepTime > NMXP_SLEEPMAX)
+		sleepTime = NMXP_SLEEPMAX;
+	}
     }
-    else
-    {
-      nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CONNFLOW, "Connecting to %s port %d. Trying again after %d seconds...\n",
-	      NMXP_LOG_STR(inet_ntoa(hostaddr)), portNum, sleepTime);
-      nmxp_closeSocket(isock);
-      nmxp_sleep (sleepTime);
-      sleepTime *= 2;
-      if (sleepTime > NMXP_SLEEPMAX)
-        sleepTime = NMXP_SLEEPMAX;
-    }
+
   }
+  return isock;
 }
 
 

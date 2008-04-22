@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp.h,v 1.51 2008-04-01 08:09:13 mtheo Exp $
+ * $Id: nmxp.h,v 1.52 2008-04-22 12:53:42 mtheo Exp $
  *
  */
 
@@ -1163,7 +1163,7 @@ int nmxp_sendDataRequest(int isock, int32_t key, int32_t start_time, int32_t end
  * \warning Returned value will need to be freed.
  * 
  */
-NMXP_CHAN_LIST *nmxp_getAvailableChannelList(char * hostname, int portnum, NMXP_DATATYPE datatype);
+NMXP_CHAN_LIST *nmxp_getAvailableChannelList(char * hostname, int portnum, NMXP_DATATYPE datatype, int (*func_cond)(void));
 
 
 /*! \brief Get the list of the start and end time for the available data for each channel.
@@ -1181,7 +1181,7 @@ NMXP_CHAN_LIST *nmxp_getAvailableChannelList(char * hostname, int portnum, NMXP_
  * \warning Returned value will need to be freed.
  * 
  */
-NMXP_META_CHAN_LIST *nmxp_getMetaChannelList(char * hostname, int portnum, NMXP_DATATYPE datatype, int flag_request_channelinfo, char *datas_username, char *datas_password, NMXP_CHAN_LIST **pchannelList);
+NMXP_META_CHAN_LIST *nmxp_getMetaChannelList(char * hostname, int portnum, NMXP_DATATYPE datatype, int flag_request_channelinfo, char *datas_username, char *datas_password, NMXP_CHAN_LIST **pchannelList, int (*func_cond)(void));
 
 
 /*! \brief Base function for qsort() in order to sort an array of pointers to pointers to NMXP_DATA_PROCESS

@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_base.h,v 1.31 2008-04-01 14:10:05 mtheo Exp $
+ * $Id: nmxp_base.h,v 1.32 2008-04-22 12:53:42 mtheo Exp $
  *
  */
 
@@ -37,7 +37,7 @@
  *  \retval -1 "Empty host name", "Cannot lookup host", ...
  *
  */
-int nmxp_openSocket(char *hostname, int portNum);
+int nmxp_openSocket(char *hostname, int portNum, int (*func_cond)(void));
 
 
 /*! \brief Close a socket.

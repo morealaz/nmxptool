@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp.c,v 1.88 2008-04-09 07:57:01 mtheo Exp $
+ * $Id: nmxp.c,v 1.89 2008-04-22 12:53:42 mtheo Exp $
  *
  */
 
@@ -456,13 +456,13 @@ int nmxp_sendDataRequest(int isock, int32_t key, int32_t start_time, int32_t end
 }
 
 
-NMXP_CHAN_LIST *nmxp_getAvailableChannelList(char * hostname, int portnum, NMXP_DATATYPE datatype) {
+NMXP_CHAN_LIST *nmxp_getAvailableChannelList(char * hostname, int portnum, NMXP_DATATYPE datatype, int (*func_cond)(void)) {
     int naqssock;
     NMXP_CHAN_LIST *channelList = NULL, *channelList_subset = NULL;
     /* int i; */
 
     /* 1. Open a socket*/
-    naqssock = nmxp_openSocket(hostname, portnum);
+    naqssock = nmxp_openSocket(hostname, portnum, func_cond);
 
     if(naqssock != NMXP_SOCKET_ERROR) {
 
@@ -515,7 +515,7 @@ NMXP_CHAN_LIST *nmxp_getAvailableChannelList(char * hostname, int portnum, NMXP_
 }
 
 
-NMXP_META_CHAN_LIST *nmxp_getMetaChannelList(char * hostname, int portnum, NMXP_DATATYPE datatype, int flag_request_channelinfo, char *datas_username, char *datas_password, NMXP_CHAN_LIST **pchannelList) {
+NMXP_META_CHAN_LIST *nmxp_getMetaChannelList(char * hostname, int portnum, NMXP_DATATYPE datatype, int flag_request_channelinfo, char *datas_username, char *datas_password, NMXP_CHAN_LIST **pchannelList, int (*func_cond)(void)) {
     int naqssock;
     NMXP_CHAN_PRECISLIST *precisChannelList = NULL;
     NMXP_CHAN_LIST *channelList = NULL;
@@ -538,7 +538,7 @@ NMXP_META_CHAN_LIST *nmxp_getMetaChannelList(char * hostname, int portnum, NMXP_
     str_end[0] = 0;
     
     /* DAP Step 1: Open a socket */
-    if( (naqssock = nmxp_openSocket(hostname, portnum)) == NMXP_SOCKET_ERROR) {
+    if( (naqssock = nmxp_openSocket(hostname, portnum, func_cond)) == NMXP_SOCKET_ERROR) {
 	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CONNFLOW, "Error opening socket!\n");
 	return NULL;
     }
