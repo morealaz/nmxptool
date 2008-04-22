@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.192 2008-04-22 12:53:42 mtheo Exp $
+ * $Id: nmxptool.c,v 1.193 2008-04-22 13:13:41 mtheo Exp $
  *
  */
 
@@ -785,10 +785,10 @@ int main (int argc, char **argv) {
 #endif
 
 #ifdef HAVE_PTHREAD_H
-	if(params.port_socket_listen != DEFAULT_SOCKETLISTEN_PORT) {
+	if(params.listen_port != DEFAULT_LISTEN_PORT) {
 	    pthread_attr_init(&attr_socket_listen);
 	    pthread_attr_setdetachstate(&attr_socket_listen, PTHREAD_CREATE_DETACHED);
-	    pthread_create(&thread_socket_listen, &attr_socket_listen, nmxptool_listen, (void *)params.port_socket_listen);
+	    pthread_create(&thread_socket_listen, &attr_socket_listen, nmxptool_listen, (void *)params.listen_port);
 	    pthread_attr_destroy(&attr_socket_listen);
 	}
 #endif
