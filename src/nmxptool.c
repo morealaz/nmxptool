@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.194 2008-04-22 13:37:50 mtheo Exp $
+ * $Id: nmxptool.c,v 1.195 2008-04-24 08:08:24 mtheo Exp $
  *
  */
 
@@ -87,6 +87,7 @@ void *p_nmxp_sendAddTimeSeriesChannel(void *arg);
 pthread_t thread_socket_listen;
 pthread_attr_t attr_socket_listen;
 void *status_thread_socket_listen;
+int already_listen = 0;
 #endif
 
 
@@ -785,7 +786,8 @@ int main (int argc, char **argv) {
 #endif
 
 #ifdef HAVE_PTHREAD_H
-	if(params.listen_port != DEFAULT_LISTEN_PORT) {
+	if(!already_listen  &&  params.listen_port != DEFAULT_LISTEN_PORT) {
+	    already_listen = 1;
 	    pthread_attr_init(&attr_socket_listen);
 	    pthread_attr_setdetachstate(&attr_socket_listen, PTHREAD_CREATE_DETACHED);
 	    pthread_create(&thread_socket_listen, &attr_socket_listen, nmxptool_listen, (void *)params.listen_port);
