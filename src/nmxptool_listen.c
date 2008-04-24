@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_listen.c,v 1.5 2008-04-22 13:37:50 mtheo Exp $
+ * $Id: nmxptool_listen.c,v 1.6 2008-04-24 08:08:59 mtheo Exp $
  *
  */
 
@@ -72,6 +72,14 @@ char *nmxptool_command_clean(char *str_command) {
 	    command[len] = 0;
 	}
     }
+
+    if(len <= 0) {
+	if(command) {
+	    NMXP_MEM_FREE(command);
+	    command = NULL;
+	}
+    }
+
     return command;
 }
 
@@ -109,23 +117,26 @@ int nmxptool_command(char *str_command) {
     int ret = -1;
     int i = 0;
     int len = 0;
-    char *command = NULL;
+    char *command_clean = NULL;
 
-    len = strlen(str_command);
+    command_clean = nmxptool_command_clean(str_command);
 
-    if(len > 0) {
-	command = nmxptool_command_clean(str_command);
+    /* nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "'%s' ==> '%s'\n", NMXP_LOG_STR(str_command), NMXP_LOG_STR(command_clean)); */
+
+    if(command_clean) {
+	len = strlen(command_clean);
 	i = 0;
-	while(i < N_COMMAND  &&  strcmp(command, list_cmd[i].str_command) != 0) {
+	while(i < N_COMMAND  &&  strcmp(command_clean, list_cmd[i].str_command) != 0) {
 	    i++;
 	}
 	if(i < N_COMMAND) {
 	    ret = list_cmd[i].command;
 	}
-	if(command) {
-	    NMXP_MEM_FREE(command);
-	}
+	NMXP_MEM_FREE(command_clean);
+    } else {
+	ret = COMMAND_NULL;
     }
+
     return ret;
 }
 
@@ -246,6 +257,9 @@ int nmxptool_fd_command(int new_fd, int command) {
 	    }
 	    break;
 
+	case COMMAND_NULL:
+	    break;
+
 	default:
 	    nmxptool_send_ctrl(new_fd, str_command_not_found);
 	    break;
@@ -262,10 +276,11 @@ typedef struct {
 
 void *nmxptool_p_man_sockfd(void *arg) {
     FD_HC *fd_hc = (FD_HC *) arg;
-    char command[100];
+    char command[MAX_LEN_COMMAND];
+    int i;
     int last_command = -1;
     char *prompt = "> ";
-    char *welcome_message = "Welcome aboard nmxptool!\n";
+    char *welcome_message = "Welcome aboard nmxptool! Type 'help' for command list.\n";
     char *last_str_command = NULL;
 
     nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY,
@@ -277,12 +292,16 @@ void *nmxptool_p_man_sockfd(void *arg) {
 	
     while(last_command != COMMAND_EXIT) {
 
+	for(i=0; i<MAX_LEN_COMMAND; i++) {
+	    command[i] = 0;
+	}
+
 	pthread_mutex_lock (&mutex_occ);
 	nmxptool_send_ctrl(fd_hc->fd, prompt);
 	/* TODO if error NMXP_MEM_FREE(fd_hc); */
 	pthread_mutex_unlock (&mutex_occ);
 	
-	read(fd_hc->fd, command, 10);
+	read(fd_hc->fd, command, MAX_LEN_COMMAND);
 
 	if( (last_command = nmxptool_command(command)) != -1 ) {
 	    last_str_command = nmxptool_command_clean(command);
@@ -296,9 +315,7 @@ void *nmxptool_p_man_sockfd(void *arg) {
 	    last_str_command = NULL;
 	}
 
-	if(last_command != -1) {
-	    nmxptool_fd_command(fd_hc->fd, last_command);
-	}
+	nmxptool_fd_command(fd_hc->fd, last_command);
 	
     }
 
