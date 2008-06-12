@@ -62,7 +62,7 @@ status collapsed
 \backslash
 small 
 \backslash
-itshape $ $Revision: 1.18 $ $ $ $Date: 2008-06-12 08:12:28 $ $}
+itshape $ $Revision: 1.19 $ $ $ $Date: 2008-06-12 08:38:08 $ $}
 \end_layout
 
 \end_inset
@@ -316,16 +316,23 @@ Data Access Protocol
 \end_layout
 
 \begin_layout Standard
-Why a new software? Problems: Short-term data stream: gap for each retransmitted
- packet.
- Raw stream: both naqs_plugin and naqs2ew are not able to reorder retransmitted
- packets.
-\end_layout
-
-\begin_layout Standard
-nmxptool is capable to manage a buffer of packets and order them chronologically
- when is needed, that is when a retransmission occurs.
- 
+Someone could be asking why developing a new software.
+ Because both existing software for redirecting data into SeedLink and Earthworm
+ systems, respectively, naqs_plugin and naqs2ew, can use only the 
+\shape italic
+Buffered Stream
+\shape default
+ without controlling of retransmitted packet.
+ Main problem when you connect to NaqServer by the short-term data stream
+ is that you can get a gap for each retransmitted packet.
+ On the contrary, nmxptool can use the 
+\shape italic
+Raw Stream
+\shape default
+ and therefore it is able to receive retransmitted packets, manage and chronolog
+ically order them in a buffer when is needed, that is when a retransmission
+ occurs, and finally it can redirect data into the SeedLink or Earthworm
+ system or store the data in mini-SEED records
 \end_layout
 
 \begin_layout Section
@@ -874,10 +881,6 @@ Earthworm
 SeisComP
 \end_layout
 
-\begin_layout Section
-Test
-\end_layout
-
 \begin_layout Standard
 \begin_inset Float figure
 wide false
@@ -924,6 +927,10 @@ name "fig:nmxptoolusages"
 \end_inset
 
 
+\end_layout
+
+\begin_layout Section
+Test
 \end_layout
 
 \begin_layout Standard
