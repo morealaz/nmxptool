@@ -62,7 +62,7 @@ status collapsed
 \backslash
 small 
 \backslash
-itshape $ $Revision: 1.17 $ $ $ $Date: 2008-02-19 14:51:01 $ $}
+itshape $ $Revision: 1.18 $ $ $ $Date: 2008-06-12 08:12:28 $ $}
 \end_layout
 
 \end_inset
@@ -180,7 +180,7 @@ Nanometrics Server - Client
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Standard
 \align center
@@ -342,7 +342,7 @@ Dependencies: libmseed - http://www.iris.edu/manuals/ plug-in.h and plug-in.c
 \begin_inset Float table
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Standard
 \align center
@@ -888,7 +888,7 @@ status open
 \align center
 \begin_inset Graphics
 	filename /Users/mtheo/Desktop/cvswork/nmxptool/no_dist/paper/images/nanometrics_nmxptool_usages.eps.gz
-	width 10cm
+	width 15cm
 
 \end_inset
 
@@ -902,7 +902,8 @@ status open
 \begin_layout Standard
 
 \shape italic
-nmxptool usages.
+Main nmxptool usages: Earthworm module, Seedlink plug-in, Stand-alone.
+ Main options: -F, -A, -M, -T.
 \end_layout
 
 \end_inset
