@@ -87,7 +87,7 @@ quintiliani@ingv.it
 Istituto Nazionale di Geofisica e Vulcanologia, Via di Vigna Murata 605,
  00143 Roma, Italy
 \begin_inset ERT
-status open
+status collapsed
 
 \begin_layout Standard
 
@@ -99,10 +99,6 @@ thanksref{revision}
 \end_inset
 
 
-\end_layout
-
-\begin_layout Author URL
-http://mednet.rm.ingv.it/nmxptool.php
 \end_layout
 
 \begin_layout Abstract
@@ -137,7 +133,7 @@ The Nanometrics servers NaqsServer and DataServer can provide on-line access
 
 \begin_layout Abstract
 \begin_inset ERT
-status open
+status collapsed
 
 \begin_layout Standard
 
@@ -152,7 +148,7 @@ url{http://mednet.rm.ingv.it/nmxptool.php}}
 
  
 \begin_inset ERT
-status open
+status collapsed
 
 \begin_layout Standard
 
@@ -162,14 +158,14 @@ thanks[revision]{
 \backslash
 small 
 \backslash
-itshape CVS $ $Revision: 1.22 $ $ -- $ $Date: 2008-06-17 13:28:41 $ $} 
+itshape CVS $ $Revision: 1.23 $ $ -- $ $Date: 2008-06-17 13:56:15 $ $} 
 \end_layout
 
 \end_inset
 
  
 \begin_inset ERT
-status open
+status collapsed
 
 \begin_layout Standard
 
@@ -284,7 +280,7 @@ name "fig:stationclients"
 In the context of this paper we are considering more the second part (right
  side), especially the software implementation aspects in the interaction
  of a software client with both NaqsServer and DataServer as well-documented
- into the Nanometrics manuals 
+ into the manual 
 \begin_inset LatexCommand cite
 key "nanometrics"
 
