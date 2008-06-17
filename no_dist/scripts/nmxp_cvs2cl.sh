@@ -19,5 +19,5 @@ echo "" >> ${HEADERFILE}
 echo "	  ChangeLog from tag ${FROM_TAG} to ${TO_TAG}" >> ${HEADERFILE}
 echo "" >> ${HEADERFILE}
 
-cat ${HEADERFILE} | cvs2cl.pl -r --delta ${FROM_TAG}:${TO_TAG} -U ${UFILE} -S --utc -I "^no_dist/*" --header -
+cat ${HEADERFILE} | cvs2cl.pl -r --delta ${FROM_TAG}:${TO_TAG} -U ${UFILE} -S --utc -I "ChangeLog" -I "^no_dist/*" --header -
 
