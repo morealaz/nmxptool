@@ -7,9 +7,6 @@
 \journal{Computers \& Geosciences}
 
 \usepackage{url}
-
-\corauth[cor]{Tel.: +39-06-51860671}
-\thanks[sourcesite]{Source code is available from server at \emph{http://mednet.rm.ingv.it/nmxptool.php}}
 \end_preamble
 \language english
 \inputencoding auto
@@ -57,18 +54,55 @@ status collapsed
 
 
 \backslash
-
-\backslash
- {
-\backslash
-small 
-\backslash
-itshape $ $Revision: 1.21 $ $ $ $Date: 2008-06-13 15:32:34 $ $}
+thanksref{sourcesite}
 \end_layout
 
 \end_inset
 
 
+\end_layout
+
+\begin_layout Author
+Matteo Quintiliani
+\begin_inset ERT
+status collapsed
+
+\begin_layout Standard
+
+
+\backslash
+corauthref{cor}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Author Email
+quintiliani@ingv.it
+\end_layout
+
+\begin_layout Author Address
+Istituto Nazionale di Geofisica e Vulcanologia, Via di Vigna Murata 605,
+ 00143 Roma, Italy
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+thanksref{revision}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Author URL
+http://mednet.rm.ingv.it/nmxptool.php
 \end_layout
 
 \begin_layout Abstract
@@ -101,38 +135,56 @@ The Nanometrics servers NaqsServer and DataServer can provide on-line access
  systems, Mac OS X, Windows and either 32-bit or 64-bit architectures.
 \end_layout
 
-\begin_layout Keywords
-Seismic data acquisition; software.
-\end_layout
-
-\begin_layout Author
-Matteo Quintiliani
+\begin_layout Abstract
 \begin_inset ERT
-status collapsed
+status open
 
 \begin_layout Standard
 
 
 \backslash
-corauthref{cor}
+thanks[sourcesite]{Source code is available from 
+\backslash
+url{http://mednet.rm.ingv.it/nmxptool.php}} 
 \end_layout
 
 \end_inset
 
+ 
+\begin_inset ERT
+status open
 
+\begin_layout Standard
+
+
+\backslash
+thanks[revision]{
+\backslash
+small 
+\backslash
+itshape CVS $ $Revision: 1.22 $ $ -- $ $Date: 2008-06-17 13:28:41 $ $} 
 \end_layout
 
-\begin_layout Author Address
-Istituto Nazionale di Geofisica e Vulcanologia, Via di Vigna Murata 605,
- 00143 Roma, Italy
+\end_inset
+
+ 
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+corauth[cor]{Tel.: +39-06-51860671}
 \end_layout
 
-\begin_layout Author Email
-quintiliani@ingv.it
+\end_inset
+
+ 
 \end_layout
 
-\begin_layout Author URL
-http://mednet.rm.ingv.it/nmxptool.php
+\begin_layout Keywords
+Seismic data acquisition; software.
 \end_layout
 
 \begin_layout Section
