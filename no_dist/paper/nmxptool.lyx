@@ -115,9 +115,9 @@ The Nanometrics servers NaqsServer and DataServer can provide on-line access
  The tool, based on libnmxp, allows to retrieve or monitor real-time data
  and data of the past.
  nmxptool can be used in three different ways: stand-alone to monitor data
- or save retrieved data in mini-seed records, launched as an Earthworm module
- to redirect data into the EW-rings or like a Seed-Link plug-in to feed
- the SL-server.
+ or save retrieved data in mini-SEED records, launched as an Earthworm module
+ to redirect data into the EW-rings or like a Seedlink plug-in to feed the
+ SL-server.
  The main contribute, as regards other similar software, is the capability
  to manage Raw Stream connections by buffering and sorting all received
  packets, included the retransmitted ones, guaranteeing a good compromise
@@ -158,7 +158,7 @@ thanks[revision]{
 \backslash
 small 
 \backslash
-itshape CVS $ $Revision: 1.24 $ $ -- $ $Date: 2008-06-18 07:40:16 $ $} 
+itshape CVS $ $Revision: 1.25 $ $ -- $ $Date: 2008-06-18 12:42:15 $ $} 
 \end_layout
 
 \end_inset
@@ -227,7 +227,7 @@ Nanometrics Server - Client
 
 \begin_layout Standard
 \begin_inset Float figure
-wide false
+wide true
 sideways false
 status open
 
@@ -392,7 +392,7 @@ key "naqs2ew"
 
 \end_inset
 
- developed for redirecting data from NaqsServer into the SeedLink of 
+ developed for redirecting data from NaqsServer into the Seedlink of 
 \begin_inset LatexCommand citet
 key "seiscomp"
 
@@ -417,8 +417,14 @@ Raw Stream
 \shape default
 , nmxptool is also able to receive retransmitted packets, manage and chronologic
 ally order them in a buffer when is needed, that is when a retransmission
- occurs, and finally it can redirect data into the SeedLink or Earthworm
- system or repacket them in mini-SEED records.
+ occurs, and finally it can redirect data into the Seedlink or Earthworm
+ system or repacket them in mini-SEED records by 
+\begin_inset LatexCommand citet
+key "seedmanual"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Section
@@ -441,7 +447,7 @@ reference "tab:architectures"
 
 \begin_layout Standard
 \begin_inset Float table
-wide false
+wide true
 sideways false
 status open
 
@@ -876,7 +882,7 @@ name "tab:architectures"
 
 \begin_layout Standard
 In order to enable nmxptool for storing data in mini-SEED format, feeding
- SeedLink server or redirecting data into an Earthworm ring, some open-source
+ Seedlink server or redirecting data into an Earthworm ring, some open-source
  software could be required, the respective software are libmseed, Seedlink
  and Earthworm.
  These software and their installation will be described in the next sections.
@@ -902,7 +908,7 @@ reference "fig:maxtolerablelatency"
 
 \begin_layout Standard
 \begin_inset Float figure
-wide false
+wide true
 sideways false
 status open
 
@@ -984,7 +990,7 @@ Source is subdivided in two main trunks, the first contains a library called
 The main flow of the program is always the same for the two protocols, only
  the functions that manage the packets are different, respectively, as regard
  to the different usages: saving mini-SEED records, Earthworm module or
- SeedLink plug-in.
+ Seedlink plug-in.
 \end_layout
 
 \begin_layout Standard
@@ -1017,15 +1023,10 @@ You should be able to compile and install them everywhere you can launch
 \end_layout
 
 \begin_layout Standard
-\begin_inset ERT
+\begin_inset listings
+lstparams "basicstyle={\scriptsize\ttfamily},breaklines=true"
+inline false
 status open
-
-\begin_layout Standard
-
-
-\backslash
-begin{verbatim}
-\end_layout
 
 \begin_layout Standard
 
@@ -1042,13 +1043,6 @@ make
 \begin_layout Standard
 
 make install
-\end_layout
-
-\begin_layout Standard
-
-
-\backslash
-end{verbatim}
 \end_layout
 
 \end_inset
@@ -1078,19 +1072,14 @@ Displaying the version of nmxptool and enabled features after compilation:
 \end_layout
 
 \begin_layout Standard
-\begin_inset ERT
-status collapsed
+\begin_inset listings
+lstparams "basicstyle={\scriptsize\ttfamily},breaklines=true"
+inline false
+status open
 
 \begin_layout Standard
 
-
-\backslash
-begin{verbatim}
-\end_layout
-
-\begin_layout Standard
-
-src/nmxptool --version
+src/nmxptool --versionxxxxx
 \end_layout
 
 \begin_layout Standard
@@ -1110,13 +1099,6 @@ nmxptool 1.2.2, Nanometrics tool
 \begin_layout Standard
 
     Enabled features: libmseed YES, SeedLink YES, Earthworm YES.
-\end_layout
-
-\begin_layout Standard
-
-
-\backslash
-end{verbatim}
 \end_layout
 
 \end_inset
@@ -1148,7 +1130,7 @@ url{http://www.iris.edu/manuals/}
 
 
 \newline
-The Mini-SEED library.
+The mini-SEED library.
  A C library framework for manipulating and managing SEED data records.
  Author: Chad Trabant, IRIS DMC
 \newline
@@ -1210,7 +1192,7 @@ libmseed
 \end_layout
 
 \begin_layout Standard
-The Mini-SEED library - http://www.iris.edu/manuals/If available within include
+The mini-SEED library - http://www.iris.edu/manuals/If available within include
  and library path, this library allows to save retrieved data in Mini-SEED
  records.
  You might add to CFLAGS this "-I/<anywhere>/libmseed" and to LDFLAGS this
@@ -1223,15 +1205,10 @@ A possible command line to compile nmxptool only capable of saving data
 \end_layout
 
 \begin_layout Standard
-\begin_inset ERT
+\begin_inset listings
+lstparams "basicstyle={\scriptsize\ttfamily},breaklines=true"
+inline false
 status open
-
-\begin_layout Standard
-
-
-\backslash
-begin{verbatim}
-\end_layout
 
 \begin_layout Standard
 
@@ -1243,13 +1220,6 @@ begin{verbatim}
 \begin_layout Standard
 
   LDFLAGS="-L/<anywhere>/libmseed"
-\end_layout
-
-\begin_layout Standard
-
-
-\backslash
-end{verbatim}
 \end_layout
 
 \end_inset
@@ -1310,15 +1280,10 @@ ly adds
 \end_layout
 
 \begin_layout Standard
-\begin_inset ERT
+\begin_inset listings
+lstparams "basicstyle={\scriptsize\ttfamily},breaklines=true"
+inline false
 status open
-
-\begin_layout Standard
-
-
-\backslash
-begin{verbatim}
-\end_layout
 
 \begin_layout Standard
 
@@ -1360,13 +1325,6 @@ begin{verbatim}
   GLOBALFLAGS="-D_SPARC -D_SOLARIS"
 \end_layout
 
-\begin_layout Standard
-
-
-\backslash
-end{verbatim}
-\end_layout
-
 \end_inset
 
 
@@ -1378,15 +1336,10 @@ The following values of GLOBALFLAGS can be used for compiling nmxptool on
 \end_layout
 
 \begin_layout Standard
-\begin_inset ERT
+\begin_inset listings
+lstparams "basicstyle={\scriptsize\ttfamily},breaklines=true"
+inline false
 status open
-
-\begin_layout Standard
-
-
-\backslash
-begin{verbatim}
-\end_layout
 
 \begin_layout Standard
 
@@ -1417,13 +1370,6 @@ GLOBALFLAGS="-D_WINNT -D_INTEL -D_CRT_SECURE_NO_DEPRECATE
             -D_USE_32BIT_TIME_T"
 \end_layout
 
-\begin_layout Standard
-
-
-\backslash
-end{verbatim}
-\end_layout
-
 \end_inset
 
 
@@ -1438,15 +1384,10 @@ Install binary and configuration files for Earthworm:
 \end_layout
 
 \begin_layout Standard
-\begin_inset ERT
+\begin_inset listings
+lstparams "basicstyle={\scriptsize\ttfamily},breaklines=true"
+inline false
 status open
-
-\begin_layout Standard
-
-
-\backslash
-begin{verbatim}
-\end_layout
 
 \begin_layout Standard
 
@@ -1456,13 +1397,6 @@ make install-ew-conf ( # ONLY THE FIRST TIME # )
 \begin_layout Standard
 
 make install-ew-bin
-\end_layout
-
-\begin_layout Standard
-
-
-\backslash
-end{verbatim}
 \end_layout
 
 \end_inset
@@ -1477,26 +1411,14 @@ The first command copies nmxptool binary in $EW_HOME/$EW_VERSION/bin The
 \end_layout
 
 \begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-begin{verbatim}
-\end_layout
+\begin_inset listings
+lstparams "basicstyle={\scriptsize\ttfamily},breaklines=true"
+inline false
+status collapsed
 
 \begin_layout Standard
 
 make install-ew-doc
-\end_layout
-
-\begin_layout Standard
-
-
-\backslash
-end{verbatim}
 \end_layout
 
 \end_inset
@@ -1520,174 +1442,6 @@ and
 $EW_HOME/$EW_VERSION/ewdoc/WEB_DOC/cmd 
 \end_layout
 
-\begin_layout Subsection
-Seedlink
-\end_layout
-
-\begin_layout Standard
-SeisComP - http://www.gfz-potsdam.de/geofon/seiscomp/ Seedlink is a system
- for near real time seismic data distribution.
- Inside the directory 'src' has been copied files 'seedlink_plugin.c' and
- 'seedlink_plugin.h' from 'plugin.c' and 'plugin.h' belonging to the SeisComP
- 2.5 distribution.
-\end_layout
-
-\begin_layout Standard
-Enable only libmseed and seedlink
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-begin{verbatim}
-\end_layout
-
-\begin_layout Standard
-
-./configure --disable-ew 
-\backslash
-
-\end_layout
-
-\begin_layout Standard
-
-  CFLAGS="-O2 -Wall -pipe -I/<anywhere>/libmseed" 
-\backslash
-
-\end_layout
-
-\begin_layout Standard
-
-  LDFLAGS="-L/<anywhere>/libmseed"
-\end_layout
-
-\begin_layout Standard
-
-
-\backslash
-end{verbatim}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-If your SeisComP root directory is not equal to /home/sysop/seiscomp, you
- have to launch the script 'configure' in the following way:
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-begin{verbatim}
-\end_layout
-
-\begin_layout Standard
-
-./configure ...
- ...
- SEISCOMPDIR=/<where>/<seiscompdir>/<is>
-\end_layout
-
-\begin_layout Standard
-
-
-\backslash
-end{verbatim}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Install binary and template files for SeedLink:
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-begin{verbatim}
-\end_layout
-
-\begin_layout Standard
-
-make install-seiscomp-templates ( # ONLY THE FIRST TIME # )
-\end_layout
-
-\begin_layout Standard
-
-make install-seiscomp-bin
-\end_layout
-
-\begin_layout Standard
-
-
-\backslash
-end{verbatim}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-The first command copies nmxptool binary in %SEISCOMPDIR%/acquisition/bin
- The second command copies the directory seiscomp_templates/135_nmxptool
- in %SEISCOMPDIR%/acquisition/templates/source/
-\end_layout
-
-\begin_layout Standard
-After, you can use:
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-begin{verbatim}
-\end_layout
-
-\begin_layout Standard
-
-seiscomp config
-\end_layout
-
-\begin_layout Standard
-
-
-\backslash
-end{verbatim}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout Section
 Usages
 \end_layout
@@ -1698,6 +1452,798 @@ List of available channel, matching channel, network code only for output
 
 \begin_layout Standard
 Main common parameters.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\scriptsize\ttfamily},breaklines=true"
+inline false
+status collapsed
+
+\begin_layout Standard
+
+nmxptool 1.2.2, Nanometrics tool
+\end_layout
+
+\begin_layout Standard
+
+         Private Data Stream 1.4, Data Access Protocol 1.0
+\end_layout
+
+\begin_layout Standard
+
+         Enabled features: libmseed YES, SeedLink YES, Earthworm YES.
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+Usage: nmxptool -H hostname   -l | -L
+\end_layout
+
+\begin_layout Standard
+
+             Print list of the available Time Series channels
+\end_layout
+
+\begin_layout Standard
+
+             on DataServer and NaqsServer respectively.
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+       nmxptool -H hostname -C channellist [...]
+\end_layout
+
+\begin_layout Standard
+
+             Receive data in near real-time from NaqsServer by PDS 1.4
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+       nmxptool -H hostname -F statefile [-A SECs] [...]
+\end_layout
+
+\begin_layout Standard
+
+             Receive data from NaqsServer and, in case, retrieve previous
+\end_layout
+
+\begin_layout Standard
+
+             data from DataServer up to SECs seconds before.
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+       nmxptool -H hostname -C channellist -s DATE -e DATE [...]
+\end_layout
+
+\begin_layout Standard
+
+       nmxptool -H hostname -C channellist -s DATE -t TIME [...]
+\end_layout
+
+\begin_layout Standard
+
+             Receive a temporal interval of data from DataServer by DAP
+ 1.0
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+       nmxptool nmxptool.d
+\end_layout
+
+\begin_layout Standard
+
+             Launched as Earthworm module to redirect data into the EW-Rings.
+\end_layout
+
+\begin_layout Standard
+
+             Refer to nmxptool_cmd.html into the Earthworm documentation.
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+       nmxptool <option ...
+ option> -k
+\end_layout
+
+\begin_layout Standard
+
+             Launched as SeedLink plug-in to feed the SL-Server.
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+       nmxptool --help | -h
+\end_layout
+
+\begin_layout Standard
+
+             Print this help.
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+Main arguments:
+\end_layout
+
+\begin_layout Standard
+
+  -H, --hostname=HOST     NaqsServer/DataServer hostname or IP address.
+\end_layout
+
+\begin_layout Standard
+
+  -C, --channels=LIST     List of NET.STA.CHAN separated by comma.
+\end_layout
+
+\begin_layout Standard
+
+                          NET  is optional and used only for output.
+\end_layout
+
+\begin_layout Standard
+
+                          STA  can be '*', it stands for all stations.
+\end_layout
+
+\begin_layout Standard
+
+                          CHAN can contain '?', it stands for any character.
+\end_layout
+
+\begin_layout Standard
+
+                          Network code will be assigned from the first
+\end_layout
+
+\begin_layout Standard
+
+                          pattern that includes station and channel.
+\end_layout
+
+\begin_layout Standard
+
+                          DO NOT USE with -F.
+\end_layout
+
+\begin_layout Standard
+
+                                Example: N1.AAA.HH?,N2.*.HH?,MMM.BH?
+\end_layout
+
+\begin_layout Standard
+
+                          Second pattern includes the first.
+ Unless AAA, all
+\end_layout
+
+\begin_layout Standard
+
+                          stations with HH channels will have network to
+ N2.
+\end_layout
+
+\begin_layout Standard
+
+                          Station MMM will have default network defined
+ by -N.
+\end_layout
+
+\begin_layout Standard
+
+  -F, --statefile=FILE    List of channel patterns, as in -C.
+ One for each line.
+\end_layout
+
+\begin_layout Standard
+
+                          Load/Save time of the last sample of each channel
+\end_layout
+
+\begin_layout Standard
+
+                          into a file with the same name, same directory,
+\end_layout
+
+\begin_layout Standard
+
+                          appending the suffix '.nmxpstate'.
+\end_layout
+
+\begin_layout Standard
+
+                          Allow data continuity when short disconnections
+ occur.
+\end_layout
+
+\begin_layout Standard
+
+                          Related to -A and -f, it enables -b.
+\end_layout
+
+\begin_layout Standard
+
+                          DO NOT USE with -C.
+\end_layout
+
+\begin_layout Standard
+
+  -A, --maxdataretr=SECs  Max amount of data of the past to retrieve from
+ the
+\end_layout
+
+\begin_layout Standard
+
+                          DataServer when program restarts (default 0) [0..86400].
+\end_layout
+
+\begin_layout Standard
+
+                          0 to disable connection to DataServer.
+\end_layout
+
+\begin_layout Standard
+
+                          If this option is equal to zero and -F is used,
+\end_layout
+
+\begin_layout Standard
+
+                          only data buffered by NaqsServer will be retrieved.
+\end_layout
+
+\begin_layout Standard
+
+                          Rather than using -A, it is preferable, inside
+ the section
+\end_layout
+
+\begin_layout Standard
+
+                          Datastream of the file Naqs.ini, setting DataBufferLeng
+th
+\end_layout
+
+\begin_layout Standard
+
+                          to a high value.
+ -A allows to retrieve much more
+\end_layout
+
+\begin_layout Standard
+
+                          data of the past when the program restarts but
+ it
+\end_layout
+
+\begin_layout Standard
+
+                          considerably slows down the execution.
+\end_layout
+
+\begin_layout Standard
+
+                          It is extremely harmful when you have many channels,
+\end_layout
+
+\begin_layout Standard
+
+                          in this case you might consider to subdivide the
+\end_layout
+
+\begin_layout Standard
+
+                          channels into different nmxptool instances.
+\end_layout
+
+\begin_layout Standard
+
+                          Related to -F.
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+PDS arguments for NaqsServer:
+\end_layout
+
+\begin_layout Standard
+
+  -P, --portpds=PORT      NaqsServer port number (default 28000).
+\end_layout
+
+\begin_layout Standard
+
+  -S, --stc=SECs          Short-Term-Completion (default -1).
+\end_layout
+
+\begin_layout Standard
+
+                          -1 is for Raw Stream, no Short-Term-Completion.
+\end_layout
+
+\begin_layout Standard
+
+                             Packets contain compressed data.
+ Related to -M, -T.
+\end_layout
+
+\begin_layout Standard
+
+                             It enables --rate=-1.
+\end_layout
+
+\begin_layout Standard
+
+                           0 decompressed packets are received in chronological
+\end_layout
+
+\begin_layout Standard
+
+                             order without waiting for missing packets.
+\end_layout
+
+\begin_layout Standard
+
+                          [1..300] decompressed packets are received in
+\end_layout
+
+\begin_layout Standard
+
+                             chronological order but waiting for missing
+ packets
+\end_layout
+
+\begin_layout Standard
+
+                             at most SECs seconds.
+\end_layout
+
+\begin_layout Standard
+
+  -R, --rate=Hz           Receive data with specified sample rate (default
+ -1).
+\end_layout
+
+\begin_layout Standard
+
+                          -1 for original sample rate and compressed data.
+\end_layout
+
+\begin_layout Standard
+
+                           0 for original sample rate and decompressed data.
+\end_layout
+
+\begin_layout Standard
+
+                          >0 for specified sample rate and decompressed
+ data.
+\end_layout
+
+\begin_layout Standard
+
+  -b, --buffered          Request also recent packets into the past.
+\end_layout
+
+\begin_layout Standard
+
+  -B, --buffdate=DATE     Request also recent packets into the past
+\end_layout
+
+\begin_layout Standard
+
+                          but consider only samples after DATE.
+\end_layout
+
+\begin_layout Standard
+
+  -f, --mschan=mSECs/nC   mSECs are milliseconds to wait before the next
+ request,
+\end_layout
+
+\begin_layout Standard
+
+                          nC is the number of channels to request at a time.
+\end_layout
+
+\begin_layout Standard
+
+                          Delaying and requesting few channels at a time
+ make
+\end_layout
+
+\begin_layout Standard
+
+                          data buffering on NaqsServer side more efficient.
+\end_layout
+
+\begin_layout Standard
+
+                          Determined empiric values are default 280/9.
+\end_layout
+
+\begin_layout Standard
+
+                          Condition: TotalNumberOfChannels * (mSECs/nC)
+ < 15 sec.
+\end_layout
+
+\begin_layout Standard
+
+                          Related to -F and -b.
+ 0/0 for disabling.
+\end_layout
+
+\begin_layout Standard
+
+  -L, --listchannelsnaqs  List of the available Time Series channels on
+ NaqsServer.
+\end_layout
+
+\begin_layout Standard
+
+  -M, --maxlatency=SECs   Max tolerable latency (default 600) [60..600].
+\end_layout
+
+\begin_layout Standard
+
+                          Enable NaqsServer to send out retransmission requests
+\end_layout
+
+\begin_layout Standard
+
+                          for missed packets.
+ Inside the section NetworkInterface
+\end_layout
+
+\begin_layout Standard
+
+                          of the file Naqs.ini set RetxRequest to Enabled.
+\end_layout
+
+\begin_layout Standard
+
+                          If RetxRequest is not enabled then -M is ineffective.
+\end_layout
+
+\begin_layout Standard
+
+  -T, --timeoutrecv=SECs  Time-out for flushing queued packets of each channel.
+\end_layout
+
+\begin_layout Standard
+
+                          It sets --mschan=0/0 (default 0, no time-out)
+ [10..300].
+\end_layout
+
+\begin_layout Standard
+
+                          -T is useful for retrieving Data On Demand with
+ minimum delay.
+\end_layout
+
+\begin_layout Standard
+
+                          -M, -T are usable only with Raw Stream, -S=-1.
+\end_layout
+
+\begin_layout Standard
+
+                          In general, -M and -T are not used together.
+\end_layout
+
+\begin_layout Standard
+
+                          Receiving signals interrupts the time out.
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+DAP arguments for DataServer:
+\end_layout
+
+\begin_layout Standard
+
+  -D, --portdap=PORT      DataServer port number (default 28002).
+\end_layout
+
+\begin_layout Standard
+
+  -s, --start_time=DATE   Start time in date format.
+\end_layout
+
+\begin_layout Standard
+
+  -e, --end_time=DATE     End time in date format.
+\end_layout
+
+\begin_layout Standard
+
+                          DATE can be in formats:
+\end_layout
+
+\begin_layout Standard
+
+                              <date>,<time> | <date>
+\end_layout
+
+\begin_layout Standard
+
+                          where:
+\end_layout
+
+\begin_layout Standard
+
+                              <date> = yyyy/mm/dd | yyy.jjj
+\end_layout
+
+\begin_layout Standard
+
+                              <time> = hh:mm:ss | hh:mm:ss.dddd | hh:mm
+\end_layout
+
+\begin_layout Standard
+
+  -t, --interval=TIME     Time interval from start_time (greater than zero).
+\end_layout
+
+\begin_layout Standard
+
+                          TIME is in seconds, otherwise append 'm' for minutes
+\end_layout
+
+\begin_layout Standard
+
+                          'h' for hours or 'd' for days.
+ [1 sec ..
+ 31 days]
+\end_layout
+
+\begin_layout Standard
+
+                          DO NOT USE with -e.
+\end_layout
+
+\begin_layout Standard
+
+  -d, --delay=TIME        Receive continuosly data with delay [60 sec ..
+ 31 days].
+\end_layout
+
+\begin_layout Standard
+
+  -u, --username=USER     DataServer username.
+\end_layout
+
+\begin_layout Standard
+
+  -p, --password=PASS     DataServer password.
+\end_layout
+
+\begin_layout Standard
+
+  -l, --listchannels      List of the available Time Series channels on
+ DataServer.
+\end_layout
+
+\begin_layout Standard
+
+  -i, --channelinfo       Print channelinfo (network name) when using -l.
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+Other arguments:
+\end_layout
+
+\begin_layout Standard
+
+  -N, --network=NET       Default output Network code.
+ (default 'XX').
+\end_layout
+
+\begin_layout Standard
+
+  -n, --location=LOC      Default output Location code.
+ DISABLED!
+\end_layout
+
+\begin_layout Standard
+
+  -v, --verbose=LEVEL     Be verbose.
+ LEVEL is a bitmap:
+\end_layout
+
+\begin_layout Standard
+
+                          1 Channel State, 2 Channel, 4 Raw Stream,
+\end_layout
+
+\begin_layout Standard
+
+                          8 CRC32, 16 Connection flow,
+\end_layout
+
+\begin_layout Standard
+
+                          32 Packet Management, 64 Extra, 128 Date,
+\end_layout
+
+\begin_layout Standard
+
+                          256 Gap, 512 DOD, 1023 All messages.
+\end_layout
+
+\begin_layout Standard
+
+  -g, --logdata           Print info about packet data.
+\end_layout
+
+\begin_layout Standard
+
+  -G, --logsample         Print sample values of packets.
+ Includes -g.
+\end_layout
+
+\begin_layout Standard
+
+  -m, --writeseed         Pack received data in Mini-SEED records
+\end_layout
+
+\begin_layout Standard
+
+                          and write to a file.
+\end_layout
+
+\begin_layout Standard
+
+  -w, --writefile         Dump received packets to a file.
+\end_layout
+
+\begin_layout Standard
+
+  -k, --slink=PLUGINID    Send received data to SeedLink as a plug-in.
+\end_layout
+
+\begin_layout Standard
+
+                          This option, inside the file seedlink.ini, must
+ be
+\end_layout
+
+\begin_layout Standard
+
+                          the last without adding value for PLUGINID!
+\end_layout
+
+\begin_layout Standard
+
+                          PLUGINID is set by SeisComP daemon.
+\end_layout
+
+\begin_layout Standard
+
+  -E, --testport=PORT     Accept 'telnet' connection on PORT
+\end_layout
+
+\begin_layout Standard
+
+                          for data testing and diagnostic purposes.
+\end_layout
+
+\begin_layout Standard
+
+  -V, --version           Print tool version.
+\end_layout
+
+\begin_layout Standard
+
+  -h, --help              Print this help.
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+Signal handling:
+\end_layout
+
+\begin_layout Standard
+
+   INT QUIT TERM          Sending these signals to nmxptool causes it
+\end_layout
+
+\begin_layout Standard
+
+                          to immediately attempt to gracefully terminate.
+\end_layout
+
+\begin_layout Standard
+
+                          It may take several seconds to complete exiting.
+\end_layout
+
+\begin_layout Standard
+
+   ALRM                   Print current info about Raw Stream buffer.
+\end_layout
+
+\begin_layout Standard
+
+   HUP PIPE               Ignored.
+ (SIG_IGN)
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+Matteo Quintiliani - Istituto Nazionale di Geofisica e Vulcanologia - Italy
+\end_layout
+
+\begin_layout Standard
+
+Mail bug reports and suggestions to <quintiliani@ingv.it>.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -1712,7 +2258,7 @@ reference "fig:nmxptoolusages"
 
 \begin_layout Standard
 \begin_inset Float figure
-wide false
+wide true
 sideways false
 status open
 
@@ -1794,6 +2340,126 @@ Test and results
 Test.
  Almost all packets are retrieved within 60 seconds.
  
+\end_layout
+
+\begin_layout Subsection
+Seedlink
+\end_layout
+
+\begin_layout Standard
+SeisComP - http://www.gfz-potsdam.de/geofon/seiscomp/ Seedlink is a system
+ for near real time seismic data distribution.
+ Inside the directory 'src' has been copied files 'seedlink_plugin.c' and
+ 'seedlink_plugin.h' from 'plugin.c' and 'plugin.h' belonging to the SeisComP
+ 2.5 distribution.
+\end_layout
+
+\begin_layout Standard
+Enable only libmseed and seedlink
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\scriptsize\ttfamily},breaklines=true"
+inline false
+status collapsed
+
+\begin_layout Standard
+
+./configure --disable-ew 
+\backslash
+
+\end_layout
+
+\begin_layout Standard
+
+  CFLAGS="-O2 -Wall -pipe -I/<anywhere>/libmseed" 
+\backslash
+
+\end_layout
+
+\begin_layout Standard
+
+  LDFLAGS="-L/<anywhere>/libmseed"
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If your SeisComP root directory is not equal to /home/sysop/seiscomp, you
+ have to launch the script 'configure' in the following way:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\scriptsize\ttfamily},breaklines=true"
+inline false
+status open
+
+\begin_layout Standard
+
+./configure ...
+ ...
+ SEISCOMPDIR=/<where>/<seiscompdir>/<is>
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Install binary and template files for Seedlink:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\scriptsize\ttfamily},breaklines=true"
+inline false
+status open
+
+\begin_layout Standard
+
+make install-seiscomp-templates ( # ONLY THE FIRST TIME # )
+\end_layout
+
+\begin_layout Standard
+
+make install-seiscomp-bin
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The first command copies nmxptool binary in %SEISCOMPDIR%/acquisition/bin
+ The second command copies the directory seiscomp_templates/135_nmxptool
+ in %SEISCOMPDIR%/acquisition/templates/source/
+\end_layout
+
+\begin_layout Standard
+After, you can use:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\scriptsize\ttfamily},breaklines=true"
+inline false
+status open
+
+\begin_layout Standard
+
+seiscomp config
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
