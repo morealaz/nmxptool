@@ -1,4 +1,4 @@
-#LyX 1.5.3 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.5 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -79,10 +79,6 @@ corauthref{cor}
 
 \end_layout
 
-\begin_layout Author Email
-quintiliani@ingv.it
-\end_layout
-
 \begin_layout Author Address
 Istituto Nazionale di Geofisica e Vulcanologia, Via di Vigna Murata 605,
  00143 Roma, Italy
@@ -99,6 +95,10 @@ thanksref{revision}
 \end_inset
 
 
+\end_layout
+
+\begin_layout Author Email
+quintiliani@ingv.it
 \end_layout
 
 \begin_layout Abstract
@@ -158,7 +158,7 @@ thanks[revision]{
 \backslash
 small 
 \backslash
-itshape CVS $ $Revision: 1.23 $ $ -- $ $Date: 2008-06-17 13:56:15 $ $} 
+itshape CVS $ $Revision: 1.24 $ $ -- $ $Date: 2008-06-18 07:40:16 $ $} 
 \end_layout
 
 \end_inset
@@ -229,7 +229,7 @@ Nanometrics Server - Client
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Standard
 \align center
@@ -249,15 +249,27 @@ status collapsed
 \begin_layout Standard
 
 \shape italic
-Typical configuration of a seismic data flow from seismic stations, through
- Nanometrics Servers, as far as the client programs.
+Typical configuration at INGV of a seismic data flow from seismic stations
+ with a satellite connection, through Nanometrics Servers, as far as the
+ client programs.
  In order to interact with NaqsServer or DataServer any client must implement
  the subscription protocols Private Data Stream or Data Access Protocol
  respectively.
+ NaqsServer manages a circular buffer of packets and you can configure,
+ or not, the retransmissions of missing packets in order to fill the gaps.
+ Priority of retransmissions is in inverse proportion to the age of the
+ packet.
  The most important difference between a NaqsServer and a DataServer is
  that the first one provides data in near-real-time whereas DataServer spreads
  archived data into the past.
- 
+ More details about software interaction beetween the servers and clients
+ are shown in figure 
+\begin_inset LatexCommand ref
+reference "fig:nmxptoolusages"
+
+\end_inset
+
+.
 \end_layout
 
 \end_inset
@@ -431,7 +443,7 @@ reference "tab:architectures"
 \begin_inset Float table
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Standard
 \align center
@@ -874,7 +886,13 @@ In order to enable nmxptool for storing data in mini-SEED format, feeding
 The main contribute produced by nmxptool, as regards other similar software,
  is the capability to manage Raw Stream connections by buffering and sorting
  all received packets, included the retransmitted ones, guaranteeing a good
- compromise between data continuity and low latency.
+ compromise between data continuity and low latency, figure 
+\begin_inset LatexCommand ref
+reference "fig:maxtolerablelatency"
+
+\end_inset
+
+.
  Besides, nmxptool allows to retrieve Data-On-Demand from NaqsServer with
  minimum delay after request.
  Another important feature allows data continuity between program restarts,
@@ -883,25 +901,10 @@ The main contribute produced by nmxptool, as regards other similar software,
 \end_layout
 
 \begin_layout Standard
-Main parameter to set for Raw Stream is the max tolerable latency you can
- accept, a sort of short-term-completion but managed by the client and not
- by the server.
- Figure 
-\begin_inset LatexCommand ref
-reference "fig:maxtolerablelatency"
-
-\end_inset
-
-.
- Moreover, for retrieving data-on-demand....
- Timeoutrecv....
-\end_layout
-
-\begin_layout Standard
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Standard
 \align center
@@ -921,8 +924,24 @@ status collapsed
 \begin_layout Standard
 
 \shape italic
-Raw stream management.
- Max tolerable latency.
+Main parameter to set for the Raw Stream connection is the Max tolerable
+ latency you can accept, a sort of short-term-completion but managed by
+ the client and not by the server.
+ nmxptool is able to manage a buffer of trasmitted and retransmitted packets
+ aiming to guarantee continuous data, chronological order of packets, minimum
+ latency and minimum number of gaps.
+ nmxptool slows down the acquisition only when it is waiting for a missing
+ packet.
+ Main parameter to set for Raw Stream is the max tolerable latency you can
+ accept, a sort of short-term-completion but managed by the client and not
+ by the server.
+ nmxptool is capable to manage a queue of packets and order them chronologically
+ when is needed, that is when a retrasmission occurs.
+ Unusable if the NaqsServer and station are not configured for retransmission
+ of missing packets.
+ Type of compressed packet is equal to 1.
+ bit 5 = 1 indicates the packet is being restransmitted, Type of retransmitted
+ packet is 33, that is 1 + 32 
 \end_layout
 
 \end_inset
@@ -946,9 +965,26 @@ name "fig:maxtolerablelatency"
 \end_layout
 
 \begin_layout Standard
+TODO: DataOnDemand figure and descriptions.
+\end_layout
+
+\begin_layout Standard
+Moreover, for retrieving data-on-demand....
+ Timeoutrecv....
+ Packet type 1+32+64
+\end_layout
+
+\begin_layout Standard
 Source is subdivided in two main trunks, the first contains a library called
  libnmxp designed to provide APIs for interacting with the Nanometrics servers,
  the second one is nmxptool which relies on libnmxp.
+\end_layout
+
+\begin_layout Standard
+The main flow of the program is always the same for the two protocols, only
+ the functions that manage the packets are different, respectively, as regard
+ to the different usages: saving mini-SEED records, Earthworm module or
+ SeedLink plug-in.
 \end_layout
 
 \begin_layout Standard
@@ -972,7 +1008,7 @@ done
 \end_layout
 
 \begin_layout Section
-Installation
+Installation and compilation
 \end_layout
 
 \begin_layout Standard
@@ -1038,29 +1074,152 @@ The script configure automatically tries to compile all features, for disabling
 \end_layout
 
 \begin_layout Standard
-Some influential environment variables when you launch configure and compile
- nmxptool are:
-\end_layout
-
-\begin_layout Description
-EW_HOME Earthworm home directory
-\end_layout
-
-\begin_layout Description
-EW_VERSION Earthworm version directory
-\end_layout
-
-\begin_layout Description
-EW_PARAMS Earthworm configuration files directory
-\end_layout
-
-\begin_layout Description
-GLOBALFLAGS C compiler flags for Earthworm
+Displaying the version of nmxptool and enabled features after compilation:
 \end_layout
 
 \begin_layout Standard
-It is possible to pass to the script configure the previous variables within
- command line, for example:
+\begin_inset ERT
+status collapsed
+
+\begin_layout Standard
+
+
+\backslash
+begin{verbatim}
+\end_layout
+
+\begin_layout Standard
+
+src/nmxptool --version
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+nmxptool 1.2.2, Nanometrics tool
+\end_layout
+
+\begin_layout Standard
+
+    Private Data Stream 1.4, Data Access Protocol 1.0
+\end_layout
+
+\begin_layout Standard
+
+    Enabled features: libmseed YES, SeedLink YES, Earthworm YES.
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+end{verbatim}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Optional Dependencies
+\end_layout
+
+\begin_layout Standard
+Optional dependencies
+\end_layout
+
+\begin_layout Description
+libmseed-2.1.4 or later, from 
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+url{http://www.iris.edu/manuals/}
+\end_layout
+
+\end_inset
+
+
+\newline
+The Mini-SEED library.
+ A C library framework for manipulating and managing SEED data records.
+ Author: Chad Trabant, IRIS DMC
+\newline
+It can be compiled on Unix-like operating
+ systems, Mac OS X and Windows.
+\end_layout
+
+\begin_layout Description
+Earthworm-6.2 or later, from 
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+url{http://www.isti2.com/ew/}
+\end_layout
+
+\end_inset
+
+
+\newline
+Seismic data processing system.
+\newline
+It can be compiled on Unix-like operating
+ systems, Mac OS X and Windows.
+\end_layout
+
+\begin_layout Description
+Seedlink-2.5 or later, from 
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+url{http://www.gfz-potsdam.de/geofon/seiscomp/}
+\end_layout
+
+\end_inset
+
+
+\newline
+Seedlink is a system for near real time seismic data distribution.
+\newline
+It can
+ run mostly on Linux.
+\end_layout
+
+\begin_layout Standard
+The optional libraries and how link them to nmxptool is described in the
+ following subsections.
+\end_layout
+
+\begin_layout Subsection
+libmseed
+\end_layout
+
+\begin_layout Standard
+The Mini-SEED library - http://www.iris.edu/manuals/If available within include
+ and library path, this library allows to save retrieved data in Mini-SEED
+ records.
+ You might add to CFLAGS this "-I/<anywhere>/libmseed" and to LDFLAGS this
+ "-L/<anywhere>/libmseed", do not forget to run 'ranlib libmseed.a' or similars.
+\end_layout
+
+\begin_layout Standard
+A possible command line to compile nmxptool only capable of saving data
+ in mini-SEED format could be, for example:
 \end_layout
 
 \begin_layout Standard
@@ -1098,9 +1257,48 @@ end{verbatim}
 
 \end_layout
 
+\begin_layout Subsection
+ew
+\end_layout
+
 \begin_layout Standard
-Another example show how enabling only the Earthworm feature, the script
- automatically adds 
+Earthworm System - http://www.isti2.com/ew/ nmxptool is included into the
+ official Earthworm distribution since the version 7.2.
+ Anyway, you can compile nmxptool outside the EW distribution, for example,
+ to upgrade.
+ Before launching 'configure', run the appropriate script from directory
+ 'environment', the compilation depends on the following environment variables:
+ $EW_HOME, $EW_VERSION, $EW_PARAMS and $GLOBALFLAGS.
+ 'configure' looks for necessary Earthworm object files inside $EW_HOME/$EW_VERS
+ION/lib and link them to nmxptool in order to enable Earthworm module feature.
+ If some of object files are missing then it will attempt to discover sources
+ dependents on your operating system and it will compile them before linking.
+\end_layout
+
+\begin_layout Standard
+Some influential environment variables when you launch configure and compile
+ nmxptool are:
+\end_layout
+
+\begin_layout Description
+EW_HOME Earthworm home directory
+\end_layout
+
+\begin_layout Description
+EW_VERSION Earthworm version directory
+\end_layout
+
+\begin_layout Description
+EW_PARAMS Earthworm configuration files directory
+\end_layout
+
+\begin_layout Description
+GLOBALFLAGS C compiler flags for Earthworm
+\end_layout
+
+\begin_layout Standard
+An example showw how enabling only the Earthworm feature, the script automatical
+ly adds 
 \begin_inset Quotes eld
 \end_inset
 
@@ -1236,183 +1434,6 @@ The last one has to be used to compile Earthworm feature under Windows-MinGW.
 \end_layout
 
 \begin_layout Standard
-* Enable only libmseed and seedlink
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-begin{verbatim}
-\end_layout
-
-\begin_layout Standard
-
-./configure --disable-ew 
-\backslash
-
-\end_layout
-
-\begin_layout Standard
-
-  CFLAGS="-O2 -Wall -pipe -I/<anywhere>/libmseed" 
-\backslash
-
-\end_layout
-
-\begin_layout Standard
-
-  LDFLAGS="-L/<anywhere>/libmseed"
-\end_layout
-
-\begin_layout Standard
-
-
-\backslash
-end{verbatim}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Verifying the version and enabled features after compilation:
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-begin{verbatim}
-\end_layout
-
-\begin_layout Standard
-
-src/nmxptool --version
-\end_layout
-
-\begin_layout Standard
-
-\end_layout
-
-\begin_layout Standard
-
-nmxptool 1.2.2, Nanometrics tool
-\end_layout
-
-\begin_layout Standard
-
-    Private Data Stream 1.4, Data Access Protocol 1.0
-\end_layout
-
-\begin_layout Standard
-
-    Enabled features: libmseed YES, SeedLink YES, Earthworm YES.
-\end_layout
-
-\begin_layout Standard
-
-
-\backslash
-end{verbatim}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-The optional libraries are briefly described in the following subsections.
-\end_layout
-
-\begin_layout Subsection
-libmseed
-\end_layout
-
-\begin_layout Description
-libmseed-2.1.4 or later, from 
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-url{http://www.iris.edu/manuals/}
-\end_layout
-
-\end_inset
-
-
-\newline
-The Mini-SEED library.
- A C library framework for manipulating and managing SEED data records.
- Author: Chad Trabant, IRIS DMC
-\newline
-It can be compiled on Unix-like operating
- systems, Mac OS X and Windows.
-\end_layout
-
-\begin_layout Standard
-The Mini-SEED library - http://www.iris.edu/manuals/If available within include
- and library path, this library allows to save retrieved data in Mini-SEED
- records.
- You might add to CFLAGS this "-I/<anywhere>/libmseed" and to LDFLAGS this
- "-L/<anywhere>/libmseed", do not forget to run 'ranlib libmseed.a' or similars.
-\end_layout
-
-\begin_layout Subsection
-ew
-\end_layout
-
-\begin_layout Description
-Earthworm-6.2 or later, from 
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-url{http://www.isti2.com/ew/}
-\end_layout
-
-\end_inset
-
-
-\newline
-Seismic data processing system.
-\newline
-It can be compiled on Unix-like operating
- systems, Mac OS X and Windows.
-\end_layout
-
-\begin_layout Standard
-Earthworm System - http://www.isti2.com/ew/ nmxptool is included into the
- official Earthworm distribution since the version 7.2.
- Anyway, you can compile nmxptool outside the EW distribution, for example,
- to upgrade.
- Before launching 'configure', run the appropriate script from directory
- 'environment', the compilation depends on the following environment variables:
- $EW_HOME, $EW_VERSION, $EW_PARAMS and $GLOBALFLAGS.
- 'configure' looks for necessary Earthworm object files inside $EW_HOME/$EW_VERS
-ION/lib and link them to nmxptool in order to enable Earthworm module feature.
- If some of object files are missing then it will attempt to discover sources
- dependents on your operating system and it will compile them before linking.
-\end_layout
-
-\begin_layout Standard
 Install binary and configuration files for Earthworm:
 \end_layout
 
@@ -1500,29 +1521,7 @@ $EW_HOME/$EW_VERSION/ewdoc/WEB_DOC/cmd
 \end_layout
 
 \begin_layout Subsection
-SeedLink
-\end_layout
-
-\begin_layout Description
-Seedlink-2.5 or later, from 
-\begin_inset ERT
-status open
-
-\begin_layout Standard
-
-
-\backslash
-url{http://www.gfz-potsdam.de/geofon/seiscomp/}
-\end_layout
-
-\end_inset
-
-
-\newline
-Seedlink is a system for near real time seismic data distribution.
-\newline
-It can
- run mostly on Linux.
+Seedlink
 \end_layout
 
 \begin_layout Standard
@@ -1531,6 +1530,52 @@ SeisComP - http://www.gfz-potsdam.de/geofon/seiscomp/ Seedlink is a system
  Inside the directory 'src' has been copied files 'seedlink_plugin.c' and
  'seedlink_plugin.h' from 'plugin.c' and 'plugin.h' belonging to the SeisComP
  2.5 distribution.
+\end_layout
+
+\begin_layout Standard
+Enable only libmseed and seedlink
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Standard
+
+
+\backslash
+begin{verbatim}
+\end_layout
+
+\begin_layout Standard
+
+./configure --disable-ew 
+\backslash
+
+\end_layout
+
+\begin_layout Standard
+
+  CFLAGS="-O2 -Wall -pipe -I/<anywhere>/libmseed" 
+\backslash
+
+\end_layout
+
+\begin_layout Standard
+
+  LDFLAGS="-L/<anywhere>/libmseed"
+\end_layout
+
+\begin_layout Standard
+
+
+\backslash
+end{verbatim}
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -1648,6 +1693,14 @@ Usages
 \end_layout
 
 \begin_layout Standard
+List of available channel, matching channel, network code only for output
+\end_layout
+
+\begin_layout Standard
+Main common parameters.
+\end_layout
+
+\begin_layout Standard
 Figure 
 \begin_inset LatexCommand ref
 reference "fig:nmxptoolusages"
@@ -1661,7 +1714,7 @@ reference "fig:nmxptoolusages"
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Standard
 \align center
@@ -1705,16 +1758,36 @@ name "fig:nmxptoolusages"
 Stand-alone
 \end_layout
 
+\begin_layout Itemize
+List of available channel.
+\end_layout
+
+\begin_layout Itemize
+Monitoring data.
+\end_layout
+
+\begin_layout Itemize
+Saving mini-SEED.
+\end_layout
+
 \begin_layout Subsection
 Earthworm
 \end_layout
 
+\begin_layout Itemize
+Redirect data into the Earthworm ring.
+\end_layout
+
 \begin_layout Subsection
-SeisComP
+Seedlink
+\end_layout
+
+\begin_layout Itemize
+Redirect data into the Seedlink server.
 \end_layout
 
 \begin_layout Section
-Test
+Test and results
 \end_layout
 
 \begin_layout Standard
@@ -1745,10 +1818,44 @@ Manage information about state-of-health, triggers and events.
 I would like to ...
 \end_layout
 
-\begin_layout Standard
+\begin_layout Acknowledgement
 \begin_inset LatexCommand bibtex
 options "elsart-harv"
 bibfiles "references"
+
+\end_inset
+
+
+\newpage
+
+\end_layout
+
+\begin_layout Acknowledgement
+\begin_inset LatexCommand tableofcontents
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset FloatList figure
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset FloatList table
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset FloatList algorithm
 
 \end_inset
 
