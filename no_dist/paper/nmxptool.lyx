@@ -158,7 +158,7 @@ thanks[revision]{
 \backslash
 small 
 \backslash
-itshape CVS $ $Revision: 1.25 $ $ -- $ $Date: 2008-06-18 12:42:15 $ $} 
+itshape CVS $ $Revision: 1.26 $ $ -- $ $Date: 2008-06-19 13:12:16 $ $} 
 \end_layout
 
 \end_inset
@@ -906,6 +906,15 @@ reference "fig:maxtolerablelatency"
  joining it in near-real-time to the data that is flowing from the NaqsServer.
 \end_layout
 
+\begin_layout Subsection
+Raw Stream
+\end_layout
+
+\begin_layout Standard
+Unusable if the NaqsServer and station are not configured for retransmission
+ of missing packets.
+\end_layout
+
 \begin_layout Standard
 \begin_inset Float figure
 wide true
@@ -943,8 +952,6 @@ Main parameter to set for the Raw Stream connection is the Max tolerable
  by the server.
  nmxptool is capable to manage a queue of packets and order them chronologically
  when is needed, that is when a retrasmission occurs.
- Unusable if the NaqsServer and station are not configured for retransmission
- of missing packets.
  Type of compressed packet is equal to 1.
  bit 5 = 1 indicates the packet is being restransmitted, Type of retransmitted
  packet is 33, that is 1 + 32 
@@ -970,6 +977,10 @@ name "fig:maxtolerablelatency"
 
 \end_layout
 
+\begin_layout Subsection
+Data On Demand
+\end_layout
+
 \begin_layout Standard
 TODO: DataOnDemand figure and descriptions.
 \end_layout
@@ -980,37 +991,944 @@ Moreover, for retrieving data-on-demand....
  Packet type 1+32+64
 \end_layout
 
+\begin_layout Subsection
+Sources
+\end_layout
+
 \begin_layout Standard
 Source is subdivided in two main trunks, the first contains a library called
  libnmxp designed to provide APIs for interacting with the Nanometrics servers,
  the second one is nmxptool which relies on libnmxp.
-\end_layout
-
-\begin_layout Standard
-The main flow of the program is always the same for the two protocols, only
- the functions that manage the packets are different, respectively, as regard
- to the different usages: saving mini-SEED records, Earthworm module or
+ The main flow of nmxptool is always the same for the two protocols, only
+ the functions that manage the packets are different as regard to the different
+ usages: monitoring data or saving mini-SEED records, Earthworm module or
  Seedlink plug-in.
 \end_layout
 
 \begin_layout Standard
-Example of APIs call
+\begin_inset Float table
+wide true
+sideways false
+status collapsed
+
+\begin_layout Standard
+
+\shape italic
+\size scriptsize
+\begin_inset Box Boxed
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Standard
+
+\series bold
+\size scriptsize
+NMXP_DATA_PROCESS Struct Reference
 \end_layout
 
-\begin_layout Algorithm
-Source code skeleton.
+\begin_layout Standard
+
+\size scriptsize
+Parameter structure for functions that process data.
+ More...
 \end_layout
 
-\begin_layout Algorithm
-for i = 1 to 10; do
+\begin_layout Standard
+
+\size scriptsize
+#include <nmxp_data.h>
 \end_layout
 
-\begin_layout Algorithm
-echo i
+\begin_layout Standard
+
+\series bold
+\size scriptsize
+Public Attributes
 \end_layout
 
-\begin_layout Algorithm
-done
+\begin_layout List
+\labelwidthstring 00.00.0000
+
+\size scriptsize
+int32_t 
+\series bold
+key
+\series default
+
+\newline
+
+\shape italic
+Channel Key.
+\end_layout
+
+\begin_layout List
+\labelwidthstring 00.00.0000
+
+\size scriptsize
+char 
+\series bold
+network
+\series default
+ [NETWORK_LENGTH]
+\newline
+
+\shape italic
+Network code.
+\end_layout
+
+\begin_layout List
+\labelwidthstring 00.00.0000
+
+\size scriptsize
+char 
+\series bold
+station
+\series default
+ [STATION_LENGTH]
+\newline
+
+\shape italic
+Station code.
+\end_layout
+
+\begin_layout List
+\labelwidthstring 00.00.0000
+
+\size scriptsize
+char 
+\series bold
+channel
+\series default
+ [CHANNEL_LENGTH]
+\newline
+
+\shape italic
+Channel code.
+\end_layout
+
+\begin_layout List
+\labelwidthstring 00.00.0000
+
+\size scriptsize
+int32_t 
+\series bold
+packet_type
+\series default
+
+\newline
+
+\shape italic
+Packet type.
+\end_layout
+
+\begin_layout List
+\labelwidthstring 00.00.0000
+
+\size scriptsize
+int32_t 
+\series bold
+x0
+\series default
+
+\newline
+
+\shape italic
+First sample.
+ It is significant only if x0n_significant != 0.
+\end_layout
+
+\begin_layout List
+\labelwidthstring 00.00.0000
+
+\size scriptsize
+int32_t 
+\series bold
+xn
+\series default
+
+\newline
+
+\shape italic
+Last sample.
+ It is significant only if x0n_significant != 0.
+\end_layout
+
+\begin_layout List
+\labelwidthstring 00.00.0000
+
+\size scriptsize
+int32_t 
+\series bold
+x0n_significant
+\series default
+
+\newline
+
+\shape italic
+Declare if xn significant.
+\end_layout
+
+\begin_layout List
+\labelwidthstring 00.00.0000
+
+\size scriptsize
+int32_t 
+\series bold
+oldest_seq_no
+\series default
+
+\newline
+
+\shape italic
+Oldest Sequence number.
+\end_layout
+
+\begin_layout List
+\labelwidthstring 00.00.0000
+
+\size scriptsize
+int32_t 
+\series bold
+seq_no
+\series default
+
+\newline
+
+\shape italic
+Sequence number.
+\end_layout
+
+\begin_layout List
+\labelwidthstring 00.00.0000
+
+\size scriptsize
+double 
+\series bold
+time
+\series default
+
+\newline
+
+\shape italic
+Time first sample.
+ Epochs.
+\end_layout
+
+\begin_layout List
+\labelwidthstring 00.00.0000
+
+\size scriptsize
+void * 
+\series bold
+buffer
+\series default
+
+\newline
+
+\shape italic
+Nanometrics packet data.
+\end_layout
+
+\begin_layout List
+\labelwidthstring 00.00.0000
+
+\size scriptsize
+int32_t 
+\series bold
+length
+\series default
+
+\newline
+
+\shape italic
+Packet length.
+\end_layout
+
+\begin_layout List
+\labelwidthstring 00.00.0000
+
+\size scriptsize
+int * 
+\series bold
+pDataPtr
+\series default
+
+\newline
+
+\shape italic
+Array of samples.
+\end_layout
+
+\begin_layout List
+\labelwidthstring 00.00.0000
+
+\size scriptsize
+int32_t 
+\series bold
+nSamp
+\series default
+
+\newline
+
+\shape italic
+Number or samples.
+\end_layout
+
+\begin_layout List
+\labelwidthstring 00.00.0000
+
+\size scriptsize
+int32_t 
+\series bold
+sampRate
+\series default
+
+\newline
+
+\shape italic
+Sample rate.
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
+NMXP_DATA_PROCESS struct reference created by doxygen.
+\end_layout
+
+\end_inset
+
+
+\begin_inset LatexCommand label
+name "tab:nmxpdataprocess"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The library documentation has been edited by doxygen 
+\begin_inset LatexCommand citet
+key "doxygen"
+
+\end_inset
+
+ and released in html, rtf and man.
+ The documentation about the most important structure NMXP_DATA_PROCESS
+ has been reported as an example in table 
+\begin_inset LatexCommand ref
+reference "tab:nmxpdataprocess"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+The most important functions in libnmxp are responsible for the management
+ of the Raw Stream buffer.
+ For each seismic channel, the function nmxp_raw_stream_manage(), chronologicall
+y reorders the compressed packets stored into the structure ot type NMXP_DATA_PR
+OCESS and then it executes the n_func_pd functions contained into the array
+ p_func_pd.
+ If some packet is missing, the function queue the structure into a buffers
+ causing a latency for the data flow of its seismic channel.
+ The waiting of the missing packet ends when the packet latency go over
+ the value of the maximum tolerable set by nmxp_raw_stream_init() at beginning.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Standard
+Le funzioni a cui prestare maggiore attenzione sono quelle che si occupano
+ della gestione del buffer dei pacchetti nelle connessioni di tipo Raw Stream,
+ cioè dei pacchetti compressi e con valore di Short-term-complete uguale
+ a -1.
+ Per un canale sismico la funzione nmxp_raw_stream_manage() si occupa di
+ riordinare cronologicamente le strutture NMXP_DATA_PROCESS che ad ogni
+ chiamata le vengono passate, successivamente di eseguire sulle stesse le
+ n_func_pd funzioni i cui puntatori sono contenuti nell’array p_func_pd.
+ Nel caso in cui rilevi una discontinuità temporale del dato, la funzione
+ accoda in un buffer la struttura corrente inducendo così una latenza sul
+ flusso dei dati per quel canale.
+ L’attesa dei pacchetti mancanti termina quando il tempo massimo di latenza
+ tollerabile, impostato al momento dell’inizializzazione per mezzo della
+ funzione nmxp_raw_stream_init(), viene superato.
+ In quest’ultimo caso la funzione forzerà l’esecuzione delle funzioni sulla
+ prima struttura disponibile causando quindi un gap sul flusso dei dati.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The listing 
+\begin_inset LatexCommand ref
+reference "lst:pdssource"
+
+\end_inset
+
+ shows how writing a C program for implementing the subscription protocol
+ Private Data Stream 1.4.
+ nmxptool is based on this skeleton of source.
+ It is possible to notice how is easy develop an application capable of
+ establishing Raw Stream connection.
+ The developer will declare own function with the following prototype
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\scriptsize},breaklines=true,language=C,showstringspaces=false"
+inline false
+status open
+
+\begin_layout Standard
+
+int ( *process_data_function ) ( NMXP_DATA_PROCESS *)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+then he will add this function to the array function pointers passed to
+ nmxp_raw_stream_manage().
+ Before calling the function nmxp_raw_stream_manage() for each channel,
+ it needs to initialize, by the function nmxp_raw_stream_init(), a structure
+ of type NMXP_RAW_STREAM_DATA and the maximum tolerable latency.
+ At the end of the program, or in any case at the end of the connection,
+ will be necessary freeing the allocated memory by the function nmxp_raw_stream_
+free().
+ Before freeing the memory, in order to flush the incidental queued NMXP_DATA_PR
+OCESS structures, the function nmxp_raw_manage_stream_manage() can optionally
+ be called passing pd = NULL.
+ In this way, the functions contained into the array p_func_pd will be executed
+ on all remaining packet independently on the data continuity.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Standard
+Per sviluppare una propria applicazione in C che faccia uso della libreria
+ libnmxp vengono di seguito illustrati i sorgenti 
+\begin_inset LatexCommand ref
+reference "lst:pdssource"
+
+\end_inset
+
+ 1 e 2 che possono essere utilizzati come base per l’implementazione dei
+ protocolli Data Access Protocol 1.0 e Private Data Stream 1.4.
+ Su tali strutture di codice C è basato anche nmxptool descritto successivamente.
+ E’ importante notare come risulti relativamente semplice sviluppare una
+ propria applicazione anche nel caso in cui si vogliano stabilire connessioni
+ di tipo Raw Stream.
+ Infatti lo sviluppatore non dovrà far altro che utilizzare la struttura
+ base del sorgente 2, eseguire le opportune personalizzazioni, e dichiarare
+ una funzione con prototipo
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\scriptsize},breaklines=true,language=C,showstringspaces=false"
+inline false
+status open
+
+\begin_layout Standard
+
+int ( *process_data_function ) ( NMXP_DATA_PROCESS *)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+il cui puntatore dovrà poi essere aggiunto nell’array da passare come parametro
+ alla funzione nmxp_raw_stream_manage().
+ Prima di poter richiamare la funzione nmxp_raw_stream_manage() bisogna
+ inizializzare per ogni canale, tramite la funzione nmxp_raw_stream_init(),
+ una struttura dati di tipo NMXP_RAW_STREAM_DATA e il valore della massima
+ latenza tollerabile.
+ Al termine del programma, o comunque al termine della connessione, sarà
+ necessario liberare la memoria allocata dalla struttura NMXP_RAW_STREAM_DATA
+ per mezzo della funzione nmxp_raw_stream_free().
+ Opzionalmente, prima di questa funzione può essere richiamata nmxp_raw_manage_s
+tream_flush() che esegue le funzioni sui pacchetti rimanenti indipendentemente
+ dalla continuità del dato.
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\scriptsize},breaklines=true,caption={\textit{An example of how you can call the libnmxp APIs from a C program. The C source skeleton shows a base implementation for connecting to NaqsServer using a Raw Stream connection like it is specified by the Private Data Stream subscription protocol.}},frame=tlBR,label={lst:pdssource},language=C,numbers=left,showstringspaces=false,stepnumber=4"
+inline false
+status open
+
+\begin_layout Standard
+
+/* Print summary packet information from NMXP_DATA_PROCESS */
+\end_layout
+
+\begin_layout Standard
+
+int my_print_seq_no(NMXP_DATA_PROCESS *pd);
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+/* Convert data from NMXP_DATA_PROCESS to another */
+\end_layout
+
+\begin_layout Standard
+
+int my_write_someotherformat(NMXP_DATA_PROCESS *pd);
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+/* Program parameters */
+\end_layout
+
+\begin_layout Standard
+
+struct PARAMS params;
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+/* List of the functions to execute on each packet.
+\end_layout
+
+\begin_layout Standard
+
+   The functions are called at the right time by the function nmxp_raw_stream_ma
+nage().
+\end_layout
+
+\begin_layout Standard
+
+int n_func_pd = 0;
+\end_layout
+
+\begin_layout Standard
+
+int (*p_func_pd[NMXP_MAX_FUNC_PD]) (NMXP_DATA_PROCESS *);
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+...
+\end_layout
+
+\begin_layout Standard
+
+/* Init a NMXP_RAW_STREAM_DATA structure
+\end_layout
+
+\begin_layout Standard
+
+   N.B.
+ This operation has to be executed for each channel */
+\end_layout
+
+\begin_layout Standard
+
+nmxp_raw_stream_init(&raw_stream_buffer, max_tolerable_latency, timeoutrecv);
+\end_layout
+
+\begin_layout Standard
+
+...
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+/* Add function my_print_seq_no() to the list p_func_pd */
+\end_layout
+
+\begin_layout Standard
+
+if(params.flag_print_seq_no) {
+\end_layout
+
+\begin_layout Standard
+
+  p_func_pd[n_func_pd++] = my_print_seq_no;
+\end_layout
+
+\begin_layout Standard
+
+}
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+/* Add function my_write_someotherformat() to the list p_func_pd */
+\end_layout
+
+\begin_layout Standard
+
+if(params.flag_writeseed) {
+\end_layout
+
+\begin_layout Standard
+
+  p_func_pd[n_func_pd++] = my_write_someotherformat;
+\end_layout
+
+\begin_layout Standard
+
+}
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+/* ************************************************************* */
+\end_layout
+
+\begin_layout Standard
+
+/* Start subscription protocol "PRIVATE DATA STREAM" version 1.4 */
+\end_layout
+
+\begin_layout Standard
+
+/* ************************************************************* */
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+/* PDS Step 1: Open a socket */
+\end_layout
+
+\begin_layout Standard
+
+if((naqssock = nmxp_openSocket(params.hostname, params.portnumberpds)) ==
+ NMXP_SOCKET_ERROR) {
+\end_layout
+
+\begin_layout Standard
+
+  return 1;
+\end_layout
+
+\begin_layout Standard
+
+}
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+/* PDS Step 2: Send a Connect */
+\end_layout
+
+\begin_layout Standard
+
+if(nmxp_sendConnect(naqssock) != NMXP_SOCKET_OK) {
+\end_layout
+
+\begin_layout Standard
+
+  printf("Error on sendConnect()
+\backslash
+n");  return 1;
+\end_layout
+
+\begin_layout Standard
+
+}
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+/* PDS Step 3: Receive ChannelList */
+\end_layout
+
+\begin_layout Standard
+
+if(nmxp_receiveChannelList(naqssock, &channelList) != NMXP_SOCKET_OK) {
+\end_layout
+
+\begin_layout Standard
+
+  printf("Error on receiveChannelList()
+\backslash
+n");  return 1;
+\end_layout
+
+\begin_layout Standard
+
+}
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+/* Get a subset of channel from arguments */
+\end_layout
+
+\begin_layout Standard
+
+channelList_subset = nmxp_chan_subset(channelList, NMXP_DATA_TIMESERIES,
+ params.channels);
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+/* PDS Step 4: Send a Request Pending (optional) */
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+/* PDS Step 5: Send AddChannels */
+\end_layout
+
+\begin_layout Standard
+
+nmxp_sendAddTimeSeriesChannel(naqssock, channelList_subset, params.stc, params.rat
+e,
+\end_layout
+
+\begin_layout Standard
+
+    (params.flag_buffered)? NMXP_BUFFER_YES : NMXP_BUFFER_NO);
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+/* PDS Step 6: Repeat until finished: receive and handle packets */
+\end_layout
+
+\begin_layout Standard
+
+while(exitpdscondition) {
+\end_layout
+
+\begin_layout Standard
+
+  /* Process Compressed or Decompressed Data */
+\end_layout
+
+\begin_layout Standard
+
+  pd = nmxp_receiveData(naqssock, channelList_subset, CURRENT_NETWORK);
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+  /* Log contents of last packet */
+\end_layout
+
+\begin_layout Standard
+
+  nmxp_data_log(pd);
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+  /* Manage Raw Stream */
+\end_layout
+
+\begin_layout Standard
+
+  nmxp_raw_stream_manage(&raw_stream_buffer, pd, p_func_pd, n_func_pd);
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+  }
+\end_layout
+
+\begin_layout Standard
+
+}
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+/* Execute functions on incidental remaining packet in buffer */
+\end_layout
+
+\begin_layout Standard
+
+nmxp_raw_stream_manage(&raw_stream_buffer, NULL, p_func_pd, n_func_pd);
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+/* Free a NMXP_RAW_STREAM_DATA structure
+\end_layout
+
+\begin_layout Standard
+
+   N.B.
+ This operation has to be executed for each channel */
+\end_layout
+
+\begin_layout Standard
+
+nmxp_raw_stream_free(&raw_stream_buffer);
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+/* PDS Step 7: Send Terminate Subscription */
+\end_layout
+
+\begin_layout Standard
+
+nmxp_sendTerminateSubscription(naqssock, NMXP_SHUTDOWN_NORMAL, "Good Bye!");
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+/* PDS Step 8: Close the socket */
+\end_layout
+
+\begin_layout Standard
+
+nmxp_closeSocket(naqssock);
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+
+/* *********************************************************** */
+\end_layout
+
+\begin_layout Standard
+
+/* End subscription protocol "PRIVATE DATA STREAM" version 1.4 */
+\end_layout
+
+\begin_layout Standard
+
+/* *********************************************************** */
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
@@ -1079,7 +1997,7 @@ status open
 
 \begin_layout Standard
 
-src/nmxptool --versionxxxxx
+src/nmxptool --version
 \end_layout
 
 \begin_layout Standard
@@ -1106,12 +2024,8 @@ nmxptool 1.2.2, Nanometrics tool
 
 \end_layout
 
-\begin_layout Subsection
-Optional Dependencies
-\end_layout
-
 \begin_layout Standard
-Optional dependencies
+These features depend on the following optional software:
 \end_layout
 
 \begin_layout Description
@@ -1131,11 +2045,9 @@ url{http://www.iris.edu/manuals/}
 
 \newline
 The mini-SEED library.
- A C library framework for manipulating and managing SEED data records.
- Author: Chad Trabant, IRIS DMC
 \newline
-It can be compiled on Unix-like operating
- systems, Mac OS X and Windows.
+It can be compiled on Unix-like operating systems,
+ Mac OS X and Windows.
 \end_layout
 
 \begin_layout Description
@@ -1192,9 +2104,14 @@ libmseed
 \end_layout
 
 \begin_layout Standard
-The mini-SEED library - http://www.iris.edu/manuals/If available within include
- and library path, this library allows to save retrieved data in Mini-SEED
- records.
+The mini-SEED library is a C library framework for manipulating and managing
+ SEED data records.
+ Author: Chad Trabant, IRIS DMC.
+\end_layout
+
+\begin_layout Standard
+If available within include and library path, this library allows to save
+ retrieved data in Mini-SEED records.
  You might add to CFLAGS this "-I/<anywhere>/libmseed" and to LDFLAGS this
  "-L/<anywhere>/libmseed", do not forget to run 'ranlib libmseed.a' or similars.
 \end_layout
@@ -1232,8 +2149,8 @@ ew
 \end_layout
 
 \begin_layout Standard
-Earthworm System - http://www.isti2.com/ew/ nmxptool is included into the
- official Earthworm distribution since the version 7.2.
+nmxptool is included into the official Earthworm distribution since the
+ version 7.2.
  Anyway, you can compile nmxptool outside the EW distribution, for example,
  to upgrade.
  Before launching 'configure', run the appropriate script from directory
@@ -1442,927 +2359,26 @@ and
 $EW_HOME/$EW_VERSION/ewdoc/WEB_DOC/cmd 
 \end_layout
 
-\begin_layout Section
-Usages
+\begin_layout Subsection
+Seedlink
 \end_layout
 
 \begin_layout Standard
-List of available channel, matching channel, network code only for output
+Seedlink is a system for near real time seismic data distribution.
+ Inside the directory 'src' of nmxptool distribution has been copied files
+ 'seedlink_plugin.c' and 'seedlink_plugin.h' from 'plugin.c' and 'plugin.h'
+ belonging to the SeisComP 2.5 distribution.
 \end_layout
 
 \begin_layout Standard
-Main common parameters.
+An example to compile enabling only features libmseed and seedlink:
 \end_layout
 
 \begin_layout Standard
 \begin_inset listings
 lstparams "basicstyle={\scriptsize\ttfamily},breaklines=true"
 inline false
-status collapsed
-
-\begin_layout Standard
-
-nmxptool 1.2.2, Nanometrics tool
-\end_layout
-
-\begin_layout Standard
-
-         Private Data Stream 1.4, Data Access Protocol 1.0
-\end_layout
-
-\begin_layout Standard
-
-         Enabled features: libmseed YES, SeedLink YES, Earthworm YES.
-\end_layout
-
-\begin_layout Standard
-
-\end_layout
-
-\begin_layout Standard
-
-Usage: nmxptool -H hostname   -l | -L
-\end_layout
-
-\begin_layout Standard
-
-             Print list of the available Time Series channels
-\end_layout
-
-\begin_layout Standard
-
-             on DataServer and NaqsServer respectively.
-\end_layout
-
-\begin_layout Standard
-
-\end_layout
-
-\begin_layout Standard
-
-       nmxptool -H hostname -C channellist [...]
-\end_layout
-
-\begin_layout Standard
-
-             Receive data in near real-time from NaqsServer by PDS 1.4
-\end_layout
-
-\begin_layout Standard
-
-\end_layout
-
-\begin_layout Standard
-
-       nmxptool -H hostname -F statefile [-A SECs] [...]
-\end_layout
-
-\begin_layout Standard
-
-             Receive data from NaqsServer and, in case, retrieve previous
-\end_layout
-
-\begin_layout Standard
-
-             data from DataServer up to SECs seconds before.
-\end_layout
-
-\begin_layout Standard
-
-\end_layout
-
-\begin_layout Standard
-
-       nmxptool -H hostname -C channellist -s DATE -e DATE [...]
-\end_layout
-
-\begin_layout Standard
-
-       nmxptool -H hostname -C channellist -s DATE -t TIME [...]
-\end_layout
-
-\begin_layout Standard
-
-             Receive a temporal interval of data from DataServer by DAP
- 1.0
-\end_layout
-
-\begin_layout Standard
-
-\end_layout
-
-\begin_layout Standard
-
-       nmxptool nmxptool.d
-\end_layout
-
-\begin_layout Standard
-
-             Launched as Earthworm module to redirect data into the EW-Rings.
-\end_layout
-
-\begin_layout Standard
-
-             Refer to nmxptool_cmd.html into the Earthworm documentation.
-\end_layout
-
-\begin_layout Standard
-
-\end_layout
-
-\begin_layout Standard
-
-       nmxptool <option ...
- option> -k
-\end_layout
-
-\begin_layout Standard
-
-             Launched as SeedLink plug-in to feed the SL-Server.
-\end_layout
-
-\begin_layout Standard
-
-\end_layout
-
-\begin_layout Standard
-
-       nmxptool --help | -h
-\end_layout
-
-\begin_layout Standard
-
-             Print this help.
-\end_layout
-
-\begin_layout Standard
-
-\end_layout
-
-\begin_layout Standard
-
-Main arguments:
-\end_layout
-
-\begin_layout Standard
-
-  -H, --hostname=HOST     NaqsServer/DataServer hostname or IP address.
-\end_layout
-
-\begin_layout Standard
-
-  -C, --channels=LIST     List of NET.STA.CHAN separated by comma.
-\end_layout
-
-\begin_layout Standard
-
-                          NET  is optional and used only for output.
-\end_layout
-
-\begin_layout Standard
-
-                          STA  can be '*', it stands for all stations.
-\end_layout
-
-\begin_layout Standard
-
-                          CHAN can contain '?', it stands for any character.
-\end_layout
-
-\begin_layout Standard
-
-                          Network code will be assigned from the first
-\end_layout
-
-\begin_layout Standard
-
-                          pattern that includes station and channel.
-\end_layout
-
-\begin_layout Standard
-
-                          DO NOT USE with -F.
-\end_layout
-
-\begin_layout Standard
-
-                                Example: N1.AAA.HH?,N2.*.HH?,MMM.BH?
-\end_layout
-
-\begin_layout Standard
-
-                          Second pattern includes the first.
- Unless AAA, all
-\end_layout
-
-\begin_layout Standard
-
-                          stations with HH channels will have network to
- N2.
-\end_layout
-
-\begin_layout Standard
-
-                          Station MMM will have default network defined
- by -N.
-\end_layout
-
-\begin_layout Standard
-
-  -F, --statefile=FILE    List of channel patterns, as in -C.
- One for each line.
-\end_layout
-
-\begin_layout Standard
-
-                          Load/Save time of the last sample of each channel
-\end_layout
-
-\begin_layout Standard
-
-                          into a file with the same name, same directory,
-\end_layout
-
-\begin_layout Standard
-
-                          appending the suffix '.nmxpstate'.
-\end_layout
-
-\begin_layout Standard
-
-                          Allow data continuity when short disconnections
- occur.
-\end_layout
-
-\begin_layout Standard
-
-                          Related to -A and -f, it enables -b.
-\end_layout
-
-\begin_layout Standard
-
-                          DO NOT USE with -C.
-\end_layout
-
-\begin_layout Standard
-
-  -A, --maxdataretr=SECs  Max amount of data of the past to retrieve from
- the
-\end_layout
-
-\begin_layout Standard
-
-                          DataServer when program restarts (default 0) [0..86400].
-\end_layout
-
-\begin_layout Standard
-
-                          0 to disable connection to DataServer.
-\end_layout
-
-\begin_layout Standard
-
-                          If this option is equal to zero and -F is used,
-\end_layout
-
-\begin_layout Standard
-
-                          only data buffered by NaqsServer will be retrieved.
-\end_layout
-
-\begin_layout Standard
-
-                          Rather than using -A, it is preferable, inside
- the section
-\end_layout
-
-\begin_layout Standard
-
-                          Datastream of the file Naqs.ini, setting DataBufferLeng
-th
-\end_layout
-
-\begin_layout Standard
-
-                          to a high value.
- -A allows to retrieve much more
-\end_layout
-
-\begin_layout Standard
-
-                          data of the past when the program restarts but
- it
-\end_layout
-
-\begin_layout Standard
-
-                          considerably slows down the execution.
-\end_layout
-
-\begin_layout Standard
-
-                          It is extremely harmful when you have many channels,
-\end_layout
-
-\begin_layout Standard
-
-                          in this case you might consider to subdivide the
-\end_layout
-
-\begin_layout Standard
-
-                          channels into different nmxptool instances.
-\end_layout
-
-\begin_layout Standard
-
-                          Related to -F.
-\end_layout
-
-\begin_layout Standard
-
-\end_layout
-
-\begin_layout Standard
-
-PDS arguments for NaqsServer:
-\end_layout
-
-\begin_layout Standard
-
-  -P, --portpds=PORT      NaqsServer port number (default 28000).
-\end_layout
-
-\begin_layout Standard
-
-  -S, --stc=SECs          Short-Term-Completion (default -1).
-\end_layout
-
-\begin_layout Standard
-
-                          -1 is for Raw Stream, no Short-Term-Completion.
-\end_layout
-
-\begin_layout Standard
-
-                             Packets contain compressed data.
- Related to -M, -T.
-\end_layout
-
-\begin_layout Standard
-
-                             It enables --rate=-1.
-\end_layout
-
-\begin_layout Standard
-
-                           0 decompressed packets are received in chronological
-\end_layout
-
-\begin_layout Standard
-
-                             order without waiting for missing packets.
-\end_layout
-
-\begin_layout Standard
-
-                          [1..300] decompressed packets are received in
-\end_layout
-
-\begin_layout Standard
-
-                             chronological order but waiting for missing
- packets
-\end_layout
-
-\begin_layout Standard
-
-                             at most SECs seconds.
-\end_layout
-
-\begin_layout Standard
-
-  -R, --rate=Hz           Receive data with specified sample rate (default
- -1).
-\end_layout
-
-\begin_layout Standard
-
-                          -1 for original sample rate and compressed data.
-\end_layout
-
-\begin_layout Standard
-
-                           0 for original sample rate and decompressed data.
-\end_layout
-
-\begin_layout Standard
-
-                          >0 for specified sample rate and decompressed
- data.
-\end_layout
-
-\begin_layout Standard
-
-  -b, --buffered          Request also recent packets into the past.
-\end_layout
-
-\begin_layout Standard
-
-  -B, --buffdate=DATE     Request also recent packets into the past
-\end_layout
-
-\begin_layout Standard
-
-                          but consider only samples after DATE.
-\end_layout
-
-\begin_layout Standard
-
-  -f, --mschan=mSECs/nC   mSECs are milliseconds to wait before the next
- request,
-\end_layout
-
-\begin_layout Standard
-
-                          nC is the number of channels to request at a time.
-\end_layout
-
-\begin_layout Standard
-
-                          Delaying and requesting few channels at a time
- make
-\end_layout
-
-\begin_layout Standard
-
-                          data buffering on NaqsServer side more efficient.
-\end_layout
-
-\begin_layout Standard
-
-                          Determined empiric values are default 280/9.
-\end_layout
-
-\begin_layout Standard
-
-                          Condition: TotalNumberOfChannels * (mSECs/nC)
- < 15 sec.
-\end_layout
-
-\begin_layout Standard
-
-                          Related to -F and -b.
- 0/0 for disabling.
-\end_layout
-
-\begin_layout Standard
-
-  -L, --listchannelsnaqs  List of the available Time Series channels on
- NaqsServer.
-\end_layout
-
-\begin_layout Standard
-
-  -M, --maxlatency=SECs   Max tolerable latency (default 600) [60..600].
-\end_layout
-
-\begin_layout Standard
-
-                          Enable NaqsServer to send out retransmission requests
-\end_layout
-
-\begin_layout Standard
-
-                          for missed packets.
- Inside the section NetworkInterface
-\end_layout
-
-\begin_layout Standard
-
-                          of the file Naqs.ini set RetxRequest to Enabled.
-\end_layout
-
-\begin_layout Standard
-
-                          If RetxRequest is not enabled then -M is ineffective.
-\end_layout
-
-\begin_layout Standard
-
-  -T, --timeoutrecv=SECs  Time-out for flushing queued packets of each channel.
-\end_layout
-
-\begin_layout Standard
-
-                          It sets --mschan=0/0 (default 0, no time-out)
- [10..300].
-\end_layout
-
-\begin_layout Standard
-
-                          -T is useful for retrieving Data On Demand with
- minimum delay.
-\end_layout
-
-\begin_layout Standard
-
-                          -M, -T are usable only with Raw Stream, -S=-1.
-\end_layout
-
-\begin_layout Standard
-
-                          In general, -M and -T are not used together.
-\end_layout
-
-\begin_layout Standard
-
-                          Receiving signals interrupts the time out.
-\end_layout
-
-\begin_layout Standard
-
-\end_layout
-
-\begin_layout Standard
-
-DAP arguments for DataServer:
-\end_layout
-
-\begin_layout Standard
-
-  -D, --portdap=PORT      DataServer port number (default 28002).
-\end_layout
-
-\begin_layout Standard
-
-  -s, --start_time=DATE   Start time in date format.
-\end_layout
-
-\begin_layout Standard
-
-  -e, --end_time=DATE     End time in date format.
-\end_layout
-
-\begin_layout Standard
-
-                          DATE can be in formats:
-\end_layout
-
-\begin_layout Standard
-
-                              <date>,<time> | <date>
-\end_layout
-
-\begin_layout Standard
-
-                          where:
-\end_layout
-
-\begin_layout Standard
-
-                              <date> = yyyy/mm/dd | yyy.jjj
-\end_layout
-
-\begin_layout Standard
-
-                              <time> = hh:mm:ss | hh:mm:ss.dddd | hh:mm
-\end_layout
-
-\begin_layout Standard
-
-  -t, --interval=TIME     Time interval from start_time (greater than zero).
-\end_layout
-
-\begin_layout Standard
-
-                          TIME is in seconds, otherwise append 'm' for minutes
-\end_layout
-
-\begin_layout Standard
-
-                          'h' for hours or 'd' for days.
- [1 sec ..
- 31 days]
-\end_layout
-
-\begin_layout Standard
-
-                          DO NOT USE with -e.
-\end_layout
-
-\begin_layout Standard
-
-  -d, --delay=TIME        Receive continuosly data with delay [60 sec ..
- 31 days].
-\end_layout
-
-\begin_layout Standard
-
-  -u, --username=USER     DataServer username.
-\end_layout
-
-\begin_layout Standard
-
-  -p, --password=PASS     DataServer password.
-\end_layout
-
-\begin_layout Standard
-
-  -l, --listchannels      List of the available Time Series channels on
- DataServer.
-\end_layout
-
-\begin_layout Standard
-
-  -i, --channelinfo       Print channelinfo (network name) when using -l.
-\end_layout
-
-\begin_layout Standard
-
-\end_layout
-
-\begin_layout Standard
-
-Other arguments:
-\end_layout
-
-\begin_layout Standard
-
-  -N, --network=NET       Default output Network code.
- (default 'XX').
-\end_layout
-
-\begin_layout Standard
-
-  -n, --location=LOC      Default output Location code.
- DISABLED!
-\end_layout
-
-\begin_layout Standard
-
-  -v, --verbose=LEVEL     Be verbose.
- LEVEL is a bitmap:
-\end_layout
-
-\begin_layout Standard
-
-                          1 Channel State, 2 Channel, 4 Raw Stream,
-\end_layout
-
-\begin_layout Standard
-
-                          8 CRC32, 16 Connection flow,
-\end_layout
-
-\begin_layout Standard
-
-                          32 Packet Management, 64 Extra, 128 Date,
-\end_layout
-
-\begin_layout Standard
-
-                          256 Gap, 512 DOD, 1023 All messages.
-\end_layout
-
-\begin_layout Standard
-
-  -g, --logdata           Print info about packet data.
-\end_layout
-
-\begin_layout Standard
-
-  -G, --logsample         Print sample values of packets.
- Includes -g.
-\end_layout
-
-\begin_layout Standard
-
-  -m, --writeseed         Pack received data in Mini-SEED records
-\end_layout
-
-\begin_layout Standard
-
-                          and write to a file.
-\end_layout
-
-\begin_layout Standard
-
-  -w, --writefile         Dump received packets to a file.
-\end_layout
-
-\begin_layout Standard
-
-  -k, --slink=PLUGINID    Send received data to SeedLink as a plug-in.
-\end_layout
-
-\begin_layout Standard
-
-                          This option, inside the file seedlink.ini, must
- be
-\end_layout
-
-\begin_layout Standard
-
-                          the last without adding value for PLUGINID!
-\end_layout
-
-\begin_layout Standard
-
-                          PLUGINID is set by SeisComP daemon.
-\end_layout
-
-\begin_layout Standard
-
-  -E, --testport=PORT     Accept 'telnet' connection on PORT
-\end_layout
-
-\begin_layout Standard
-
-                          for data testing and diagnostic purposes.
-\end_layout
-
-\begin_layout Standard
-
-  -V, --version           Print tool version.
-\end_layout
-
-\begin_layout Standard
-
-  -h, --help              Print this help.
-\end_layout
-
-\begin_layout Standard
-
-\end_layout
-
-\begin_layout Standard
-
-Signal handling:
-\end_layout
-
-\begin_layout Standard
-
-   INT QUIT TERM          Sending these signals to nmxptool causes it
-\end_layout
-
-\begin_layout Standard
-
-                          to immediately attempt to gracefully terminate.
-\end_layout
-
-\begin_layout Standard
-
-                          It may take several seconds to complete exiting.
-\end_layout
-
-\begin_layout Standard
-
-   ALRM                   Print current info about Raw Stream buffer.
-\end_layout
-
-\begin_layout Standard
-
-   HUP PIPE               Ignored.
- (SIG_IGN)
-\end_layout
-
-\begin_layout Standard
-
-\end_layout
-
-\begin_layout Standard
-
-Matteo Quintiliani - Istituto Nazionale di Geofisica e Vulcanologia - Italy
-\end_layout
-
-\begin_layout Standard
-
-Mail bug reports and suggestions to <quintiliani@ingv.it>.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Figure 
-\begin_inset LatexCommand ref
-reference "fig:nmxptoolusages"
-
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide true
-sideways false
 status open
-
-\begin_layout Standard
-\align center
-\begin_inset Graphics
-	filename /Users/mtheo/Desktop/cvswork/nmxptool/no_dist/paper/images/nanometrics_nmxptool_usages.eps.gz
-	width 15cm
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\align center
-\begin_inset Caption
-
-\begin_layout Standard
-
-\shape italic
-Main nmxptool usages: Earthworm module, Seedlink plug-in, Stand-alone.
- Main options: -F, -A, -M, -T.
-\end_layout
-
-\end_inset
-
-
-\begin_inset LatexCommand label
-name "fig:nmxptoolusages"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Stand-alone
-\end_layout
-
-\begin_layout Itemize
-List of available channel.
-\end_layout
-
-\begin_layout Itemize
-Monitoring data.
-\end_layout
-
-\begin_layout Itemize
-Saving mini-SEED.
-\end_layout
-
-\begin_layout Subsection
-Earthworm
-\end_layout
-
-\begin_layout Itemize
-Redirect data into the Earthworm ring.
-\end_layout
-
-\begin_layout Subsection
-Seedlink
-\end_layout
-
-\begin_layout Itemize
-Redirect data into the Seedlink server.
-\end_layout
-
-\begin_layout Section
-Test and results
-\end_layout
-
-\begin_layout Standard
-Test.
- Almost all packets are retrieved within 60 seconds.
- 
-\end_layout
-
-\begin_layout Subsection
-Seedlink
-\end_layout
-
-\begin_layout Standard
-SeisComP - http://www.gfz-potsdam.de/geofon/seiscomp/ Seedlink is a system
- for near real time seismic data distribution.
- Inside the directory 'src' has been copied files 'seedlink_plugin.c' and
- 'seedlink_plugin.h' from 'plugin.c' and 'plugin.h' belonging to the SeisComP
- 2.5 distribution.
-\end_layout
-
-\begin_layout Standard
-Enable only libmseed and seedlink
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-lstparams "basicstyle={\scriptsize\ttfamily},breaklines=true"
-inline false
-status collapsed
 
 \begin_layout Standard
 
@@ -2463,6 +2479,856 @@ seiscomp config
 \end_layout
 
 \begin_layout Section
+Usages
+\end_layout
+
+\begin_layout Standard
+List of available channel, matching channel, network code only for output
+\end_layout
+
+\begin_layout Standard
+Main common parameters.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Standard
+nmxptool 1.2.2, Nanometrics tool
+\end_layout
+
+\begin_layout Standard
+         Private Data Stream 1.4, Data Access Protocol 1.0
+\end_layout
+
+\begin_layout Standard
+         Enabled features: libmseed YES, SeedLink YES, Earthworm YES.
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+Usage: nmxptool -H hostname   -l | -L
+\end_layout
+
+\begin_layout Standard
+             Print list of the available Time Series channels
+\end_layout
+
+\begin_layout Standard
+             on DataServer and NaqsServer respectively.
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+       nmxptool -H hostname -C channellist [...]
+\end_layout
+
+\begin_layout Standard
+             Receive data in near real-time from NaqsServer by PDS 1.4
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+       nmxptool -H hostname -F statefile [-A SECs] [...]
+\end_layout
+
+\begin_layout Standard
+             Receive data from NaqsServer and, in case, retrieve previous
+\end_layout
+
+\begin_layout Standard
+             data from DataServer up to SECs seconds before.
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+       nmxptool -H hostname -C channellist -s DATE -e DATE [...]
+\end_layout
+
+\begin_layout Standard
+       nmxptool -H hostname -C channellist -s DATE -t TIME [...]
+\end_layout
+
+\begin_layout Standard
+             Receive a temporal interval of data from DataServer by DAP
+ 1.0
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+       nmxptool nmxptool.d
+\end_layout
+
+\begin_layout Standard
+             Launched as Earthworm module to redirect data into the EW-Rings.
+\end_layout
+
+\begin_layout Standard
+             Refer to nmxptool_cmd.html into the Earthworm documentation.
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+       nmxptool <option ...
+ option> -k
+\end_layout
+
+\begin_layout Standard
+             Launched as SeedLink plug-in to feed the SL-Server.
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+       nmxptool --help | -h
+\end_layout
+
+\begin_layout Standard
+             Print this help.
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+Main arguments:
+\end_layout
+
+\begin_layout Standard
+  -H, --hostname=HOST     NaqsServer/DataServer hostname or IP address.
+\end_layout
+
+\begin_layout Standard
+  -C, --channels=LIST     List of NET.STA.CHAN separated by comma.
+\end_layout
+
+\begin_layout Standard
+                          NET  is optional and used only for output.
+\end_layout
+
+\begin_layout Standard
+                          STA  can be '*', it stands for all stations.
+\end_layout
+
+\begin_layout Standard
+                          CHAN can contain '?', it stands for any character.
+\end_layout
+
+\begin_layout Standard
+                          Network code will be assigned from the first
+\end_layout
+
+\begin_layout Standard
+                          pattern that includes station and channel.
+\end_layout
+
+\begin_layout Standard
+                          DO NOT USE with -F.
+\end_layout
+
+\begin_layout Standard
+                                Example: N1.AAA.HH?,N2.*.HH?,MMM.BH?
+\end_layout
+
+\begin_layout Standard
+                          Second pattern includes the first.
+ Unless AAA, all
+\end_layout
+
+\begin_layout Standard
+                          stations with HH channels will have network to
+ N2.
+\end_layout
+
+\begin_layout Standard
+                          Station MMM will have default network defined
+ by -N.
+\end_layout
+
+\begin_layout Standard
+  -F, --statefile=FILE    List of channel patterns, as in -C.
+ One for each line.
+\end_layout
+
+\begin_layout Standard
+                          Load/Save time of the last sample of each channel
+\end_layout
+
+\begin_layout Standard
+                          into a file with the same name, same directory,
+\end_layout
+
+\begin_layout Standard
+                          appending the suffix '.nmxpstate'.
+\end_layout
+
+\begin_layout Standard
+                          Allow data continuity when short disconnections
+ occur.
+\end_layout
+
+\begin_layout Standard
+                          Related to -A and -f, it enables -b.
+\end_layout
+
+\begin_layout Standard
+                          DO NOT USE with -C.
+\end_layout
+
+\begin_layout Standard
+  -A, --maxdataretr=SECs  Max amount of data of the past to retrieve from
+ the
+\end_layout
+
+\begin_layout Standard
+                          DataServer when program restarts (default 0) [0..86400].
+\end_layout
+
+\begin_layout Standard
+                          0 to disable connection to DataServer.
+\end_layout
+
+\begin_layout Standard
+                          If this option is equal to zero and -F is used,
+\end_layout
+
+\begin_layout Standard
+                          only data buffered by NaqsServer will be retrieved.
+\end_layout
+
+\begin_layout Standard
+                          Rather than using -A, it is preferable, inside
+ the section
+\end_layout
+
+\begin_layout Standard
+                          Datastream of the file Naqs.ini, setting DataBufferLeng
+th
+\end_layout
+
+\begin_layout Standard
+                          to a high value.
+ -A allows to retrieve much more
+\end_layout
+
+\begin_layout Standard
+                          data of the past when the program restarts but
+ it
+\end_layout
+
+\begin_layout Standard
+                          considerably slows down the execution.
+\end_layout
+
+\begin_layout Standard
+                          It is extremely harmful when you have many channels,
+\end_layout
+
+\begin_layout Standard
+                          in this case you might consider to subdivide the
+\end_layout
+
+\begin_layout Standard
+                          channels into different nmxptool instances.
+\end_layout
+
+\begin_layout Standard
+                          Related to -F.
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+PDS arguments for NaqsServer:
+\end_layout
+
+\begin_layout Standard
+  -P, --portpds=PORT      NaqsServer port number (default 28000).
+\end_layout
+
+\begin_layout Standard
+  -S, --stc=SECs          Short-Term-Completion (default -1).
+\end_layout
+
+\begin_layout Standard
+                          -1 is for Raw Stream, no Short-Term-Completion.
+\end_layout
+
+\begin_layout Standard
+                             Packets contain compressed data.
+ Related to -M, -T.
+\end_layout
+
+\begin_layout Standard
+                             It enables --rate=-1.
+\end_layout
+
+\begin_layout Standard
+                           0 decompressed packets are received in chronological
+\end_layout
+
+\begin_layout Standard
+                             order without waiting for missing packets.
+\end_layout
+
+\begin_layout Standard
+                          [1..300] decompressed packets are received in
+\end_layout
+
+\begin_layout Standard
+                             chronological order but waiting for missing
+ packets
+\end_layout
+
+\begin_layout Standard
+                             at most SECs seconds.
+\end_layout
+
+\begin_layout Standard
+  -R, --rate=Hz           Receive data with specified sample rate (default
+ -1).
+\end_layout
+
+\begin_layout Standard
+                          -1 for original sample rate and compressed data.
+\end_layout
+
+\begin_layout Standard
+                           0 for original sample rate and decompressed data.
+\end_layout
+
+\begin_layout Standard
+                          >0 for specified sample rate and decompressed
+ data.
+\end_layout
+
+\begin_layout Standard
+  -b, --buffered          Request also recent packets into the past.
+\end_layout
+
+\begin_layout Standard
+  -B, --buffdate=DATE     Request also recent packets into the past
+\end_layout
+
+\begin_layout Standard
+                          but consider only samples after DATE.
+\end_layout
+
+\begin_layout Standard
+  -f, --mschan=mSECs/nC   mSECs are milliseconds to wait before the next
+ request,
+\end_layout
+
+\begin_layout Standard
+                          nC is the number of channels to request at a time.
+\end_layout
+
+\begin_layout Standard
+                          Delaying and requesting few channels at a time
+ make
+\end_layout
+
+\begin_layout Standard
+                          data buffering on NaqsServer side more efficient.
+\end_layout
+
+\begin_layout Standard
+                          Determined empiric values are default 280/9.
+\end_layout
+
+\begin_layout Standard
+                          Condition: TotalNumberOfChannels * (mSECs/nC)
+ < 15 sec.
+\end_layout
+
+\begin_layout Standard
+                          Related to -F and -b.
+ 0/0 for disabling.
+\end_layout
+
+\begin_layout Standard
+  -L, --listchannelsnaqs  List of the available Time Series channels on
+ NaqsServer.
+\end_layout
+
+\begin_layout Standard
+  -M, --maxlatency=SECs   Max tolerable latency (default 600) [60..600].
+\end_layout
+
+\begin_layout Standard
+                          Enable NaqsServer to send out retransmission requests
+\end_layout
+
+\begin_layout Standard
+                          for missed packets.
+ Inside the section NetworkInterface
+\end_layout
+
+\begin_layout Standard
+                          of the file Naqs.ini set RetxRequest to Enabled.
+\end_layout
+
+\begin_layout Standard
+                          If RetxRequest is not enabled then -M is ineffective.
+\end_layout
+
+\begin_layout Standard
+  -T, --timeoutrecv=SECs  Time-out for flushing queued packets of each channel.
+\end_layout
+
+\begin_layout Standard
+                          It sets --mschan=0/0 (default 0, no time-out)
+ [10..300].
+\end_layout
+
+\begin_layout Standard
+                          -T is useful for retrieving Data On Demand with
+ minimum delay.
+\end_layout
+
+\begin_layout Standard
+                          -M, -T are usable only with Raw Stream, -S=-1.
+\end_layout
+
+\begin_layout Standard
+                          In general, -M and -T are not used together.
+\end_layout
+
+\begin_layout Standard
+                          Receiving signals interrupts the time out.
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+DAP arguments for DataServer:
+\end_layout
+
+\begin_layout Standard
+  -D, --portdap=PORT      DataServer port number (default 28002).
+\end_layout
+
+\begin_layout Standard
+  -s, --start_time=DATE   Start time in date format.
+\end_layout
+
+\begin_layout Standard
+  -e, --end_time=DATE     End time in date format.
+\end_layout
+
+\begin_layout Standard
+                          DATE can be in formats:
+\end_layout
+
+\begin_layout Standard
+                              <date>,<time> | <date>
+\end_layout
+
+\begin_layout Standard
+                          where:
+\end_layout
+
+\begin_layout Standard
+                              <date> = yyyy/mm/dd | yyy.jjj
+\end_layout
+
+\begin_layout Standard
+                              <time> = hh:mm:ss | hh:mm:ss.dddd | hh:mm
+\end_layout
+
+\begin_layout Standard
+  -t, --interval=TIME     Time interval from start_time (greater than zero).
+\end_layout
+
+\begin_layout Standard
+                          TIME is in seconds, otherwise append 'm' for minutes
+\end_layout
+
+\begin_layout Standard
+                          'h' for hours or 'd' for days.
+ [1 sec ..
+ 31 days]
+\end_layout
+
+\begin_layout Standard
+                          DO NOT USE with -e.
+\end_layout
+
+\begin_layout Standard
+  -d, --delay=TIME        Receive continuosly data with delay [60 sec ..
+ 31 days].
+\end_layout
+
+\begin_layout Standard
+  -u, --username=USER     DataServer username.
+\end_layout
+
+\begin_layout Standard
+  -p, --password=PASS     DataServer password.
+\end_layout
+
+\begin_layout Standard
+  -l, --listchannels      List of the available Time Series channels on
+ DataServer.
+\end_layout
+
+\begin_layout Standard
+  -i, --channelinfo       Print channelinfo (network name) when using -l.
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+Other arguments:
+\end_layout
+
+\begin_layout Standard
+  -N, --network=NET       Default output Network code.
+ (default 'XX').
+\end_layout
+
+\begin_layout Standard
+  -n, --location=LOC      Default output Location code.
+ DISABLED!
+\end_layout
+
+\begin_layout Standard
+  -v, --verbose=LEVEL     Be verbose.
+ LEVEL is a bitmap:
+\end_layout
+
+\begin_layout Standard
+                          1 Channel State, 2 Channel, 4 Raw Stream,
+\end_layout
+
+\begin_layout Standard
+                          8 CRC32, 16 Connection flow,
+\end_layout
+
+\begin_layout Standard
+                          32 Packet Management, 64 Extra, 128 Date,
+\end_layout
+
+\begin_layout Standard
+                          256 Gap, 512 DOD, 1023 All messages.
+\end_layout
+
+\begin_layout Standard
+  -g, --logdata           Print info about packet data.
+\end_layout
+
+\begin_layout Standard
+  -G, --logsample         Print sample values of packets.
+ Includes -g.
+\end_layout
+
+\begin_layout Standard
+  -m, --writeseed         Pack received data in Mini-SEED records
+\end_layout
+
+\begin_layout Standard
+                          and write to a file.
+\end_layout
+
+\begin_layout Standard
+  -w, --writefile         Dump received packets to a file.
+\end_layout
+
+\begin_layout Standard
+  -k, --slink=PLUGINID    Send received data to SeedLink as a plug-in.
+\end_layout
+
+\begin_layout Standard
+                          This option, inside the file seedlink.ini, must
+ be
+\end_layout
+
+\begin_layout Standard
+                          the last without adding value for PLUGINID!
+\end_layout
+
+\begin_layout Standard
+                          PLUGINID is set by SeisComP daemon.
+\end_layout
+
+\begin_layout Standard
+  -E, --testport=PORT     Accept 'telnet' connection on PORT
+\end_layout
+
+\begin_layout Standard
+                          for data testing and diagnostic purposes.
+\end_layout
+
+\begin_layout Standard
+  -V, --version           Print tool version.
+\end_layout
+
+\begin_layout Standard
+  -h, --help              Print this help.
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+Signal handling:
+\end_layout
+
+\begin_layout Standard
+   INT QUIT TERM          Sending these signals to nmxptool causes it
+\end_layout
+
+\begin_layout Standard
+                          to immediately attempt to gracefully terminate.
+\end_layout
+
+\begin_layout Standard
+                          It may take several seconds to complete exiting.
+\end_layout
+
+\begin_layout Standard
+   ALRM                   Print current info about Raw Stream buffer.
+\end_layout
+
+\begin_layout Standard
+   HUP PIPE               Ignored.
+ (SIG_IGN)
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+Matteo Quintiliani - Istituto Nazionale di Geofisica e Vulcanologia - Italy
+\end_layout
+
+\begin_layout Standard
+Mail bug reports and suggestions to <quintiliani@ingv.it>.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+See figure 
+\begin_inset LatexCommand ref
+reference "fig:nmxptoolusages"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide true
+sideways false
+status open
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename /Users/mtheo/Desktop/cvswork/nmxptool/no_dist/paper/images/nanometrics_nmxptool_usages.eps.gz
+	width 15cm
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Caption
+
+\begin_layout Standard
+
+\shape italic
+Main nmxptool usages: Earthworm module, Seedlink plug-in, Stand-alone.
+ Main options: -F, -A, -M, -T.
+\end_layout
+
+\end_inset
+
+
+\begin_inset LatexCommand label
+name "fig:nmxptoolusages"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Stand-alone
+\end_layout
+
+\begin_layout Itemize
+List of available channel.
+\end_layout
+
+\begin_layout Itemize
+Monitoring data.
+\end_layout
+
+\begin_layout Itemize
+Saving mini-SEED.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Standard
+Fare riferimento al rapporto tecnico pagina 17
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Earthworm
+\end_layout
+
+\begin_layout Itemize
+Redirect data into the Earthworm ring.
+\end_layout
+
+\begin_layout Itemize
+Example of earthworm configuration
+\end_layout
+
+\begin_layout Itemize
+Documentation
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Standard
+nmxptool può essere eseguito come modulo del sistema Earthworm.
+ Generalmente il tipo di connessione eseguita è di tipo Raw Stream e i parametri
+, invece di essere passati tramite linea di comando, vengono letti da un
+ file di configurazione tipo .d, rispettando così lo standard dei moduli
+ Earthworm.
+ All’interno della distribuzione sono disponibili i due file nmxptool.d e
+ nmxptool.desc, i quali possono essere usati come base per la configurazione
+ di nmxptool all’interno del sistema Earthworm.
+ E’ comunque in corso la richiesta per inserire nmxptool nelle distribuzioni
+ ufficiali di Earthworm.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Seedlink
+\end_layout
+
+\begin_layout Itemize
+Redirect data into the Seedlink server.
+\end_layout
+
+\begin_layout Itemize
+Example of plug-in configuration
+\end_layout
+
+\begin_layout Itemize
+Template
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Standard
+Con qualsiasi configurazione di opzioni descritte precedentemente, nmxptool
+ può essere lanciato come un plug-in per SeedLink per mezzo dell’utilizzo
+ dell’opzione -k.
+ Questa opzione deve essere necessariamente dichiarata per ultima.
+ All’interno della distribuzione sono inoltre disponibili i templates SeedLink
+ necessari alla configurazione del plug-in tramite il comando “seiscomp
+ config”.
+ E’ comunque in corso la richiesta per inserire nmxptool fra i plug-in delle
+ distribuzioni ufficiali di SeisComP.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Test and results
+\end_layout
+
+\begin_layout Itemize
+Test.
+ Almost all packets are retrieved within 60 seconds.
+ 
+\end_layout
+
+\begin_layout Itemize
+Data Completeness
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Standard
+Fare riferimento al rapporto tecnico 3.3 pag.
+ 21 e il test nelle conclusioni a pag.
+ 22
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
 Conclusion
 \end_layout
 
@@ -2480,6 +3346,20 @@ Manage information about state-of-health, triggers and events.
 \end_layout
 
 \end_deeper
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Standard
+Fare riferimento al rapporto tecnico conclusioni a pag.
+ 22
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Acknowledgement
 I would like to ...
 \end_layout
