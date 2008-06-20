@@ -166,7 +166,7 @@ thanks[revision]{
 \backslash
 small 
 \backslash
-itshape CVS $ $Revision: 1.27 $ $ -- $ $Date: 2008-06-20 07:46:01 $ $} 
+itshape CVS $ $Revision: 1.28 $ $ -- $ $Date: 2008-06-20 13:19:36 $ $} 
 \end_layout
 
 \end_inset
@@ -2490,11 +2490,23 @@ seiscomp config
 Usages
 \end_layout
 
-\begin_layout Standard
-List of available channel, matching channel, network code only for output
+\begin_layout Itemize
+List of the available channels
 \end_layout
 
-\begin_layout Standard
+\begin_layout Itemize
+Matching channel
+\end_layout
+
+\begin_layout Itemize
+Network code only for output
+\end_layout
+
+\begin_layout Itemize
+Time declaration.
+\end_layout
+
+\begin_layout Itemize
 Main common parameters.
 \end_layout
 
@@ -3241,11 +3253,11 @@ Redirect data into the Earthworm ring.
 \end_layout
 
 \begin_layout Itemize
-Example of earthworm configuration
+Example of earthworm configuration.
 \end_layout
 
 \begin_layout Itemize
-Documentation
+Documentation.
 \end_layout
 
 \begin_layout Standard
@@ -3279,11 +3291,11 @@ Redirect data into the Seedlink server.
 \end_layout
 
 \begin_layout Itemize
-Example of plug-in configuration
+Example of plug-in configuration.
 \end_layout
 
 \begin_layout Itemize
-Template
+Templates.
 \end_layout
 
 \begin_layout Standard
@@ -3314,11 +3326,10 @@ Test and results
 \begin_layout Itemize
 Test.
  Almost all packets are retrieved within 60 seconds.
- 
 \end_layout
 
 \begin_layout Itemize
-Data Completeness
+Data Completeness.
 \end_layout
 
 \begin_layout Standard
@@ -3346,7 +3357,11 @@ Future.
 
 \begin_deeper
 \begin_layout Itemize
-Maintenance, improvements, bug fixes
+Maintenance, improvements, bug fixes.
+\end_layout
+
+\begin_layout Itemize
+SDS and BUD
 \end_layout
 
 \begin_layout Itemize
