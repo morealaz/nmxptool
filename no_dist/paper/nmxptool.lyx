@@ -80,8 +80,16 @@ corauthref{cor}
 \end_layout
 
 \begin_layout Author Address
-Istituto Nazionale di Geofisica e Vulcanologia, Via di Vigna Murata 605,
+Istituto Nazionale di Geofisica e Vulcanologia,
+\newline
+Via di Vigna Murata 605,
  00143 Roma, Italy
+\family typewriter
+
+\newline
+Draft Revision
+\family default
+
 \begin_inset ERT
 status collapsed
 
@@ -158,7 +166,7 @@ thanks[revision]{
 \backslash
 small 
 \backslash
-itshape CVS $ $Revision: 1.26 $ $ -- $ $Date: 2008-06-19 13:12:16 $ $} 
+itshape CVS $ $Revision: 1.27 $ $ -- $ $Date: 2008-06-20 07:46:01 $ $} 
 \end_layout
 
 \end_inset
