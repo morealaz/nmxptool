@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.101 2008-04-22 13:13:41 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.102 2008-07-15 14:11:58 mtheo Exp $
  *
  */
 
@@ -75,7 +75,7 @@ Mail bug reports and suggestions to <%s>.\n",
 
 void nmxptool_version() {
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
-%s %s, Nanometrics tool\n\
+%s %s, tool for Nanometrics Protocols\n\
          Private Data Stream %s, Data Access Protocol %s\n",
 	NMXP_LOG_STR(PACKAGE_NAME), NMXP_LOG_STR(PACKAGE_VERSION),
 	NMXP_LOG_STR(PDS_VERSION), NMXP_LOG_STR(DAP_VERSION)
@@ -86,6 +86,7 @@ void nmxptool_version() {
 
     nmxptool_supports();
 }
+
 
 void nmxptool_supports() {
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
@@ -105,6 +106,15 @@ void nmxptool_supports() {
 
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, ", Earthworm ");
 #ifdef HAVE_EARTHWORMOBJS
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "YES");
+#else
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "NO");
+#endif
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, ".\n");
+
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
+         Using pthread: ");
+#ifdef HAVE_PTHREAD_H
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "YES");
 #else
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "NO");
