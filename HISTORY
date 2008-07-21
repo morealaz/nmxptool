@@ -15,7 +15,7 @@ nmxptool Release History
     - Improved function nmxp_openSocket().
     - Added 'pluginid' to prefix log messages when launched as Seedlink plug-in.
     - Fixed bug: on Solaris system set a time-out using select() and recv()
-        in order to quit properly the program when any data has not received.
+        in order to quit properly the program when any data is received.
 
 * Release 1.2.1    (2008/03/31) 
     - Improved request of channels in order to retrieve more efficiently
