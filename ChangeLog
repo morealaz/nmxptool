@@ -1,4 +1,4 @@
-2008-06-17 14:27
+2008-07-22 01:03
 
 	* nmxptool:
 
@@ -6,7 +6,51 @@
 	  Matteo Quintiliani - Istituto Nazionale di Geofisica e Vulcanologia - Italy
 	  Mail bug reports and suggestions to <quintiliani@ingv.it> 
 
-	  ChangeLog from tag nmxptool_1_2_0 to nmxptool_1_2_1
+2008-07-21 22:59  mtheo <quintiliani@ingv.it>
+
+	* HISTORY (1.58):
+
+	Minor change
+
+2008-07-21 22:58  mtheo <quintiliani@ingv.it>
+
+	* HISTORY (1.57):
+
+	Up to date
+
+2008-07-21 22:41  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_chan.h (1.24), lib/nmxp_chan.c (1.41),
+	src/nmxptool.c (1.196), src/nmxptool_getoptlong.c (1.103):
+
+	Added functions nmxp_chan_print_channelList_with_match() and
+	nmxp_meta_chan_print_with_match() for printing channel using a
+	Channel List pattern
+
+2008-07-21 22:04  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_memory.h (1.7), lib/nmxp_memory.c (1.9):
+
+	Added function nmxp_mem_null_function()
+
+2008-07-21 00:07  mtheo <quintiliani@ingv.it>
+
+	* configure.in (1.73):
+
+	Incremented version to nmxptool_1_2_2_beta5
+
+2008-07-21 00:04  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_base.c (1.74):
+
+	Improved nmxp_recv_select_timeout() setting timeout to
+	HIGHEST_TIMEOUT when timeoutsec is equal to zero
+
+2008-07-15 14:11  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.c (1.102):
+
+	Changed output about tool information -V and -h
 
 2008-04-24 08:08  mtheo <quintiliani@ingv.it>
 
@@ -1039,4 +1083,4269 @@
 	* DoxyfileLib (1.44), configure.in (1.52):
 
 	Upgrade to version 1.2.1
+
+2008-03-07 17:44  mtheo <quintiliani@ingv.it>
+
+	* HISTORY (1.30), earthworm/nmxptool.d (1.29),
+	earthworm/nmxptool_cmd.html (1.24):
+
+	Added parameters UserDAP and PassDAP
+
+2008-03-07 17:33  mtheo <quintiliani@ingv.it>
+
+	* earthworm/nmxptool.d (1.28), src/nmxptool_ew.c (1.25):
+
+	Added parameters UserDAP and PassDAP
+
+2008-03-07 17:32  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.149):
+
+	Closing when nmxp_getMetaChannelList() returns NULL
+
+2008-03-07 17:30  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp.c (1.72):
+
+	Closed socket when terminate subscription
+
+2008-03-07 16:15  mtheo <quintiliani@ingv.it>
+
+	* Makefile.am (1.11):
+
+	Improved rule dist-bin
+
+2008-03-07 14:20  mtheo <quintiliani@ingv.it>
+
+	* Makefile.am (1.10):
+
+	Improved rule dist-bin
+
+2008-03-07 10:37  mtheo <quintiliani@ingv.it>
+
+	* HISTORY (1.29), Makefile.am (1.9), README (1.12), bootstrap
+	(1.2), configure.in (1.51), lib/Makefile.am (1.10), src/Makefile.am
+	(1.8):
+
+	Up to date to version 1.2.0
+
+2008-03-07 10:36  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_log.c (1.17):
+
+	Minor change
+
+2008-03-07 10:35  mtheo <quintiliani@ingv.it>
+
+	* DoxyfileLib (1.43):
+
+	Version 1.2.0
+
+2008-03-07 10:35  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.c (1.80):
+
+	Removed display of libnmxp version
+
+2008-03-07 10:34  mtheo <quintiliani@ingv.it>
+
+	* earthworm/: makefile.ux (1.2), makefile.ux.nognu (1.8):
+
+	libnmxp has been removed
+
+2008-03-06 16:47  mtheo <quintiliani@ingv.it>
+
+	* configure.in (1.50):
+
+	Changed setting for BINARY_DIST_NAME_SUFFIX
+
+2008-03-06 13:26  mtheo <quintiliani@ingv.it>
+
+	* Makefile.am (1.8), configure.in (1.49):
+
+	Added rule dist-bin based on value of BINARY_DIST_NAME_SUFFIX
+
+2008-03-05 11:10  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_base.c (1.63):
+
+	Fixed bug: swap nmx_oldest_sequence_number on bigendian machine
+
+2008-03-05 11:02  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.148):
+
+	Fixed bug: exit if channelList is NULL
+
+2008-03-05 10:44  mtheo <quintiliani@ingv.it>
+
+	* Makefile.am (1.7):
+
+	Added dist-hook rule and dist_doc_DATA
+
+2008-03-05 10:21  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_chan.h (1.23), lib/nmxp.c (1.71):
+
+	Minor change: renamed NMXP_MSGBODY_* to NMXP_*
+
+2008-03-05 09:54  mtheo <quintiliani@ingv.it>
+
+	* src/Makefile.am (1.7):
+
+	Fixed for running 'make dist'
+
+2008-03-05 09:14  mtheo <quintiliani@ingv.it>
+
+	* configure.in (1.48), src/Makefile.am (1.6):
+
+	Moved EW_LIBSRC EW_LIBSRC_UTIL EW_LIBSRC_OS from src/Makefile.am to
+	configure.in
+
+2008-03-05 07:46  mtheo <quintiliani@ingv.it>
+
+	* earthworm/makefile.ux.nognu (1.7):
+
+	libmseed is enable for default
+
+2008-03-05 07:29  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.h (1.91):
+
+	Reset PACKAGE_BUILD
+
+2008-03-05 07:22  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_ew.c (1.24):
+
+	Added NMXP_LOG_STR
+
+2008-03-05 07:16  mtheo <quintiliani@ingv.it>
+
+	* seiscomp_templates/135_nmxptool/seedlink_plugin.tpl (1.12):
+
+	Removed options -S and -A
+
+2008-03-05 07:00  mtheo <quintiliani@ingv.it>
+
+	* HISTORY (1.28):
+
+	Minor change
+
+2008-03-05 06:57  mtheo <quintiliani@ingv.it>
+
+	* README (1.11):
+
+	Up to date INTRODUCTION
+
+2008-03-05 06:50  mtheo <quintiliani@ingv.it>
+
+	* earthworm/nmxptool.d (1.27):
+
+	set HeartBeatInterval to 10
+
+2008-03-05 06:41  mtheo <quintiliani@ingv.it>
+
+	* earthworm/: nmxptool.d (1.26), nmxptool_cmd.html (1.23):
+
+	Minor change
+
+2008-03-04 22:41  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.147):
+
+	Moved free(channelList)
+
+2008-03-04 15:26  mtheo <quintiliani@ingv.it>
+
+	* earthworm/nmxptool_cmd.html (1.22):
+
+	Added comments for relationship between TimeoutRecv and tsec
+
+2008-03-04 14:01  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.146):
+
+	Free channelList_subset_waste
+
+2008-03-04 13:46  mtheo <quintiliani@ingv.it>
+
+	* earthworm/nmxptool.d (1.25):
+
+	Added comments for relationship between TimeoutRecv and tsec
+
+2008-03-03 13:20  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp.c (1.70):
+
+	Improved log in nmxp_raw_stream_manage when NULL elemets appears
+
+2008-03-03 13:19  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.145):
+
+	Fixed bug in TIMES_FLOW_EXIT
+
+2008-03-03 12:50  mtheo <quintiliani@ingv.it>
+
+	* HISTORY (1.27), src/nmxptool_getoptlong.h (1.90):
+
+	Incremented PACKAGE_BUILD
+
+2008-03-03 12:44  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.144):
+
+	Fixed bug in packet management and times_flow
+
+2008-03-03 10:53  mtheo <quintiliani@ingv.it>
+
+	* HISTORY (1.26), src/nmxptool_getoptlong.h (1.89):
+
+	Incremented PACKAGE BUILD
+
+2008-03-03 10:50  mtheo <quintiliani@ingv.it>
+
+	* earthworm/nmxptool.d (1.24), earthworm/nmxptool_cmd.html (1.21),
+	src/nmxptool_getoptlong.c (1.79):
+
+	Improved description
+
+2008-03-03 10:46  mtheo <quintiliani@ingv.it>
+
+	* earthworm/: nmxptool.d (1.23), nmxptool_cmd.html (1.20):
+
+	Improved description
+
+2008-03-03 10:38  mtheo <quintiliani@ingv.it>
+
+	* earthworm/nmxptool.d (1.22):
+
+	Added comments for MaxDataToRetrieve
+
+2008-03-03 10:37  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.c (1.78):
+
+	Added comments for option -A
+
+2008-03-03 09:59  mtheo <quintiliani@ingv.it>
+
+	* TODO (1.19):
+
+	Index: TODO
+	===================================================================
+	RCS file: /reps/nmxptool/TODO,v retrieving revision 1.18 diff
+	-r1.18 TODO 3,10d2 < - Add check for channel duplication in
+	sta_chan_list <       nmxp_chan_subset() in libnmxp/src/nmxp_chan.c
+	< < - Riclassificare log messages <	  Channel state < < -
+	nmxp_log() check for NULL string <
+
+2008-03-03 09:58  mtheo <quintiliani@ingv.it>
+
+	* README (1.10):
+
+	Added HISTORY
+
+2008-03-03 09:57  mtheo <quintiliani@ingv.it>
+
+	* HISTORY (1.25), README (1.9):
+
+	Minor change
+
+2008-03-03 09:53  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_base.c (1.62):
+
+	Added message for message NMXP_MSG_TERMINATESUBSCRIPTION
+
+2008-03-03 09:16  mtheo <quintiliani@ingv.it>
+
+	* earthworm/: nmxptool.d (1.21), nmxptool_ovr.html (1.8),
+	nmxptool_cmd.html (1.19):
+
+	Up to date
+
+2008-03-03 08:23  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.c (1.77):
+
+	minor change
+
+2008-03-03 07:56  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.c (1.76), earthworm/nmxptool_cmd.html
+	(1.18):
+
+	Added comments for channel pattern
+
+2008-03-02 16:26  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.c (1.75):
+
+	Added description for channel declaration
+
+2008-03-02 09:06  mtheo <quintiliani@ingv.it>
+
+	* HISTORY (1.24), src/nmxptool_getoptlong.h (1.88):
+
+	Up to date
+
+2008-03-01 22:36  mtheo <quintiliani@ingv.it>
+
+	* TODO (1.18), src/nmxptool.c (1.143):
+
+	 Get a subset of channel from arguments, in respect to the step 3
+	of PDS
+	Improved log messages
+
+2008-03-01 22:35  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.c (1.74):
+
+	Added NMXP_LOG_D_CHANSTATE Changed log message for printing list of
+	available channels Fixed problem in option for location
+
+2008-03-01 22:34  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_chan.c (1.37):
+
+	Fixed problem in log messages for channel duplication
+
+2008-03-01 22:33  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_data.c (1.56):
+
+	Improved log messages
+
+2008-03-01 22:33  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp.c (1.69):
+
+	Minor changes
+
+2008-03-01 22:32  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_log.h (1.13), lib/nmxp_log.c (1.16):
+
+	Changed NMXP_LOG_D_PACKET to NMXP_LOG_D_CHANSTATE Changed prefix in
+	log message to 'nmxp'
+
+2008-03-01 10:50  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_chan.c (1.36):
+
+	Fixed small bug in channel matching
+
+2008-02-29 22:16  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_chan.c (1.35):
+
+	Added check for channel duplication
+
+2008-02-29 22:15  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.142):
+
+	Commented channelList_subset_waste
+
+2008-02-29 16:23  mtheo <quintiliani@ingv.it>
+
+	* TODO (1.17), lib/nmxp_chan.c (1.34):
+
+	Add check in nmxp_chan_subset() for channel duplication
+
+2008-02-29 14:21  mtheo <quintiliani@ingv.it>
+
+	* HISTORY (1.23), src/nmxptool_getoptlong.h (1.87):
+
+	Release candidate 6
+
+2008-02-29 10:10  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.h (1.86):
+
+	Incremented PACKAGE_BUILD
+
+2008-02-29 10:09  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_log.h (1.12), lib/nmxp.c (1.68):
+
+	Added comments
+
+2008-02-29 09:53  mtheo <quintiliani@ingv.it>
+
+	* earthworm/makefile.ux.nognu (1.6):
+
+	Minor change
+
+2008-02-29 09:46  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.h (1.85):
+
+	Incremented PACKAGE_BUILD
+
+2008-02-29 09:46  mtheo <quintiliani@ingv.it>
+
+	* Makefile.am (1.6):
+
+	Added rules uninstall-ew-bin and uninstall-seiscomp-bin
+
+2008-02-29 09:00  mtheo <quintiliani@ingv.it>
+
+	* earthworm/makefile.ux.nognu (1.5):
+
+	Up to date
+
+2008-02-29 07:33  mtheo <quintiliani@ingv.it>
+
+	* earthworm/makefile.ux.nognu (1.4):
+
+	Significant change for compilation with cc under Solaris 10
+
+2008-02-29 07:18  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.c (1.73):
+
+	Fixed problem displaying 'non-option ARGV-elements'
+
+2008-02-29 07:09  mtheo <quintiliani@ingv.it>
+
+	* src/: nmxptool.c (1.141), nmxptool_getoptlong.c (1.72):
+
+	Minor change
+
+2008-02-29 06:55  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.h (1.84):
+
+	Incremented PACKAGE_BUILD
+
+2008-02-29 06:40  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.140):
+
+	Prevent to reset value in .nmxpstate when retrieve data from
+	DataServer
+
+2008-02-29 04:59  mtheo <quintiliani@ingv.it>
+
+	* HISTORY (1.22):
+
+	Added description
+
+2008-02-28 22:17  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_base.c (1.61):
+
+	Fixed bug in packet decompression nmxp_processCompressedData()
+
+2008-02-28 15:29  mtheo <quintiliani@ingv.it>
+
+	* HISTORY (1.21):
+
+	Up to date
+
+2008-02-28 14:09  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_data.c (1.55):
+
+	Added check for check length of double
+
+2008-02-28 14:05  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_data.c (1.54):
+
+	Fixed problem
+
+2008-02-28 14:01  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_data.h (1.28), lib/nmxp_base.c (1.60),
+	lib/nmxp_data.c (1.53):
+
+	Substituted int64_t in double and minor changes
+
+2008-02-28 13:58  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.c (1.71), lib/nmxp_chan.c (1.33),
+	lib/nmxp.c (1.67):
+
+	Minor change
+
+2008-02-28 13:13  mtheo <quintiliani@ingv.it>
+
+	* earthworm/makefile.ux.nognu (1.3):
+
+	Improved
+
+2008-02-28 13:02  mtheo <quintiliani@ingv.it>
+
+	* earthworm/makefile.ux.nognu (1.2):
+
+	Up to date
+
+2008-02-28 12:33  mtheo <quintiliani@ingv.it>
+
+	* earthworm/: nmxptool.d (1.20), nmxptool_cmd.html (1.17):
+
+	Improved documentation
+
+2008-02-28 12:23  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.c (1.70):
+
+	Improved help output
+
+2008-02-28 12:22  mtheo <quintiliani@ingv.it>
+
+	* src/: nmxptool.c (1.139), nmxptool_getoptlong.h (1.83):
+
+	Moved NMXP_STR_STATE_EXT from nmxptool.c to nmxptool_getoptlong.h
+
+2008-02-28 10:47  mtheo <quintiliani@ingv.it>
+
+	* scripts/: nmxp_sds.sh (1.5), nmxp_sds_mgr.sh (1.6):
+
+	Added parameter for overriding existing files
+
+2008-02-28 10:14  mtheo <quintiliani@ingv.it>
+
+	* earthworm/: nmxptool.d (1.19), nmxptool_cmd.html (1.16):
+
+	added precise statement for NSC (Network.Station.Channel)
+
+2008-02-28 09:07  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.h (1.82):
+
+	Incremented PACKAGE_BUILD
+
+2008-02-28 09:04  mtheo <quintiliani@ingv.it>
+
+	* HISTORY (1.20), src/nmxptool_getoptlong.h (1.81):
+
+	Release candidate 5
+
+2008-02-28 09:04  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.138):
+
+	Minor change
+
+2008-02-28 09:03  mtheo <quintiliani@ingv.it>
+
+	* HISTORY (1.19):
+
+	Up to date
+
+2008-02-28 09:00  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_data.c (1.52):
+
+	Changed ms_log() calls to nmxp_log()
+
+2008-02-28 08:48  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_data.h (1.27), lib/nmxp_data.c (1.51):
+
+	Added flag_sample in nmxp_data_log()
+
+2008-02-28 08:47  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_base.c (1.59):
+
+	Fixed a huge bug in nmxp_processCompressedData() and
+	nmxp_processDecompressedData()
+
+2008-02-28 07:36  mtheo <quintiliani@ingv.it>
+
+	* src/: nmxptool_getoptlong.c (1.69), nmxptool_getoptlong.h (1.80):
+
+	Added flag_logsample
+
+2008-02-28 07:36  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.137):
+
+	Improved miniseed log management and added params.flag_logsample
+
+2008-02-27 11:35  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.h (1.79):
+
+	Incremented PACKAGE_BUILD
+
+2008-02-27 11:33  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_base.c (1.58):
+
+	Changed error message in nmxp_recv_ctrl() and nmxp_receiveMessage()
+
+2008-02-27 11:20  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.136):
+
+	Minor change
+
+2008-02-27 11:11  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.135):
+
+	Added check for params.flag_writeseed
+
+2008-02-27 10:44  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.h (1.78):
+
+	Incremented PACKAGE_BUILD
+
+2008-02-27 10:42  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.134):
+
+	added improvement for earthworm in DAP flow
+
+2008-02-27 08:58  mtheo <quintiliani@ingv.it>
+
+	* earthworm/nmxptool.d (1.18):
+
+	Changed information about Timeoutrecv
+
+2008-02-27 06:49  mtheo <quintiliani@ingv.it>
+
+	* README (1.8):
+
+	Up to date
+
+2008-02-27 06:44  mtheo <quintiliani@ingv.it>
+
+	* README (1.7):
+
+	Up to date
+
+2008-02-26 13:37  mtheo <quintiliani@ingv.it>
+
+	* AUTHORS (1.3):
+
+	Up to date
+
+2008-02-26 13:36  mtheo <quintiliani@ingv.it>
+
+	* BUGS (1.8):
+
+	No Known bugs
+
+2008-02-26 13:36  mtheo <quintiliani@ingv.it>
+
+	* HISTORY (1.18):
+
+	Reordered items
+
+2008-02-26 13:32  mtheo <quintiliani@ingv.it>
+
+	* README (1.6):
+
+	Extended information
+
+2008-02-26 12:32  mtheo <quintiliani@ingv.it>
+
+	* HISTORY (1.17):
+
+	Improved
+
+2008-02-26 12:23  mtheo <quintiliani@ingv.it>
+
+	* HISTORY (1.16):
+
+	Release candidate 4
+
+2008-02-26 12:05  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.h (1.77):
+
+	Incremented release candidate version to 4
+
+2008-02-26 11:47  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp.c (1.66):
+
+	Added check in nmxp_raw_stream_manage() to prevent NULL item
+
+2008-02-25 21:34  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp.c (1.65):
+
+	changed output
+
+2008-02-25 11:20  mtheo <quintiliani@ingv.it>
+
+	* HISTORY (1.15), src/nmxptool_getoptlong.h (1.76):
+
+	Release candidate 3
+
+2008-02-25 11:19  mtheo <quintiliani@ingv.it>
+
+	* HISTORY (1.14):
+
+	Option interval can be declared in minutes, hours or days
+
+2008-02-25 11:02  mtheo <quintiliani@ingv.it>
+
+	* src/: nmxptool_getoptlong.c (1.68), nmxptool_getoptlong.h (1.75):
+
+	Changed interval definition   -t, --interval=TIME     Time interval
+	from start_time (greater than zero).
+	TIME is in seconds, otherwise append 'm' for minutes
+		    'h' for hours or 'd' for days. [1 sec .. 31 days]
+
+2008-02-25 08:48  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.h (1.74):
+
+	Incremented PACKAGE_BUILD
+
+2008-02-25 08:23  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp.c (1.64):
+
+	Improved log messages in nmxp_raw_stream_manage()
+
+2008-02-25 07:08  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp.c (1.63):
+
+	Minor changes, added a log message and reformatted
+
+2008-02-25 06:34  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_data.c (1.50):
+
+	Added NMXP_LOG_STR() to string parameters for nmxp_log()
+
+2008-02-25 06:27  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp.c (1.62):
+
+	Fixed error calling NMXP_LOG_STR
+
+2008-02-24 17:41  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_chan.c (1.32):
+
+	Added NMXP_LOG_STR() to string parameters for nmxp_log()
+
+2008-02-24 17:36  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_base.c (1.57):
+
+	Added NMXP_LOG_STR() to string parameters for nmxp_log()
+
+2008-02-24 17:30  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp.c (1.61):
+
+	Added NMXP_LOG_STR() to string parameters for nmxp_log()
+
+2008-02-24 17:19  mtheo <quintiliani@ingv.it>
+
+	* src/: nmxptool.c (1.133), nmxptool_ew.c (1.23),
+	nmxptool_getoptlong.c (1.67):
+
+	Added NMXP_LOG_STR() to string parameters for nmxp_log()
+
+2008-02-24 16:49  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_log.h (1.11), src/nmxptool_getoptlong.c (1.66):
+
+	Defined NMXP_LOG_STR
+
+2008-02-24 15:32  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.132):
+
+	Minor changes on C comments
+
+2008-02-24 15:14  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp.c (1.60):
+
+	Minor changes on output messages
+
+2008-02-24 15:10  mtheo <quintiliani@ingv.it>
+
+	* lib/: nmxp.c (1.59), nmxp_base.c (1.56), nmxp_chan.c (1.31),
+	nmxp_crc32.c (1.6), nmxp_data.c (1.49), nmxp_log.c (1.15):
+
+	Minor changes on C comments
+
+2008-02-22 13:56  mtheo <quintiliani@ingv.it>
+
+	* TODO (1.16):
+
+	Index: TODO
+	===================================================================
+	RCS file: /reps/nmxptool/TODO,v retrieving revision 1.15 diff
+	-r1.15 TODO 2a3,4
+	> - nmxp_log() check for NULL string
+	>
+
+2008-02-22 08:10  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.h (1.73):
+
+	Incremented PACKAGE BUILD
+
+2008-02-22 08:06  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.131):
+
+	Fixed bug in management of packets that are different from the
+	requested ones
+
+2008-02-22 08:05  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_chan.c (1.30):
+
+	Minor change in log message
+
+2008-02-22 08:04  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_base.c (1.55):
+
+	Fixed bug when use output of nmxp_chan_lookupName()
+
+2008-02-22 06:21  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.130):
+
+	Extended log message for i_chan != cur_chan
+
+2008-02-21 13:58  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.c (1.65):
+
+	Minor change for pluginid
+
+2008-02-21 13:21  mtheo <quintiliani@ingv.it>
+
+	* Makefile.am (1.5), configure.in (1.47):
+
+	Fixed little bug
+
+2008-02-21 11:32  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.h (1.72):
+
+	Incremented PACKAGE_BUILD
+
+2008-02-21 11:27  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.129):
+
+	Fixed bug in clientShutdown()
+
+2008-02-21 08:23  mtheo <quintiliani@ingv.it>
+
+	* seiscomp_templates/135_nmxptool/seedlink_plugin.tpl (1.11):
+
+	Improved
+
+2008-02-21 08:15  mtheo <quintiliani@ingv.it>
+
+	* seiscomp_templates/135_nmxptool/seedlink_plugin.tpl (1.10):
+
+	Fixed bug in template defining pluginid
+
+2008-02-20 21:43  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.c (1.64):
+
+	minor change
+
+2008-02-20 08:47  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.c (1.63):
+
+	Minor change
+
+2008-02-20 08:28  mtheo <quintiliani@ingv.it>
+
+	* scripts/nmxp_sds_mgr.sh (1.5):
+
+	Updated station list
+
+2008-02-20 06:40  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.c (1.62):
+
+	Improved help output
+
+2008-02-19 14:57  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.h (1.71):
+
+	Incremented PACKAGE_BUILD
+
+2008-02-19 14:40  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_base.c (1.54), src/nmxptool.c (1.128):
+
+	Fixed problem related to WSAEWOULDBLOCK and WSAETIMEDOUT for
+	Windows
+
+2008-02-19 14:40  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_win.h (1.2), lib/nmxp_win.c (1.2):
+
+	Minor change
+
+2008-02-19 14:11  mtheo <quintiliani@ingv.it>
+
+	* Makefile.am (1.4):
+
+	Added EXEEXT value to binary name
+
+2008-02-19 13:16  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_base.c (1.53):
+
+	Fixed bug for WSAEWOULDBLOCK
+
+2008-02-18 14:41  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.h (1.70):
+
+	Incremented PACKAGE_BUILD
+
+2008-02-18 14:40  mtheo <quintiliani@ingv.it>
+
+	* configure.in (1.46):
+
+	Added message for Earthworm and SeedLink installation
+
+2008-02-18 14:25  mtheo <quintiliani@ingv.it>
+
+	* Makefile.am (1.3), configure.in (1.45):
+
+	Added following target for make: install-seiscomp-bin
+	install-seiscomp-templates install-ew-bin install-ew-conf
+
+2008-02-18 12:03  mtheo <quintiliani@ingv.it>
+
+	* seiscomp_templates/135_nmxptool/seedlink_plugin.tpl (1.9):
+
+	Minor change
+
+2008-02-18 11:27  mtheo <quintiliani@ingv.it>
+
+	* earthworm/: nmxptool.d (1.17), nmxptool_cmd.html (1.15):
+
+	Up to date
+
+2008-02-18 09:34  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.h (1.69):
+
+	PACKAGE_BUILD release candidate 2
+
+2008-02-18 09:32  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.c (1.61):
+
+	Changed output of helpoption -t has to be greater than zero
+
+2008-02-18 09:32  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.h (1.68):
+
+	Changed default value to zero for MAX_TIME_TO_RETRIEVE, disabled
+	default connection to DataServer
+
+2008-02-17 14:41  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_chan.c (1.29):
+
+	Uniformed channel list display
+
+2008-02-17 13:54  mtheo <quintiliani@ingv.it>
+
+	* src/: nmxptool_getoptlong.c (1.60), nmxptool_getoptlong.h (1.67):
+
+	Added check to avoid to request to DataServer
+
+2008-02-17 13:54  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.127):
+
+	Fixed bug in timeoutrecv managementAdded check to avoid to request
+	to DataServer
+
+2008-02-16 15:35  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.h (1.66):
+
+	Incremented PACKAGE_BUILD
+
+2008-02-16 15:32  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_base.c (1.52), src/nmxptool.c (1.126):
+
+	Changed some message for Timeoutrecv DOD management
+
+2008-02-15 11:31  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp.c (1.58), src/nmxptool.c (1.125):
+
+	Fixed bug in raw stream management for data on demand timeout recv
+
+2008-02-15 10:01  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.h (1.65):
+
+	Incremented PACKAGE_BUILD
+
+2008-02-15 08:04  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.124):
+
+	Fixed bug
+
+2008-02-15 08:03  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.h (1.64):
+
+	Incremented PACKAGE_BUILD
+
+2008-02-15 07:26  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.123):
+
+	Added management of warning messages whether timeoutrecv is used
+
+2008-02-15 07:25  mtheo <quintiliani@ingv.it>
+
+	* configure.in (1.44):
+
+	Minor change
+
+2008-02-15 07:25  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_base.c (1.51):
+
+	Added test whether SO_RCVTIMEO is broken
+
+2008-02-14 07:35  mtheo <quintiliani@ingv.it>
+
+	* scripts/nmxp_sds_mgr.sh (1.4):
+
+	Jday to 44
+
+2008-02-14 07:34  mtheo <quintiliani@ingv.it>
+
+	* scripts/nmxp_sds_check_all.sh (1.1):
+
+	Start
+
+2008-02-14 07:33  mtheo <quintiliani@ingv.it>
+
+	* scripts/nmxp_sds_check.sh (1.2):
+
+	Added option for gap tollerance
+
+2008-02-12 15:12  mtheo <quintiliani@ingv.it>
+
+	* Makefile.am (1.2):
+
+	Added example for make rule 'clean-local'
+
+2008-02-12 14:37  mtheo <quintiliani@ingv.it>
+
+	* scripts/nmxp_sds_mgr.sh (1.3):
+
+	Up to date JDAYEND
+
+2008-02-12 14:16  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.122):
+
+	Added some log messages within clientDummyHandler()
+
+2008-02-12 13:25  mtheo <quintiliani@ingv.it>
+
+	* scripts/nmxp_sds_check.sh (1.1):
+
+	Start
+
+2008-02-12 13:11  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.h (1.63):
+
+	Incremented PACKAGE_BUILD
+
+2008-02-12 13:05  mtheo <quintiliani@ingv.it>
+
+	* HISTORY (1.13), src/nmxptool_getoptlong.h (1.62):
+
+	Release candidate 1 for 1.1.8
+
+2008-02-12 10:50  mtheo <quintiliani@ingv.it>
+
+	* TODO (1.15):
+
+	Index: TODO
+	===================================================================
+	RCS file: /reps/nmxptool/TODO,v retrieving revision 1.14 diff
+	-r1.14 TODO 5,6d4 < - Fixed bug in DAP authentication <
+
+2008-02-12 10:47  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.h (1.61):
+
+	Incremented PACKAGE_BUILD
+
+2008-02-12 10:45  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.121):
+
+	Fixed minor bug: prevent to manage a packet with zero sample after
+	nmxp_data_trim()
+
+2008-02-12 10:44  mtheo <quintiliani@ingv.it>
+
+	* README (1.5):
+
+	Added ACKNOWLEDGEMENT
+
+2008-02-01 17:59  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.h (1.60):
+
+	Incremented PACKAGE_BUILD
+
+2008-01-30 16:58  mtheo <quintiliani@ingv.it>
+
+	* HISTORY (1.12):
+
+	Update
+
+2008-01-27 18:00  mtheo <quintiliani@ingv.it>
+
+	* scripts/: nmxp_sds.sh (1.4), nmxp_sds_mgr.sh (1.2):
+
+	Minor changes
+
+2008-01-27 17:13  mtheo <quintiliani@ingv.it>
+
+	* scripts/nmxp_sds.sh (1.3):
+
+	Minor change
+
+2008-01-27 17:11  mtheo <quintiliani@ingv.it>
+
+	* scripts/nmxp_sds_mgr.sh (1.1):
+
+	Start
+
+2008-01-27 08:38  mtheo <quintiliani@ingv.it>
+
+	* scripts/nmxp_sds.sh (1.2):
+
+	Ok
+
+2008-01-27 08:04  mtheo <quintiliani@ingv.it>
+
+	* scripts/nmxp_sds.sh (1.1):
+
+	Start
+
+2008-01-21 10:44  mtheo <quintiliani@ingv.it>
+
+	* seiscomp_templates/135_nmxptool/seedlink_plugin.tpl (1.8):
+
+	Changed default configuration
+
+2008-01-21 10:35  mtheo <quintiliani@ingv.it>
+
+	* BUGS (1.7), src/nmxptool_getoptlong.c (1.59):
+
+	Minor change
+
+2008-01-18 08:25  mtheo <quintiliani@ingv.it>
+
+	* seiscomp_templates/135_nmxptool/seedlink_plugin.tpl (1.7):
+
+	Added option for Max Data To Retrieve
+
+2008-01-18 08:20  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.120):
+
+	default_start_time set to nmxp_data_gmtime_now() -
+	params.max_data_to_retrieve
+
+2008-01-18 08:13  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.119):
+
+	Minor improvement loading channel state
+
+2008-01-18 07:24  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.118), earthworm/nmxptool_cmd.html (1.14):
+
+	Minor change
+
+2008-01-18 07:12  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.h (1.59):
+
+	incremented PACKAGE_BUILD
+
+2008-01-18 07:11  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.117), BUGS (1.6):
+
+	Fixed bug in infinite flow management
+
+2008-01-18 06:46  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_base.h (1.27):
+
+	Minor change
+
+2008-01-17 16:25  mtheo <quintiliani@ingv.it>
+
+	* earthworm/nmxptool_cmd.html (1.13):
+
+	Minor change
+
+2008-01-17 16:25  mtheo <quintiliani@ingv.it>
+
+	* earthworm/nmxptool_cmd.html (1.12), BUGS (1.5):
+
+	Update
+
+2008-01-17 16:23  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.116):
+
+	Major change for infinite flow management
+
+2008-01-17 14:00  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.h (1.58):
+
+	Incremented PACKAGE_BUILD
+
+2008-01-17 13:58  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.115):
+
+	Earthworm management in DAP flow
+
+2008-01-17 13:46  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.114):
+
+	Minor change
+
+2008-01-17 13:10  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.c (1.58), earthworm/nmxptool.d (1.16),
+	earthworm/nmxptool_cmd.html (1.11):
+
+	Minor change
+
+2008-01-17 13:05  mtheo <quintiliani@ingv.it>
+
+	* earthworm/nmxptool_cmd.html (1.10):
+
+	Added description for MaxDataToRetrieve Changed example of
+	configuration file
+
+2008-01-17 13:05  mtheo <quintiliani@ingv.it>
+
+	* earthworm/nmxptool.d (1.15), src/nmxptool_getoptlong.c (1.57):
+
+	Minor change
+
+2008-01-17 12:45  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.113):
+
+	Minor change
+
+2008-01-17 12:39  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.h (1.57):
+
+	Incremented PACKAGE_BUILD
+
+2008-01-17 12:05  mtheo <quintiliani@ingv.it>
+
+	* BUGS (1.4), src/nmxptool.c (1.112):
+
+	Fixed bug in channelListSeq management under DAP
+
+2008-01-17 11:23  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.h (1.56):
+
+	Incremented PACKAGE_BUILD
+
+2008-01-17 11:20  mtheo <quintiliani@ingv.it>
+
+	* src/: nmxptool_getoptlong.c (1.56), nmxptool_getoptlong.h (1.55),
+	nmxptool.c (1.111):
+
+	Changed name from max_time_to_retrieve to max_data_to_retrieve
+
+2008-01-17 11:19  mtheo <quintiliani@ingv.it>
+
+	* earthworm/nmxptool.d (1.14), src/nmxptool_ew.c (1.22):
+
+	Added parameter MaxDataToRetrieve
+
+2008-01-17 11:00  mtheo <quintiliani@ingv.it>
+
+	* src/: nmxptool.c (1.110), nmxptool_getoptlong.c (1.55),
+	nmxptool_getoptlong.h (1.54):
+
+	Added management of max_time_to_retrieve
+
+2008-01-17 08:14  mtheo <quintiliani@ingv.it>
+
+	* src/: nmxptool_getoptlong.c (1.54), nmxptool_getoptlong.h (1.53),
+	nmxptool.c (1.109):
+
+	Added management for infinite flow
+
+2008-01-17 08:14  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_chan.c (1.28):
+
+	Minor change in logging
+
+2008-01-17 08:13  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_data.c (1.48):
+
+	Fixed bug in nmxp_data_to_str()
+
+2008-01-16 10:51  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.108):
+
+	Changed channel state file management
+
+2008-01-16 10:14  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.107):
+
+	Minor change: changed only indentation
+
+2008-01-14 09:16  mtheo <quintiliani@ingv.it>
+
+	* earthworm/nmxptool.desc (1.5), src/nmxptool.c (1.106),
+	src/nmxptool_ew.c (1.21), src/nmxptool_ew.h (1.12):
+
+	Added ew message when terminating on request
+
+2008-01-14 08:06  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.h (1.52):
+
+	incremented PACKAGE_BUILD
+
+2008-01-14 08:02  mtheo <quintiliani@ingv.it>
+
+	* earthworm/nmxptool.desc (1.4), src/nmxptool_ew.c (1.20),
+	src/nmxptool_ew.h (1.11):
+
+	Added sending ew messages
+
+2008-01-11 14:31  mtheo <quintiliani@ingv.it>
+
+	* src/: nmxptool.c (1.105), nmxptool_ew.c (1.19), nmxptool_ew.h
+	(1.10):
+
+	Added function nmxptool_ew_send_error()
+
+2008-01-11 13:50  mtheo <quintiliani@ingv.it>
+
+	* earthworm/: nmxptool.d (1.13), nmxptool.desc (1.3):
+
+	Changed value of heartbeat interval
+
+2008-01-11 11:04  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.h (1.51):
+
+	incremented PACKAGE_BUILD
+
+2008-01-11 10:57  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_base.c (1.50):
+
+	Fixed bug receiving zero byte from recv() 'TCP FIN or EOF received'
+
+2008-01-10 11:05  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.h (1.50):
+
+	incremented PACKAGE_BUILD
+
+2008-01-10 10:59  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_data.c (1.47):
+
+	Added warning message for computation packet latencies
+
+2008-01-10 10:48  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_data.c (1.46):
+
+	Fixed bug in computation of packet latencies
+
+2008-01-10 10:35  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.h (1.49):
+
+	incremented PACKAGE_BUILD
+
+2008-01-10 10:06  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_base.c (1.49):
+
+	Fixed bug receiving zero byte from recv() 'TCP FIN or EOF received'
+
+2008-01-10 08:46  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_data.c (1.45):
+
+	Fixed bug for computation of packets latencies
+
+2008-01-09 17:16  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.c (1.53):
+
+	Reduced string length for logit() ew
+
+2008-01-09 16:14  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.c (1.52):
+
+	Fixed bug printing null strings
+
+2008-01-09 15:30  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.h (1.48):
+
+	incremented PACKAGE_BUILD
+
+2008-01-09 15:27  mtheo <quintiliani@ingv.it>
+
+	* src/: nmxptool.c (1.104), nmxptool_getoptlong.c (1.51),
+	nmxptool_getoptlong.h (1.47):
+
+	Added function nmxptool_log_params()
+
+2008-01-09 12:18  mtheo <quintiliani@ingv.it>
+
+	* earthworm/makefile.ux.nognu (1.1):
+
+	start
+
+2008-01-09 12:12  mtheo <quintiliani@ingv.it>
+
+	* configure.in (1.43):
+
+	Added GLOBALFLAGS to CFLAGS automatically
+
+2008-01-03 08:44  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.h (1.46):
+
+	Fixed problem with interval and end_time
+
+2007-12-28 11:21  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_crc32.h (1.6), lib/nmxp_crc32.c (1.5):
+
+	minor change: cleaned source
+
+2007-12-28 11:04  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.h (1.45):
+
+	PACKAGE BUILD
+
+2007-12-28 11:00  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.h (1.44):
+
+	PACKAGE BUILD
+
+2007-12-28 10:55  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp.c (1.57):
+
+	Fixed bug for big endian architecture
+
+2007-12-28 10:49  mtheo <quintiliani@ingv.it>
+
+	* BUGS (1.3), HISTORY (1.11):
+
+	Update
+
+2007-12-28 10:40  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.103):
+
+	alternative listing of available channels from NaqsServer or
+	DataServer
+
+2007-12-28 10:39  mtheo <quintiliani@ingv.it>
+
+	* src/: nmxptool_getoptlong.c (1.50), nmxptool_getoptlong.h (1.43):
+
+	Minor change
+
+2007-12-28 10:38  mtheo <quintiliani@ingv.it>
+
+	* seiscomp_templates/135_nmxptool/: key (1.2), seedlink_plugin.tpl
+	(1.6):
+
+	One instance for address and use of channel state file
+
+2007-12-28 10:37  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp.h (1.44), lib/nmxp.c (1.56):
+
+	Fixed bug in CRC-32 computation Improved use of function
+	nmxp_getMetaChannelList()
+
+2007-12-28 10:36  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_crc32.h (1.5), lib/nmxp_crc32.c (1.4):
+
+	Fixed bug in CRC-32 computation
+
+2007-12-19 14:54  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.h (1.42):
+
+	set BUILD PACKAGE
+
+2007-12-19 14:44  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.h (1.41):
+
+	set BUILD PACKAGE
+
+2007-12-19 14:32  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_data.c (1.44):
+
+	Fixed bug calling gmtime with argument equal to -1
+
+2007-12-19 14:31  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.102):
+
+	minor change
+
+2007-12-19 14:20  mtheo <quintiliani@ingv.it>
+
+	* HISTORY (1.10):
+
+	update
+
+2007-12-19 14:14  mtheo <quintiliani@ingv.it>
+
+	* src/: nmxptool_getoptlong.c (1.49), nmxptool_getoptlong.h (1.40):
+
+	added management of channel state file
+
+2007-12-19 14:13  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.101):
+
+	Added function load_channel_states Added management of
+	'after_start_time' for each channel
+
+2007-12-19 14:12  mtheo <quintiliani@ingv.it>
+
+	* earthworm/nmxptool.d (1.12), earthworm/nmxptool_cmd.html (1.9),
+	src/nmxptool_ew.c (1.18):
+
+	Added paramater ChannelFile
+
+2007-12-19 09:31  mtheo <quintiliani@ingv.it>
+
+	* BUGS (1.2):
+
+	Minor change
+
+2007-12-17 11:05  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.100):
+
+	added after_start_time in channelListSeq
+
+2007-12-17 10:55  mtheo <quintiliani@ingv.it>
+
+	* HISTORY (1.9):
+
+	Update
+
+2007-12-17 10:42  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.h (1.39):
+
+	set PACKAGE_BUILD
+
+2007-12-17 10:40  mtheo <quintiliani@ingv.it>
+
+	* HISTORY (1.8):
+
+	beta3
+
+2007-12-17 10:36  mtheo <quintiliani@ingv.it>
+
+	* src/: nmxptool.c (1.99), nmxptool_getoptlong.c (1.48),
+	nmxptool_getoptlong.h (1.38):
+
+	Added option buffered_time and management of skipped packets
+
+2007-12-17 08:40  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.h (1.37):
+
+	set PACKAGE_BUILD
+
+2007-12-17 08:38  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.98):
+
+	Minor changes
+
+2007-12-17 08:21  mtheo <quintiliani@ingv.it>
+
+	* HISTORY (1.7):
+
+	Minor change
+
+2007-12-17 08:16  mtheo <quintiliani@ingv.it>
+
+	* HISTORY (1.5), HISTORY (1.6):
+
+	beta2
+
+2007-12-17 08:14  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_data.c (1.43):
+
+	Fixed bug and improved function nmxp_data_parse_date()
+
+2007-12-17 07:37  mtheo <quintiliani@ingv.it>
+
+	* HISTORY (1.3):
+
+	Added support for retrieving Data on Demand
+
+2007-12-17 07:37  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.c (1.47), src/nmxptool_getoptlong.h
+	(1.36), HISTORY (1.4):
+
+	Added ten thousandth of second in date format
+
+2007-12-17 07:36  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.97):
+
+	Added ten thousandth of second in date format Fixed small bug in
+	gap management
+
+2007-12-17 07:20  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_data.h (1.26), lib/nmxp_data.c (1.42):
+
+	Added ten thousandth of second in date format
+
+2007-12-16 21:08  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_log.h (1.10), lib/nmxp_base.c (1.48):
+
+	Minor change
+
+2007-12-16 18:25  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.96):
+
+	Improved function save_channel_states()
+
+2007-12-16 17:12  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.95):
+
+	Added function saving_channel_states()
+
+2007-12-16 17:11  mtheo <quintiliani@ingv.it>
+
+	* src/: nmxptool_getoptlong.c (1.46), nmxptool_getoptlong.h (1.35):
+
+	Added option -F for saving and restoring channel states
+
+2007-12-16 16:02  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.94):
+
+	Fixed bug using free()
+
+2007-12-16 14:23  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.h (1.34):
+
+	set PACKAGE_BUILD
+
+2007-12-16 14:19  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.h (1.33):
+
+	set PACKAGE_BUILD
+
+2007-12-16 14:18  mtheo <quintiliani@ingv.it>
+
+	* DoxyfileLib (1.42), configure.in (1.42):
+
+	incremented micro version
+
+2007-12-16 14:17  mtheo <quintiliani@ingv.it>
+
+	* earthworm/nmxptool.d (1.11), earthworm/nmxptool_cmd.html (1.8),
+	src/nmxptool_getoptlong.c (1.45):
+
+	Enabled time-out for flushing buffered packets
+
+2007-12-16 14:05  mtheo <quintiliani@ingv.it>
+
+	* configure.in (1.41):
+
+	Moved check for earthworm headers
+
+2007-12-16 14:05  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_base.c (1.47):
+
+	Fixed bug in setting timeout for recv and moved some code into
+	nmxp_win.c and nmxp_win.h
+
+2007-12-16 14:03  mtheo <quintiliani@ingv.it>
+
+	* lib/Makefile.am (1.9):
+
+	Added sources nmxp_win.c and nmxp_win.h
+
+2007-12-16 14:02  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_win.h (1.1), lib/nmxp_win.c (1.1):
+
+	Code for operation on Windows system
+
+2007-12-14 14:16  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_base.c (1.46):
+
+	Renamed EAGAIN to EWOULDBLOCK
+
+2007-12-14 14:15  mtheo <quintiliani@ingv.it>
+
+	* scripts/nmxpdod.sh (1.1):
+
+	start
+
+2007-12-13 14:49  mtheo <quintiliani@ingv.it>
+
+	* earthworm/makefile.ux (1.1):
+
+	start
+
+2007-12-11 13:49  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.h (1.32), AUTHORS (1.2):
+
+	Reset PACKAGE_BUILD for 1.1.7 release
+
+2007-12-11 13:48  mtheo <quintiliani@ingv.it>
+
+	* HISTORY (1.2):
+
+	Better arrangement
+
+2007-12-11 13:48  mtheo <quintiliani@ingv.it>
+
+	* BUGS (1.1):
+
+	start
+
+2007-12-11 13:44  mtheo <quintiliani@ingv.it>
+
+	* earthworm/nmxptool_ovr.html (1.7):
+
+	Better arrangement
+
+2007-12-11 13:20  mtheo <quintiliani@ingv.it>
+
+	* earthworm/: nmxptool.d (1.10), nmxptool_cmd.html (1.7),
+	nmxptool_ovr.html (1.6):
+
+	Better arrangement
+
+2007-12-11 13:13  mtheo <quintiliani@ingv.it>
+
+	* earthworm/: nmxptool_cmd.html (1.6), nmxptool_ovr.html (1.5):
+
+	Better arrangement
+
+2007-12-11 11:56  mtheo <quintiliani@ingv.it>
+
+	* HISTORY (1.1), README (1.4):
+
+	Better arrangement
+
+2007-12-11 11:16  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.h (1.31):
+
+	Incremented PACKAGE_BUILD
+
+2007-12-11 11:13  mtheo <quintiliani@ingv.it>
+
+	* TODO (1.14):
+
+	Index: TODO
+	===================================================================
+	RCS file: /reps/nmxptool/TODO,v retrieving revision 1.13 diff
+	-r1.13 TODO 3c3 < - Add option for output directory ---
+	> - Add option for output directory dump and mini-seed
+
+2007-12-11 10:39  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.c (1.44):
+
+	Minor change
+
+2007-12-11 05:11  mtheo <quintiliani@ingv.it>
+
+	* TODO (1.13):
+
+	Update
+
+2007-12-11 05:09  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.c (1.43):
+
+	Added pattern '*' for station code Disable location code Improved
+	help output
+
+2007-12-11 05:08  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_chan.c (1.27):
+
+	Added pattern '*' for station code
+
+2007-12-10 16:31  mtheo <quintiliani@ingv.it>
+
+	* earthworm/nmxptool_cmd.html (1.5):
+
+	Minor change
+
+2007-12-10 16:27  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.h (1.30):
+
+	Incremente PACKAGE_BUILD
+
+2007-12-10 16:24  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.h (1.29):
+
+	Incremente PACKAGE_BUILD
+
+2007-12-10 16:23  mtheo <quintiliani@ingv.it>
+
+	* README (1.3):
+
+	Added information for ew and seedlink configuration
+
+2007-12-10 16:17  mtheo <quintiliani@ingv.it>
+
+	* earthworm/nmxptool_ovr.html (1.4), README (1.2):
+
+	Extended documentation, almost complete
+
+2007-12-10 15:40  mtheo <quintiliani@ingv.it>
+
+	* earthworm/nmxptool_cmd.html (1.4):
+
+	Extended documentation, almost complete
+
+2007-12-10 15:40  mtheo <quintiliani@ingv.it>
+
+	* earthworm/nmxptool.d (1.9):
+
+	Changed verbosity
+
+2007-12-10 13:44  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.h (1.28):
+
+	Set PACKAGE_BUILD
+
+2007-12-10 09:53  mtheo <quintiliani@ingv.it>
+
+	* configure.in (1.40):
+
+	Added NMXP_CFLAGS and NMXP_LDFLAGS
+
+2007-12-09 10:52  mtheo <quintiliani@ingv.it>
+
+	* configure.in (1.39):
+
+	Little arrangement
+
+2007-12-08 21:55  mtheo <quintiliani@ingv.it>
+
+	* configure.in (1.38):
+
+	Fixed small bug for checking library nmxp Added check earthworm
+	header Minor changes
+
+2007-12-08 11:08  mtheo <quintiliani@ingv.it>
+
+	* configure.in (1.37):
+
+	Added TODO for GLOBALFLAGS
+
+2007-12-08 10:38  mtheo <quintiliani@ingv.it>
+
+	* configure.in (1.36), src/Makefile.am (1.5):
+
+	Add check for ew object files or ew source files compilation
+
+2007-12-07 22:23  mtheo <quintiliani@ingv.it>
+
+	* configure.in (1.35):
+
+	Minor change: added a warning message
+
+2007-12-07 22:16  mtheo <quintiliani@ingv.it>
+
+	* configure.in (1.34):
+
+	Added TODO
+
+2007-12-07 22:14  mtheo <quintiliani@ingv.it>
+
+	* configure.in (1.33), src/Makefile.am (1.4):
+
+	Added compilation of ew sources. THIS COMMIT LEAVES PACKAGE
+	IMCOMPLETE.
+
+2007-12-07 21:48  mtheo <quintiliani@ingv.it>
+
+	* configure.in (1.32), src/Makefile.am (1.3):
+
+	Conditional compilation for seedlink_plugin sources
+
+2007-12-07 14:44  mtheo <quintiliani@ingv.it>
+
+	* configure.in (1.31):
+
+	Minor change
+
+2007-12-07 14:43  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_base.c (1.45):
+
+	Fixed problem in use of strerror_r()
+
+2007-12-07 14:23  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_base.c (1.44):
+
+	Fixed windows bug in function nmxp_sleep()
+
+2007-12-07 14:22  mtheo <quintiliani@ingv.it>
+
+	* src/seedlink_plugin.h (1.2):
+
+	Added include stdint.h for windows compilation of int32_t
+
+2007-12-07 14:02  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_base.h (1.26), lib/nmxp_base.c (1.43),
+	src/nmxptool.c (1.93):
+
+	Fixed small bug for function sleep()
+
+2007-12-07 13:52  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.92):
+
+	Added Windows management
+
+2007-12-07 13:49  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_data.c (1.41):
+
+	Added windows management
+
+2007-12-07 13:48  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_base.c (1.42):
+
+	Added winsock2 management
+
+2007-12-07 13:45  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp.c (1.55):
+
+	Added check for winsock2.h
+
+2007-12-07 13:43  mtheo <quintiliani@ingv.it>
+
+	* configure.in (1.30):
+
+	Added check for winsock library
+
+2007-12-03 13:46  mtheo <quintiliani@ingv.it>
+
+	* configure.in (1.29), src/nmxptool_getoptlong.h (1.27):
+
+	Incremented micro version
+
+2007-12-03 13:39  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.h (1.26):
+
+	Set PACKAGE_BUILD
+
+2007-11-24 21:44  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.h (1.25):
+
+	Changed PACKAGE_BUILD value
+
+2007-11-24 21:39  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_chan.h (1.22), lib/nmxp_chan.c (1.26),
+	src/nmxptool.c (1.91), src/nmxptool_getoptlong.c (1.42),
+	src/nmxptool_getoptlong.h (1.24):
+
+	Added function for print channel list from NaqsServer
+
+2007-11-24 21:04  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_ew.c (1.17):
+
+	Minor changes
+
+2007-11-24 20:58  mtheo <quintiliani@ingv.it>
+
+	* src/: nmxptool_getoptlong.c (1.41), nmxptool_getoptlong.h (1.23):
+
+	Assigned different meaning to PACKAGE_BUILD
+
+2007-11-24 20:32  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_chan.c (1.25):
+
+	Fixed bug in matching channels
+
+2007-11-24 20:24  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.90):
+
+	Moved nmxp_log_init for ew
+
+2007-11-24 13:48  mtheo <quintiliani@ingv.it>
+
+	* seiscomp_templates/135_nmxptool/seedlink_plugin.tpl (1.5):
+
+	Update seiscomp template
+
+2007-11-23 17:49  mtheo <quintiliani@ingv.it>
+
+	* earthworm/nmxptool.d (1.8):
+
+	Minor change
+
+2007-11-23 17:34  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp.c (1.54):
+
+	Added include for solaris
+
+2007-11-23 16:58  mtheo <quintiliani@ingv.it>
+
+	* src/: nmxptool_getoptlong.c (1.40), nmxptool_getoptlong.h (1.22):
+
+	added check for verbose_level
+
+2007-11-23 16:58  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.89):
+
+	fixed small bug in setting verbose_level for ew
+
+2007-11-22 13:36  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_base.c (1.41):
+
+	Removed unuseful nmxp_log() call
+
+2007-11-22 11:47  mtheo <quintiliani@ingv.it>
+
+	* earthworm/: nmxptool.d (1.7), nmxptool.desc (1.2):
+
+	Updated ew configuration files
+
+2007-11-22 11:13  mtheo <quintiliani@ingv.it>
+
+	* src/: nmxptool.c (1.88), nmxptool_ew.c (1.16),
+	nmxptool_getoptlong.c (1.39), nmxptool_getoptlong.h (1.21):
+
+	Adapted call for nmxp_log() and modified means of option -v
+
+2007-11-22 11:12  mtheo <quintiliani@ingv.it>
+
+	* lib/: nmxp.c (1.53), nmxp_base.c (1.40), nmxp_chan.c (1.24),
+	nmxp_data.c (1.40):
+
+	Adapted call for nmxp_log()
+
+2007-11-22 11:10  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_log.h (1.9), lib/nmxp_log.c (1.14):
+
+	Improved management of log messages, major change within nmxp_log()
+
+2007-11-22 06:53  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_log.c (1.13):
+
+	Fixed bug in nmxp_log_add()
+
+2007-11-21 14:07  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.c (1.38):
+
+	Disabled option -T
+
+2007-11-21 13:22  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_base.c (1.39):
+
+	Added use of strerror_r()
+
+2007-11-21 13:12  mtheo <quintiliani@ingv.it>
+
+	* src/: nmxptool.c (1.87), nmxptool_getoptlong.c (1.37):
+
+	Set NMXP_LOG_ variable for nmxp_log()
+
+2007-11-21 11:04  mtheo <quintiliani@ingv.it>
+
+	* src/: nmxptool_getoptlong.c (1.36), nmxptool_getoptlong.h (1.20):
+
+	Added macro PACKAGE_BUILD
+
+2007-10-25 13:45  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_log.c (1.12), src/nmxptool_ew.c (1.15):
+
+	Fixed a bug for calling logit()
+
+2007-10-25 10:13  mtheo <quintiliani@ingv.it>
+
+	* TODO (1.12):
+
+	Update
+
+2007-10-25 09:11  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.86), lib/nmxp_base.c (1.38):
+
+	Timeout management
+
+2007-10-24 10:05  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_base.c (1.37):
+
+	Improved management of null bundle packet
+
+2007-10-24 10:05  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.85):
+
+	Managed recv_errno value for exiting from main loop
+
+2007-10-24 10:04  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_ew.c (1.14):
+
+	changed calls to logit
+
+2007-10-24 08:13  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_base.c (1.36):
+
+	Improved nmxp_recv_ctrl()
+
+2007-10-18 14:34  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_base.c (1.35):
+
+	substituted MSG_WAITALL in recv() with a while() command
+
+2007-10-18 14:33  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_chan.c (1.23):
+
+	Changed output for channel list
+
+2007-10-09 07:43  mtheo <quintiliani@ingv.it>
+
+	* earthworm/: nmxptool.d (1.6), nmxptool_cmd.html (1.3),
+	nmxptool_ovr.html (1.3):
+
+	Update
+
+2007-10-08 20:16  mtheo <quintiliani@ingv.it>
+
+	* earthworm/: nmxptool_cmd.html (1.2), nmxptool_ovr.html (1.2):
+
+	Update
+
+2007-10-08 20:08  mtheo <quintiliani@ingv.it>
+
+	* earthworm/: nmxptool_cmd.html (1.1), nmxptool_ovr.html (1.1):
+
+	start
+
+2007-10-08 13:52  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.c (1.35):
+
+	Modified help
+
+2007-10-08 13:23  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_ew.c (1.13):
+
+	fixed error
+
+2007-10-08 13:18  mtheo <quintiliani@ingv.it>
+
+	* src/: nmxptool_ew.c (1.11), nmxptool_ew.c (1.12):
+
+	Removed some comment
+
+2007-10-08 13:14  mtheo <quintiliani@ingv.it>
+
+	* earthworm/nmxptool.d (1.5), src/nmxptool_ew.c (1.10):
+
+	Redefined parameters for Earthworm
+
+2007-10-07 20:28  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp.c (1.52):
+
+	Fixed little bug
+
+2007-10-07 19:38  mtheo <quintiliani@ingv.it>
+
+	* DoxyfileLib (1.41), configure.in (1.28):
+
+	Incremented micro version
+
+2007-10-07 19:25  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp.h (1.43):
+
+	Minor change
+
+2007-10-07 19:22  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp.h (1.42), include/nmxp_base.h (1.25), lib/nmxp.c
+	(1.51):
+
+	Minor changes
+
+2007-10-07 18:13  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_data.h (1.25), lib/nmxp_data.c (1.39):
+
+	Defined function nmxp_data_gmtime_now()
+
+2007-10-07 18:12  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.84), src/nmxptool_getoptlong.c (1.34),
+	src/nmxptool_getoptlong.h (1.19), include/nmxp.h (1.41),
+	include/nmxp_base.h (1.24), lib/nmxp.c (1.50), lib/nmxp_base.c
+	(1.34):
+
+	Added time-out management
+
+2007-10-07 14:48  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp.h (1.40):
+
+	Aggiornato l'help italiano alle opzione della versione 1.1.5 di
+	nmxptool
+
+2007-10-07 14:40  mtheo <quintiliani@ingv.it>
+
+	* COPYING (1.2):
+
+	Updated to GPL 3
+
+2007-10-07 14:11  mtheo <quintiliani@ingv.it>
+
+	* earthworm/nmxptool.d (1.4),
+	seiscomp_templates/135_nmxptool/seedlink_plugin.tpl (1.4),
+	src/nmxptool.c (1.83), src/nmxptool_getoptlong.c (1.33),
+	include/nmxp.h (1.39), include/nmxp_base.h (1.23),
+	include/nmxp_chan.h (1.21), lib/nmxp.c (1.49), lib/nmxp_base.c
+	(1.33), lib/nmxp_chan.c (1.22):
+
+	Added network code for channel specification
+
+2007-10-06 17:26  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.c (1.32):
+
+	Fixed bug
+
+2007-10-06 15:34  mtheo <quintiliani@ingv.it>
+
+	* src/: nmxptool.c (1.82), nmxptool_getoptlong.c (1.31),
+	nmxptool_getoptlong.h (1.18):
+
+	Added interval option
+
+2007-10-05 12:54  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_base.c (1.32):
+
+	Minor change
+
+2007-10-04 20:36  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.81):
+
+	Added checks for pd=NULL
+
+2007-10-04 20:34  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp.c (1.48):
+
+	Added checks for passing pd=NULL to function
+	nmxp_raw_stream_manage()
+
+2007-10-04 20:06  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.80):
+
+	added nmxptool_ew_detach() when clientShutDown
+
+2007-10-03 13:38  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp.h (1.38):
+
+	Added italian documentation for 'rapporto tecnico'
+
+2007-10-03 13:37  mtheo <quintiliani@ingv.it>
+
+	* DoxyfileLib (1.40):
+
+	Added IMAGE_PATH
+
+2007-10-02 09:46  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_ew.c (1.9):
+
+	Minor change
+
+2007-10-02 09:03  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.c (1.30):
+
+	Changed help output
+
+2007-10-02 08:55  mtheo <quintiliani@ingv.it>
+
+	* earthworm/nmxptool.d (1.3):
+
+	Update
+
+2007-10-02 08:33  mtheo <quintiliani@ingv.it>
+
+	* earthworm/nmxptool.d (1.2):
+
+	Update for nmxptool
+
+2007-10-01 06:35  mtheo <quintiliani@ingv.it>
+
+	* DoxyfileLib (1.39), configure.in (1.27):
+
+	Incremented micro version
+
+2007-10-01 06:25  mtheo <quintiliani@ingv.it>
+
+	* DoxyfileLib (1.38), configure.in (1.26):
+
+	Incremented micro version
+
+2007-10-01 06:03  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_log.c (1.11), src/nmxptool.c (1.79):
+
+	Fixed bug in logging
+
+2007-10-01 05:44  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_log.h (1.8), lib/nmxp_log.c (1.10), src/nmxptool.c
+	(1.78), src/nmxptool_ew.c (1.8), src/nmxptool_ew.h (1.9):
+
+	Improvement for manage logs
+
+2007-09-30 20:35  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_log.h (1.7), lib/nmxp_log.c (1.9):
+
+	Added function for outputting log messages
+
+2007-09-30 06:48  mtheo <quintiliani@ingv.it>
+
+	* DoxyfileLib (1.37), configure.in (1.25):
+
+	Incremented micro version
+
+2007-09-30 06:42  mtheo <quintiliani@ingv.it>
+
+	* DoxyfileLib (1.36):
+
+	Set new release version
+
+2007-09-30 06:32  mtheo <quintiliani@ingv.it>
+
+	* configure.in (1.24):
+
+	Set new release version
+
+2007-09-30 06:26  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.c (1.29):
+
+	Minor change
+
+2007-09-29 11:32  mtheo <quintiliani@ingv.it>
+
+	* DoxyfileLib (1.35), configure.in (1.23):
+
+	Incremented major version
+
+2007-09-29 10:41  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.c (1.28):
+
+	Changed help output
+
+2007-09-29 10:15  mtheo <quintiliani@ingv.it>
+
+	* earthworm/: nmxptool.d (1.1), nmxptool.desc (1.1):
+
+	nmxptool earthworm configuration files
+
+2007-09-29 10:08  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.77):
+
+	Starting debug as earthworm module
+
+2007-09-29 08:15  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.76):
+
+	Added earthworm support
+
+2007-09-29 08:15  mtheo <quintiliani@ingv.it>
+
+	* src/: nmxptool_ew.c (1.7), nmxptool_ew.h (1.8):
+
+	Major changes for earthworm support configuration
+
+2007-09-29 08:14  mtheo <quintiliani@ingv.it>
+
+	* src/: nmxptool_getoptlong.c (1.27), nmxptool_getoptlong.h (1.17):
+
+	Minor change
+
+2007-09-28 21:07  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_base.c (1.31):
+
+	Minor change
+
+2007-09-28 21:03  mtheo <quintiliani@ingv.it>
+
+	* configure.in (1.22), src/nmxptool.c (1.75),
+	src/nmxptool_getoptlong.c (1.26):
+
+	Optional seedlink support
+
+2007-09-28 20:51  mtheo <quintiliani@ingv.it>
+
+	* src/: nmxptool_ew.c (1.6), nmxptool_ew.h (1.7):
+
+	Added functions:    nmxptool_ew_report_status()
+	nmxptool_ew_logit_msg()    nmxptool_ew_logit_err()
+
+2007-09-28 20:43  mtheo <quintiliani@ingv.it>
+
+	* src/: nmxptool_ew.c (1.5), nmxptool_ew.h (1.6):
+
+	Added functions    nmxptool_ew_configure()
+	nmxptool_ew_proc_configfile()
+
+2007-09-28 15:30  mtheo <quintiliani@ingv.it>
+
+	* src/: nmxptool_ew.c (1.4), nmxptool_ew.h (1.5):
+
+	Added functions     nmxptool_ew_attach()     nmxptool_ew_detach()
+	  nmx2ewring()
+
+2007-09-28 15:30  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.74):
+
+	Make independent on earthworm support implementation
+
+2007-09-28 13:30  mtheo <quintiliani@ingv.it>
+
+	* src/: nmxptool.c (1.73), nmxptool_ew.h (1.4):
+
+	Starting source structuring for earthworm support
+
+2007-09-28 13:24  mtheo <quintiliani@ingv.it>
+
+	* src/: nmxptool.c (1.72), nmxptool_getoptlong.c (1.25),
+	nmxptool_getoptlong.h (1.16):
+
+	Added Earthworm parameter check
+
+2007-09-28 13:07  mtheo <quintiliani@ingv.it>
+
+	* configure.in (1.21):
+
+	Minor change
+
+2007-09-28 12:57  mtheo <quintiliani@ingv.it>
+
+	* src/: nmxptool.c (1.71), nmxptool_ew.c (1.3), nmxptool_ew.h
+	(1.3):
+
+	Optimization for earthworm support
+
+2007-09-28 12:56  mtheo <quintiliani@ingv.it>
+
+	* configure.in (1.20):
+
+	Optimization
+
+2007-09-28 10:13  mtheo <quintiliani@ingv.it>
+
+	* src/: nmxptool_getoptlong.c (1.24), nmxptool_getoptlong.h (1.15):
+
+	Added output supports
+
+2007-09-28 09:51  mtheo <quintiliani@ingv.it>
+
+	* src/: nmxptool.c (1.70), nmxptool_ew.c (1.2), nmxptool_ew.h
+	(1.2):
+
+	Minor changes
+
+2007-09-28 09:47  mtheo <quintiliani@ingv.it>
+
+	* configure.in (1.19), src/Makefile.am (1.2), src/nmxptool.c
+	(1.69), src/nmxptool_ew.c (1.1), src/nmxptool_ew.h (1.1):
+
+	Start with Earthworm support
+
+2007-09-28 09:18  mtheo <quintiliani@ingv.it>
+
+	* configure.in (1.18):
+
+	Check for earthworm headers and object files
+
+2007-09-27 15:09  mtheo <quintiliani@ingv.it>
+
+	* configure.in (1.17):
+
+	Added option --without-libmseed for disabling libmseed compilation
+
+2007-09-27 15:08  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.68):
+
+	Fixed bug in source for LIBMSEED
+
+2007-09-25 16:45  mtheo <quintiliani@ingv.it>
+
+	* DoxyfileLib (1.33), configure.in (1.15), DoxyfileLib (1.34),
+	configure.in (1.16):
+
+	Incremented minor version
+
+2007-09-25 16:39  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_data.h (1.24), lib/nmxp_data.c (1.38),
+	src/nmxptool.c (1.67):
+
+	libmseed has been updated to 2.1.4
+
+2007-09-25 11:45  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.66):
+
+	Added time in gap output
+
+2007-09-25 09:54  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.65):
+
+	Fixed minor bug in nmxptool_check_and_log_gap() output
+
+2007-09-25 07:59  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.c (1.23):
+
+	Fixed bug in check params
+
+2007-09-24 12:47  mtheo <quintiliani@ingv.it>
+
+	* DoxyfileLib (1.32), configure.in (1.14):
+
+	Incremented minor version
+
+2007-09-21 07:02  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp.h (1.37), lib/nmxp.c (1.47):
+
+	Added function to do nmxp_raw_stream_manage_flush()
+
+2007-09-21 06:44  mtheo <quintiliani@ingv.it>
+
+	* src/: nmxptool_getoptlong.c (1.22), nmxptool_getoptlong.h (1.14):
+
+	Improved help output Improved check params function
+
+2007-09-21 06:42  mtheo <quintiliani@ingv.it>
+
+	* seiscomp_templates/135_nmxptool/seedlink_plugin.tpl (1.3):
+
+	Update options
+
+2007-09-20 16:40  mtheo <quintiliani@ingv.it>
+
+	* src/: nmxptool_getoptlong.c (1.21), nmxptool_getoptlong.h (1.13):
+
+	Changed default tollerable latency to the maximum
+
+2007-09-20 16:32  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp.h (1.36), lib/nmxp.c (1.46), src/nmxptool.c (1.64),
+	src/nmxptool_getoptlong.c (1.20), src/nmxptool_getoptlong.h (1.12):
+
+	max_pdlist_items depends on maxlatency value
+
+2007-09-20 13:47  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.63):
+
+	Minor change
+
+2007-09-20 10:05  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.62):
+
+	Improved filename nmx and mini-SEED
+
+2007-09-20 09:48  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.61):
+
+	Improved logging for gap and overlap
+
+2007-09-20 09:40  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.c (1.19):
+
+	Fixed bug
+
+2007-09-17 13:00  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp.c (1.45):
+
+	Fixed bug
+
+2007-09-17 12:57  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp.c (1.44), src/nmxptool.c (1.60):
+
+	Log pd data for retransmitted packets
+
+2007-09-17 05:21  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.59):
+
+	Added function for printing retransmitted packet
+
+2007-09-16 21:44  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.c (1.18):
+
+	Minor change
+
+2007-09-16 21:38  mtheo <quintiliani@ingv.it>
+
+	* src/: nmxptool_getoptlong.c (1.16), nmxptool_getoptlong.h (1.11),
+	nmxptool_getoptlong.c (1.17):
+
+	Added option -V for printing tool version
+
+2007-09-16 21:38  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_log.h (1.6), lib/nmxp_log.c (1.8):
+
+	Added nmxp_log_version()
+
+2007-09-13 10:04  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp.c (1.43):
+
+	Change minor output
+
+2007-09-13 10:04  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.58):
+
+	Fixed name NMXP_MAX_FUNC_PD
+
+2007-09-12 14:11  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp.h (1.35), lib/nmxp.c (1.42):
+
+	Minor change
+
+2007-09-12 14:07  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp.h (1.34):
+
+	Fixed problem for doxygen
+
+2007-09-12 13:03  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp.h (1.33):
+
+	Added documentation about raw stream functions
+
+2007-09-12 12:36  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.57), include/nmxp.h (1.32), lib/nmxp.c (1.41):
+
+	Raw Stream Management has been moved to libnmxp
+
+2007-09-11 14:06  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_base.h (1.22):
+
+	Incremented timeout
+
+2007-09-11 14:05  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_base.h (1.21), lib/nmxp_base.c (1.30):
+
+	Fixed bug in logging
+
+2007-09-11 13:41  mtheo <quintiliani@ingv.it>
+
+	* DoxyfileLib (1.30), DoxyfileLib (1.31), configure.in (1.13):
+
+	Incremented minor version
+
+2007-09-11 13:40  mtheo <quintiliani@ingv.it>
+
+	* configure.in (1.12), src/nmxptool.c (1.56):
+
+	Fixed bug in logging
+
+2007-09-11 11:53  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.55):
+
+	Added warning when sequence number is contiguos and packet time not
+
+2007-09-11 07:19  mtheo <quintiliani@ingv.it>
+
+	* seiscomp_templates/135_nmxptool/seedlink_plugin.tpl (1.2):
+
+	Added parameter npacket and set to 100
+
+2007-09-10 13:13  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.54):
+
+	Minor change
+
+2007-09-10 13:06  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.53):
+
+	Added latency logging in warning message
+
+2007-09-10 13:01  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.52):
+
+	Added function for latency log
+
+2007-09-10 12:56  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_data.h (1.23), lib/nmxp_data.c (1.37):
+
+	Defined function nmxp_data_latency()
+
+2007-09-10 12:50  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.51):
+
+	Dynamic management of raw_stream_buffer
+
+2007-09-10 12:49  mtheo <quintiliani@ingv.it>
+
+	* src/: nmxptool_getoptlong.c (1.15), nmxptool_getoptlong.h (1.10):
+
+	Added option --npackets
+
+2007-09-07 20:20  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.50):
+
+	Added second length of packet in output
+
+2007-09-07 10:39  mtheo <quintiliani@ingv.it>
+
+	* seiscomp_templates/135_nmxptool/: chain_digiserv_station.tpl
+	(1.1), chain_digiserv_station_trig.tpl (1.1), key (1.1),
+	plugins.ini.tpl (1.1), seedlink_plugin.tpl (1.1),
+	seedlink_station.tpl (1.1):
+
+	Start
+
+2007-09-07 09:12  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.49):
+
+	Changed output log
+
+2007-09-07 07:08  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp.h (1.31), include/nmxp_base.h (1.20),
+	include/nmxp_chan.h (1.20), include/nmxp_crc32.h (1.4),
+	include/nmxp_data.h (1.22), include/nmxp_log.h (1.5), lib/nmxp.c
+	(1.40), lib/nmxp_base.c (1.29), lib/nmxp_chan.c (1.21),
+	lib/nmxp_crc32.c (1.3), lib/nmxp_data.c (1.36), lib/nmxp_log.c
+	(1.7):
+
+	Added cvs keyword Id
+
+2007-09-07 07:04  mtheo <quintiliani@ingv.it>
+
+	* src/: nmxptool.c (1.48), nmxptool_getoptlong.c (1.14),
+	nmxptool_getoptlong.h (1.9):
+
+	Added cvs keyword Id
+
+2007-09-07 06:56  mtheo <quintiliani@ingv.it>
+
+	* src/: nmxptool.c (1.43), nmxptool.c (1.44), nmxptool.c (1.45),
+	nmxptool.c (1.46), nmxptool.c (1.47):
+
+	test on cvs keywords
+
+2007-09-07 06:55  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.42):
+
+	Minor changes
+
+2007-09-07 06:40  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.41):
+
+	Minor change
+
+2007-09-06 11:22  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.40):
+
+	Fixed bug in management raw stream
+
+2007-09-06 10:05  mtheo <quintiliani@ingv.it>
+
+	* configure.in (1.10), DoxyfileLib (1.29), configure.in (1.11):
+
+	Incremented minor version
+
+2007-09-06 09:35  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_log.c (1.6):
+
+	Incremented log message length
+
+2007-09-06 09:34  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.c (1.13):
+
+	Added checks in nmxptool_check_params()
+
+2007-09-06 09:13  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.c (1.12):
+
+	Substituted printf with nmxp_log and fixed little bug
+
+2007-09-06 08:44  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_log.h (1.4), lib/nmxp_data.c (1.35), lib/nmxp_log.c
+	(1.5):
+
+	Minor revision
+
+2007-09-06 08:01  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.39):
+
+	Added function nmxptool_print_seq_no()
+
+2007-09-06 07:55  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.38):
+
+	Minor revision
+
+2007-09-06 07:50  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.37):
+
+	Improved function nmxptool_manage_raw_stream()
+
+2007-09-06 07:37  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.36):
+
+	Formatting
+
+2007-09-06 07:10  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.35):
+
+	Minor changes
+
+2007-09-06 07:06  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.34):
+
+	Defined functions nmxptool_write_miniseed() and
+	nmxptool_send_raw_depoch()
+
+2007-09-06 07:05  mtheo <quintiliani@ingv.it>
+
+	* configure.in (1.9):
+
+	Incremented minor version
+
+2007-09-05 20:24  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.33):
+
+	Added description nmxptool_add_and_do_ordered()
+
+2007-09-05 20:18  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.32):
+
+	Fixed bug
+
+2007-09-05 20:11  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.31):
+
+	Fixed bug
+
+2007-09-05 15:57  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.30):
+
+	Some improvements
+
+2007-09-05 13:59  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.29):
+
+	A preliminary mechanism to manage Raw Stream
+
+2007-09-05 09:52  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp.c (1.39), include/nmxp_log.h (1.3), lib/nmxp_data.c
+	(1.34), lib/nmxp_log.c (1.4):
+
+	Improved function nmxp_log()
+
+2007-08-31 05:24  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_data.c (1.33):
+
+	Changed output for time
+
+2007-08-30 12:17  mtheo <quintiliani@ingv.it>
+
+	* DoxyfileLib (1.28), configure.in (1.8):
+
+	Incremented minor version
+
+2007-08-30 12:12  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp.c (1.38):
+
+	Fixed bug reading connection time
+
+2007-08-30 12:03  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp.c (1.37):
+
+	Added management of error message from server
+
+2007-08-30 10:25  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_base.c (1.28):
+
+	Fixed bug for big endian machine
+
+2007-08-30 09:41  mtheo <quintiliani@ingv.it>
+
+	* configure.in (1.7):
+
+	Decremented to 2.60 requisite version of autoconf
+
+2007-08-30 09:34  mtheo <quintiliani@ingv.it>
+
+	* DoxyfileLib (1.27):
+
+	Incremented minor version
+
+2007-08-30 09:27  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_data.c (1.32):
+
+
+	Check for function timegm Check for member tm_gmtoff within struct
+	tm
+
+2007-08-30 09:26  mtheo <quintiliani@ingv.it>
+
+	* configure.in (1.6):
+
+	Check for Solaris libraries nsl socket
+
+2007-08-30 07:43  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.28):
+
+	Fixed bug: set x0 to zero for mini seed when a gap or overlap
+	occurs.
+
+2007-08-24 12:43  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp.c (1.36):
+
+	Fixed a bug
+
+2007-08-24 12:33  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp.c (1.35):
+
+	Fixed a bug in logging
+
+2007-08-24 12:18  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_crc32.h (1.3), lib/nmxp.c (1.34), lib/nmxp_crc32.c
+	(1.2), lib/nmxp_data.c (1.31):
+
+	Substitude long with int32_t
+
+2007-08-24 11:44  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp.h (1.30), include/nmxp_base.h (1.19),
+	include/nmxp_chan.h (1.19), include/nmxp_data.h (1.21), lib/nmxp.c
+	(1.33), lib/nmxp_base.c (1.27), lib/nmxp_data.c (1.30),
+	src/nmxptool.c (1.27), src/nmxptool_getoptlong.h (1.8):
+
+	Substitude int with int32_t
+
+2007-08-23 13:12  mtheo <quintiliani@ingv.it>
+
+	* DoxyfileLib (1.26):
+
+	Removed latex output Added RTF and MAN output
+
+2007-08-23 12:58  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp.h (1.29):
+
+	Minor change
+
+2007-08-22 09:41  mtheo <quintiliani@ingv.it>
+
+	* TODO (1.11):
+
+	Index: TODO
+	===================================================================
+	RCS file: /reps/mednet/mtheo/soft/libnmxp/tools/nmxptool/TODO,v
+	retrieving revision 1.10 diff -r1.10 TODO 13,14d12 < - Improve
+	"delay" way avoiding to open and close the socket <
+
+2007-08-17 13:37  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp.c (1.32):
+
+	Minor change
+
+2007-08-15 17:13  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_chan.h (1.18), lib/nmxp.c (1.31), lib/nmxp_chan.c
+	(1.20):
+
+	Added NMXP_META_CHAN_LIST_SORT_TYPE
+
+2007-08-15 16:56  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_chan.c (1.19):
+
+	Minor change
+
+2007-08-15 16:56  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.26), src/nmxptool_getoptlong.c (1.11),
+	src/nmxptool_getoptlong.h (1.7), include/nmxp.h (1.28), lib/nmxp.c
+	(1.30):
+
+	Added param for requesting channel info
+
+2007-08-15 10:28  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_chan.c (1.18):
+
+	Added function nmxp_meta_chan_compare()
+
+2007-08-14 18:26  mtheo <quintiliani@ingv.it>
+
+	* TODO (1.10):
+
+	Index: TODO
+	===================================================================
+	RCS file: /reps/mednet/mtheo/soft/libnmxp/tools/nmxptool/TODO,v
+	retrieving revision 1.9 diff -r1.9 TODO 17a18,20
+	>
+	> - Define a nmxptool_log or use printf
+	>
+
+2007-08-14 18:17  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp.h (1.27), lib/nmxp.c (1.29), src/nmxptool.c (1.25):
+
+	Substituded nmxp_getPrecisChannelList() with
+	nmxp_getMetaChannelList()
+
+2007-08-14 18:15  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_chan.h (1.17), lib/nmxp_chan.c (1.17):
+
+	Added functions:     void nmxp_meta_chan_free(NMXP_META_CHAN_LIST
+	**chan_list);	  NMXP_META_CHAN_LIST
+	*nmxp_meta_chan_add(NMXP_META_CHAN_LIST **chan_list, int32_t key,
+	char *name, int32_t start_time, int32_t end_time, char *network);
+	  NMXP_META_CHAN_LIST
+	*nmxp_meta_chan_search_key(NMXP_META_CHAN_LIST *chan_list, int32_t
+	key);	  NMXP_META_CHAN_LIST
+	*nmxp_meta_chan_set_name(NMXP_META_CHAN_LIST *chan_list, int32_t
+	key, char *name);     NMXP_META_CHAN_LIST
+	*nmxp_meta_chan_set_times(NMXP_META_CHAN_LIST *chan_list, int32_t
+	key, int32_t start_time, int32_t end_time);	NMXP_META_CHAN_LIST
+	*nmxp_meta_chan_set_network(NMXP_META_CHAN_LIST *chan_list, int32_t
+	key, char *network);	 void
+	nmxp_meta_chan_print(NMXP_META_CHAN_LIST *chan_list); Substitude
+	int32_t for keys
+
+2007-08-14 18:13  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_data.c (1.29):
+
+	Minor change
+
+2007-08-14 17:16  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.24):
+
+	Changed get channel list
+
+2007-08-14 15:37  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_chan.h (1.16), lib/nmxp.c (1.28):
+
+	Minor change
+
+2007-08-14 15:36  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.23):
+
+	Fixed bug
+
+2007-08-14 15:16  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_chan.c (1.16):
+
+	nmxp_chan_cpy_sta_chan() has been used
+
+2007-08-14 15:15  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp.h (1.26):
+
+	Updated documentation
+
+2007-08-14 14:58  mtheo <quintiliani@ingv.it>
+
+	* TODO (1.9):
+
+	Index: TODO
+	===================================================================
+	RCS file: /reps/mednet/mtheo/soft/libnmxp/tools/nmxptool/TODO,v
+	retrieving revision 1.8 diff -r1.8 TODO 15a16,17
+	>
+	> - params.start_time and params.start_time has to become double
+
+2007-08-14 09:46  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.22):
+
+	Changed DAP loop, continue in development, there is something does
+	not work
+
+2007-08-14 09:28  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_data.c (1.28):
+
+	Fixed a bug
+
+2007-08-14 09:04  mtheo <quintiliani@ingv.it>
+
+	* TODO (1.8):
+
+	Index: TODO
+	===================================================================
+	RCS file: /reps/mednet/mtheo/soft/libnmxp/tools/nmxptool/TODO,v
+	retrieving revision 1.7 diff -r1.7 TODO 13c13,15 < - Improved
+	"delay" way avoiding to open and close the socket ---
+	> - Improve "delay" way avoiding to open and close the socket
+	>
+	> - Add option for output directory
+
+2007-08-13 20:40  mtheo <quintiliani@ingv.it>
+
+	* TODO (1.7):
+
+	Index: TODO
+	===================================================================
+	RCS file: /reps/mednet/mtheo/soft/libnmxp/tools/nmxptool/TODO,v
+	retrieving revision 1.6 diff -r1.6 TODO 12a13
+	> - Improved "delay" way avoiding to open and close the socket
+
+2007-08-13 20:34  mtheo <quintiliani@ingv.it>
+
+	* TODO (1.6):
+
+	Index: TODO
+	===================================================================
+	RCS file: /reps/mednet/mtheo/soft/libnmxp/tools/nmxptool/TODO,v
+	retrieving revision 1.5 diff -r1.5 TODO 13,16d12 < - Add following
+	messages: <  * PrecisList <  * ChannelHeader <
+
+2007-08-13 20:29  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.21), include/nmxp.h (1.25), include/nmxp_chan.h
+	(1.15), include/nmxp_data.h (1.20), lib/nmxp.c (1.27):
+
+	Added function nmxp_getPrecisChannelList()
+
+2007-08-13 19:33  mtheo <quintiliani@ingv.it>
+
+	* TODO (1.5):
+
+	Index: TODO
+	===================================================================
+	RCS file: /reps/mednet/mtheo/soft/libnmxp/tools/nmxptool/TODO,v
+	retrieving revision 1.4 diff -r1.4 TODO 12a13,16
+	> - Add following messages:
+	>	* PrecisList
+	>	* ChannelHeader
+	>
+
+2007-08-13 19:27  mtheo <quintiliani@ingv.it>
+
+	* TODO (1.4):
+
+	Index: TODO
+	===================================================================
+	RCS file: /reps/mednet/mtheo/soft/libnmxp/tools/nmxptool/TODO,v
+	retrieving revision 1.3 diff -r1.3 TODO 0a1,3
+	> TODO LIST:
+	>
+	> - Check option -k MUST BE THE LAST!
+
+2007-08-13 19:20  mtheo <quintiliani@ingv.it>
+
+	* DoxyfileLib (1.25), configure.in (1.5):
+
+	Incremented minor version
+
+2007-08-13 19:15  mtheo <quintiliani@ingv.it>
+
+	* configure.in (1.4):
+
+	Incremented minor version
+
+2007-08-13 19:07  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_data.h (1.19):
+
+	Added description
+
+2007-08-13 18:14  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.20):
+
+	Fixed minor bug
+
+2007-08-13 17:34  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_base.c (1.26):
+
+	Changed for use of nmxp_chan_cpy_sta_chan()
+
+2007-08-13 17:17  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_data.c (1.27):
+
+	Fixed bug: error in nmxp_data_trim()
+
+2007-08-13 15:45  mtheo <quintiliani@ingv.it>
+
+	* TODO (1.3):
+
+	Index: TODO
+	===================================================================
+	RCS file: /reps/mednet/mtheo/soft/libnmxp/tools/nmxptool/TODO,v
+	retrieving revision 1.2 diff -r1.2 TODO 6,7d5 < - From DAP receive
+	data continously with a big latency, for example 3 hours <
+
+2007-08-13 15:18  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.19):
+
+	Fixed bug: gap management
+
+2007-08-13 15:17  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_data.c (1.26):
+
+	Fixed bug: erronous deallocation
+
+2007-08-13 15:17  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp.h (1.24), lib/nmxp.c (1.26),
+	src/nmxptool_getoptlong.c (1.10):
+
+	Fixed bug: shortTermCompletion is int32_t
+
+2007-08-13 14:19  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.18):
+
+	Some adjustment
+
+2007-08-13 13:21  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_data.c (1.25):
+
+	Minor changes
+
+2007-08-13 13:13  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_data.h (1.18), lib/nmxp_data.c (1.24):
+
+	Fixed bugs in nmxp_data_trim() and added a parameter
+
+2007-08-13 13:12  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.17):
+
+	Some adjustment
+
+2007-08-12 19:08  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.16):
+
+	Added management of delay
+
+2007-08-12 16:53  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.15):
+
+	Change selection for DAP/PDS
+
+2007-08-12 16:51  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.h (1.6):
+
+	Minor change
+
+2007-08-12 16:50  mtheo <quintiliani@ingv.it>
+
+	* src/: nmxptool_getoptlong.c (1.9), nmxptool_getoptlong.h (1.5):
+
+	change some arguments
+
+2007-08-12 16:03  mtheo <quintiliani@ingv.it>
+
+	* src/: nmxptool.c (1.14), nmxptool_getoptlong.c (1.8),
+	nmxptool_getoptlong.h (1.4):
+
+	Changed option seedlink with argument
+
+2007-08-11 15:19  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.c (1.7):
+
+	Reformatted the help
+
+2007-08-11 14:57  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.13):
+
+	Minor change
+
+2007-08-11 14:49  mtheo <quintiliani@ingv.it>
+
+	* TODO (1.2):
+
+	Index: TODO
+	===================================================================
+	RCS file: /reps/mednet/mtheo/soft/libnmxp/tools/nmxptool/TODO,v
+	retrieving revision 1.1 diff -r1.1 TODO 3a4,11
+	> - Params for DAP, <start_time> <interval_time>, for example
+	2007/08/11,00:00:00 30s
+	>
+	> - From DAP receive data continously with a big latency, for
+	example 3 hours
+	>
+	> - Exit conditions for PDS loop
+	>	* after t time amount of data, for example 10 seconds of
+	data
+	>	* after n packets, for example like "ping"
+	>
+
+2007-08-11 14:42  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_data.h (1.17), lib/nmxp_data.c (1.23):
+
+	Added function nmxp_data_trim()
+
+2007-08-11 14:41  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.12):
+
+	Added use of nmxp_data_trim()
+
+2007-08-10 21:10  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.11), include/nmxp_data.h (1.16),
+	lib/nmxp_data.c (1.22):
+
+	Added x_1
+
+2007-08-10 10:45  mtheo <quintiliani@ingv.it>
+
+	* configure.in (1.3):
+
+	Added AC_FUNC_MALLOC
+
+2007-08-10 10:44  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.10):
+
+	added signal.h
+
+2007-08-10 09:52  mtheo <quintiliani@ingv.it>
+
+	* include/: nmxp_data.h (1.15), nmxp_chan.h (1.14):
+
+	Added description
+
+2007-08-10 09:51  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_base.h (1.18), lib/nmxp_base.c (1.25),
+	include/nmxp.h (1.23), lib/nmxp.c (1.25):
+
+	Changed parameters in nmxp_receiveData()
+	nmxp_processCompressedData()
+
+2007-08-10 09:49  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.9):
+
+	Added macros CURRENT_NETWORK Changed parameters in
+	nmxp_receiveData() Changed parameters in nmxp_receiveData()
+
+2007-08-10 09:32  mtheo <quintiliani@ingv.it>
+
+	* src/: nmxptool.c (1.8), nmxptool_getoptlong.c (1.6),
+	nmxptool_getoptlong.h (1.3):
+
+	Added flag for loggin data
+
+2007-08-10 09:25  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.7):
+
+	Added function nmxp_chan_cpy_sta_chan() Improved mini-SEED records
+	managament Gap management
+
+2007-08-10 09:22  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_chan.h (1.13), lib/nmxp_chan.c (1.15),
+	lib/nmxp_data.c (1.21):
+
+	Added nmxp_chan_cpy_sta_chan()
+
+2007-08-10 07:48  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_data.h (1.14), lib/nmxp_data.c (1.20):
+
+	Modified nmxp_data_msr_pack()
+
+2007-08-09 15:40  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_data.h (1.13), lib/nmxp_data.c (1.19):
+
+	Modified nmxp_data_msr_pack()
+
+2007-08-09 15:40  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.6):
+
+	Major version
+
+2007-08-09 15:39  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_chan.h (1.12), lib/nmxp_chan.c (1.14):
+
+	Added function nmxp_chan_lookupKeyIndex()
+
+2007-08-09 15:39  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_base.h (1.17), lib/nmxp_base.c (1.24):
+
+	Changed name
+
+2007-08-09 15:39  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp.h (1.22), lib/nmxp.c (1.24):
+
+	Changed parameters for nmxp_receiveData()
+
+2007-08-09 10:53  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_data.h (1.12), lib/nmxp_base.c (1.23),
+	lib/nmxp_data.c (1.18):
+
+	Modified management for x0 and xn
+
+2007-08-09 10:53  mtheo <quintiliani@ingv.it>
+
+	* src/: nmxptool.c (1.5), nmxptool_getoptlong.c (1.5):
+
+	Changed description and removed flag --quiet
+
+2007-08-09 09:06  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.4):
+
+	Minor change
+
+2007-08-09 09:05  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_chan.h (1.11), lib/nmxp_chan.c (1.13):
+
+	Added function nmxp_chan_match()
+
+2007-08-09 06:53  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_data.h (1.11), lib/nmxp_base.c (1.22),
+	lib/nmxp_data.c (1.17):
+
+	Added xn and oldest_seq_no into the NMXP_DATA_PROCESS\n Fixed bug
+	in latency computation
+
+2007-08-09 06:38  mtheo <quintiliani@ingv.it>
+
+	* TODO (1.1):
+
+	[no log message]
+
+2007-08-08 21:39  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_data.c (1.16):
+
+	Change output of nmxp_data_log
+
+2007-08-08 21:34  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_data.c (1.15):
+
+	Change output of nmxp_data_log
+
+2007-08-08 21:33  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.c (1.4):
+
+	Fixed bug in erroneous initialization of flag_buffered
+
+2007-08-08 21:16  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_data.c (1.14):
+
+	Latency computation
+
+2007-08-08 15:25  mtheo <quintiliani@ingv.it>
+
+	* DoxyfileLib (1.24):
+
+	Incremented minor version
+
+2007-08-08 15:22  mtheo <quintiliani@ingv.it>
+
+	* DoxyfileLib (1.23):
+
+	Incremented minor version
+
+2007-08-08 15:09  mtheo <quintiliani@ingv.it>
+
+	* configure.in (1.2):
+
+	Incremented minor version
+
+2007-08-08 15:08  mtheo <quintiliani@ingv.it>
+
+	* src/: nmxptool.c (1.3), nmxptool_getoptlong.c (1.3):
+
+	Added PRIVATE DATA STREAM subscription protocol
+
+2007-08-08 14:58  mtheo <quintiliani@ingv.it>
+
+	* src/: nmxptool.c (1.2), nmxptool_getoptlong.c (1.2),
+	nmxptool_getoptlong.h (1.2):
+
+	Added parameters from nmxp_pds
+
+2007-08-08 14:29  mtheo <quintiliani@ingv.it>
+
+	* AUTHORS (1.1), COPYING (1.1), INSTALL (1.1), Makefile.am (1.1),
+	NEWS (1.1), README (1.1), bootstrap (1.1), configure.in (1.1),
+	src/Makefile.am (1.1), src/nmxptool.c (1.1),
+	src/nmxptool_getoptlong.c (1.1), src/nmxptool_getoptlong.h (1.1),
+	src/seedlink_plugin.c (1.1), src/seedlink_plugin.h (1.1):
+
+	Starting from nmxp_dap_0_3_0
+
+2007-08-08 12:05  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_data.h (1.10):
+
+	Fixed bug
+
+2007-08-08 11:53  mtheo <quintiliani@ingv.it>
+
+	* DoxyfileLib (1.22):
+
+	Incremented minor version
+
+2007-08-08 10:49  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_data.h (1.9), lib/nmxp.c (1.23), lib/nmxp_base.c
+	(1.21), lib/nmxp_data.c (1.13):
+
+	Optional libmseed
+
+2007-08-07 14:06  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_chan.h (1.10), lib/nmxp_chan.c (1.12):
+
+	Added nmxp_chan_print_channelList() into the library
+
+2007-08-07 14:05  mtheo <quintiliani@ingv.it>
+
+	* DoxyfileLib (1.21):
+
+	Incremented minor version
+
+2007-08-07 13:39  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_data.h (1.8), lib/nmxp_data.c (1.12):
+
+	Moved functions nmxp_data_parse_date() into the library
+
+2007-08-06 15:10  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_data.c (1.11):
+
+	Minor change
+
+2007-08-06 14:58  mtheo <quintiliani@ingv.it>
+
+	* DoxyfileLib (1.20):
+
+	Incremented minor version
+
+2007-08-06 13:09  mtheo <quintiliani@ingv.it>
+
+	* lib/: nmxp_base.c (1.20), nmxp_data.c (1.10):
+
+	Removed dependency on qlib2
+
+2007-08-06 12:27  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp.h (1.21):
+
+	Removed dependency on qlib2
+
+2007-08-06 12:23  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_data.h (1.7), lib/nmxp_base.c (1.19),
+	lib/nmxp_data.c (1.9):
+
+	Removed dependency on qlib2
+
+2007-08-06 10:16  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp.h (1.20):
+
+	Updated documentation
+
+2007-08-06 09:39  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp.h (1.19):
+
+	Added descriptions in documentation section
+
+2007-08-06 09:39  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp.c (1.22):
+
+	Minor change
+
+2007-08-06 08:32  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_data.h (1.6), lib/nmxp_data.c (1.8):
+
+	Added functions to write mini-SEED records
+
+2007-08-05 18:19  mtheo <quintiliani@ingv.it>
+
+	* lib/Makefile.am (1.8):
+
+	Removed libmseed dependency
+
+2007-08-05 16:54  mtheo <quintiliani@ingv.it>
+
+	* lib/Makefile.am (1.7):
+
+	Added libmseed dependency
+
+2007-08-05 15:19  mtheo <quintiliani@ingv.it>
+
+	* DoxyfileLib (1.19):
+
+	Incremented minor version
+
+2007-08-05 15:07  mtheo <quintiliani@ingv.it>
+
+	* DoxyfileLib (1.18):
+
+	Incremented minor version
+
+2007-08-05 15:04  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_base.c (1.18):
+
+	Substitude strlcpy with strncpy
+
+2007-08-05 12:46  mtheo <quintiliani@ingv.it>
+
+	* include/: nmxp_chan.h (1.9), nmxp_data.h (1.5):
+
+	Substitude sys/types.h with stdint.h
+
+2007-08-04 20:03  mtheo <quintiliani@ingv.it>
+
+	* DoxyfileLib (1.17):
+
+	Incremented minor version
+
+2007-08-04 19:33  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_base.h (1.16), include/nmxp_chan.h (1.8),
+	include/nmxp_data.h (1.4), include/nmxp_log.h (1.2),
+	lib/nmxp_base.c (1.17), lib/nmxp_chan.c (1.11), lib/nmxp_data.c
+	(1.7), lib/nmxp_log.c (1.3):
+
+	Minor changes
+
+2007-08-04 19:33  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp.h (1.18), lib/nmxp.c (1.21):
+
+	Added description
+
+2007-08-04 17:27  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_data.c (1.6):
+
+	Fixed problem with computation of epoch
+
+2007-08-04 17:11  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_log.c (1.2):
+
+	Used config.h
+
+2007-08-04 15:54  mtheo <quintiliani@ingv.it>
+
+	* DoxyfileLib (1.16):
+
+	Incremented minor version
+
+2007-08-04 13:13  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_data.h (1.3), lib/nmxp_base.c (1.16),
+	lib/nmxp_data.c (1.5):
+
+	Fixed bug in structure management of NMXP_DATA_PROCESS
+
+2007-08-04 13:12  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_chan.c (1.10):
+
+	Fixed bug in nmxp_chan_lookupKey()
+
+2007-08-04 12:34  mtheo <quintiliani@ingv.it>
+
+	* lib/: nmxp.c (1.19), nmxp.c (1.20):
+
+	Improved check username and password
+
+2007-08-03 22:34  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp.c (1.18):
+
+	Fixed bug but added TODO
+
+2007-08-02 13:56  mtheo <quintiliani@ingv.it>
+
+	* DoxyfileLib (1.15):
+
+	Incremented minor version
+
+2007-08-02 13:55  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_data.c (1.4):
+
+	Improved function nmxp_log()
+
+2007-08-02 13:55  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp.h (1.17):
+
+	Minor change
+
+2007-08-02 13:01  mtheo <quintiliani@ingv.it>
+
+	* lib/: nmxp.c (1.17), nmxp_base.c (1.15), nmxp_data.c (1.3):
+
+	Changed level for some message
+
+2007-08-02 10:30  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp.h (1.16), include/nmxp_base.h (1.15),
+	include/nmxp_data.h (1.2), lib/nmxp.c (1.16), lib/nmxp_base.c
+	(1.14), lib/nmxp_chan.c (1.9), lib/nmxp_data.c (1.2):
+
+	Rearrangement of functions and some improvements
+
+2007-08-02 08:10  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp.h (1.15), lib/nmxp.c (1.15):
+
+	Minor change
+
+2007-08-02 08:10  mtheo <quintiliani@ingv.it>
+
+	* DoxyfileLib (1.14):
+
+	UML option
+
+2007-08-02 07:53  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_base.h (1.14), include/nmxp_data.h (1.1),
+	include/nmxp_log.h (1.1), lib/Makefile.am (1.6), lib/nmxp_base.c
+	(1.13), lib/nmxp_data.c (1.1), lib/nmxp_log.c (1.1):
+
+	Moved some function from nmx_base to nmxp_data and nmxp_log
+
+2007-08-01 14:18  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp.h (1.14), include/nmxp_base.h (1.13),
+	lib/nmxp_base.c (1.12), lib/nmxp_chan.c (1.8):
+
+	Minor changes
+
+2007-07-29 23:03  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp.c (1.14):
+
+	Renamed nmpx_waitReady() with nmxp_waitReady()
+
+2007-07-29 22:26  mtheo <quintiliani@ingv.it>
+
+	* DoxyfileLib (1.13):
+
+	Incremented minor version
+
+2007-07-29 22:25  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_chan.h (1.7), lib/nmxp_chan.c (1.7):
+
+	Changed beahviour of nmxp_chan_subset()
+
+2007-07-29 22:24  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_base.c (1.11):
+
+	Changed output for nmxp_log_process_data()
+
+2007-07-29 21:03  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_base.c (1.10):
+
+	Minor changes
+
+2007-07-29 05:53  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_chan.h (1.6), lib/nmxp_chan.c (1.6):
+
+	Added function nmxp_chan_subset()
+
+2007-07-28 23:12  mtheo <quintiliani@ingv.it>
+
+	* DoxyfileLib (1.12):
+
+	Incremented minor version
+
+2007-07-28 23:05  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_base.h (1.12), lib/nmxp_base.c (1.9):
+
+	Added function nmxp_init_process_data()
+
+2007-07-28 23:05  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp.h (1.13), lib/nmxp.c (1.13):
+
+	Generalized parameter for nmxp_processCompressedDataFunc() and
+	nmxp_processDeompressedDataFunc
+
+2007-07-28 23:05  mtheo <quintiliani@ingv.it>
+
+	* DoxyfileLib (1.11):
+
+	Redefined input sources
+
+2007-07-28 22:25  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_base.h (1.11):
+
+	Fixed bug
+
+2007-07-28 22:23  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_base.h (1.10), lib/nmxp_base.c (1.8):
+
+	Added field buffer in NMXP_DATA_PROCESS and some comment
+
+2007-07-28 21:49  mtheo <quintiliani@ingv.it>
+
+	* DoxyfileLib (1.10):
+
+	Incremented minor version
+
+2007-07-28 21:43  mtheo <quintiliani@ingv.it>
+
+	* DoxyfileLib (1.9):
+
+	Enabled diagrams
+
+2007-07-28 21:43  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_base.h (1.9), lib/nmxp_base.c (1.7):
+
+	Renamed nmxp_processCompressedData() with
+	nmxp_processCompressedDataFunc()
+
+2007-07-28 21:43  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp.h (1.12), lib/nmxp.c (1.12):
+
+	Substituted nmxp_receiveCompressedData() with more general
+	nmxp_receiveData
+
+2007-07-28 16:20  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_base.h (1.8), lib/nmxp_base.c (1.6):
+
+	Redefined function nmxp_processDecompressedData() with
+	nmxp_processDecompressedDataFunc()
+
+2007-07-28 16:19  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp.c (1.11):
+
+	function xxxxx() for processing data
+
+2007-07-26 23:12  mtheo <quintiliani@ingv.it>
+
+	* DoxyfileLib (1.8):
+
+	Incremented minor version
+
+2007-07-26 23:05  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp.h (1.11), lib/nmxp.c (1.10):
+
+	Added function nmxp_getAvailableChannelList()
+
+2007-07-26 23:05  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_base.c (1.5):
+
+	Changed log messages
+
+2007-07-26 23:04  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_chan.h (1.5), lib/nmxp_chan.c (1.5):
+
+	Added function for sorting channel list
+
+2007-07-26 21:25  mtheo <quintiliani@ingv.it>
+
+	* DoxyfileLib (1.7):
+
+	Incremented minor version
+
+2007-07-26 13:50  mtheo <quintiliani@ingv.it>
+
+	* lib/: nmxp.c (1.9), nmxp_base.c (1.4):
+
+	Fixed bugs
+
+2007-07-26 12:58  mtheo <quintiliani@ingv.it>
+
+	* DoxyfileLib (1.6):
+
+	incremented minor version
+
+2007-07-26 12:57  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_base.h (1.7):
+
+	Fixed small bug
+
+2007-07-26 12:22  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp.h (1.10), lib/nmxp.c (1.8):
+
+	Added functions for Data Access Protocol
+
+2007-07-26 10:01  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_base.h (1.6):
+
+	Minor change
+
+2007-07-26 10:00  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp.h (1.9), include/nmxp_base.h (1.5), lib/nmxp.c
+	(1.7):
+
+	Minor changes
+
+2007-07-26 09:53  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_chan.h (1.4), lib/nmxp_chan.c (1.4):
+
+	Added enum NMXP_DATATYPE
+
+2007-07-26 09:53  mtheo <quintiliani@ingv.it>
+
+	* include/: nmxp_base.h (1.4), nmxp.h (1.8):
+
+	Fixed error for doxygen documentation
+
+2007-07-26 09:10  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp.h (1.7), include/nmxp_base.h (1.3), lib/nmxp.c
+	(1.6), lib/nmxp_base.c (1.3):
+
+	Moved some function from nmxp to nmxp_base
+
+2007-07-26 09:09  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_chan.h (1.3), lib/nmxp_chan.c (1.3):
+
+	Added function nmxp_chan_getType() Minor changes
+
+2007-07-26 07:23  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp.h (1.6), lib/nmxp.c (1.5), include/nmxp_chan.h
+	(1.2), lib/nmxp_chan.c (1.2), include/nmxp_base.h (1.2),
+	lib/nmxp_base.c (1.2):
+
+	Minor changes
+
+2007-07-26 06:34  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_chan.h (1.1), lib/nmxp_chan.c (1.1):
+
+	Moved functions related to channel from nmxp.[ch] into
+	nmxp_chan.[ch]
+
+2007-07-26 06:33  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp.h (1.5), lib/nmxp.c (1.4):
+
+	Moved functions related to channel into nmxp_chan.c nmxp_chan.h
+
+2007-07-26 06:32  mtheo <quintiliani@ingv.it>
+
+	* lib/Makefile.am (1.5):
+
+	Added nmxp_chan.c nmxp_chan.h
+
+2007-07-26 06:31  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_crc32.h (1.2):
+
+	Minor change
+
+2007-07-26 06:31  mtheo <quintiliani@ingv.it>
+
+	* DoxyfileLib (1.5):
+
+	Added nmxp_chan
+
+2007-07-26 06:01  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp.h (1.4), include/nmxp_base.h (1.1),
+	include/nmxp_crc32.h (1.1), lib/Makefile.am (1.4), lib/nmxp_base.c
+	(1.1), lib/nmxp_crc32.c (1.1):
+
+	Renamed functions and files with suffix nmxp_
+
+2007-07-26 05:57  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp.h (1.3), lib/nmxp.c (1.3):
+
+	Renamed function with suffix nmxp_
+
+2007-07-25 16:49  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp.h (1.2), lib/nmxp.c (1.2):
+
+	Added function for manipulating TimeSeriesChannel, NEED RESTYLING
+
+2007-07-25 15:49  mtheo <quintiliani@ingv.it>
+
+	* DoxyfileLib (1.4):
+
+	Changed name
+
+2007-07-25 15:29  mtheo <quintiliani@ingv.it>
+
+	* lib/Makefile.am (1.3), DoxyfileLib (1.3):
+
+	Renamed crc32 to nmpxcrc32
+
+2007-07-25 15:22  mtheo <quintiliani@ingv.it>
+
+	* DoxyfileLib (1.2):
+
+	Configured
+
+2007-07-25 15:21  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp.h (1.1), lib/nmxp.c (1.1):
+
+	Start
+
+2007-07-25 15:20  mtheo <quintiliani@ingv.it>
+
+	* lib/Makefile.am (1.2):
+
+	Added nmxp.c nmxp.h
+
+2007-07-25 12:01  mtheo <quintiliani@ingv.it>
+
+	* DoxyfileLib (1.1):
+
+	Start
+
+2007-07-25 06:45  mtheo <quintiliani@ingv.it>
+
+	* lib/Makefile.am (1.1):
+
+	Start
 
