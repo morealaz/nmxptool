@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_chan.h,v 1.23 2008-03-05 10:21:12 mtheo Exp $
+ * $Id: nmxp_chan.h,v 1.24 2008-07-21 22:41:24 mtheo Exp $
  *
  */
 
@@ -231,6 +231,15 @@ void nmxp_chan_sortByName(NMXP_CHAN_LIST *channelList);
 void nmxp_chan_print_channelList(NMXP_CHAN_LIST *channelList);
 
 
+/*! Print channel information using channel pattern list
+ *
+ * \param channelList Channel List
+ * \param sta_chan_list Channel pattern list
+ *
+ */
+void nmxp_chan_print_channelList_with_match(NMXP_CHAN_LIST *channelList, char *sta_chan_list);
+
+
 /*! Print channel information
  *
  * \param channelList Channel List
@@ -252,6 +261,8 @@ NMXP_META_CHAN_LIST *nmxp_meta_chan_set_times(NMXP_META_CHAN_LIST *chan_list, in
 NMXP_META_CHAN_LIST *nmxp_meta_chan_set_network(NMXP_META_CHAN_LIST *chan_list, int32_t key, char *network);
 
 void nmxp_meta_chan_print(NMXP_META_CHAN_LIST *chan_list);
+
+void nmxp_meta_chan_print_with_match(NMXP_META_CHAN_LIST *chan_list, char *sta_chan_list);
 
 #endif
 

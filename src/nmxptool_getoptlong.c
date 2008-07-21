@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.102 2008-07-15 14:11:58 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.103 2008-07-21 22:41:24 mtheo Exp $
  *
  */
 
@@ -129,7 +129,7 @@ void nmxptool_usage(struct option long_options[])
 
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
 \n\
-Usage: %s -H hostname   -l | -L\n\
+Usage: %s -H hostname  [  -C channellist ]  -l | -L \n\
              Print list of the available Time Series channels\n\
              on DataServer and NaqsServer respectively.\n\
 \n",

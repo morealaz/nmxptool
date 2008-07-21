@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_chan.c,v 1.40 2008-03-28 13:21:24 mtheo Exp $
+ * $Id: nmxp_chan.c,v 1.41 2008-07-21 22:41:24 mtheo Exp $
  *
  */
 
@@ -413,6 +413,58 @@ void nmxp_chan_print_channelList(NMXP_CHAN_LIST *channelList) {
 
 }
 
+
+void nmxp_chan_print_channelList_with_match(NMXP_CHAN_LIST *channelList, char *sta_chan_list) {
+    int chan_number = 0;
+    int i_chan = 0;
+    int ret_match = 0;
+    int istalist, ista;
+    char sta_chan_code_pattern[100];
+
+    if(channelList) {
+	chan_number = channelList->number;
+	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_CHANNEL, "%04d channels:\n", chan_number);
+
+	for (i_chan = 0; i_chan < chan_number; i_chan++)
+	{
+	    if(sta_chan_list) {
+
+		ret_match = 0;
+		istalist = 0;
+		while(sta_chan_list[istalist] != sep_chan_list  &&  sta_chan_list[istalist] != 0  &&  ret_match == 0) {
+
+		    /* Build sta_chan_code_pattern from sta_chan_list */
+		    ista = 0;
+		    while(sta_chan_list[istalist] != sep_chan_list  &&  sta_chan_list[istalist] != 0) {
+			sta_chan_code_pattern[ista++] = sta_chan_list[istalist++];
+		    }
+		    sta_chan_code_pattern[ista] = 0;
+		    if(sta_chan_list[istalist] == sep_chan_list) {
+			istalist++;
+		    }
+
+		    ret_match = nmxp_chan_match(channelList->channel[i_chan].name, sta_chan_code_pattern);
+		}
+
+	    } else {
+		ret_match = 1;
+	    }
+	    if(ret_match == 1) {
+		nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "%04d %12d %6s%c%-11s\n",
+			i_chan+1,
+			channelList->channel[i_chan].key,
+			"    ",
+			' ',
+			NMXP_LOG_STR(channelList->channel[i_chan].name));
+	    }
+	}
+    } else {
+	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANNEL, "Channel list is NULL.\n");
+    }
+
+}
+
+
 void nmxp_chan_print_netchannelList(NMXP_CHAN_LIST_NET *channelList) {
     int chan_number = channelList->number;
     int i_chan = 0;
@@ -607,6 +659,63 @@ void nmxp_meta_chan_print(NMXP_META_CHAN_LIST *chan_list) {
 	i_chan++;
     }
 }
+
+
+void nmxp_meta_chan_print_with_match(NMXP_META_CHAN_LIST *chan_list, char *sta_chan_list) {
+    NMXP_META_CHAN_LIST *iter = chan_list;
+    char str_start_time[200], str_end_time[200];
+    int i_chan = 0;
+    int ret_match = 0;
+    int istalist, ista;
+    char sta_chan_code_pattern[100];
+
+    str_start_time[0] = 0;
+    str_end_time[0] = 0;
+
+    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CHANNEL, "nmxp_meta_chan_print()\n");
+
+    while(iter != NULL) {
+	nmxp_data_to_str(str_start_time, iter->start_time);
+	nmxp_data_to_str(str_end_time,   iter->end_time);
+
+	if(sta_chan_list) {
+
+	    ret_match = 0;
+	    istalist = 0;
+	    while(sta_chan_list[istalist] != sep_chan_list  &&  sta_chan_list[istalist] != 0  &&  ret_match == 0) {
+
+		/* Build sta_chan_code_pattern from sta_chan_list */
+		ista = 0;
+		while(sta_chan_list[istalist] != sep_chan_list  &&  sta_chan_list[istalist] != 0) {
+		    sta_chan_code_pattern[ista++] = sta_chan_list[istalist++];
+		}
+		sta_chan_code_pattern[ista] = 0;
+		if(sta_chan_list[istalist] == sep_chan_list) {
+		    istalist++;
+		}
+
+		ret_match = nmxp_chan_match(iter->name, sta_chan_code_pattern);
+	    }
+
+	} else {
+	    ret_match = 1;
+	}
+	if(ret_match == 1) {
+	    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "%04d %12d %6s%c%-11s (%s  -  %s)\n",
+		    i_chan+1,
+		    iter->key,
+		    NMXP_LOG_STR(iter->network),
+		    (strcmp(iter->network, "")==0)? ' ' : '.',
+		    NMXP_LOG_STR(iter->name),
+		    NMXP_LOG_STR(str_start_time),
+		    NMXP_LOG_STR(str_end_time)
+		    );
+	}
+	iter = iter->next;
+	i_chan++;
+    }
+}
+
 
 
 
