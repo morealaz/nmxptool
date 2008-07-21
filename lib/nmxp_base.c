@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_base.c,v 1.73 2008-04-22 12:53:42 mtheo Exp $
+ * $Id: nmxp_base.c,v 1.74 2008-07-21 00:04:56 mtheo Exp $
  *
  */
 
@@ -151,15 +151,24 @@ int nmxp_send_ctrl(int isock, void* buffer, int length)
 #warning Managing non-blocking I/O using select()
 int nmxp_recv_select_timeout(int s, char *buf, int len, int timeout)
 {
+#define HIGHEST_TIMEOUT 300
     fd_set fds;
     int n;
     struct timeval tv;
+    static message_times = 0;
 
     /* set up the file descriptor set*/
     FD_ZERO(&fds);
     FD_SET(s, &fds);
 
     /* set up the struct timeval for the timeout*/
+    if(timeout == 0) {
+	if(message_times == 0) {
+	    nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "nmxp_recv_select_timeout(): timeout = %d\n", HIGHEST_TIMEOUT);
+	    message_times++;
+	}
+	timeout = HIGHEST_TIMEOUT;
+    }
     tv.tv_sec = timeout;
     tv.tv_usec = 0;
 
@@ -271,15 +280,9 @@ int nmxp_recv_ctrl(int isock, void *buffer, int length, int timeoutsec, int *rec
       errno = 0;
 
 #ifdef HAVE_BROKEN_SO_RCVTIMEO
-      if(timeoutsec == 0) {
-#endif
-
-	  cc = recv(isock, buffer_char + recvCount, length - recvCount, 0);
-
-#ifdef HAVE_BROKEN_SO_RCVTIMEO
-      } else {
-	  cc = nmxp_recv_select_timeout(isock, buffer_char + recvCount, length - recvCount, timeoutsec);
-      }
+      cc = nmxp_recv_select_timeout(isock, buffer_char + recvCount, length - recvCount, timeoutsec);
+#else
+      cc = recv(isock, buffer_char + recvCount, length - recvCount, 0);
 #endif
 
 #ifdef HAVE_WINDOWS_H
