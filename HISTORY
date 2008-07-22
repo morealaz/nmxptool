@@ -2,7 +2,7 @@
 nmxptool Release History
 #########################
 
-* Release 1.2.2-beta6    (2008/07/22) 
+* Release 1.2.2    (2008/07/23) 
     - Added feature: channel list can be printed declaring a pattern
         to match the desired channels. (involved options -C, -l, -L)
     - Added feature: accept 'telnet' connection for monitoring data
