@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.103 2008-07-21 22:41:24 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.104 2008-07-22 23:21:25 mtheo Exp $
  *
  */
 
@@ -348,9 +348,11 @@ Other arguments:\n\
                           PLUGINID is set by SeisComP daemon.\n");
 #endif
 
+#ifndef HAVE_WINDOWS_H
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
   -E, --testport=PORT     Accept 'telnet' connection on PORT\n\
                           for data testing and diagnostic purposes.\n");
+#endif
 
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
   -V, --version           Print tool version.\n\
@@ -537,7 +539,9 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 #ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
 	{"slink",        required_argument, NULL, 'k'},
 #endif
+#ifndef HAVE_WINDOWS_H
 	{"socketport",   required_argument, NULL, 'E'},
+#endif
 	{"statefile",    required_argument, NULL, 'F'},
 	{"mschan",       required_argument, NULL, 'f'},
 	{"help",         no_argument,       NULL, 'h'},
@@ -545,7 +549,7 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 	{0, 0, 0, 0}
     };
 
-    char optstr[300] = "H:P:D:C:N:n:S:R:s:e:t:d:u:p:M:T:v:B:A:F:f:E:gGblLiwhV";
+    char optstr[300] = "H:P:D:C:N:n:S:R:s:e:t:d:u:p:M:T:v:B:A:F:f:gGblLiwhV";
 
     int option_index = 0;
 
@@ -558,6 +562,9 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
     strcat(optstr, "k:");
 #endif
 
+#ifndef HAVE_WINDOWS_H
+    strcat(optstr, "E:");
+#endif
 
     /* getopt_long stores the option index here. */
     /* init array for checking one time option */
@@ -726,9 +733,11 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 		    break;
 #endif
 
+#ifndef HAVE_WINDOWS_H
 		case 'E':
 		    params->listen_port = atoi(optarg);
 		    break;
+#endif
 
 		case 'F':
 		    params->flag_buffered = 1;

@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.196 2008-07-21 22:41:24 mtheo Exp $
+ * $Id: nmxptool.c,v 1.197 2008-07-22 23:21:25 mtheo Exp $
  *
  */
 
@@ -265,7 +265,9 @@ int main (int argc, char **argv) {
 
     if(params.stc == -1) {
 
+#ifndef HAVE_WINDOWS_H
 	p_func_pd[n_func_pd++] = nmxptool_listen_print_seq_no;
+#endif
 
 	if(params.flag_logdata) {
 	    p_func_pd[n_func_pd++] = nmxptool_print_seq_no;

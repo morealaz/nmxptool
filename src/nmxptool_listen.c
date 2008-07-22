@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_listen.c,v 1.6 2008-04-24 08:08:59 mtheo Exp $
+ * $Id: nmxptool_listen.c,v 1.7 2008-07-22 23:21:25 mtheo Exp $
  *
  */
 
@@ -17,6 +17,8 @@
 */
 
 #include "config.h"
+
+#ifndef HAVE_WINDOWS_H
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -441,6 +443,7 @@ void *nmxptool_listen(void *arg)
 }
 
 
+#endif
 
 
 
