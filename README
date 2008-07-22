@@ -17,6 +17,7 @@ CONTENTS
    QUICK INSTALLATION
    INSTALLATION
    SUPPORTED PLATFORMS AND 64-Bit ISSUES
+   NAQSSERVER CONFIGURATION
    DOCUMENTATION
    SIGNAL HANDLING
    HISTORY
@@ -231,6 +232,31 @@ architectures.
 
    N.B. No test has been done on Earthworm when
         nmxptool is compiled with 64-bit option (-m64)
+
+
+- NAQSSERVER CONFIGURATION
+
+   * Data continuity when short disconnections to NaqsServer occur
+
+   Inside the section Datastream of the file Naqs.ini set DataBufferLength to a high value.
+
+       [ Datastream ] 
+         Port = 28000              // TCP port for control/data connections to Naqs 
+         Password = none           // access password (not used in version 1.3) 
+         MaxConnections = 10       // maximum number of simultaneous connections 
+         SocketType = Direct       // connection type (Direct or Callback) 
+         DataBufferLength = 100    // Buffer length for data channels (# packets)
+
+   * Packet retransmission
+
+   Inside the section NetworkInterface of the file Naqs.ini enable RetxRequest.
+   If RetxRequest is not enabled then MaxTolerableLatency is ineffective.
+
+       [ NetworkInterface ] 
+         Port = 32000           // UDP port for incoming NMX data (usually 32000) 
+         SendDelay = 250        // milliseconds to delay after each send 
+         RetxRequest = Enabled
+         MulticastGroup = 224.1.1.1 
      
 
 - DOCUMENTATION
@@ -240,6 +266,7 @@ architectures.
 
     * Earthworm module: earthworm/nmxptool_cmd.html
                                   nmxptool_ovr.html
+
 
 - SIGNAL HANDLING
 
