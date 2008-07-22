@@ -6,7 +6,7 @@ nmxptool Release History
     - Added feature: channel list can be printed declaring a pattern
         to match the desired channels. (involved options -C, -l, -L)
     - Added feature: accept 'telnet' connection for monitoring data
-        and diagnostic purposes. (option -E)
+        and diagnostic purposes. Not available on Windows yet. (option -E)
     - Improved connection management. Exit from program only on request,
         that is, receving termination signal or ew-flag-terminate.
     - Improved signal handling using safe threads.
