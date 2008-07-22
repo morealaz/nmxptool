@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.197 2008-07-22 23:21:25 mtheo Exp $
+ * $Id: nmxptool.c,v 1.198 2008-07-22 23:33:01 mtheo Exp $
  *
  */
 
@@ -794,6 +794,7 @@ int main (int argc, char **argv) {
 	pthread_attr_destroy(&attr_request_channels);
 #endif
 
+#ifndef HAVE_WINDOWS_H
 #ifdef HAVE_PTHREAD_H
 	if(!already_listen  &&  params.listen_port != DEFAULT_LISTEN_PORT) {
 	    already_listen = 1;
@@ -802,6 +803,7 @@ int main (int argc, char **argv) {
 	    pthread_create(&thread_socket_listen, &attr_socket_listen, nmxptool_listen, (void *)params.listen_port);
 	    pthread_attr_destroy(&attr_socket_listen);
 	}
+#endif
 #endif
 
 	/* PDS Step 6: Repeat until finished: receive and handle packets */
