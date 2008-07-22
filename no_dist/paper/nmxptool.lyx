@@ -1,4 +1,4 @@
-#LyX 1.5.5 created this file. For more info see http://www.lyx.org/
+#LyX 1.5.3 created this file. For more info see http://www.lyx.org/
 \lyxformat 276
 \begin_document
 \begin_header
@@ -19,6 +19,7 @@
 \font_sf_scale 100
 \font_tt_scale 100
 \graphics default
+\float_placement h
 \paperfontsize default
 \spacing single
 \papersize default
@@ -166,7 +167,7 @@ thanks[revision]{
 \backslash
 small 
 \backslash
-itshape CVS $ $Revision: 1.28 $ $ -- $ $Date: 2008-06-20 13:19:36 $ $} 
+itshape CVS $ $Revision: 1.29 $ $ -- $ $Date: 2008-07-22 21:56:29 $ $} 
 \end_layout
 
 \end_inset
@@ -414,19 +415,19 @@ key "earthworm"
 
  respectively, can only use the 
 \shape italic
-Buffered Stream
+Buffered Stream [NON POTENDO, SENZA POTER]
 \shape default
- without control of the retransmitted packet.
+ managing the retransmitted packets.
  Main problem when you connect to NaqServer by the short-term data stream
  is that you can get a gap for each retransmitted packet.
  On the contrary, using the 
 \shape italic
 Raw Stream
 \shape default
-, nmxptool is also able to receive retransmitted packets, manage and chronologic
-ally order them in a buffer when is needed, that is when a retransmission
- occurs, and finally it can redirect data into the Seedlink or Earthworm
- system or repacket them in mini-SEED records by 
+, nmxptool is able to receive all kinds of packet, buffer the packets when
+ a gap occurs, sort them and redirect data in chronologically order into
+ the Seedlink or Earthworm system or repacket them in mini-SEED records
+ by 
 \begin_inset LatexCommand citet
 key "seedmanual"
 
@@ -435,8 +436,22 @@ key "seedmanual"
 .
 \end_layout
 
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Standard
+manage and chronologically order them in a buffer when is needed, that is
+ when a retransmission occurs, and finally it can redirect data
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Section
-Development and features
+Contributes and features
 \end_layout
 
 \begin_layout Standard
@@ -889,38 +904,39 @@ name "tab:architectures"
 \end_layout
 
 \begin_layout Standard
-In order to enable nmxptool for storing data in mini-SEED format, feeding
- Seedlink server or redirecting data into an Earthworm ring, some open-source
- software could be required, the respective software are libmseed, Seedlink
- and Earthworm.
- These software and their installation will be described in the next sections.
-\end_layout
-
-\begin_layout Standard
 The main contribute produced by nmxptool, as regards other similar software,
  is the capability to manage Raw Stream connections by buffering and sorting
  all received packets, included the retransmitted ones, guaranteeing a good
- compromise between data continuity and low latency, figure 
+ compromise between data continuity and low latency.
+ Besides, nmxptool allows to retrieve Data-On-Demand from NaqsServer with
+ minimum delay after request.
+ Another important feature allows data continuity between program restarts
+ or fatal disconnections, in fact, nmxptool can retrieve buffered data from
+ NaqsServer or data of the past from the DataServer and joining it in near-real-
+time to the data that is flowing from the NaqsServer.
+\end_layout
+
+\begin_layout Standard
+In order to be able to fill the gaps due to the missing packets and retrieve
+ data-on-demand, the NaqsServer should be configured to request the retransmissi
+ons of packets and, on the other side, the seismic station should be configured
+ to send the requested packets.
+ If the NaqsServer or the stations are not configured for the retransmissions
+ you will not able to fill the gaps or receive data requested on-demand.
+\end_layout
+
+\begin_layout Subsection
+Latency vs data continuity
+\end_layout
+
+\begin_layout Standard
+Figure 
 \begin_inset LatexCommand ref
 reference "fig:maxtolerablelatency"
 
 \end_inset
 
-.
- Besides, nmxptool allows to retrieve Data-On-Demand from NaqsServer with
- minimum delay after request.
- Another important feature allows data continuity between program restarts,
- in fact, nmxptool can retrieve data of the past from the DataServer and
- joining it in near-real-time to the data that is flowing from the NaqsServer.
-\end_layout
 
-\begin_layout Subsection
-Raw Stream
-\end_layout
-
-\begin_layout Standard
-Unusable if the NaqsServer and station are not configured for retransmission
- of missing packets.
 \end_layout
 
 \begin_layout Standard
@@ -968,10 +984,6 @@ Main parameter to set for the Raw Stream connection is the Max tolerable
 \end_inset
 
 
-\end_layout
-
-\begin_layout Standard
-\align center
 \begin_inset LatexCommand label
 name "fig:maxtolerablelatency"
 
@@ -999,8 +1011,79 @@ Moreover, for retrieving data-on-demand....
  Packet type 1+32+64
 \end_layout
 
+\begin_layout Standard
+nmxptool and libnmxp have been also designed to retrieve with minimum delay
+ the data requested by the java application DataOnDemand developed by Nanometric
+s.
+ nmxptool is listening to the packets which are chronologically ordered
+ when they are flowing.
+ These packets are flushed only after a time-out of inactivity, that is
+ after a time-out.
+\end_layout
+
 \begin_layout Subsection
-Sources
+Data continuity after disconnection
+\end_layout
+
+\begin_layout Standard
+Since version 1.1.8, nmxptool offers a feature to allow the data continuity
+ between program restarts.
+\end_layout
+
+\begin_layout Standard
+This feature is based on the ringbuffer management on the NaqsServer and
+ the DataServer side.
+ 1) NaqsServer provides near-realtime data and it can buffer data up to
+ 100 packets for each channel.
+ file: Naqs.ini section: [Datastream] parameter: DataBufferLength (range
+ is [0..100], set to 100 if it is possible) 2) DataServer stores data of the
+ past and you can retrieve available data defining start time and end time.
+\end_layout
+
+\begin_layout Standard
+Using option "-F" automatically involves, before exiting from the program,
+ the save of the time of the last sample received for each channel.
+ When nmxptool restarts, it uses this time to retrieve missed data from
+ the small buffer of the NaqsServer.
+ This option is enough if you know that your disconnections will be short
+ and if you can not access to the DataServer.
+\end_layout
+
+\begin_layout Standard
+Channel state
+\end_layout
+
+\begin_layout Subsection
+Features
+\end_layout
+
+\begin_layout Standard
+nmxptool facilities...
+\end_layout
+
+\begin_layout Standard
+In order to enable nmxptool for storing data in mini-SEED format, feeding
+ Seedlink server or redirecting data into an Earthworm ring, some open-source
+ software could be required, the respective software are libmseed, Seedlink
+ and Earthworm.
+ These software and how to link them against nmxptool will be described
+ in the section 
+\begin_inset LatexCommand ref
+reference "sec:Development"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Section
+Development and compilation
+\begin_inset LatexCommand label
+name "sec:Development"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -1939,13 +2022,15 @@ nmxp_closeSocket(naqssock);
 
 \end_layout
 
-\begin_layout Section
-Installation and compilation
+\begin_layout Subsection
+Compilation
 \end_layout
 
 \begin_layout Standard
-You should be able to compile and install them everywhere you can launch
- the following standard commands:
+nmxptool and libnmxp has been developed using the GNU Build Tools (automake,
+ autoconf and configure script) then you should be able to compile them
+ everywhere you have a C compiler and you can launch the following standard
+ commands:
 \end_layout
 
 \begin_layout Standard
@@ -2005,7 +2090,7 @@ status open
 
 \begin_layout Standard
 
-src/nmxptool --version
+# nmxptool --version
 \end_layout
 
 \begin_layout Standard
@@ -2103,12 +2188,12 @@ It can
 \end_layout
 
 \begin_layout Standard
-The optional libraries and how link them to nmxptool is described in the
- following subsections.
+The optional libraries and how to link them to nmxptool is described in
+ the following subsections.
 \end_layout
 
 \begin_layout Subsection
-libmseed
+Libmseed
 \end_layout
 
 \begin_layout Standard
@@ -2153,7 +2238,7 @@ status open
 \end_layout
 
 \begin_layout Subsection
-ew
+Earthworm
 \end_layout
 
 \begin_layout Standard
@@ -2512,7 +2597,7 @@ Main common parameters.
 
 \begin_layout Standard
 \begin_inset Note Note
-status open
+status collapsed
 
 \begin_layout Standard
 nmxptool 1.2.2, Nanometrics tool
@@ -3175,7 +3260,7 @@ reference "fig:nmxptoolusages"
 \begin_inset Float figure
 wide true
 sideways false
-status open
+status collapsed
 
 \begin_layout Standard
 \align center
@@ -3330,6 +3415,7 @@ Test.
 
 \begin_layout Itemize
 Data Completeness.
+ SDS and BUD
 \end_layout
 
 \begin_layout Standard
@@ -3396,14 +3482,6 @@ bibfiles "references"
 
 
 \newpage
-
-\end_layout
-
-\begin_layout Acknowledgement
-\begin_inset LatexCommand tableofcontents
-
-\end_inset
-
 
 \end_layout
 
