@@ -60,13 +60,14 @@ cd libmseed
 make
 ranlib libmseed.a
 
-CFLAGS="-O2 -Wall -pipe -I`pwd`"
-LDFLAGS="-L`pwd`"
+CFLAGS="-O2 -Wall -pipe -I`pwd` ${CFLAGS_PTHREAD}"
+LDFLAGS="-L`pwd` ${LDFLAGS_PTHREAD}"
+LIBS="${LIBS_PTHREAD}"
 cd ..
 
 cd $NMXPSOURCE
 echo "./configure CFLAGS=\"${CFLAGS}\" LDFLAGS=\"${LDFLAGS}\" EW_HOME=\"${EW_HOME}\" EW_VERSION=\"${EW_VERSION}\" GLOBALFLAGS=\"${GLOBALFLAGS}\""
-./configure CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}" EW_HOME="${EW_HOME}" EW_VERSION="${EW_VERSION}" GLOBALFLAGS="${GLOBALFLAGS}"
+./configure CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}" LIBS="${LIBS}" EW_HOME="${EW_HOME}" EW_VERSION="${EW_VERSION}" GLOBALFLAGS="${GLOBALFLAGS}"
 make
 make dist-bin
 src/nmxptool -V
@@ -75,9 +76,9 @@ cp *-bin-*.gz ../dist-bin/
 
 cd ..
 
-rm -fr libmseed
-for FSOURCE in $EWSOURCE $LIBMSEEDSOURCE $NMXPSOURCE; do
-    rm -fr $FSOURCE
+for FSOURCE in libmseed $EWSOURCE $NMXPSOURCE; do
+    # rm -fr ${FSOURCE}
+    echo "Leaving source directory ${FSOURCE}"
 done
 
 scp dist-bin/* mtheo@kyuzo.int.ingv.it:/Users/mtheo/Desktop/soft/unix_sources/nmxptool/
