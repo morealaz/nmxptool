@@ -16,6 +16,7 @@ CONTENTS
    DEPENDENCIES
    QUICK INSTALLATION
    INSTALLATION
+   INSTALLATION BINARIES
    SUPPORTED PLATFORMS AND 64-Bit ISSUES
    NAQSSERVER CONFIGURATION
    DOCUMENTATION
@@ -208,6 +209,31 @@ architectures.
          After, you can use:
 
              seiscomp config
+
+
+- INSTALLATION BINARIES
+   Download the binary distribution for your operating system from the
+   web site http://mednet.rm.ingv.it, unpack it and copy the files where you want.
+
+   For example, installing nmxptool-1.2.2 on a Linux box within the SeisComp3 directory:
+
+             wget http://mednet.rm.ingv.it/downloads/soft/nmxptool-1.2.2-bin-i686-pc-linux-gnu.tar.gz
+             tar xvfz nmxptool-1.2.2-bin-i686-pc-linux-gnu.tar.gz
+             cd nmxptool-1.2.2-bin-i686-pc-linux-gnu/
+             cp bin/nmxptool ~/seiscomp3/acquisition/bin/
+             cp -R seiscomp_templates/135_nmxptool ~/seiscomp3/acquisition/templates/source/
+
+   Or, installing nmxptool-1.2.2 on a Solaris Sparc Machine within Earthworm environment:
+
+             wget http://mednet.rm.ingv.it/downloads/soft/nmxptool-1.2.2-bin-sparc-sun-solaris2.10.tar.gz
+             gunzip -c < nmxptool-1.2.2-bin-sparc-sun-solaris2.10.tar.gz | tar xvf -
+             cd nmxptool-1.2.2-bin-sparc-sun-solaris2.10/
+             cp bin/nmxptool $EW_HOME/$EW_VERSION/bin/
+             cp earthworm/nmxptool.d $EW_PARAMS/
+             cp earthworm/nmxptool.desc $EW_PARAMS/
+
+             Inside the same directory 'earthworm' are also available the documentation
+             html files nmxptool_cmd.html and nmxptool_ovr.html
 
 
 - SUPPORTED PLATFORMS AND 64-Bit ISSUES
