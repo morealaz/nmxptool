@@ -167,7 +167,7 @@ thanks[revision]{
 \backslash
 small 
 \backslash
-itshape CVS $ $Revision: 1.29 $ $ -- $ $Date: 2008-07-22 21:56:29 $ $} 
+itshape CVS $ $Revision: 1.30 $ $ -- $ $Date: 2008-08-19 07:01:12 $ $} 
 \end_layout
 
 \end_inset
@@ -259,8 +259,8 @@ status open
 
 \shape italic
 Typical configuration at INGV of a seismic data flow from seismic stations
- with a satellite connection, through Nanometrics Servers, as far as the
- client programs.
+ by a satellite connection, through Nanometrics Servers, as far as the client
+ programs.
  In order to interact with NaqsServer or DataServer any client must implement
  the subscription protocols Private Data Stream or Data Access Protocol
  respectively.
@@ -298,9 +298,15 @@ name "fig:stationclients"
 \end_layout
 
 \begin_layout Standard
-In the context of this paper we are considering more the second part (right
- side), especially the software implementation aspects in the interaction
- of a software client with both NaqsServer and DataServer as well-documented
+In the context of this paper we are considering more the second part (the
+ right side in the figure 
+\begin_inset LatexCommand ref
+reference "fig:stationclients"
+
+\end_inset
+
+), especially the software implementation aspects in the interaction of
+ a software client with both NaqsServer and DataServer as well-documented
  into the manual 
 \begin_inset LatexCommand cite
 key "nanometrics"
@@ -308,7 +314,8 @@ key "nanometrics"
 \end_inset
 
 .
- The kinds of connection and the related behaviours can be briefly schematized:
+ The kinds of the connection and the related behaviours can be briefly schematiz
+ed:
 \end_layout
 
 \begin_layout Itemize
@@ -413,18 +420,29 @@ key "earthworm"
 
 \end_inset
 
- respectively, can only use the 
-\shape italic
-Buffered Stream [NON POTENDO, SENZA POTER]
-\shape default
- managing the retransmitted packets.
- Main problem when you connect to NaqServer by the short-term data stream
- is that you can get a gap for each retransmitted packet.
- On the contrary, using the 
+ respectively, are not capable of buffering and reordering the retransmitted
+ packets received by a 
 \shape italic
 Raw Stream
 \shape default
-, nmxptool is able to receive all kinds of packet, buffer the packets when
+ protocol from NaqsServer.
+\end_layout
+
+\begin_layout Standard
+The main problem when you connect to NaqServer by the 
+\shape italic
+Buffered Stream
+\shape default
+ is that you can get a gap for each retransmitted packet, whereas when you
+ connect by a 
+\shape italic
+Raw Stream
+\shape default
+ the retransmitted packets are received disorderly.
+\end_layout
+
+\begin_layout Standard
+nmxptool is able to receive all kinds of packet, buffer the packets when
  a gap occurs, sort them and redirect data in chronologically order into
  the Seedlink or Earthworm system or repacket them in mini-SEED records
  by 
