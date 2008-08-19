@@ -167,7 +167,7 @@ thanks[revision]{
 \backslash
 small 
 \backslash
-itshape CVS $ $Revision: 1.30 $ $ -- $ $Date: 2008-08-19 07:01:12 $ $} 
+itshape CVS $ $Revision: 1.31 $ $ -- $ $Date: 2008-08-19 07:26:31 $ $} 
 \end_layout
 
 \end_inset
@@ -271,14 +271,6 @@ Typical configuration at INGV of a seismic data flow from seismic stations
  The most important difference between a NaqsServer and a DataServer is
  that the first one provides data in near-real-time whereas DataServer spreads
  archived data into the past.
- More details about software interaction beetween the servers and clients
- are shown in figure 
-\begin_inset LatexCommand ref
-reference "fig:nmxptoolusages"
-
-\end_inset
-
-.
 \end_layout
 
 \end_inset
@@ -396,7 +388,24 @@ Data Access Protocol
 \end_layout
 
 \begin_layout Standard
-Why developing a new software? Because both existing software 
+Why developing a new software?
+\end_layout
+
+\begin_layout Standard
+The main problem[s] when you connect to NaqServer by the 
+\shape italic
+Buffered Stream
+\shape default
+ is that you can get a gap for each retransmitted packet, whereas when you
+ connect by the 
+\shape italic
+Raw Stream,
+\shape default
+ the retransmitted packets are received disorderly.
+\end_layout
+
+\begin_layout Standard
+Both existing software 
 \begin_inset LatexCommand citet
 key "naqsplugin"
 
@@ -421,24 +430,7 @@ key "earthworm"
 \end_inset
 
  respectively, are not capable of buffering and reordering the retransmitted
- packets received by a 
-\shape italic
-Raw Stream
-\shape default
- protocol from NaqsServer.
-\end_layout
-
-\begin_layout Standard
-The main problem when you connect to NaqServer by the 
-\shape italic
-Buffered Stream
-\shape default
- is that you can get a gap for each retransmitted packet, whereas when you
- connect by a 
-\shape italic
-Raw Stream
-\shape default
- the retransmitted packets are received disorderly.
+ packets received from the NaqsServer.
 \end_layout
 
 \begin_layout Standard
@@ -448,6 +440,14 @@ nmxptool is able to receive all kinds of packet, buffer the packets when
  by 
 \begin_inset LatexCommand citet
 key "seedmanual"
+
+\end_inset
+
+.
+ More details about software interaction beetween the servers and nmxptool
+ will be described later and showned in figure 
+\begin_inset LatexCommand ref
+reference "fig:nmxptoolusages"
 
 \end_inset
 
