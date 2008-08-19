@@ -167,7 +167,7 @@ thanks[revision]{
 \backslash
 small 
 \backslash
-itshape CVS $ $Revision: 1.31 $ $ -- $ $Date: 2008-08-19 07:26:31 $ $} 
+itshape CVS $ $Revision: 1.32 $ $ -- $ $Date: 2008-08-19 16:22:56 $ $} 
 \end_layout
 
 \end_inset
@@ -473,6 +473,312 @@ Contributes and features
 \end_layout
 
 \begin_layout Standard
+The main contribute produced by nmxptool, as regards other similar software,
+ is the capability to manage Raw Stream connections by buffering and sorting
+ all received packets, included the retransmitted ones, guaranteeing a good
+ compromise between data continuity and low latency.
+ Besides, nmxptool allows to retrieve Data-On-Demand from NaqsServer with
+ minimum delay after request.
+ Another important feature allows data continuity between program restarts
+ or fatal disconnections, in fact, nmxptool can retrieve buffered data from
+ NaqsServer or data of the past from the DataServer and joining it in near-real-
+time to the data that is flowing from the NaqsServer.
+\end_layout
+
+\begin_layout Standard
+In order to be able to fill the gaps due to the missing packets and retrieve
+ data-on-demand, the NaqsServer should be configured to request the retransmissi
+ons of packets and, on the other side, the seismic station should be configured
+ to send the requested packets.
+ If the NaqsServer or the stations are not configured for the retransmissions
+ you will not able to fill the gaps or receive data requested on-demand.
+ The default configuration of NaqsServer automatically enables requests
+ of retransmission of the missing packet, however, the variable to set is
+ 
+\shape italic
+RetxRequest
+\shape default
+ inside the section 
+\shape italic
+NetworkInterface
+\shape default
+ of the file Naqs.ini.
+ For example:
+\end_layout
+
+\begin_layout Quotation
+\begin_inset listings
+lstparams "basicstyle={\scriptsize},commentstyle={\textit},keywords={Datastream,NetworkInterface,DataBufferLength,RetxRequest},morecomment={[l]//}"
+inline false
+status open
+
+\begin_layout Standard
+
+[ NetworkInterface ]
+\end_layout
+
+\begin_layout Standard
+
+  Port = 32000           // UDP port for incoming NMX data (usually 32000)
+\end_layout
+
+\begin_layout Standard
+
+  SendDelay = 250        // milliseconds to delay after each send
+\end_layout
+
+\begin_layout Standard
+
+  RetxRequest = Enabled
+\end_layout
+
+\begin_layout Standard
+
+  MulticastGroup = 224.1.1.1
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If 
+\shape italic
+RetxRequest
+\shape default
+ is not enabled on both NaqsServer and seismic station then the buffering
+ by nmxptool will be ineffective and you will get a gap for each missing
+ packet.
+\end_layout
+
+\begin_layout Standard
+In order to allow data continuity when short disconnections to NaqsServer
+ occur it would be better to set a high value the variable 
+\shape italic
+DataBufferLength
+\shape default
+ inside the section 
+\shape italic
+Datastream
+\shape default
+ of the file Naqs.ini.
+ Presently, the maximum value is equal to 100.
+ For example:
+\end_layout
+
+\begin_layout Quotation
+\begin_inset listings
+lstparams "basicstyle={\scriptsize},commentstyle={\textit},keywords={Datastream,NetworkInterface,DataBufferLength,RetxRequest},morecomment={[l]//}"
+inline false
+status open
+
+\begin_layout Standard
+
+[ Datastream ]
+\end_layout
+
+\begin_layout Standard
+
+  Port = 28000           // TCP port for control/data connections to Naqs
+\end_layout
+
+\begin_layout Standard
+
+  Password = none        // access password (not used in version 1.3)
+\end_layout
+
+\begin_layout Standard
+
+  MaxConnections = 10    // maximum number of simultaneous connections
+\end_layout
+
+\begin_layout Standard
+
+  SocketType = Direct    // connection type (Direct or Callback)
+\end_layout
+
+\begin_layout Standard
+
+  DataBufferLength = 100 // Buffer length for data channels (# packets)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Latency vs data continuity
+\end_layout
+
+\begin_layout Standard
+If the main target is archiving data, certainly, it will be more important
+ having data stored less fragmented as possible.
+ Supposing the data is received continuous and ordered then the latency
+ will be only due to the means of transmission (cable, satellite connection)
+ and the time spent from the software to process the data.
+ But if we consider also that the packets can be missed, requested and retransmi
+tted then, in order to guarantee continuous data, the latency will be further
+ increased by the wait of the missing packet.
+ nmxptool allows to declare the maximum tolerable latency you can accept.
+ The figure 
+\begin_inset LatexCommand ref
+reference "fig:maxtolerablelatency"
+
+\end_inset
+
+ shows the case when a packet is retransmitted out of order.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide true
+sideways false
+status open
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename /Users/mtheo/Desktop/cvswork/nmxptool/no_dist/paper/images/nanometrics_gaps.eps.gz
+	width 10cm
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Caption
+
+\begin_layout Standard
+
+\shape italic
+Main parameter to set for the Raw Stream connection is the Max tolerable
+ latency you can accept, a sort of short-term-completion but managed by
+ the client and not by the server.
+ nmxptool is able to manage a buffer of trasmitted and retransmitted packets
+ aiming to guarantee continuous data, chronological order of packets, minimum
+ latency and minimum number of gaps.
+ nmxptool slows down the acquisition only when it is waiting for a missing
+ packet.
+ Main parameter to set for Raw Stream is the max tolerable latency you can
+ accept, a sort of short-term-completion but managed by the client and not
+ by the server.
+ nmxptool is capable to manage a queue of packets and order them chronologically
+ when is needed, that is when a retrasmission occurs.
+ Type of compressed packet is equal to 1.
+ bit 5 = 1 indicates the packet is being restransmitted, Type of retransmitted
+ packet is 33, that is 1 + 32 
+\end_layout
+
+\end_inset
+
+
+\begin_inset LatexCommand label
+name "fig:maxtolerablelatency"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Data On Demand
+\end_layout
+
+\begin_layout Standard
+TODO: DataOnDemand figure and descriptions.
+\end_layout
+
+\begin_layout Standard
+Moreover, for retrieving data-on-demand....
+ Timeoutrecv....
+ Packet type 1+32+64
+\end_layout
+
+\begin_layout Standard
+nmxptool and libnmxp have been also designed to retrieve with minimum delay
+ the data requested by the java application DataOnDemand developed by Nanometric
+s.
+ nmxptool is listening to the packets which are chronologically ordered
+ when they are flowing.
+ These packets are flushed only after a time-out of inactivity, that is
+ after a time-out.
+\end_layout
+
+\begin_layout Subsection
+Data continuity after disconnection
+\end_layout
+
+\begin_layout Standard
+Since version 1.1.8, nmxptool offers a feature to allow the data continuity
+ between program restarts.
+\end_layout
+
+\begin_layout Standard
+This feature is based on the ringbuffer management on the NaqsServer and
+ the DataServer side.
+ 1) NaqsServer provides near-realtime data and it can buffer data up to
+ 100 packets for each channel.
+ file: Naqs.ini section: [Datastream] parameter: DataBufferLength (range
+ is [0..100], set to 100 if it is possible) 2) DataServer stores data of the
+ past and you can retrieve available data defining start time and end time.
+\end_layout
+
+\begin_layout Standard
+Using option "-F" automatically involves, before exiting from the program,
+ the save of the time of the last sample received for each channel.
+ When nmxptool restarts, it uses this time to retrieve missed data from
+ the small buffer of the NaqsServer.
+ This option is enough if you know that your disconnections will be short
+ and if you can not access to the DataServer.
+\end_layout
+
+\begin_layout Standard
+Channel state
+\end_layout
+
+\begin_layout Subsection
+Features
+\end_layout
+
+\begin_layout Standard
+nmxptool facilities...
+\end_layout
+
+\begin_layout Standard
+In order to enable nmxptool for storing data in mini-SEED format, feeding
+ Seedlink server or redirecting data into an Earthworm ring, some open-source
+ software could be required, the respective software are libmseed, Seedlink
+ and Earthworm.
+ These software and how to link them against nmxptool will be described
+ in the section 
+\begin_inset LatexCommand ref
+reference "sec:Development"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Section
+Development and compilation
+\begin_inset LatexCommand label
+name "sec:Development"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 nmxptool has been written in C language using the GNU Build Tools (automake,
  autoconf and configure script) and taking in account the cross-platform
  compilation aspects, in fact, it can run on almost all the Unix-like operating
@@ -490,7 +796,7 @@ reference "tab:architectures"
 \begin_inset Float table
 wide true
 sideways false
-status open
+status collapsed
 
 \begin_layout Standard
 \align center
@@ -902,7 +1208,11 @@ X
 
 \emph on
 Supported platforms: operating systems and architectures where nmxptool
- has been compiled with success.
+ has been compiled with success by the GNU make and C compiler.
+ On Solaris system it is possible to use also the SUN make and C compiler.
+ At INGV, nmxptool is mainly used within the SeisComP on a 64-bit little-endian
+ Linux box and within the Earthworm system on a Sparc 64-bit machine with
+ Solaris 10.
 \end_layout
 
 \end_inset
@@ -915,189 +1225,6 @@ name "tab:architectures"
 
 
 \end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-The main contribute produced by nmxptool, as regards other similar software,
- is the capability to manage Raw Stream connections by buffering and sorting
- all received packets, included the retransmitted ones, guaranteeing a good
- compromise between data continuity and low latency.
- Besides, nmxptool allows to retrieve Data-On-Demand from NaqsServer with
- minimum delay after request.
- Another important feature allows data continuity between program restarts
- or fatal disconnections, in fact, nmxptool can retrieve buffered data from
- NaqsServer or data of the past from the DataServer and joining it in near-real-
-time to the data that is flowing from the NaqsServer.
-\end_layout
-
-\begin_layout Standard
-In order to be able to fill the gaps due to the missing packets and retrieve
- data-on-demand, the NaqsServer should be configured to request the retransmissi
-ons of packets and, on the other side, the seismic station should be configured
- to send the requested packets.
- If the NaqsServer or the stations are not configured for the retransmissions
- you will not able to fill the gaps or receive data requested on-demand.
-\end_layout
-
-\begin_layout Subsection
-Latency vs data continuity
-\end_layout
-
-\begin_layout Standard
-Figure 
-\begin_inset LatexCommand ref
-reference "fig:maxtolerablelatency"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide true
-sideways false
-status open
-
-\begin_layout Standard
-\align center
-\begin_inset Graphics
-	filename /Users/mtheo/Desktop/cvswork/nmxptool/no_dist/paper/images/nanometrics_gaps.eps.gz
-	width 10cm
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\align center
-\begin_inset Caption
-
-\begin_layout Standard
-
-\shape italic
-Main parameter to set for the Raw Stream connection is the Max tolerable
- latency you can accept, a sort of short-term-completion but managed by
- the client and not by the server.
- nmxptool is able to manage a buffer of trasmitted and retransmitted packets
- aiming to guarantee continuous data, chronological order of packets, minimum
- latency and minimum number of gaps.
- nmxptool slows down the acquisition only when it is waiting for a missing
- packet.
- Main parameter to set for Raw Stream is the max tolerable latency you can
- accept, a sort of short-term-completion but managed by the client and not
- by the server.
- nmxptool is capable to manage a queue of packets and order them chronologically
- when is needed, that is when a retrasmission occurs.
- Type of compressed packet is equal to 1.
- bit 5 = 1 indicates the packet is being restransmitted, Type of retransmitted
- packet is 33, that is 1 + 32 
-\end_layout
-
-\end_inset
-
-
-\begin_inset LatexCommand label
-name "fig:maxtolerablelatency"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Data On Demand
-\end_layout
-
-\begin_layout Standard
-TODO: DataOnDemand figure and descriptions.
-\end_layout
-
-\begin_layout Standard
-Moreover, for retrieving data-on-demand....
- Timeoutrecv....
- Packet type 1+32+64
-\end_layout
-
-\begin_layout Standard
-nmxptool and libnmxp have been also designed to retrieve with minimum delay
- the data requested by the java application DataOnDemand developed by Nanometric
-s.
- nmxptool is listening to the packets which are chronologically ordered
- when they are flowing.
- These packets are flushed only after a time-out of inactivity, that is
- after a time-out.
-\end_layout
-
-\begin_layout Subsection
-Data continuity after disconnection
-\end_layout
-
-\begin_layout Standard
-Since version 1.1.8, nmxptool offers a feature to allow the data continuity
- between program restarts.
-\end_layout
-
-\begin_layout Standard
-This feature is based on the ringbuffer management on the NaqsServer and
- the DataServer side.
- 1) NaqsServer provides near-realtime data and it can buffer data up to
- 100 packets for each channel.
- file: Naqs.ini section: [Datastream] parameter: DataBufferLength (range
- is [0..100], set to 100 if it is possible) 2) DataServer stores data of the
- past and you can retrieve available data defining start time and end time.
-\end_layout
-
-\begin_layout Standard
-Using option "-F" automatically involves, before exiting from the program,
- the save of the time of the last sample received for each channel.
- When nmxptool restarts, it uses this time to retrieve missed data from
- the small buffer of the NaqsServer.
- This option is enough if you know that your disconnections will be short
- and if you can not access to the DataServer.
-\end_layout
-
-\begin_layout Standard
-Channel state
-\end_layout
-
-\begin_layout Subsection
-Features
-\end_layout
-
-\begin_layout Standard
-nmxptool facilities...
-\end_layout
-
-\begin_layout Standard
-In order to enable nmxptool for storing data in mini-SEED format, feeding
- Seedlink server or redirecting data into an Earthworm ring, some open-source
- software could be required, the respective software are libmseed, Seedlink
- and Earthworm.
- These software and how to link them against nmxptool will be described
- in the section 
-\begin_inset LatexCommand ref
-reference "sec:Development"
-
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Section
-Development and compilation
-\begin_inset LatexCommand label
-name "sec:Development"
 
 \end_inset
 
