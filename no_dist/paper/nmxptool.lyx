@@ -127,7 +127,7 @@ The Nanometrics servers NaqsServer and DataServer can provide on-line access
  or save retrieved data in mini-SEED records, launched as an Earthworm module
  to redirect data into the EW-rings or like a Seedlink plug-in to feed the
  SL-server.
- The main contribute, as regards other similar software, is the capability
+ The main contribution, as regards other similar software, is the capability
  to manage Raw Stream connections by buffering and sorting all received
  packets, included the retransmitted ones, guaranteeing a good compromise
  between data continuity and low latency.
@@ -167,7 +167,7 @@ thanks[revision]{
 \backslash
 small 
 \backslash
-itshape CVS $ $Revision: 1.32 $ $ -- $ $Date: 2008-08-19 16:22:56 $ $} 
+itshape CVS $ $Revision: 1.33 $ $ -- $ $Date: 2008-08-19 16:37:11 $ $} 
 \end_layout
 
 \end_inset
@@ -469,20 +469,21 @@ manage and chronologically order them in a buffer when is needed, that is
 \end_layout
 
 \begin_layout Section
-Contributes and features
+Contributions and features
 \end_layout
 
 \begin_layout Standard
-The main contribute produced by nmxptool, as regards other similar software,
+The main contribution offered by nmxptool, as regards other similar software,
  is the capability to manage Raw Stream connections by buffering and sorting
  all received packets, included the retransmitted ones, guaranteeing a good
  compromise between data continuity and low latency.
  Besides, nmxptool allows to retrieve Data-On-Demand from NaqsServer with
  minimum delay after request.
- Another important feature allows data continuity between program restarts
- or fatal disconnections, in fact, nmxptool can retrieve buffered data from
- NaqsServer or data of the past from the DataServer and joining it in near-real-
-time to the data that is flowing from the NaqsServer.
+ Another important property is the capability that allows to retrieve missing
+ data due to the program restart or fatal disconnections, in fact, nmxptool
+ can retrieve buffered data from NaqsServer or data of the past from the
+ DataServer and joining it in near-real-time to the data that is flowing
+ from the NaqsServer.
 \end_layout
 
 \begin_layout Standard
