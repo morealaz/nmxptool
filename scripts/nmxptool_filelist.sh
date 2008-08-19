@@ -14,7 +14,7 @@ if [ -z "${HOSTNAME}" ]; then
     exit
 fi
 
-../src/nmxptool -H $HOSTNAME -L | grep -E "${REGEXP}" | sed -e "s/^.*        //"
+../src/nmxptool -H $HOSTNAME -L | grep -E "${REGEXP}" | sed -e "s/^.*        //" -e "s/[ ][ ]*$//"
 
 # ../src/nmxptool -H $HOSTNAME -L | grep HZ | sed -e "s/^.*        //" -e "s/HZ/H?/g"
 
