@@ -167,7 +167,7 @@ thanks[revision]{
 \backslash
 small 
 \backslash
-itshape CVS $ $Revision: 1.36 $ $ -- $ $Date: 2008-08-20 13:56:35 $ $} 
+itshape CVS $ $Revision: 1.37 $ $ -- $ $Date: 2008-08-20 15:31:34 $ $} 
 \end_layout
 
 \end_inset
@@ -651,6 +651,58 @@ Data On Demand
 \end_layout
 
 \begin_layout Standard
+A remote seismic station could be configured not for sending data in real-time
+ to the NaqsServer but for receiving request of data by channel and time
+ period and then respond to the retransmission requests.
+ A software to make this kind of requests is called DataOnDemand and provided
+ by 
+\begin_inset LatexCommand citet
+key "nanometricsdod"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+If your aim is retrieving data-on-demand with minimum delay after the request
+ and redirect it into a Seedlink or Earthworm then you can use nmxptool
+ because it has been also designed to do that.
+ nmxptool is listening to the packets which are chronologically ordered
+ when they are flowing.
+ The buffer of the packets is flushed after a time-out of inactivity in
+ input.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Standard
+Data on Demand (DoD) Version 1.02 provides options to request waveform data
+ by channel and time period from remote Cygnus or Janus comms devices, for
+ transmission to a specified NAQS Server.
+ The comms device collects data in ringbuffers at the remote site and will
+ respond to retransmission requests, but continuous real-time data are not
+ sent to the central site for channels set to Demand.
+\end_layout
+
+\begin_layout Standard
+Using DoD you can select data of interest by time period from the remote
+ ringbuffer for channels set to Demand.
+ These requests may include future data.
+ The selected data are then transmitted to the central site NAQS Server.
+ You can use DoD manually via the graphical user interface (GUI) or the
+ command line interface (CLI), or automatically by invoking the CLI via
+ scripts in conjunction with user-provided event detection software.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 TODO: DataOnDemand figure and descriptions.
 \end_layout
 
@@ -666,16 +718,6 @@ TODO: DataOnDemand figure and descriptions.
 *** Type of compressed packet is equal to 1.
  bit 5 = 1 indicates the packet is being restransmitted, Type of retransmitted
  packet is 33, that is 1 + 32 
-\end_layout
-
-\begin_layout Standard
-nmxptool and libnmxp have been also designed to retrieve with minimum delay
- the data requested by the java application DataOnDemand developed by Nanometric
-s.
- nmxptool is listening to the packets which are chronologically ordered
- when they are flowing.
- These packets are flushed only after a time-out of inactivity, that is
- after a time-out.
 \end_layout
 
 \begin_layout Subsection
