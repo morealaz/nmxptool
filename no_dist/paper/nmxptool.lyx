@@ -167,7 +167,7 @@ thanks[revision]{
 \backslash
 small 
 \backslash
-itshape CVS $ $Revision: 1.33 $ $ -- $ $Date: 2008-08-19 16:37:11 $ $} 
+itshape CVS $ $Revision: 1.34 $ $ -- $ $Date: 2008-08-20 08:52:26 $ $} 
 \end_layout
 
 \end_inset
@@ -444,8 +444,8 @@ key "seedmanual"
 \end_inset
 
 .
- More details about software interaction beetween the servers and nmxptool
- will be described later and showned in figure 
+ More details about possible software interactions beetween the Nanometrics
+ servers and nmxptool will be described later and showned in figure 
 \begin_inset LatexCommand ref
 reference "fig:nmxptoolusages"
 
@@ -479,11 +479,11 @@ The main contribution offered by nmxptool, as regards other similar software,
  compromise between data continuity and low latency.
  Besides, nmxptool allows to retrieve Data-On-Demand from NaqsServer with
  minimum delay after request.
- Another important property is the capability that allows to retrieve missing
- data due to the program restart or fatal disconnections, in fact, nmxptool
- can retrieve buffered data from NaqsServer or data of the past from the
- DataServer and joining it in near-real-time to the data that is flowing
- from the NaqsServer.
+ Another important property is the capability that allows to restart the
+ data flow from the last sample received before the last program shutdown
+ or fatal disconnections, in fact, nmxptool can retrieve buffered data from
+ NaqsServer or data of the past from the DataServer and joining it in near-real-
+time to the data that is flowing from the NaqsServer.
 \end_layout
 
 \begin_layout Standard
@@ -554,8 +554,9 @@ RetxRequest
 \end_layout
 
 \begin_layout Standard
-In order to allow data continuity when short disconnections to NaqsServer
- occur it would be better to set a high value the variable 
+Moreover, in order to allow data continuity when short disconnections to
+ NaqsServer occur it would be better to set to a high value the variable
+ 
 \shape italic
 DataBufferLength
 \shape default
@@ -564,8 +565,7 @@ DataBufferLength
 Datastream
 \shape default
  of the file Naqs.ini.
- Presently, the maximum value is equal to 100.
- For example:
+ Presently, the maximum value is equal to 100, then for example:
 \end_layout
 
 \begin_layout Quotation
@@ -614,14 +614,16 @@ Latency vs data continuity
 \end_layout
 
 \begin_layout Standard
-If the main target is archiving data, certainly, it will be more important
- having data stored less fragmented as possible.
+If the main target is data archiving, certainly, it will be more important
+ having data stored less fragmented as possible, on the other hand, if the
+ main target is the earthquake location then it would be preferable a low
+ latency of data flow even if it should suffer from some small gap.
  Supposing the data is received continuous and ordered then the latency
  will be only due to the means of transmission (cable, satellite connection)
  and the time spent from the software to process the data.
- But if we consider also that the packets can be missed, requested and retransmi
-tted then, in order to guarantee continuous data, the latency will be further
- increased by the wait of the missing packet.
+ But, in order to guarantee most the continuity of the data and if we consider
+ also that the packets can be missed, requested and retransmitted, then
+ the latency will be further increased by the wait of the missing packet.
  nmxptool allows to declare the maximum tolerable latency you can accept.
  The figure 
 \begin_inset LatexCommand ref
@@ -629,7 +631,11 @@ reference "fig:maxtolerablelatency"
 
 \end_inset
 
- shows the case when a packet is retransmitted out of order.
+ shows the case when a packet is retransmitted out of order within a 
+\shape italic
+Raw Stream
+\shape default
+ connection.
 \end_layout
 
 \begin_layout Standard
@@ -660,16 +666,13 @@ Main parameter to set for the Raw Stream connection is the Max tolerable
  latency you can accept, a sort of short-term-completion but managed by
  the client and not by the server.
  nmxptool is able to manage a buffer of trasmitted and retransmitted packets
- aiming to guarantee continuous data, chronological order of packets, minimum
- latency and minimum number of gaps.
+ aiming to guarantee continuouity of the data, chronological order of packets,
+ minimum latency and minimum number of gaps.
  nmxptool slows down the acquisition only when it is waiting for a missing
  packet.
- Main parameter to set for Raw Stream is the max tolerable latency you can
- accept, a sort of short-term-completion but managed by the client and not
- by the server.
- nmxptool is capable to manage a queue of packets and order them chronologically
- when is needed, that is when a retrasmission occurs.
- Type of compressed packet is equal to 1.
+ *** nmxptool is capable to manage a queue of packets and order them chronologic
+ally when is needed, that is when a retrasmission occurs.
+ *** Type of compressed packet is equal to 1.
  bit 5 = 1 indicates the packet is being restransmitted, Type of retransmitted
  packet is 33, that is 1 + 32 
 \end_layout
