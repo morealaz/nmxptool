@@ -48,8 +48,8 @@
 			<integer>493</integer>
 			<key>Points</key>
 			<array>
-				<string>{716.772, 1602.48}</string>
-				<string>{797.611, 1642.67}</string>
+				<string>{716.769, 1602.48}</string>
+				<string>{797.61, 1642.67}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -1921,7 +1921,7 @@ Files}</string>
 			<integer>401</integer>
 			<key>Points</key>
 			<array>
-				<string>{678.738, 1583.48}</string>
+				<string>{678.737, 1583.48}</string>
 				<string>{598.967, 1543.44}</string>
 			</array>
 			<key>Style</key>
@@ -7031,7 +7031,7 @@ Default -60 sec.}</string>
 			<array>
 				<string>{540.394, 1516.92}</string>
 				<string>{442.587, 1477.47}</string>
-				<string>{342.632, 1517.12}</string>
+				<string>{342.633, 1517.12}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -8810,7 +8810,7 @@ Default 600 sec.}</string>
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\qc\pardirnatural
 
-\f0\b\fs48 \cf0 11}</string>
+\f0\b\fs48 \cf0 9}</string>
 			</dict>
 		</dict>
 		<dict>
@@ -10681,7 +10681,7 @@ gaps}</string>
 		</dict>
 	</array>
 	<key>ModificationDate</key>
-	<string>2008-08-20 12:34:03 +0200</string>
+	<string>2008-08-20 12:43:47 +0200</string>
 	<key>Modifier</key>
 	<string>mtheo</string>
 	<key>NotesVisible</key>
