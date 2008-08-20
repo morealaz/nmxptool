@@ -167,7 +167,7 @@ thanks[revision]{
 \backslash
 small 
 \backslash
-itshape CVS $ $Revision: 1.35 $ $ -- $ $Date: 2008-08-20 10:42:32 $ $} 
+itshape CVS $ $Revision: 1.36 $ $ -- $ $Date: 2008-08-20 13:56:35 $ $} 
 \end_layout
 
 \end_inset
@@ -553,6 +553,150 @@ RetxRequest
  packet.
 \end_layout
 
+\begin_layout Subsection
+Latency vs data continuity
+\end_layout
+
+\begin_layout Standard
+If the main target is the data archiving, certainly, it will be more important
+ having data stored less fragmented as possible, on the other hand, if the
+ main target is the earthquake location then it would be preferable a low
+ latency of data flow even if it should suffer from some small gap.
+ Supposing the data received is continuous and ordered then the latency
+ will be only due to the means of transmission (cable, satellite connection)
+ and due to the time spent from the software to process the data.
+ But, in order to guarantee most the continuity of the data and if we consider
+ also that the packets can be missed, requested and retransmitted, then
+ the latency could be further increased by the possible wait of the missing
+ packet.
+ nmxptool allows to declare the maximum tolerable latency you can accept,
+ only after that maximum wait, nmxptool breaks up the continuous data flow
+ and revealing the gap.
+ The figure 
+\begin_inset LatexCommand ref
+reference "fig:maxtolerablelatency"
+
+\end_inset
+
+ shows the behaviour of nmxptool when the packets are retransmitted out
+ of order within a 
+\shape italic
+Raw Stream
+\shape default
+ connection.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide true
+sideways false
+status open
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename /Users/mtheo/Desktop/cvswork/nmxptool/no_dist/paper/images/nanometrics_gaps.eps.gz
+	width 10cm
+	subcaptionText "dddd"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Caption
+
+\begin_layout Standard
+
+\shape italic
+Main parameter to set for the Raw Stream connection is the Maximum-Tolerable-Lat
+ency you can accept, a sort of Short-Term-Completion but managed by the
+ client and not by the server.
+ nmxptool slows down the acquisition only when it is waiting for a missing
+ packet and it waits that packets up to that maximum time.
+ Aiming to guarantee the continuity of the data, the chronological order
+ of packets, the minimum latency and the minimum number of gaps, nmxptool
+ is able to manage a buffer of all kinds of packet received, comprised the
+ packets retransmitted out of order.
+ The figure shows two exemplifying cases of how the retransmitted packets
+ are handled by nmxptool: a) since the packet number 2 has been received
+ whitin reasonable and tolerable time, nmxptool uses it to fill the temporary
+ gap and the data flow will be only affected from a certain latency less
+ than the Maximum-Tolerable-Latency; b) the packet number 9 is lost because
+ it has been received after too much time, then nmxptool reveals a gap equal
+ to the duration of that packet after a time nearly equal to the Maximum-Tolerab
+le-Latency.
+\end_layout
+
+\end_inset
+
+
+\begin_inset LatexCommand label
+name "fig:maxtolerablelatency"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Data On Demand
+\end_layout
+
+\begin_layout Standard
+TODO: DataOnDemand figure and descriptions.
+\end_layout
+
+\begin_layout Standard
+*** Moreover, for retrieving data-on-demand....
+ Timeoutrecv....
+ Packet type 1+32+64
+\end_layout
+
+\begin_layout Standard
+
+\shape italic
+*** Type of compressed packet is equal to 1.
+ bit 5 = 1 indicates the packet is being restransmitted, Type of retransmitted
+ packet is 33, that is 1 + 32 
+\end_layout
+
+\begin_layout Standard
+nmxptool and libnmxp have been also designed to retrieve with minimum delay
+ the data requested by the java application DataOnDemand developed by Nanometric
+s.
+ nmxptool is listening to the packets which are chronologically ordered
+ when they are flowing.
+ These packets are flushed only after a time-out of inactivity, that is
+ after a time-out.
+\end_layout
+
+\begin_layout Subsection
+Data continuity after disconnection
+\end_layout
+
+\begin_layout Standard
+Since version 1.1.8, nmxptool offers a feature to allow the data continuity
+ between program restarts.
+\end_layout
+
+\begin_layout Standard
+This feature is based on the ringbuffer management on the NaqsServer and
+ the DataServer side.
+ 1) NaqsServer provides near-realtime data and it can buffer data up to
+ 100 packets for each channel.
+ file: Naqs.ini section: [Datastream] parameter: DataBufferLength (range
+ is [0..100], set to 100 if it is possible) 2) DataServer stores data of the
+ past and you can retrieve available data defining start time and end time.
+\end_layout
+
 \begin_layout Standard
 Moreover, in order to allow data continuity when short disconnections to
  NaqsServer occur it would be better to set to a high value the variable
@@ -607,137 +751,6 @@ status open
 \end_inset
 
 
-\end_layout
-
-\begin_layout Subsection
-Latency vs data continuity
-\end_layout
-
-\begin_layout Standard
-If the main target is the data archiving, certainly, it will be more important
- having data stored less fragmented as possible, on the other hand, if the
- main target is the earthquake location then it would be preferable a low
- latency of data flow even if it should suffer from some small gap.
- Supposing the data received is continuous and ordered then the latency
- will be only due to the means of transmission (cable, satellite connection)
- and due to the time spent from the software to process the data.
- But, in order to guarantee most the continuity of the data and if we consider
- also that the packets can be missed, requested and retransmitted, then
- the latency could be further increased by the possible wait of the missing
- packet.
- nmxptool allows to declare the maximum tolerable latency you can accept,
- only after that maximum wait, nmxptool breaks up the continuous data flow
- and .
- The figure 
-\begin_inset LatexCommand ref
-reference "fig:maxtolerablelatency"
-
-\end_inset
-
- shows the case when a packet is retransmitted out of order within a 
-\shape italic
-Raw Stream
-\shape default
- connection.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide true
-sideways false
-status open
-
-\begin_layout Standard
-\align center
-\begin_inset Graphics
-	filename /Users/mtheo/Desktop/cvswork/nmxptool/no_dist/paper/images/nanometrics_gaps.eps.gz
-	width 10cm
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\align center
-\begin_inset Caption
-
-\begin_layout Standard
-
-\shape italic
-Main parameter to set for the Raw Stream connection is the Maximum-Tolerable-Lat
-ency you can accept, a sort of short-term-completion but managed by the
- client and not by the server.
- nmxptool slows down the acquisition only when it is waiting for a missing
- packet and it waits that packets up to that maximum time.
- Aiming to guarantee continuouity of the data, chronological order of packets,
- minimum latency and minimum number of gaps, nmxptool is able to manage
- a buffer of all kinds of packet, comprised the packets retransmitted out
- of order.
- *** Packet number 2 will be retrieved and used to fill the gap.
- Packet number 9 will be lost.
- *** Type of compressed packet is equal to 1.
- bit 5 = 1 indicates the packet is being restransmitted, Type of retransmitted
- packet is 33, that is 1 + 32 
-\end_layout
-
-\end_inset
-
-
-\begin_inset LatexCommand label
-name "fig:maxtolerablelatency"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Data On Demand
-\end_layout
-
-\begin_layout Standard
-TODO: DataOnDemand figure and descriptions.
-\end_layout
-
-\begin_layout Standard
-Moreover, for retrieving data-on-demand....
- Timeoutrecv....
- Packet type 1+32+64
-\end_layout
-
-\begin_layout Standard
-nmxptool and libnmxp have been also designed to retrieve with minimum delay
- the data requested by the java application DataOnDemand developed by Nanometric
-s.
- nmxptool is listening to the packets which are chronologically ordered
- when they are flowing.
- These packets are flushed only after a time-out of inactivity, that is
- after a time-out.
-\end_layout
-
-\begin_layout Subsection
-Data continuity after disconnection
-\end_layout
-
-\begin_layout Standard
-Since version 1.1.8, nmxptool offers a feature to allow the data continuity
- between program restarts.
-\end_layout
-
-\begin_layout Standard
-This feature is based on the ringbuffer management on the NaqsServer and
- the DataServer side.
- 1) NaqsServer provides near-realtime data and it can buffer data up to
- 100 packets for each channel.
- file: Naqs.ini section: [Datastream] parameter: DataBufferLength (range
- is [0..100], set to 100 if it is possible) 2) DataServer stores data of the
- past and you can retrieve available data defining start time and end time.
 \end_layout
 
 \begin_layout Standard
