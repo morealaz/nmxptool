@@ -167,7 +167,7 @@ thanks[revision]{
 \backslash
 small 
 \backslash
-itshape CVS $ $Revision: 1.34 $ $ -- $ $Date: 2008-08-20 08:52:26 $ $} 
+itshape CVS $ $Revision: 1.35 $ $ -- $ $Date: 2008-08-20 10:42:32 $ $} 
 \end_layout
 
 \end_inset
@@ -614,17 +614,20 @@ Latency vs data continuity
 \end_layout
 
 \begin_layout Standard
-If the main target is data archiving, certainly, it will be more important
+If the main target is the data archiving, certainly, it will be more important
  having data stored less fragmented as possible, on the other hand, if the
  main target is the earthquake location then it would be preferable a low
  latency of data flow even if it should suffer from some small gap.
- Supposing the data is received continuous and ordered then the latency
+ Supposing the data received is continuous and ordered then the latency
  will be only due to the means of transmission (cable, satellite connection)
- and the time spent from the software to process the data.
+ and due to the time spent from the software to process the data.
  But, in order to guarantee most the continuity of the data and if we consider
  also that the packets can be missed, requested and retransmitted, then
- the latency will be further increased by the wait of the missing packet.
- nmxptool allows to declare the maximum tolerable latency you can accept.
+ the latency could be further increased by the possible wait of the missing
+ packet.
+ nmxptool allows to declare the maximum tolerable latency you can accept,
+ only after that maximum wait, nmxptool breaks up the continuous data flow
+ and .
  The figure 
 \begin_inset LatexCommand ref
 reference "fig:maxtolerablelatency"
@@ -662,16 +665,17 @@ status open
 \begin_layout Standard
 
 \shape italic
-Main parameter to set for the Raw Stream connection is the Max tolerable
- latency you can accept, a sort of short-term-completion but managed by
- the client and not by the server.
- nmxptool is able to manage a buffer of trasmitted and retransmitted packets
- aiming to guarantee continuouity of the data, chronological order of packets,
- minimum latency and minimum number of gaps.
+Main parameter to set for the Raw Stream connection is the Maximum-Tolerable-Lat
+ency you can accept, a sort of short-term-completion but managed by the
+ client and not by the server.
  nmxptool slows down the acquisition only when it is waiting for a missing
- packet.
- *** nmxptool is capable to manage a queue of packets and order them chronologic
-ally when is needed, that is when a retrasmission occurs.
+ packet and it waits that packets up to that maximum time.
+ Aiming to guarantee continuouity of the data, chronological order of packets,
+ minimum latency and minimum number of gaps, nmxptool is able to manage
+ a buffer of all kinds of packet, comprised the packets retransmitted out
+ of order.
+ *** Packet number 2 will be retrieved and used to fill the gap.
+ Packet number 9 will be lost.
  *** Type of compressed packet is equal to 1.
  bit 5 = 1 indicates the packet is being restransmitted, Type of retransmitted
  packet is 33, that is 1 + 32 
