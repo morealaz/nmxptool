@@ -112,7 +112,7 @@ FILEMAILDAY=$DIRLOG/mail
 FILEARCH=${DIRARCHIVESDS}/${YEAR}/${NET}/${STA}/${CHAN}.D/${NET}.${STA}.${LOC}.${CHAN}.D.${YEAR}.${JDAY}
 
 # debugging variables
-RUNNMXP=n
+RUNNMXP=y
 
 if [ -f ${FILEARCH} ]; then
 	echo "WARNING: ${FILEARCH} already exists! ${OVERRIDEMESSAGE}"
