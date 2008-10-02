@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Syntax: cmd <year> <net> <sta> <chan>  <jday> [y/n]
+# Syntax: cmd <hostname> <year> <net> <sta> <chan>  <jday> [y/n]
 # 
 #        Last parameter declare if override existing files. Default 'n'
 #
@@ -13,20 +13,21 @@
 #
 # SDS structure: /YEAR/NET/STA/CHAN/  NET.STA.LOC.CHAN.YEAR.JDAY
 
+. `dirname $0`/nmxp_sds.conf
 
 export PATH="/bin:/usr/bin:/usr/local/bin:$PATH"
 
-if [ -z $5 ]; then
+if [ -z $6 ]; then
 	echo ""
-	echo "Syntax: $0 <year> <net> <sta> <chan>  <jday>"
+	echo "Syntax: $0 <hostname> <year> <net> <sta> <chan>  <jday>"
 	echo "        if  <jday>  is less or equal 0,"
 	echo "        it will be cosidered like a displacement from today."
 	echo ""
 	echo "Examples:"
-	echo "        $0  2006 MN TIR HHZ 303"
-	echo "        $0  2006 MN TIR HHZ  0 (today)"
-	echo "        $0  2006 MN TIR HHZ -1 (yesterday)"
-	echo "        $0  2006 MN TIR HHZ -7 (a week ago)"
+	echo "        $0  naqs2a.int.ingv.it 2006 MN TIR HHZ 303"
+	echo "        $0  naqs2a.int.ingv.it 2006 MN TIR HHZ  0 (today)"
+	echo "        $0  naqs2a.int.ingv.it 2006 MN TIR HHZ -1 (yesterday)"
+	echo "        $0  naqs2a.int.ingv.it 2006 MN TIR HHZ -7 (a week ago)"
 	echo ""
 	echo "WARNING: the displacement does not consider leap years if it refers to previous year !"
 	echo ""
@@ -34,14 +35,14 @@ if [ -z $5 ]; then
 fi
 
 # variables dependent on the input parameters
-YEAR=$1
-NET=$2
-STA=$3
-CHAN=$4
-JDAY=$5
-JDAY=`echo $5 | sed -e "s/^[0]*//"`
-OVERRIDE=$6
-NMXPHOST=naqs2a.int.ingv.it
+NMXPHOST=$1
+YEAR=$2
+NET=$3
+STA=$4
+CHAN=$5
+JDAY=$6
+JDAY=`echo $6 | sed -e "s/^[0]*//"`
+OVERRIDE=$7
 
 if [ $JDAY -le 0 ]; then
     	export TODAY=$(date "+%j" | sed -e "s/^[0]*//")
@@ -63,6 +64,27 @@ if [ "$CHAN" == "HH?" ]; then
 	exit
 fi
 
+if [ "$CHAN" == "BH?" ]; then
+	$0 $YEAR $NET $STA BHZ $JDAY
+	$0 $YEAR $NET $STA BHN $JDAY
+	$0 $YEAR $NET $STA BHE $JDAY
+	exit
+fi
+
+if [ "$CHAN" == "HL?" ]; then
+	$0 $YEAR $NET $STA HLZ $JDAY
+	$0 $YEAR $NET $STA HLN $JDAY
+	$0 $YEAR $NET $STA HLE $JDAY
+	exit
+fi
+
+if [ "$CHAN" == "HN?" ]; then
+	$0 $YEAR $NET $STA HNZ $JDAY
+	$0 $YEAR $NET $STA HNN $JDAY
+	$0 $YEAR $NET $STA HNE $JDAY
+	exit
+fi
+
 if [ -z $OVERRIDE ]; then
 	OVERRIDE=n
 else
@@ -81,20 +103,16 @@ fi
 # add zero to JDAY
 JDAY=$(printf %03d $JDAY)
 
-#pseudo static variables
-NMXPBINDIR=/home/sysop/seiscomp/acquisition/bin
-NMXPTOOL=${NMXPBINDIR}/nmxptool
-DIRARCHIVESDS=/mnt/seedstore/nmxp_accel
-
 # derivated variables
 DIRLOG=$(dirname $0)/log
 NOW=$(date "+%Y%m%dx%H%M%S")
-FILELOG=$DIRLOG/nmdc.$1.$2.$3.$4.$5.$NOW.log
+FILELOG=$DIRLOG/nmxp_sds.$1.$2.$3.$4.$5.$NOW.log
 FILEMAILDAY=$DIRLOG/mail
 
 FILEARCH=${DIRARCHIVESDS}/${YEAR}/${NET}/${STA}/${CHAN}.D/${NET}.${STA}.${LOC}.${CHAN}.D.${YEAR}.${JDAY}
 
-RUNNMXP=y
+# debugging variables
+RUNNMXP=n
 
 if [ -f ${FILEARCH} ]; then
 	echo "WARNING: ${FILEARCH} already exists! ${OVERRIDEMESSAGE}"
