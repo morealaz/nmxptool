@@ -14,8 +14,10 @@
 NOW=$(date "+%Y%m%dx%H%M%S")
 FILELOG=`dirname $0`/nmxp_sds_mgr_${NOW}.log
 
+echo "Begin: `date`" >> ${FILELOG}
+
 FILE_STATION_LIST=`dirname $0`/nmxp_sds_station_list.conf
-`dirname $0`/nmxp_stationlist.sh naqs2a.int.ingv.it data "\.HL[NEZ]" | sed -e "s/^/${DEFAULTNET}\./" > ${FILE_STATION_LIST} 2> ${FILELOG}
+`dirname $0`/nmxp_stationlist.sh naqs2a.int.ingv.it data "\.HL[NEZ]" | sed -e "s/^/${DEFAULTNET}\./" > ${FILE_STATION_LIST} 2>> ${FILELOG}
 STATION_LIST=`cat ${FILE_STATION_LIST}`
 
 NMXP_SDS=`dirname $0`/nmxp_sds.sh 
@@ -32,3 +34,6 @@ while [ $JDAY -le ${JDAYEND} ]; do
 	done
 	JDAY=$(($JDAY + 1))
 done
+
+echo "End: `date`" >> ${FILELOG}
+
