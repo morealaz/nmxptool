@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.105 2008-11-05 14:52:32 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.106 2008-11-05 15:02:43 mtheo Exp $
  *
  */
 
@@ -352,9 +352,11 @@ Other arguments:\n\
 #ifdef HAVE_LIBMSEED
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
   -m, --writeseed         Pack received data in Mini-SEED records\n\
-                          and write to a file.\n");
+                          and write to a file within SDS structure.\n\
+                          Related to -o.\n");
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
-  -o, --outdirseed        Output directory for SDS structure.\n");
+  -o, --outdirseed=DIR    Output directory for SDS structure.\n\
+                          Related to -m (default is current directory).\n");
 #endif
 
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
