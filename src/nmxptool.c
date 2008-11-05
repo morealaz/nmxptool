@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.200 2008-11-05 15:18:24 mtheo Exp $
+ * $Id: nmxptool.c,v 1.201 2008-11-05 15:24:33 mtheo Exp $
  *
  */
 
@@ -556,7 +556,7 @@ int main (int argc, char **argv) {
 
 			outfile = fopen(filename, "w");
 			if(!outfile) {
-			    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_EXTRA, "Can not to open file %s!",
+			    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_EXTRA, "Can not open file %s!\n",
 				    NMXP_LOG_STR(filename));
 			}
 		    }
@@ -629,7 +629,7 @@ int main (int argc, char **argv) {
 
 			data_seed.outfile_mseed = fopen(data_seed.filename_mseed, "w");
 			if(!data_seed.outfile_mseed) {
-			    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_EXTRA, "Can not to open file %s!",
+			    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_EXTRA, "Can not open file %s!\n",
 				    NMXP_LOG_STR(data_seed.filename_mseed));
 			}
 
@@ -854,7 +854,7 @@ int main (int argc, char **argv) {
 
 	    data_seed.outfile_mseed = fopen(data_seed.filename_mseed, "w");
 	    if(!data_seed.outfile_mseed) {
-		nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_EXTRA, "Can not to open file %s!",
+		nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_EXTRA, "Can not open file %s!\n",
 			NMXP_LOG_STR(data_seed.filename_mseed));
 	    } else {
 		nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_EXTRA, "Opened file %s!\n",
