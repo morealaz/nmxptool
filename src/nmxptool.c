@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.202 2008-11-05 15:28:13 mtheo Exp $
+ * $Id: nmxptool.c,v 1.203 2008-11-05 15:37:05 mtheo Exp $
  *
  */
 
@@ -578,7 +578,7 @@ int main (int argc, char **argv) {
 				/* ERROR */
 				nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_EXTRA, "Directory %s does not exist!\n", dirsdschan);
 			    } else {
-				nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "Directory %s exist!\n", dirsdschan);
+				nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "Directory %s exists!\n", dirsdschan);
 			    }
 
 
