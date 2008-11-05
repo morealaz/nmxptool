@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.203 2008-11-05 15:37:05 mtheo Exp $
+ * $Id: nmxptool.c,v 1.204 2008-11-05 16:10:00 mtheo Exp $
  *
  */
 
@@ -567,18 +567,21 @@ int main (int argc, char **argv) {
 			/* Open output Mini-SEED file */
 			if(nmxp_chan_cpy_sta_chan(channelList_subset->channel[request_chan].name, station_code, channel_code, network_code)) {
 			    sprintf(dirsdschan, "%s/%d/%s/%s/%s.D", params.outdirseed, nmxp_data_year_from_epoch(params.start_time), NETCODE_OR_CURRENT_NETWORK, station_code, channel_code);
-			    if(mkdirp(dirsdschan, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH) == -1) {
-				/* ERROR */
-				nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_EXTRA, "Directory %s has not been created!\n", dirsdschan);
-			    } else {
-				nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "Directory %s created!\n", dirsdschan);
-			    }
-
 			    if(chdir(dirsdschan) == -1) {
-				/* ERROR */
-				nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_EXTRA, "Directory %s does not exist!\n", dirsdschan);
+				/* nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_EXTRA, "Directory %s does not exist!\n", dirsdschan); */
+
+				if(mkdirp(dirsdschan, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH) == -1) {
+				    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_EXTRA, "Directory %s has not been created!\n", dirsdschan);
+				} else {
+				    /* nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "Directory %s created!\n", dirsdschan); */
+				    if(chdir(dirsdschan) == -1) {
+					/* ERROR */
+					nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_EXTRA, "Directory %s should be created but it does not exist!\n", dirsdschan);
+				    }
+				}
+
 			    } else {
-				nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "Directory %s exists!\n", dirsdschan);
+				/* nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "Directory %s exists!\n", dirsdschan); */
 			    }
 
 
