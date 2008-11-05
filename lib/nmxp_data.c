@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_data.c,v 1.60 2008-03-28 13:21:24 mtheo Exp $
+ * $Id: nmxp_data.c,v 1.61 2008-11-05 14:51:28 mtheo Exp $
  *
  */
 
@@ -194,6 +194,34 @@ int nmxp_data_to_str(char *out_str, double time_d) {
     return 0;
 }
 
+int nmxp_data_year_from_epoch(double time_d) {
+    time_t time_t_start_time;
+    struct tm *tm_start_time;
+
+    if(time_d > 0.0) {
+	    time_t_start_time = (time_t) time_d;
+    } else {
+	    time_t_start_time = 0;
+    }
+    tm_start_time = gmtime(&time_t_start_time);
+    
+    return tm_start_time->tm_year + 1900;
+}
+
+
+int nmxp_data_yday_from_epoch(double time_d) {
+    time_t time_t_start_time;
+    struct tm *tm_start_time;
+
+    if(time_d > 0.0) {
+	    time_t_start_time = (time_t) time_d;
+    } else {
+	    time_t_start_time = 0;
+    }
+    tm_start_time = gmtime(&time_t_start_time);
+    
+    return tm_start_time->tm_yday + 1;
+}
 
 int nmxp_data_trim(NMXP_DATA_PROCESS *pd, double trim_start_time, double trim_end_time, unsigned char exclude_bitmap) {
     int ret = 0;

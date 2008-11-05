@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_data.h,v 1.28 2008-02-28 14:01:17 mtheo Exp $
+ * $Id: nmxp_data.h,v 1.29 2008-11-05 14:51:28 mtheo Exp $
  *
  */
 
@@ -168,6 +168,16 @@ int nmxp_data_unpack_bundle (int32_t *outdata, unsigned char *indata, int32_t *p
 /*! \brief Convert epoch in string
  */
 int nmxp_data_to_str(char *out_str, double time_d);
+
+
+/*! \brief Return year from epoch
+ */
+int nmxp_data_year_from_epoch(double time_d);
+
+
+/*! \brief Return julian day from epoch
+ */
+int nmxp_data_yday_from_epoch(double time_d);
 
 
 /*! \brief Trim data within a time interval
