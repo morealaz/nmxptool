@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_data.c,v 1.61 2008-11-05 14:51:28 mtheo Exp $
+ * $Id: nmxp_data.c,v 1.62 2008-11-05 15:24:16 mtheo Exp $
  *
  */
 
@@ -693,8 +693,10 @@ int nmxp_data_seed_init(NMXP_DATA_SEED *data_seed) {
 			"Error writing %s to output file\n", data_seed->filename_mseed);
 	    }
 	} else {
+	    /*
 		nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_PACKETMAN,
 			"Error opening file %s\n", data_seed->filename_mseed);
+	    */
 	}
     }
 
