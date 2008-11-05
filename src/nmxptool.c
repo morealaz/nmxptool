@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.198 2008-07-22 23:33:01 mtheo Exp $
+ * $Id: nmxptool.c,v 1.199 2008-11-05 14:53:28 mtheo Exp $
  *
  */
 
@@ -18,6 +18,9 @@
 #include <string.h>
 #include <errno.h>
 #include <signal.h>
+
+#include <sys/stat.h>
+#include <unistd.h>
 
 #include <nmxp.h>
 #include "nmxptool_getoptlong.h"
@@ -111,6 +114,38 @@ MSRecord *msr_list_chan[MAX_N_CHAN];
 #endif
 
 int ew_check_flag_terminate = 0;
+
+int mkdirp(const char *filename, mode_t mode) {
+    const char sepdir = '/';
+    char *dir = strdup(filename);
+    int i, l;
+    int	error=0;
+
+    if(!filename) return -1;
+    dir = strdup(filename);
+    if(!dir) return -1;
+
+    l = strlen(dir);
+    i = 0;
+    while(i < l  &&  error != -1) {
+	if(dir[i] == sepdir  &&  i > 0) {
+	    dir[i] = 0;
+	    /* nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "trying to create %s...\n", dir); */
+	    if(chdir(dir) == -1) {
+		error=mkdir(dir, mode);
+	    }
+	    dir[i] = sepdir;
+	}
+	i++;
+    }
+    if(error != -1) {
+	error=mkdir(dir, mode);
+    }
+
+    free(dir);
+    return error;
+}
+
 
 int main (int argc, char **argv) {
     int32_t connection_time;
@@ -528,14 +563,55 @@ int main (int argc, char **argv) {
 
 #ifdef HAVE_LIBMSEED
 		    if(params.flag_writeseed) {
+			char dirsdschan[1024];
 			/* Open output Mini-SEED file */
 			if(nmxp_chan_cpy_sta_chan(channelList_subset->channel[request_chan].name, station_code, channel_code, network_code)) {
+			    sprintf(dirsdschan, "%s/%d/%s/%s/%s.D", params.outdirseed, nmxp_data_year_from_epoch(params.start_time), NETCODE_OR_CURRENT_NETWORK, station_code, channel_code);
+			    if(mkdirp(dirsdschan, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH) == -1) {
+				/* ERROR */
+				nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_EXTRA, "Directory %s has not been created!\n", dirsdschan);
+			    } else {
+				nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "Directory %s created!\n", dirsdschan);
+			    }
+
+			    if(chdir(dirsdschan) == -1) {
+				/* ERROR */
+				nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_EXTRA, "Directory %s does not exist!\n", dirsdschan);
+			    } else {
+				nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "Directory %s exist!\n", dirsdschan);
+			    }
+
+
+			    /*
 			    sprintf(data_seed.filename_mseed, "%s.%s.%s_%s_%s.miniseed",
 				    NETCODE_OR_CURRENT_NETWORK,
 				    station_code,
 				    channel_code,
 				    str_start_time,
 				    str_end_time);
+				    */
+
+			    /* TODO if the requested data covers different days
+			     * filename contains also the year and the yday of the end time, this breaks SDS structure */
+			    if( ( nmxp_data_year_from_epoch(params.start_time) == nmxp_data_year_from_epoch(params.end_time) )
+				    &&  ( nmxp_data_yday_from_epoch(params.start_time) == nmxp_data_yday_from_epoch(params.end_time)) ) {
+				sprintf(data_seed.filename_mseed, "%s.%s..%s.D.%d.%03d",
+					NETCODE_OR_CURRENT_NETWORK,
+					station_code,
+					channel_code,
+					nmxp_data_year_from_epoch(params.start_time),
+					nmxp_data_yday_from_epoch(params.start_time));
+			    } else {
+				sprintf(data_seed.filename_mseed, "%s.%s..%s.D.%d.%03d-%d.%03d",
+					NETCODE_OR_CURRENT_NETWORK,
+					station_code,
+					channel_code,
+					nmxp_data_year_from_epoch(params.start_time),
+					nmxp_data_yday_from_epoch(params.start_time),
+					nmxp_data_year_from_epoch(params.end_time),
+					nmxp_data_yday_from_epoch(params.end_time));
+			    }
+
 			} else {
 			    sprintf(filename, "%s_%s_%s.miniseed",
 				    channelList_subset->channel[request_chan].name,
