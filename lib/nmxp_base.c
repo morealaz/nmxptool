@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_base.c,v 1.74 2008-07-21 00:04:56 mtheo Exp $
+ * $Id: nmxp_base.c,v 1.75 2008-11-05 10:05:41 mtheo Exp $
  *
  */
 
@@ -151,7 +151,7 @@ int nmxp_send_ctrl(int isock, void* buffer, int length)
 #warning Managing non-blocking I/O using select()
 int nmxp_recv_select_timeout(int s, char *buf, int len, int timeout)
 {
-#define HIGHEST_TIMEOUT 300
+#define HIGHEST_TIMEOUT 30
     fd_set fds;
     int n;
     struct timeval tv;
