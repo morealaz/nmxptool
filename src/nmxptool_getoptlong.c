@@ -7,13 +7,16 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.104 2008-07-22 23:21:25 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.105 2008-11-05 14:52:32 mtheo Exp $
  *
  */
 
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+
+#include <errno.h>
+#include <unistd.h>
 
 #include "config.h"
 #include "nmxp.h"
@@ -43,6 +46,7 @@ const NMXPTOOL_PARAMS NMXPTOOL_PARAMS_DEFAULT =
     DEFAULT_VERBOSE_LEVEL,
     NULL,
     NULL,
+    NULL,
     DEFAULT_BUFFERED_TIME,
     DEFAULT_N_CHANNEL,
     DEFAULT_USEC,
@@ -60,6 +64,20 @@ const NMXPTOOL_PARAMS NMXPTOOL_PARAMS_DEFAULT =
     0
 };
 
+
+char *gnu_getcwd () {
+    size_t size = 512;
+    while (1)
+    {
+	char *buffer = (char *) malloc (size);
+	if (getcwd (buffer, size) == buffer)
+	    return buffer;
+	free (buffer);
+	if (errno != ERANGE)
+	    return NULL;
+	size *= 2;
+    }
+}
 
 void nmxptool_author_support() {
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
@@ -335,6 +353,8 @@ Other arguments:\n\
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
   -m, --writeseed         Pack received data in Mini-SEED records\n\
                           and write to a file.\n");
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
+  -o, --outdirseed        Output directory for SDS structure.\n");
 #endif
 
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
@@ -534,6 +554,7 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 	{"channelinfo",  no_argument,       NULL, 'i'},
 #ifdef HAVE_LIBMSEED
 	{"writeseed",    no_argument,       NULL, 'm'},
+	{"outdirseed",   required_argument, NULL, 'o'},
 #endif
 	{"writefile",    no_argument,       NULL, 'w'},
 #ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
@@ -556,6 +577,7 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 
 #ifdef HAVE_LIBMSEED
     strcat(optstr, "m");
+    strcat(optstr, "o:");
 #endif
 
 #ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
@@ -803,6 +825,14 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 		case 'm':
 		    params->flag_writeseed = 1;
 		    break;
+		case 'o':
+		    params->outdirseed = optarg;
+		    if(params->outdirseed) {
+			if(chdir(params->outdirseed) == 0) {
+			    params->outdirseed =  gnu_getcwd();
+			}
+		    }
+		    break;
 #endif
 
 		case 'w':
@@ -1017,6 +1047,23 @@ int nmxptool_check_params(NMXPTOOL_PARAMS *params) {
 	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "<maxdataretr> has to be within [%d..%d].\n",
 		DEFAULT_MAX_TIME_TO_RETRIEVE_MINIMUM,
 		DEFAULT_MAX_TIME_TO_RETRIEVE_MAXIMUM);
+
+#ifdef HAVE_LIBMSEED
+    } else if(
+	    params->outdirseed) {
+	if(chdir(params->outdirseed) == -1) {
+	    /* ERROR */
+	    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_EXTRA, "Output directory %s does not exist!\n", params->outdirseed);
+	    ret = -1;
+	} else {    
+	}
+    } else if(
+	    params->flag_writeseed && !params->outdirseed) {
+	params->outdirseed =  gnu_getcwd();
+	nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "Set output dir to %s.\n",
+		params->outdirseed);
+#endif
+
     } else if( params->stc == -1
 	    && (params->max_tolerable_latency < DEFAULT_MAX_TOLERABLE_LATENCY_MINIMUM  ||
 		params->max_tolerable_latency > DEFAULT_MAX_TOLERABLE_LATENCY_MAXIMUM)) {

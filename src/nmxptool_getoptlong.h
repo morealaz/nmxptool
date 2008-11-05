@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.h,v 1.101 2008-04-22 13:13:41 mtheo Exp $
+ * $Id: nmxptool_getoptlong.h,v 1.102 2008-11-05 14:52:32 mtheo Exp $
  *
  */
 
@@ -94,6 +94,7 @@ typedef struct {
     int32_t verbose_level;
     char *ew_configuration_file;
     char *statefile;
+    char *outdirseed;
     double buffered_time;
     int n_channel;
     int usec;
