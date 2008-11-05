@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.201 2008-11-05 15:24:33 mtheo Exp $
+ * $Id: nmxptool.c,v 1.202 2008-11-05 15:28:13 mtheo Exp $
  *
  */
 
@@ -621,11 +621,11 @@ int main (int argc, char **argv) {
 
 			data_seed.outfile_mseed = fopen(data_seed.filename_mseed, "r");
 			if(data_seed.outfile_mseed) {
-			    nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "File %s already exist. It will be overrode.\n",
+			    nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "File %s already exist. It will not be overrode.\n",
 				    NMXP_LOG_STR(data_seed.filename_mseed));
 			    fclose(data_seed.outfile_mseed);
 			    data_seed.outfile_mseed = NULL;
-			}
+			} else {
 
 			data_seed.outfile_mseed = fopen(data_seed.filename_mseed, "w");
 			if(!data_seed.outfile_mseed) {
@@ -633,6 +633,7 @@ int main (int argc, char **argv) {
 				    NMXP_LOG_STR(data_seed.filename_mseed));
 			}
 
+			}
 		    }
 #endif
 
