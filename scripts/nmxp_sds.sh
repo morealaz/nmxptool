@@ -44,6 +44,9 @@ JDAY=$6
 JDAY=`echo $6 | sed -e "s/^[0]*//"`
 OVERRIDE=$7
 
+# OVERRIDE IS TEMPORARY DISABLED
+OVERRIDE=n
+
 if [ $JDAY -le 0 ]; then
     	export TODAY=$(date "+%j" | sed -e "s/^[0]*//")
 	export JDAY=$(( $TODAY + $JDAY ))
@@ -122,20 +125,20 @@ if [ -f ${FILEARCH} ]; then
 fi
 
 if [ $RUNNMXP == "y" ]; then
-	$NMXPTOOL -H $NMXPHOST -m -C ${NET}.${STA}.${CHAN} -s ${YEAR}.${JDAY},00:00:00.0000 -e  ${YEAR}.${JDAY},23:59:59.9999
-	NMXPFILEARCH=${NET}.${STA}.${CHAN}_${YEAR}.${JDAY}.00.00.00.0000_${YEAR}.${JDAY}.23.59.59.9999.miniseed
-	if [ -f $NMXPFILEARCH ]; then
-		FILENMXPARCHSIZE=`stat -c %s ${NMXPFILEARCH}`
-		if [ $FILENMXPARCHSIZE -le 0 ]; then
-			echo "WARNING: ${NMXPFILEARCH} is empty! It will not be saved!"
-			rm -f $NMXPFILEARCH
-		else
-			echo "Moving ${NMXPFILEARCH} to ${FILEARCH} ... "
-			mkdir -p `dirname ${FILEARCH}`
-			mv -f ${NMXPFILEARCH} ${FILEARCH}
-		fi
-	else
-		echo "ERROR: ${NMXPFILEARCH} has not been created by nmxptool."
-	fi
+	$NMXPTOOL -H $NMXPHOST -m -C ${NET}.${STA}.${CHAN} -s ${YEAR}.${JDAY},00:00:00.0000 -e  ${YEAR}.${JDAY},23:59:59.9999 -o ${DIRARCHIVESDS}
+# 	NMXPFILEARCH=${NET}.${STA}.${CHAN}_${YEAR}.${JDAY}.00.00.00.0000_${YEAR}.${JDAY}.23.59.59.9999.miniseed
+# 	if [ -f $NMXPFILEARCH ]; then
+# 		FILENMXPARCHSIZE=`stat -c %s ${NMXPFILEARCH}`
+# 		if [ $FILENMXPARCHSIZE -le 0 ]; then
+# 			echo "WARNING: ${NMXPFILEARCH} is empty! It will not be saved!"
+# 			rm -f $NMXPFILEARCH
+# 		else
+# 			echo "Moving ${NMXPFILEARCH} to ${FILEARCH} ... "
+# 			mkdir -p `dirname ${FILEARCH}`
+# 			mv -f ${NMXPFILEARCH} ${FILEARCH}
+# 		fi
+# 	else
+# 		echo "ERROR: ${NMXPFILEARCH} has not been created by nmxptool."
+# 	fi
 fi
 
