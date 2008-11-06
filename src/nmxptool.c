@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.204 2008-11-05 16:10:00 mtheo Exp $
+ * $Id: nmxptool.c,v 1.205 2008-11-06 14:01:47 mtheo Exp $
  *
  */
 
@@ -115,8 +115,13 @@ MSRecord *msr_list_chan[MAX_N_CHAN];
 
 int ew_check_flag_terminate = 0;
 
+#ifdef HAVE_WINDOWS_H
+const char sepdir = '\\';
+#else
+const char sepdir = '/';
+#endif
+
 int mkdirp(const char *filename, mode_t mode) {
-    const char sepdir = '/';
     char *dir = strdup(filename);
     int i, l;
     int	error=0;
@@ -176,6 +181,7 @@ int main (int argc, char **argv) {
 
     int recv_errno = 0;
 
+    char dirsdschan[1024];
     char filename[500] = "";
     char station_code[20] = "", channel_code[20] = "", network_code[20] = "";
 
@@ -563,10 +569,13 @@ int main (int argc, char **argv) {
 
 #ifdef HAVE_LIBMSEED
 		    if(params.flag_writeseed) {
-			char dirsdschan[1024];
 			/* Open output Mini-SEED file */
 			if(nmxp_chan_cpy_sta_chan(channelList_subset->channel[request_chan].name, station_code, channel_code, network_code)) {
-			    sprintf(dirsdschan, "%s/%d/%s/%s/%s.D", params.outdirseed, nmxp_data_year_from_epoch(params.start_time), NETCODE_OR_CURRENT_NETWORK, station_code, channel_code);
+			    sprintf(dirsdschan, "%s%c%d%c%s%c%s%c%s.D", params.outdirseed, sepdir,
+				    nmxp_data_year_from_epoch(params.start_time), sepdir,
+				    NETCODE_OR_CURRENT_NETWORK, sepdir,
+				    station_code, sepdir,
+				    channel_code);
 			    if(chdir(dirsdschan) == -1) {
 				/* nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_EXTRA, "Directory %s does not exist!\n", dirsdschan); */
 
