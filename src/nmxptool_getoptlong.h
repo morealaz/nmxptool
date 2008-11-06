@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.h,v 1.102 2008-11-05 14:52:32 mtheo Exp $
+ * $Id: nmxptool_getoptlong.h,v 1.103 2008-11-06 14:59:21 mtheo Exp $
  *
  */
 
@@ -46,6 +46,10 @@
 #define DEFAULT_VERBOSE_LEVEL 			NMXP_LOG_D_NULL
 #define DEFAULT_VERBOSE_LEVEL_MINIMUM		NMXP_LOG_D_NULL
 #define DEFAULT_VERBOSE_LEVEL_MAXIMUM		NMXP_LOG_D_ANY
+
+#define DEFAULT_TYPE_WRITESEED			0
+#define TYPE_WRITESEED_SDS			's'
+#define TYPE_WRITESEED_BUD			'b'
 
 #define DEFAULT_BUFFERED_TIME			-1.0
 
@@ -95,13 +99,13 @@ typedef struct {
     char *ew_configuration_file;
     char *statefile;
     char *outdirseed;
+    char type_writeseed;
     double buffered_time;
     int n_channel;
     int usec;
     int32_t max_data_to_retrieve;
     int networkdelay;  /* sleep 'networkdelay' seconds before reconnect */
     int listen_port;  /*  */
-    int flag_writeseed;
     int flag_listchannels;
     int flag_listchannelsnaqs;
     int flag_request_channelinfo;

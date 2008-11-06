@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.106 2008-11-05 15:02:43 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.107 2008-11-06 14:58:47 mtheo Exp $
  *
  */
 
@@ -47,13 +47,13 @@ const NMXPTOOL_PARAMS NMXPTOOL_PARAMS_DEFAULT =
     NULL,
     NULL,
     NULL,
+    DEFAULT_TYPE_WRITESEED,
     DEFAULT_BUFFERED_TIME,
     DEFAULT_N_CHANNEL,
     DEFAULT_USEC,
     DEFAULT_MAX_TIME_TO_RETRIEVE,
     DEFAULT_NETWORKDELAY,
     DEFAULT_LISTEN_PORT,
-    0,
     0,
     0,
     0,
@@ -351,11 +351,14 @@ Other arguments:\n\
 
 #ifdef HAVE_LIBMSEED
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
-  -m, --writeseed         Pack received data in Mini-SEED records\n\
-                          and write to a file within SDS structure.\n\
-                          Related to -o.\n");
+  -m, --writeseed=[TYPE]  Pack received data in Mini-SEED records and\n\
+                          store them within a SDS or BUD structure.\n\
+                          TYPE can be '%c' or '%c' (-m%c or -m%c)\n\
+                          Related to -o.\n",
+			  TYPE_WRITESEED_SDS, TYPE_WRITESEED_BUD,
+			  TYPE_WRITESEED_SDS, TYPE_WRITESEED_BUD);
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
-  -o, --outdirseed=DIR    Output directory for SDS structure.\n\
+  -o, --outdirseed=DIR    Output directory for SDS or BUD structure.\n\
                           Related to -m (default is current directory).\n");
 #endif
 
@@ -555,7 +558,7 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 	{"listchannelsnaqs", no_argument,   NULL, 'L'},
 	{"channelinfo",  no_argument,       NULL, 'i'},
 #ifdef HAVE_LIBMSEED
-	{"writeseed",    no_argument,       NULL, 'm'},
+	{"writeseed",    required_argument, NULL, 'm'},
 	{"outdirseed",   required_argument, NULL, 'o'},
 #endif
 	{"writefile",    no_argument,       NULL, 'w'},
@@ -578,7 +581,7 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 
 
 #ifdef HAVE_LIBMSEED
-    strcat(optstr, "m");
+    strcat(optstr, "m:");
     strcat(optstr, "o:");
 #endif
 
@@ -825,7 +828,19 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 
 #ifdef HAVE_LIBMSEED
 		case 'm':
-		    params->flag_writeseed = 1;
+		    if(optarg && strlen(optarg) == 1) {
+			params->type_writeseed = optarg[0];
+			if(params->type_writeseed != TYPE_WRITESEED_SDS
+				&& params->type_writeseed != TYPE_WRITESEED_BUD) {
+			    ret_errors++;
+			    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY,
+				    "Syntax error in option -%c %s!\n", c, NMXP_LOG_STR(optarg));
+			}
+		    } else {
+			ret_errors++;
+			nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY,
+				"Syntax error in option -%c %s!\n", c, NMXP_LOG_STR(optarg));
+		    }
 		    break;
 		case 'o':
 		    params->outdirseed = optarg;
@@ -952,7 +967,7 @@ void nmxptool_log_params(NMXPTOOL_PARAMS *params) {
 
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_EXTRA, "\
     double buffered_time: %f\n\
-    int flag_writeseed: %d\n\
+    char type_writeseed: %c\n\
     int flag_listchannels: %d\n\
     int flag_listchannelsnaqs: %d\n\
     int flag_request_channelinfo: %d\n\
@@ -963,7 +978,7 @@ void nmxptool_log_params(NMXPTOOL_PARAMS *params) {
     int flag_logsample: %d\n\
 ",
     params->buffered_time,
-    params->flag_writeseed,
+    params->type_writeseed,
     params->flag_listchannels,
     params->flag_listchannelsnaqs,
     params->flag_request_channelinfo,
@@ -1051,16 +1066,14 @@ int nmxptool_check_params(NMXPTOOL_PARAMS *params) {
 		DEFAULT_MAX_TIME_TO_RETRIEVE_MAXIMUM);
 
 #ifdef HAVE_LIBMSEED
-    } else if(
-	    params->outdirseed) {
+    } else if(params->outdirseed) {
 	if(chdir(params->outdirseed) == -1) {
 	    /* ERROR */
 	    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_EXTRA, "Output directory %s does not exist!\n", params->outdirseed);
 	    ret = -1;
 	} else {    
 	}
-    } else if(
-	    params->flag_writeseed && !params->outdirseed) {
+    } else if(params->type_writeseed  && !params->outdirseed) {
 	params->outdirseed =  gnu_getcwd();
 	nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "Set output dir to %s.\n",
 		params->outdirseed);
