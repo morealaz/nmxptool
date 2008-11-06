@@ -2,6 +2,12 @@
 nmxptool Release History
 #########################
 
+* Release 1.2.3-beta1    (2008/07/23) 
+    - Added feature: mini-SEED files can be saved directly within a
+        SeisComP Data Structure (SDS) or Buffer of Uniform Data (BUD)
+        (changed option -m, new option -o).
+    - Changed HIGHEST_TIMEOUT
+
 * Release 1.2.2    (2008/07/23) 
     - Added feature: channel list can be printed declaring a pattern
         to match the desired channels. (involved options -C, -l, -L)
