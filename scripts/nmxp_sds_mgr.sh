@@ -114,8 +114,8 @@ done
 JDAY=${JDAYSTART}
 while [ $JDAY -le ${JDAYEND} ]; do
 	echo "Download for year/jday ${YEAR}.${JDAY}" >> ${FILELOG} 2>&1
-	echo ${NMXPTOOL} -H ${HOSTNAME} -m -C `cat ${FILE_STATION_LIST}` -s ${YEAR}.${JDAY},00:00:00.0000 -e  ${YEAR}.${JDAY},23:59:59.9999 -o ${DIRARCHIVESDS} >>  ${FILELOG} 2>&1
-	${NMXPTOOL} -H ${HOSTNAME} -m -C `cat ${FILE_STATION_LIST}` -s ${YEAR}.${JDAY},00:00:00.0000 -e  ${YEAR}.${JDAY},23:59:59.9999 -o ${DIRARCHIVESDS} >>  ${FILELOG} 2>&1
+	echo ${NMXPTOOL} -H ${HOSTNAME} -ms -C `cat ${FILE_STATION_LIST}` -s ${YEAR}.${JDAY},00:00:00.0000 -e  ${YEAR}.${JDAY},23:59:59.9999 -o ${DIRARCHIVESDS} >>  ${FILELOG} 2>&1
+	${NMXPTOOL} -H ${HOSTNAME} -ms -C `cat ${FILE_STATION_LIST}` -s ${YEAR}.${JDAY},00:00:00.0000 -e  ${YEAR}.${JDAY},23:59:59.9999 -o ${DIRARCHIVESDS} >>  ${FILELOG} 2>&1
 # 	for STATION in ${STATION_LIST}; do
 # 		NET=`echo ${STATION} | cut -f 1 -d'.'`
 # 		STA=`echo ${STATION} | cut -f 2 -d'.'`
