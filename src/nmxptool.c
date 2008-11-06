@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.205 2008-11-06 14:01:47 mtheo Exp $
+ * $Id: nmxptool.c,v 1.206 2008-11-06 14:59:13 mtheo Exp $
  *
  */
 
@@ -181,7 +181,7 @@ int main (int argc, char **argv) {
 
     int recv_errno = 0;
 
-    char dirsdschan[1024];
+    char dirseedchan[1024];
     char filename[500] = "";
     char station_code[20] = "", channel_code[20] = "", network_code[20] = "";
 
@@ -295,7 +295,7 @@ int main (int argc, char **argv) {
     }
 
 #ifdef HAVE_LIBMSEED
-    if(params.flag_writeseed) {
+    if(params.type_writeseed) {
 	ms_loginit((void*)&nmxptool_log_miniseed, NULL, (void*)&nmxptool_logerr_miniseed, "error: ");
 	/* Init mini-SEED variables */
 	nmxp_data_seed_init(&data_seed);
@@ -316,7 +316,7 @@ int main (int argc, char **argv) {
 
 #ifdef HAVE_LIBMSEED
 	/* Write Mini-SEED record */
-	if(params.flag_writeseed) {
+	if(params.type_writeseed) {
 	    p_func_pd[n_func_pd++] = nmxptool_write_miniseed;
 	}
 #endif
@@ -383,7 +383,7 @@ int main (int argc, char **argv) {
 	nmxptool_chanseq_init(&channelList_Seq, channelList_subset->number, DEFAULT_BUFFERED_TIME, params.max_tolerable_latency, params.timeoutrecv);
 
 #ifdef HAVE_LIBMSEED
-	if(params.flag_writeseed) {
+	if(params.type_writeseed) {
 	    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_EXTRA, "Init mini-SEED record list.\n");
 
 	    /* Init mini-SEED record list */
@@ -568,29 +568,37 @@ int main (int argc, char **argv) {
 		    }
 
 #ifdef HAVE_LIBMSEED
-		    if(params.flag_writeseed) {
+		    if(params.type_writeseed) {
 			/* Open output Mini-SEED file */
 			if(nmxp_chan_cpy_sta_chan(channelList_subset->channel[request_chan].name, station_code, channel_code, network_code)) {
-			    sprintf(dirsdschan, "%s%c%d%c%s%c%s%c%s.D", params.outdirseed, sepdir,
-				    nmxp_data_year_from_epoch(params.start_time), sepdir,
-				    NETCODE_OR_CURRENT_NETWORK, sepdir,
-				    station_code, sepdir,
-				    channel_code);
-			    if(chdir(dirsdschan) == -1) {
-				/* nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_EXTRA, "Directory %s does not exist!\n", dirsdschan); */
 
-				if(mkdirp(dirsdschan, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH) == -1) {
-				    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_EXTRA, "Directory %s has not been created!\n", dirsdschan);
+			    if(params.type_writeseed == TYPE_WRITESEED_BUD) {
+				sprintf(dirseedchan, "%s%c%s%c%s", params.outdirseed, sepdir,
+					NETCODE_OR_CURRENT_NETWORK, sepdir,
+					station_code);
+			    } else {
+				sprintf(dirseedchan, "%s%c%d%c%s%c%s%c%s.D", params.outdirseed, sepdir,
+					nmxp_data_year_from_epoch(params.start_time), sepdir,
+					NETCODE_OR_CURRENT_NETWORK, sepdir,
+					station_code, sepdir,
+					channel_code);
+			    }
+
+			    if(chdir(dirseedchan) == -1) {
+				/* nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_EXTRA, "Directory %s does not exist!\n", dirseedchan); */
+
+				if(mkdirp(dirseedchan, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH) == -1) {
+				    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_EXTRA, "Directory %s has not been created!\n", dirseedchan);
 				} else {
-				    /* nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "Directory %s created!\n", dirsdschan); */
-				    if(chdir(dirsdschan) == -1) {
+				    /* nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "Directory %s created!\n", dirseedchan); */
+				    if(chdir(dirseedchan) == -1) {
 					/* ERROR */
-					nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_EXTRA, "Directory %s should be created but it does not exist!\n", dirsdschan);
+					nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_EXTRA, "Directory %s should be created but it does not exist!\n", dirseedchan);
 				    }
 				}
 
 			    } else {
-				/* nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "Directory %s exists!\n", dirsdschan); */
+				/* nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "Directory %s exists!\n", dirseedchan); */
 			    }
 
 
@@ -604,24 +612,44 @@ int main (int argc, char **argv) {
 				    */
 
 			    /* TODO if the requested data covers different days
-			     * filename contains also the year and the yday of the end time, this breaks SDS structure */
+			     * filename contains also the year and the yday of the end time, this breaks both SDS and BUD structure */
 			    if( ( nmxp_data_year_from_epoch(params.start_time) == nmxp_data_year_from_epoch(params.end_time) )
 				    &&  ( nmxp_data_yday_from_epoch(params.start_time) == nmxp_data_yday_from_epoch(params.end_time)) ) {
-				sprintf(data_seed.filename_mseed, "%s.%s..%s.D.%d.%03d",
-					NETCODE_OR_CURRENT_NETWORK,
-					station_code,
-					channel_code,
-					nmxp_data_year_from_epoch(params.start_time),
-					nmxp_data_yday_from_epoch(params.start_time));
+				if(params.type_writeseed == TYPE_WRITESEED_BUD) {
+				    sprintf(data_seed.filename_mseed, "%s.%s..%s.%d.%03d",
+					    station_code,
+					    NETCODE_OR_CURRENT_NETWORK,
+					    channel_code,
+					    nmxp_data_year_from_epoch(params.start_time),
+					    nmxp_data_yday_from_epoch(params.start_time));
+				} else {
+				    sprintf(data_seed.filename_mseed, "%s.%s..%s.D.%d.%03d",
+					    NETCODE_OR_CURRENT_NETWORK,
+					    station_code,
+					    channel_code,
+					    nmxp_data_year_from_epoch(params.start_time),
+					    nmxp_data_yday_from_epoch(params.start_time));
+				}
 			    } else {
-				sprintf(data_seed.filename_mseed, "%s.%s..%s.D.%d.%03d-%d.%03d",
-					NETCODE_OR_CURRENT_NETWORK,
-					station_code,
-					channel_code,
-					nmxp_data_year_from_epoch(params.start_time),
-					nmxp_data_yday_from_epoch(params.start_time),
-					nmxp_data_year_from_epoch(params.end_time),
-					nmxp_data_yday_from_epoch(params.end_time));
+				if(params.type_writeseed == TYPE_WRITESEED_BUD) {
+				    sprintf(data_seed.filename_mseed, "%s.%s..%s.%d.%03d-%d.%03d",
+					    station_code,
+					    NETCODE_OR_CURRENT_NETWORK,
+					    channel_code,
+					    nmxp_data_year_from_epoch(params.start_time),
+					    nmxp_data_yday_from_epoch(params.start_time),
+					    nmxp_data_year_from_epoch(params.end_time),
+					    nmxp_data_yday_from_epoch(params.end_time));
+				} else {
+				    sprintf(data_seed.filename_mseed, "%s.%s..%s.D.%d.%03d-%d.%03d",
+					    NETCODE_OR_CURRENT_NETWORK,
+					    station_code,
+					    channel_code,
+					    nmxp_data_year_from_epoch(params.start_time),
+					    nmxp_data_yday_from_epoch(params.start_time),
+					    nmxp_data_year_from_epoch(params.end_time),
+					    nmxp_data_yday_from_epoch(params.end_time));
+				}
 			    }
 
 			} else {
@@ -701,7 +729,7 @@ int main (int argc, char **argv) {
 
 #ifdef HAVE_LIBMSEED
 			/* Write Mini-SEED record */
-			if(params.flag_writeseed) {
+			if(params.type_writeseed) {
 			    nmxptool_write_miniseed(pd);
 			}
 #endif
@@ -757,7 +785,7 @@ int main (int argc, char **argv) {
 		    }
 
 #ifdef HAVE_LIBMSEED
-		    if(params.flag_writeseed  &&  data_seed.outfile_mseed) {
+		    if(params.type_writeseed  &&  data_seed.outfile_mseed) {
 			/* Close output Mini-SEED file */
 			fclose(data_seed.outfile_mseed);
 			data_seed.outfile_mseed = NULL;
@@ -860,7 +888,7 @@ int main (int argc, char **argv) {
 	}
 
 #ifdef HAVE_LIBMSEED
-	if(params.flag_writeseed) {
+	if(params.type_writeseed) {
 	    /* Open output Mini-SEED file */
 	    sprintf(data_seed.filename_mseed, "%s.realtime.miniseed",
 		    CURRENT_NETWORK);
@@ -1033,7 +1061,7 @@ int main (int argc, char **argv) {
 
 #ifdef HAVE_LIBMSEED
 			/* Write Mini-SEED record */
-			if(params.flag_writeseed) {
+			if(params.type_writeseed) {
 			    nmxptool_write_miniseed(pd);
 			}
 #endif
@@ -1093,7 +1121,7 @@ int main (int argc, char **argv) {
 	flushing_raw_data_stream();
 
 #ifdef HAVE_LIBMSEED
-	if(params.flag_writeseed  &&  data_seed.outfile_mseed) {
+	if(params.type_writeseed  &&  data_seed.outfile_mseed) {
 	    /* Close output Mini-SEED file */
 	    fclose(data_seed.outfile_mseed);
 	}
@@ -1130,7 +1158,7 @@ int main (int argc, char **argv) {
     nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CONNFLOW, "End communication.\n");
 
 #ifdef HAVE_LIBMSEED
-	if(params.flag_writeseed) {
+	if(params.type_writeseed) {
 	    if(*msr_list_chan) {
 		for(i_chan = 0; i_chan < channelList_subset->number; i_chan++) {
 		    if(msr_list_chan[i_chan]) {
@@ -1272,7 +1300,7 @@ void *nmxptool_print_params(void *arg) {
 
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
     double buffered_time: %f\n\
-    int flag_writeseed: %d\n\
+    char type_writeseed: %c\n\
     int flag_listchannels: %d\n\
     int flag_listchannelsnaqs: %d\n\
     int flag_request_channelinfo: %d\n\
@@ -1283,7 +1311,7 @@ void *nmxptool_print_params(void *arg) {
     int flag_logsample: %d\n\
 ",
     params.buffered_time,
-    params.flag_writeseed,
+    params.type_writeseed,
     params.flag_listchannels,
     params.flag_listchannelsnaqs,
     params.flag_request_channelinfo,
