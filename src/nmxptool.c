@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.206 2008-11-06 14:59:13 mtheo Exp $
+ * $Id: nmxptool.c,v 1.207 2008-11-07 22:44:25 mtheo Exp $
  *
  */
 
@@ -121,6 +121,9 @@ const char sepdir = '\\';
 const char sepdir = '/';
 #endif
 
+#ifdef HAVE_MKDIR
+/* TODO */
+#endif
 int mkdirp(const char *filename, mode_t mode) {
     char *dir = strdup(filename);
     int i, l;
