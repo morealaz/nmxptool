@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_listen.c,v 1.7 2008-07-22 23:21:25 mtheo Exp $
+ * $Id: nmxptool_listen.c,v 1.8 2008-11-07 22:44:10 mtheo Exp $
  *
  */
 
@@ -30,18 +30,21 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include <sys/wait.h>
 #include <signal.h>
 #include <pthread.h>
 
 #include <nmxp.h>
 #include <nmxptool_listen.h>
 
+extern void *nmxptool_print_info_raw_stream(void *arg);
+extern void *nmxptool_print_params(void *arg);
+
 /* #define MYPORT 3490	// the port users will be connecting to */
 
 #define BACKLOG 3	 // how many pending connections queue will hold
 
 /*
+#include <sys/wait.h>
 void sigchld_handler(int s)
 {
 	while(waitpid(-1, NULL, WNOHANG) > 0);
