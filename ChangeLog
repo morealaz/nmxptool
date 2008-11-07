@@ -1,10 +1,243 @@
-2008-07-23 02:40
+2008-11-07 11:23
 
 	* nmxptool:
 
 	  Open-Source and Cross-Platform software for Nanometrics seismic data acquisition
 	  Matteo Quintiliani - Istituto Nazionale di Geofisica e Vulcanologia - Italy
 	  Mail bug reports and suggestions to <quintiliani@ingv.it> 
+
+2008-11-07 10:22  mtheo <quintiliani@ingv.it>
+
+	* HISTORY (1.62):
+
+	Up to date
+
+2008-11-06 17:26  mtheo <quintiliani@ingv.it>
+
+	* HISTORY (1.61):
+
+	Up to date
+
+2008-11-06 15:01  mtheo <quintiliani@ingv.it>
+
+	* scripts/nmxp_sds_mgr.sh (1.11):
+
+	Changed option -m to -ms
+
+2008-11-06 14:59  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.206):
+
+	Changed flag_writeseed to type_writeseed for SDS and BUD structure
+
+2008-11-06 14:58  mtheo <quintiliani@ingv.it>
+
+	* src/: nmxptool_getoptlong.c (1.107), nmxptool_getoptlong.h
+	(1.103):
+
+	Changed flag_writeseed to type_writeseed
+
+2008-11-06 14:01  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.205):
+
+	Improvement about directory separator
+
+2008-11-06 12:24  mtheo <quintiliani@ingv.it>
+
+	* scripts/nmxp_sds_mgr.sh (1.10):
+
+	this script is now independent on nmxp_sds.sh
+
+2008-11-06 12:24  mtheo <quintiliani@ingv.it>
+
+	* scripts/nmxp_sds_station_list.conf (1.3):
+
+	Changed format
+
+2008-11-06 12:23  mtheo <quintiliani@ingv.it>
+
+	* scripts/nmxp_sds.conf (1.8):
+
+	 day 310
+
+2008-11-06 10:07  mtheo <quintiliani@ingv.it>
+
+	* scripts/nmxp_sds.conf (1.7):
+
+	julian day 294 to 309
+
+2008-11-05 16:10  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.204):
+
+	Improved creation directories
+
+2008-11-05 15:44  mtheo <quintiliani@ingv.it>
+
+	* scripts/nmxp_sds.sh (1.8):
+
+	Substitude part of script by new feature of nmxptool, option -o
+
+2008-11-05 15:37  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.203):
+
+	minor change
+
+2008-11-05 15:28  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.202):
+
+	Default not override existing mini-seed files
+
+2008-11-05 15:24  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.201):
+
+	Added carriage return to some error message
+
+2008-11-05 15:24  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_data.c (1.62):
+
+	Removed error message
+
+2008-11-05 15:18  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.200):
+
+	Added message for overriding miniseed files
+
+2008-11-05 15:02  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.c (1.106):
+
+	improved help output
+
+2008-11-05 14:53  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.199):
+
+	Mini-SEED files are now saved into the SDS structure
+
+2008-11-05 14:53  mtheo <quintiliani@ingv.it>
+
+	* scripts/nmxp_sds.conf (1.6):
+
+	minor change
+
+2008-11-05 14:52  mtheo <quintiliani@ingv.it>
+
+	* src/: nmxptool_getoptlong.c (1.105), nmxptool_getoptlong.h
+	(1.102):
+
+	Added option --outdirseed
+
+2008-11-05 14:51  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_data.h (1.29), lib/nmxp_data.c (1.61):
+
+	Added functions nmxp_data_year_from_epoch() and
+	nmxp_data_yday_from_epoch()
+
+2008-11-05 10:05  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_base.c (1.75):
+
+	Set HIGHEST_TIMEOUT to 30
+
+2008-10-20 11:52  mtheo <quintiliani@ingv.it>
+
+	* scripts/nmxp_sds.conf (1.5):
+
+	minor change
+
+2008-10-13 08:18  mtheo <quintiliani@ingv.it>
+
+	* scripts/nmxp_sds.conf (1.4):
+
+	Archiving data from julian day 91 to 285
+
+2008-10-13 08:18  mtheo <quintiliani@ingv.it>
+
+	* scripts/nmxp_sds_mgr.sh (1.9):
+
+	Minor changes
+
+2008-10-02 13:23  mtheo <quintiliani@ingv.it>
+
+	* scripts/nmxp_sds.conf (1.3):
+
+	Retrieving data since 2008.50 to 2008.90
+
+2008-10-02 10:25  mtheo <quintiliani@ingv.it>
+
+	* scripts/nmxp_sds_mgr.sh (1.8):
+
+	Added improvemnts
+
+2008-10-02 10:25  mtheo <quintiliani@ingv.it>
+
+	* scripts/nmxp_sds.sh (1.7):
+
+	Running nmxptool
+
+2008-10-02 10:25  mtheo <quintiliani@ingv.it>
+
+	* scripts/nmxp_sds_station_list.conf (1.2):
+
+	Up to date
+
+2008-10-02 10:23  mtheo <quintiliani@ingv.it>
+
+	* scripts/nmxp_sds.conf (1.2):
+
+	Added variable DEFAULTNET
+
+2008-10-02 10:09  mtheo <quintiliani@ingv.it>
+
+	* scripts/nmxp_sds_mgr.sh (1.7):
+
+	Moved some variable into the configuration file nmxp_sds.conf
+
+2008-10-02 10:08  mtheo <quintiliani@ingv.it>
+
+	* scripts/nmxp_sds.sh (1.6):
+
+	Moved some variables into the configuration file nmxp_sds.conf
+	Added parameter for hostname Added some check for channel declared
+	like HH?, BH?, HH?, HL?
+
+2008-10-02 10:06  mtheo <quintiliani@ingv.it>
+
+	* scripts/: nmxp_sds.conf (1.1), nmxp_sds_station_list.conf (1.1):
+
+	Start
+
+2008-10-02 10:05  mtheo <quintiliani@ingv.it>
+
+	* scripts/: nmxp_stationlist.sh (1.1), nmxptool_filelist.sh (1.3):
+
+	Renamed and improved nmxptool_filelist.sh
+
+2008-08-19 06:14  mtheo <quintiliani@ingv.it>
+
+	* scripts/nmxptool_filelist.sh (1.2):
+
+	Trimmed blank spaces at the end of the line
+
+2008-08-18 19:50  mtheo <quintiliani@ingv.it>
+
+	* README (1.25):
+
+	Added section INSTALLATION BINARIES
+
+2008-07-23 00:42  mtheo <quintiliani@ingv.it>
+
+	* configure.in (1.75), DoxyfileLib (1.45):
+
+	Incremented version to 1.2.3
 
 2008-07-22 23:33  mtheo <quintiliani@ingv.it>
 
