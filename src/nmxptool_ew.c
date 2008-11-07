@@ -547,7 +547,8 @@ void nmxptool_ew_report_status( MSG_LOGO * pLogo, short code, char * message ) {
 
     /* Build & process the message based on the type */
     if ( pLogo->type == typeHeartbeat ) {
-	sprintf( outMsg, "%ld %ld\n\0", (long) msgTime, (long) myPid );
+	/* sprintf( outMsg, "%ld %ld\n\0", (long) msgTime, (long) myPid ); */
+	sprintf( outMsg, "%ld %ld\n%c", (long) msgTime, (long) myPid, 0 );
 
 	/* Write the message to the output region */
 	if ( tport_putmsg( &regionOut, &hrtLogo, (long) strlen( outMsg ),
@@ -559,10 +560,12 @@ void nmxptool_ew_report_status( MSG_LOGO * pLogo, short code, char * message ) {
 	}
     } else {
 	if ( message ) {
-	    sprintf( outMsg, "%ld %hd %s\n\0", (long) msgTime, code, NMXP_LOG_STR(message) );
+	    /* sprintf( outMsg, "%ld %hd %s\n\0", (long) msgTime, code, NMXP_LOG_STR(message) ); */
+	    sprintf( outMsg, "%ld %hd %s\n%c", (long) msgTime, code, NMXP_LOG_STR(message), 0 );
 	    logit("t","Error:%d (%s)\n", code, NMXP_LOG_STR(message) );
 	} else {
-	    sprintf( outMsg, "%ld %hd\n\0", (long) msgTime, code );
+	    /* sprintf( outMsg, "%ld %hd\n\0", (long) msgTime, code ); */
+	    sprintf( outMsg, "%ld %hd\n%c", (long) msgTime, code, 0 );
 	    logit("t","Error:%d (No description)\n", code );
 	}
 
