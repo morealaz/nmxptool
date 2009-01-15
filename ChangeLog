@@ -1,10 +1,72 @@
-2008-11-07 11:23
+2009-01-15 15:15
 
 	* nmxptool:
 
 	  Open-Source and Cross-Platform software for Nanometrics seismic data acquisition
 	  Matteo Quintiliani - Istituto Nazionale di Geofisica e Vulcanologia - Italy
 	  Mail bug reports and suggestions to <quintiliani@ingv.it> 
+
+2009-01-15 14:09  mtheo <quintiliani@ingv.it>
+
+	* README (1.27):
+
+	thanks to Efthimios Sokos for testing nmxptool on windows
+
+2009-01-15 14:06  mtheo <quintiliani@ingv.it>
+
+	* Makefile.am (1.15), configure.in (1.77):
+
+	Added commands for install dll pthread into the Windows binary
+	distribution
+
+2009-01-15 14:05  mtheo <quintiliani@ingv.it>
+
+	* README (1.26):
+
+	Added description for installing nmxptool binaries on Windows
+
+2009-01-15 14:05  mtheo <quintiliani@ingv.it>
+
+	* HISTORY (1.63):
+
+	Up to date for bug fixed about pthread dll
+
+2009-01-15 08:50  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.208):
+
+	Made more general function mkdirp() for windows
+
+2008-11-07 22:44  mtheo <quintiliani@ingv.it>
+
+	* src/: nmxptool.c (1.207), nmxptool_getoptlong.c (1.108):
+
+	minor change
+
+2008-11-07 22:44  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_listen.c (1.8):
+
+	Declared extern functions nmxptool_print_info_raw_stream() and
+	nmxptool_print_params()
+
+2008-11-07 22:43  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_ew.c (1.34):
+
+	removed warnings about sprintf and \0
+
+2008-11-07 22:43  mtheo <quintiliani@ingv.it>
+
+	* configure.in (1.76):
+
+	Added functions getcwd and mkdir and header sys/stat.h
+
+2008-11-07 10:37  mtheo <quintiliani@ingv.it>
+
+	* scripts/nmxp_sds.conf (1.9):
+
+	Up to date
 
 2008-11-07 10:22  mtheo <quintiliani@ingv.it>
 
