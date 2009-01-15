@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.207 2008-11-07 22:44:25 mtheo Exp $
+ * $Id: nmxptool.c,v 1.208 2009-01-15 08:50:45 mtheo Exp $
  *
  */
 
@@ -124,7 +124,10 @@ const char sepdir = '/';
 #ifdef HAVE_MKDIR
 /* TODO */
 #endif
-int mkdirp(const char *filename, mode_t mode) {
+int mkdirp(const char *filename) {
+#ifndef HAVE_WINDOWS_H
+    mode_t mode = S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
+#endif
     char *dir = strdup(filename);
     int i, l;
     int	error=0;
@@ -140,14 +143,22 @@ int mkdirp(const char *filename, mode_t mode) {
 	    dir[i] = 0;
 	    /* nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "trying to create %s...\n", dir); */
 	    if(chdir(dir) == -1) {
+#ifndef HAVE_WINDOWS_H
 		error=mkdir(dir, mode);
+#else
+		error=mkdir(dir);
+#endif
 	    }
 	    dir[i] = sepdir;
 	}
 	i++;
     }
     if(error != -1) {
+#ifndef HAVE_WINDOWS_H
 	error=mkdir(dir, mode);
+#else
+	error=mkdir(dir);
+#endif
     }
 
     free(dir);
@@ -590,7 +601,7 @@ int main (int argc, char **argv) {
 			    if(chdir(dirseedchan) == -1) {
 				/* nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_EXTRA, "Directory %s does not exist!\n", dirseedchan); */
 
-				if(mkdirp(dirseedchan, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH) == -1) {
+				if(mkdirp(dirseedchan) == -1) {
 				    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_EXTRA, "Directory %s has not been created!\n", dirseedchan);
 				} else {
 				    /* nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "Directory %s created!\n", dirseedchan); */
