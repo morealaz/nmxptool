@@ -2,12 +2,14 @@
 nmxptool Release History
 #########################
 
-* Release 1.2.3-beta1    (2008/11/07) 
+* Release 1.2.3-beta1    (2009/01/15) 
     - Added feature: mini-SEED files can be saved directly within a
         SeisComP Data Structure (SDS) or Buffer of Uniform Data (BUD)
         (changed option -m, new option -o).
     - Improvement: changed HIGHEST_TIMEOUT to 30 seconds in order to
         handle the signals whenever data is not coming through.
+    - Fixed bug: Windows binary distribution now contains
+        "pthreadVC2.dll" that it has been compiled by MSVC++6.0
 
 * Release 1.2.2    (2008/07/23) 
     - Added feature: channel list can be printed declaring a pattern
