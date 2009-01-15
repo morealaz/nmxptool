@@ -2,7 +2,7 @@
 nmxptool Release History
 #########################
 
-* Release 1.2.3-beta1    (2009/01/15) 
+* Release 1.2.3    (2009/01/15) 
     - Added feature: mini-SEED files can be saved directly within a
         SeisComP Data Structure (SDS) or Buffer of Uniform Data (BUD)
         (changed option -m, new option -o).
