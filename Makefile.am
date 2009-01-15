@@ -27,6 +27,11 @@ binary_distdir_FILES= \
 	earthworm/nmxptool_ovr.html \
         seiscomp_templates
 
+if ENABLE_DLL_PTHREAD
+binary_distdir_FILES+= bin/${DLL_PTHREAD}
+endif
+
+
 binary_distdir_suffix=${BINARY_DIST_NAME_SUFFIX}
 binary_distdir=${distdir}-bin-${binary_distdir_suffix}
 
@@ -36,6 +41,9 @@ dist-bin:
 	echo ${binary_distdir}
 	uname -a > README_DISTBIN
 	rm -fr bin && mkdir bin && cp src/nmxptool${EXEEXT} bin/
+if ENABLE_DLL_PTHREAD
+	test -f "${DIR_PTHREAD}/${DLL_PTHREAD}" && cp ${DIR_PTHREAD}/${DLL_PTHREAD} bin/
+endif
 	rm -fr ${binary_distdir}
 	mkdir ${binary_distdir}
 	${AMTAR} -cf ${TMPTARFILE} ${binary_distdir_FILES}

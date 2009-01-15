@@ -115,6 +115,10 @@ AS_IF([test "x$enable_memdebug" != xno],
 )
 AM_CONDITIONAL(ENABLE_MEMDEBUG, test x$enable_memdebug != xno)
 
+AM_CONDITIONAL(ENABLE_DLL_PTHREAD, test x$DLL_PTHREAD != x)
+AC_ARG_VAR(DIR_PTHREAD, [Directory containing PThread DDL library])
+AC_ARG_VAR(DLL_PTHREAD, [Name of PThread DLL library - i.e. pthreadVC2.dll])
+
 # Checks for header files.
 AC_HEADER_STDC
 AC_CHECK_HEADERS([arpa/inet.h netdb.h netinet/in.h stdint.h stdlib.h string.h sys/socket.h sys/stat.h sys/time.h unistd.h pthread.h])
