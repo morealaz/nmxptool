@@ -70,6 +70,10 @@ architectures.
     * Seedlink, SeisComP - http://www.gfz-potsdam.de/geofon/seiscomp/
       Seedlink is a system for near real time seismic data distribution.
 
+    * POSIX Threads library (pthread)
+      On Windows, nmxptool has been compiled with "Pthreads-w32 release 2.8.0"
+      http://sourceware.org/pthreads-win32/
+
   Read section INSTALLATION below.
 
 
@@ -93,6 +97,8 @@ architectures.
      cp src/nmxptool <where_you_want>
 
      nmxptool --help
+
+     For binary installation see section INSTALLATION BINARIES below.
 
 
 - INSTALLATION
@@ -240,7 +246,7 @@ architectures.
 
              Download http://mednet.rm.ingv.it/downloads/soft/nmxptool-1.2.3-bin-i686-pc-mingw32.zip
 	     Unzip the file.
-	     Copy where you want the files nmxptool.exe and pthreadVC2.dll
+	     Copy the files nmxptool.exe and pthreadVC2.dll where you want.
 
 
 - SUPPORTED PLATFORMS AND 64-Bit ISSUES
