@@ -2,6 +2,11 @@
 nmxptool Release History
 #########################
 
+* Release 1.2.4-beta1    (2009/01/29) 
+    - Added feature: SeisComP templates for retrieving
+        Data On Demand with minimun delay
+    - Fixed bug: possible string overflow in nmxp_chan_lookupName()
+
 * Release 1.2.3    (2009/01/15) 
     - Added feature: mini-SEED files can be saved directly within a
         SeisComP Data Structure (SDS) or Buffer of Uniform Data (BUD)
