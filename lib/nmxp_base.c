@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_base.c,v 1.75 2008-11-05 10:05:41 mtheo Exp $
+ * $Id: nmxp_base.c,v 1.76 2009-01-29 20:33:15 mtheo Exp $
  *
  */
 
@@ -155,7 +155,7 @@ int nmxp_recv_select_timeout(int s, char *buf, int len, int timeout)
     fd_set fds;
     int n;
     struct timeval tv;
-    static message_times = 0;
+    static int message_times = 0;
 
     /* set up the file descriptor set*/
     FD_ZERO(&fds);
