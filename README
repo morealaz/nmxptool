@@ -210,7 +210,9 @@ architectures.
              make install-seiscomp-templates (ONLY THE FIRST TIME)
 
          The first command copies nmxptool binary in %SEISCOMPDIR%/acquisition/bin
-         The second command copies the directory seiscomp_templates/135_nmxptool
+         The second command copies the directories
+             seiscomp_templates/135_nmxptool
+             seiscomp_templates/136_nmxptool_dod
          in %SEISCOMPDIR%/acquisition/templates/source/
 
          After, you can use:
@@ -229,6 +231,7 @@ architectures.
              cd nmxptool-1.2.3-bin-i686-pc-linux-gnu/
              cp bin/nmxptool ~/seiscomp3/acquisition/bin/
              cp -R seiscomp_templates/135_nmxptool ~/seiscomp3/acquisition/templates/source/
+             cp -R seiscomp_templates/136_nmxptool_dod ~/seiscomp3/acquisition/templates/source/
 
    Solaris Sparc Machine within Earthworm environment:
 
@@ -332,7 +335,8 @@ architectures.
      * Martina Demartin - I.N.G.V.
      * Paul Frieberg - ISTI (Instrumental Software Technologies, Inc.)
      * Marian Jusko
-     * Efthimios Sokos - (University of Patras)
+     * Efthimios Sokos - (University of Patras - Greece)
+     * Roman Racine - (ETH Zurich - Swiss Seismological Service)
 
 
 - LICENSE
