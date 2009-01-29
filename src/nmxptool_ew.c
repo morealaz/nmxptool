@@ -606,9 +606,9 @@ void nmxptool_ew_send_error(unsigned int ierr, char *message, const char *hostna
     }
     if(i < NMXPTOOL_EW_ERR_MAXVALUE) {
 	if(message) {
-	    snprintf(complete_message, NMXPTOOL_EW_MAXSZE_MSG, "%s - %s %s.", hostname, nmxptool_ew_err_msg[i].message, message);
+	    snprintf(complete_message, NMXPTOOL_EW_MAXSZE_MSG, "m%u - %s - %s %s.", myModId, hostname, nmxptool_ew_err_msg[i].message, message);
 	} else {
-	    snprintf(complete_message, NMXPTOOL_EW_MAXSZE_MSG, "%s - %s", hostname, nmxptool_ew_err_msg[i].message);
+	    snprintf(complete_message, NMXPTOOL_EW_MAXSZE_MSG, "m%u - %s - %s", myModId, hostname, nmxptool_ew_err_msg[i].message);
 	}
 	nmxptool_ew_report_status ( &errLogo, nmxptool_ew_err_msg[i].error, complete_message); 
     } else {
