@@ -1,12 +1,18 @@
-TODO LIST:
+=========
+TODO LIST
+=========
 
-- Add option -E in Earthworm configuration and documentation
+HIGH PRIORITY
+  - When saving mini-SEED files into the SDS and BUD structure,
+        data must be subdivided by day.
+        At the moment each request saves data in a single file.
 
-- Add option for output directory dump and mini-seed
+LOW PRIORITY
+  - Add option -E in Earthworm configuration and documentation
 
-- Location code
+  - Add support for location code
 
-- Exit conditions for PDS loop
-	* after t time amount of data, for example 10 seconds of data
-	* after n packets, for example like "ping"
+  - Exit conditions for PDS loop
+        * after t time amount of data, for example 10 seconds of data
+        * after n packets, for example like "ping"
 
