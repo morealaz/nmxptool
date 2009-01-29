@@ -101,6 +101,13 @@ install-seiscomp-templates:
 	${INSTALL_DATA} 'seiscomp_templates/135_nmxptool/plugins.ini.tpl' '${SEISCOMPDIRTEMPLATES}/135_nmxptool/plugins.ini.tpl'
 	${INSTALL_DATA} 'seiscomp_templates/135_nmxptool/seedlink_plugin.tpl' '${SEISCOMPDIRTEMPLATES}/135_nmxptool/seedlink_plugin.tpl'
 	${INSTALL_DATA} 'seiscomp_templates/135_nmxptool/seedlink_station.tpl' '${SEISCOMPDIRTEMPLATES}/135_nmxptool/seedlink_station.tpl'
+	test -d "${SEISCOMPDIRTEMPLATES}/136_nmxptool_dod"  || ./install-sh -c -d '${SEISCOMPDIRTEMPLATES}/136_nmxptool_dod'
+	${INSTALL_DATA} 'seiscomp_templates/136_nmxptool_dod/chain_digiserv_station.tpl' '${SEISCOMPDIRTEMPLATES}/136_nmxptool_dod/chain_digiserv_station.tpl'
+	${INSTALL_DATA} 'seiscomp_templates/136_nmxptool_dod/chain_digiserv_station_trig.tpl' '${SEISCOMPDIRTEMPLATES}/136_nmxptool_dod/chain_digiserv_station_trig.tpl'
+	${INSTALL_DATA} 'seiscomp_templates/136_nmxptool_dod/key' '${SEISCOMPDIRTEMPLATES}/136_nmxptool_dod/key'
+	${INSTALL_DATA} 'seiscomp_templates/136_nmxptool_dod/plugins.ini.tpl' '${SEISCOMPDIRTEMPLATES}/136_nmxptool_dod/plugins.ini.tpl'
+	${INSTALL_DATA} 'seiscomp_templates/136_nmxptool_dod/seedlink_plugin.tpl' '${SEISCOMPDIRTEMPLATES}/136_nmxptool_dod/seedlink_plugin.tpl'
+	${INSTALL_DATA} 'seiscomp_templates/136_nmxptool_dod/seedlink_station.tpl' '${SEISCOMPDIRTEMPLATES}/136_nmxptool_dod/seedlink_station.tpl'
 
 uninstall-seiscomp-bin:
 	rm -f ${NMXPTOOLBINSEISCOMP}
