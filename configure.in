@@ -221,6 +221,8 @@ AM_CONDITIONAL(ENABLE_EW, test x$enable_ew != xno)
 
 # Checks for files.
 
+AC_ARG_VAR(SEISCOMPDIR, [SeisComP root directory - default is /home/sysop/seiscomp3])
+
 # Seedlink check.
 AS_IF([test "x$enable_seedlink" != xno], 
       [
@@ -228,7 +230,7 @@ AS_IF([test "x$enable_seedlink" != xno],
 
        AS_IF([test "x$SEISCOMPDIR" == x],
 	      [
-	       SEISCOMPDIR=/home/sysop/seiscomp
+	       SEISCOMPDIR=/home/sysop/seiscomp3
 	       ]
 	      )
        AC_MSG_WARN([SEISCOMPDIR is set to ${SEISCOMPDIR}])
