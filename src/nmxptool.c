@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.208 2009-01-15 08:50:45 mtheo Exp $
+ * $Id: nmxptool.c,v 1.209 2009-02-16 07:51:50 mtheo Exp $
  *
  */
 
@@ -77,6 +77,13 @@ int nmxptool_logerr_miniseed(const char *s);
 
 #ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
 int nmxptool_send_raw_depoch(NMXP_DATA_PROCESS *pd);
+#endif
+
+#ifdef HAVE_LIBMSEED
+#ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
+void nmxptool_msr_send_mseed_handler (char *record, int reclen, void *handlerdata);
+int nmxptool_msr_send_mseed(NMXP_DATA_PROCESS *pd);
+#endif
 #endif
 
 #ifdef HAVE_PTHREAD_H
@@ -342,6 +349,15 @@ int main (int argc, char **argv) {
 	}
 #endif
 
+#ifdef HAVE_LIBMSEED
+#ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
+	/* Send data to SeedLink Server */
+	if(params.flag_slinkms) {
+	    p_func_pd[n_func_pd++] = nmxptool_msr_send_mseed;
+	}
+#endif
+#endif
+
 #ifdef HAVE_EARTHWORMOBJS
 	if(params.ew_configuration_file) {
 	    p_func_pd[n_func_pd++] = nmxptool_ew_nmx2ew;
@@ -397,7 +413,7 @@ int main (int argc, char **argv) {
 	nmxptool_chanseq_init(&channelList_Seq, channelList_subset->number, DEFAULT_BUFFERED_TIME, params.max_tolerable_latency, params.timeoutrecv);
 
 #ifdef HAVE_LIBMSEED
-	if(params.type_writeseed) {
+	if(params.type_writeseed  ||  params.flag_slinkms) {
 	    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_EXTRA, "Init mini-SEED record list.\n");
 
 	    /* Init mini-SEED record list */
@@ -755,6 +771,15 @@ int main (int argc, char **argv) {
 			}
 #endif
 
+#ifdef HAVE_LIBMSEED
+#ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
+			/* Send data to SeedLink Server */
+			if(params.flag_slinkms) {
+			    nmxptool_msr_send_mseed(pd);
+			}
+#endif
+#endif
+
 #ifdef HAVE_EARTHWORMOBJS
 			if(params.ew_configuration_file) {
 			    nmxptool_ew_nmx2ew(pd);
@@ -1086,6 +1111,15 @@ int main (int argc, char **argv) {
 			    nmxptool_send_raw_depoch(pd);
 			}
 #endif
+
+#ifdef HAVE_LIBMSEED
+#ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
+			/* Send data to SeedLink Server */
+			if(params.flag_slinkms) {
+			    nmxptool_msr_send_mseed(pd);
+			}
+#endif
+#endif
 		    }
 		}
 	    } /* End skip_current_packet condition */
@@ -1172,7 +1206,8 @@ int main (int argc, char **argv) {
     nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CONNFLOW, "End communication.\n");
 
 #ifdef HAVE_LIBMSEED
-	if(params.type_writeseed) {
+	if(params.type_writeseed  ||  params.flag_slinkms) {
+	    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_EXTRA, "Free mini-SEED record list.\n");
 	    if(*msr_list_chan) {
 		for(i_chan = 0; i_chan < channelList_subset->number; i_chan++) {
 		    if(msr_list_chan[i_chan]) {
@@ -1320,6 +1355,7 @@ void *nmxptool_print_params(void *arg) {
     int flag_request_channelinfo: %d\n\
     int flag_writefile: %d\n\
     int flag_slink: %d\n\
+    int flag_slinkms: %d\n\
     int flag_buffered: %d\n\
     int flag_logdata: %d\n\
     int flag_logsample: %d\n\
@@ -1331,6 +1367,7 @@ void *nmxptool_print_params(void *arg) {
     params.flag_request_channelinfo,
     params.flag_writefile,
     params.flag_slink,
+    params.flag_slinkms,
     params.flag_buffered,
     params.flag_logdata,
     params.flag_logsample
@@ -1462,6 +1499,77 @@ int nmxptool_write_miniseed(NMXP_DATA_PROCESS *pd) {
     }
     return ret;
 }
+#endif
+
+#ifdef HAVE_LIBMSEED
+#ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
+
+void nmxptool_msr_send_mseed_handler (char *record, int reclen, void *handlerdata) {
+    int ret = 0;
+    NMXP_DATA_PROCESS *pd = handlerdata;
+    ret = send_mseed(pd->station, record, reclen);
+    if ( ret <= 0 ) {
+	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_PACKETMAN,
+		"send_mseed() for %s.%s.%s\n", pd->network, pd->station, pd->channel);
+    }
+}
+
+int nmxptool_msr_send_mseed(NMXP_DATA_PROCESS *pd) {
+    int ret = 0;
+    int cur_chan;
+
+    MSRecord *msr = NULL;
+    int psamples;
+    int precords;
+    flag verbose = 0;
+    flag flush = 1;
+
+    if( (cur_chan = nmxp_chan_lookupKeyIndex(pd->key, channelList_subset)) != -1) {
+
+	msr = msr_list_chan[cur_chan];
+
+	if(pd) {
+	    if(pd->nSamp > 0) {
+
+		/* Populate MSRecord values */
+
+		msr->starttime = MS_EPOCH2HPTIME(pd->time);
+		msr->samprate = pd->sampRate;
+
+		/* msr->byteorder = 0; */         /* big endian byte order */
+		msr->byteorder = nmxp_data_bigendianhost ();
+
+		msr->sequence_number = pd->seq_no % 1000000;
+
+		msr->sampletype = 'i';      /* declare type to be 32-bit integers */
+
+		msr->numsamples = pd->nSamp;
+		msr->datasamples = NMXP_MEM_MALLOC (sizeof(int) * (msr->numsamples)); 
+		memcpy(msr->datasamples, pd->pDataPtr, sizeof(int) * pd->nSamp); /* pointer to 32-bit integer data samples */
+
+		/* ??? TODO msr_srcname (msr, data_seed->srcname, 0); ??? */
+
+		/* msr_print(msr, 2); */
+
+		precords = msr_pack (msr, &nmxptool_msr_send_mseed_handler, pd, &psamples, flush, verbose);
+
+		if ( precords == -1 ) {
+		    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_PACKETMAN,
+			    "Cannot pack records %s.%s.%s\n", pd->network, pd->station, pd->channel);
+		} else {
+		    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN,
+			    "Packed %d samples into %d records for %s.%s.%s\n",
+			    psamples, precords, pd->network, pd->station, pd->channel);
+		}
+	    }
+	}
+    } else {
+	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY, "Key %d not found in channelList_subset!\n", pd->key);
+    }
+
+    return ret;
+}
+#endif
 #endif
 
 int nmxptool_print_seq_no(NMXP_DATA_PROCESS *pd) {

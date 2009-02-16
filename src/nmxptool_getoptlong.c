@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.108 2008-11-07 22:44:32 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.109 2009-02-16 07:50:46 mtheo Exp $
  *
  */
 
@@ -54,6 +54,7 @@ const NMXPTOOL_PARAMS NMXPTOOL_PARAMS_DEFAULT =
     DEFAULT_MAX_TIME_TO_RETRIEVE,
     DEFAULT_NETWORKDELAY,
     DEFAULT_LISTEN_PORT,
+    0,
     0,
     0,
     0,
@@ -372,9 +373,22 @@ Other arguments:\n\
 #ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
   -k, --slink=PLUGINID    Send received data to SeedLink as a plug-in.\n\
+                          Data are sent by send_raw_depoch().\n\
                           This option, inside the file seedlink.ini, must be\n\
                           the last without adding value for PLUGINID!\n\
-                          PLUGINID is set by SeisComP daemon.\n");
+                          PLUGINID is set by SeisComP daemon.\n\
+                          Not usable together with -K.\n");
+#endif
+
+#ifdef HAVE_LIBMSEED
+#ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
+  -K, --slinkms=PLUGINID  Send received data to SeedLink as a plug-in.\n\
+                          This option is similar to previous -k,\n\
+                          the difference is by -K program use send_mseed()\n\
+                          instead of send_raw_depoch().\n\
+                          Not usable together with -k.\n");
+#endif
 #endif
 
 #ifndef HAVE_WINDOWS_H
@@ -569,6 +583,11 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 #ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
 	{"slink",        required_argument, NULL, 'k'},
 #endif
+#ifdef HAVE_LIBMSEED
+#ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
+	{"slinkms",      required_argument, NULL, 'K'},
+#endif
+#endif
 #ifndef HAVE_WINDOWS_H
 	{"socketport",   required_argument, NULL, 'E'},
 #endif
@@ -591,6 +610,12 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 
 #ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
     strcat(optstr, "k:");
+#endif
+
+#ifdef HAVE_LIBMSEED
+#ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
+    strcat(optstr, "K:");
+#endif
 #endif
 
 #ifndef HAVE_WINDOWS_H
@@ -757,11 +782,35 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 #ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
 		case 'k':
 		    params->flag_slink = 1;
-		    params->plugin_slink = optarg;
-		    if(params->plugin_slink) {
-			nmxp_log_set_prefix(params->plugin_slink);
+		    if(params->flag_slinkms) {
+			nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY,
+				"Options -k and -K are declared in the same command line!\n");
+			ret_errors++;
+		    } else {
+			params->plugin_slink = optarg;
+			if(params->plugin_slink) {
+			    nmxp_log_set_prefix(params->plugin_slink);
+			}
 		    }
 		    break;
+#endif
+
+#ifdef HAVE_LIBMSEED
+#ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
+		case 'K':
+		    params->flag_slinkms = 1;
+		    if(params->flag_slink) {
+			nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY,
+				"Options -k and -K are declared in the same command line!\n");
+			ret_errors++;
+		    } else {
+			params->plugin_slink = optarg;
+			if(params->plugin_slink) {
+			    nmxp_log_set_prefix(params->plugin_slink);
+			}
+		    }
+		    break;
+#endif
 #endif
 
 #ifndef HAVE_WINDOWS_H
@@ -977,6 +1026,7 @@ void nmxptool_log_params(NMXPTOOL_PARAMS *params) {
     int flag_request_channelinfo: %d\n\
     int flag_writefile: %d\n\
     int flag_slink: %d\n\
+    int flag_slinkms: %d\n\
     int flag_buffered: %d\n\
     int flag_logdata: %d\n\
     int flag_logsample: %d\n\
@@ -988,6 +1038,7 @@ void nmxptool_log_params(NMXPTOOL_PARAMS *params) {
     params->flag_request_channelinfo,
     params->flag_writefile,
     params->flag_slink,
+    params->flag_slinkms,
     params->flag_buffered,
     params->flag_logdata,
     params->flag_logsample
