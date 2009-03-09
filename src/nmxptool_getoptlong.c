@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.109 2009-02-16 07:50:46 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.110 2009-03-09 14:54:21 mtheo Exp $
  *
  */
 
@@ -385,7 +385,8 @@ Other arguments:\n\
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
   -K, --slinkms=PLUGINID  Send received data to SeedLink as a plug-in.\n\
                           This option is similar to previous -k,\n\
-                          the difference is by -K program use send_mseed()\n\
+                          using -K the program converts data into mini-SEED\n\
+                          records and sends them by the function send_mseed()\n\
                           instead of send_raw_depoch().\n\
                           Not usable together with -k.\n");
 #endif
