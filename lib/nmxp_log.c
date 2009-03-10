@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_log.c,v 1.21 2009-03-10 16:36:25 mtheo Exp $
+ * $Id: nmxp_log.c,v 1.22 2009-03-10 16:56:40 mtheo Exp $
  *
  */
 
@@ -41,7 +41,7 @@ const char *nmxp_log_get_prefix() {
 
 const char *nmxp_log_version() {
     static char ret_str[MAX_LOG_MESSAGE_LENGTH] = "";
-    sprintf(ret_str, "%s-%s", NMXP_LOG_STR(LIBRARY_NAME), NMXP_LOG_STR(PACKAGE_VERSION));
+    snprintf(ret_str, MAX_LOG_MESSAGE_LENGTH, "%s-%s", NMXP_LOG_STR(LIBRARY_NAME), NMXP_LOG_STR(PACKAGE_VERSION));
     return ret_str;
 }
 
@@ -162,23 +162,23 @@ int nmxp_log(int level, int verb, ... )
 
     switch(level) {
 	case NMXP_LOG_ERR:
-	    sprintf(message_final, "%s - %s error: %s", timestr, nmxp_log_get_prefix(), message);
+	    snprintf(message_final, MAX_LOG_MESSAGE_LENGTH, "%s - %s error: %s", timestr, nmxp_log_get_prefix(), message);
 	    nmxp_log_print_all(message_final, p_func_log_err, n_func_log_err);
 	    break;
 	case NMXP_LOG_WARN:
-	    sprintf(message_final, "%s - %s warning: %s", timestr, nmxp_log_get_prefix(), message);
+	    snprintf(message_final, MAX_LOG_MESSAGE_LENGTH, "%s - %s warning: %s", timestr, nmxp_log_get_prefix(), message);
 	    nmxp_log_print_all(message_final, p_func_log, n_func_log);
 	    break;
 	case NMXP_LOG_NORM_NO:
-	    sprintf(message_final, "%s", message);
+	    snprintf(message_final, MAX_LOG_MESSAGE_LENGTH, "%s", message);
 	    nmxp_log_print_all(message_final, p_func_log, n_func_log);
 	    break;
 	case NMXP_LOG_NORM_PKG:
-	    sprintf(message_final, "%s: %s", nmxp_log_get_prefix(), message);
+	    snprintf(message_final, MAX_LOG_MESSAGE_LENGTH, "%s: %s", nmxp_log_get_prefix(), message);
 	    nmxp_log_print_all(message_final, p_func_log, n_func_log);
 	    break;
 	default:
-	    sprintf(message_final, "%s - %s: %s", timestr, nmxp_log_get_prefix(), message);
+	    snprintf(message_final, MAX_LOG_MESSAGE_LENGTH, "%s - %s: %s", timestr, nmxp_log_get_prefix(), message);
 	    nmxp_log_print_all(message_final, p_func_log, n_func_log);
 	    break;
     }
