@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp.c,v 1.89 2008-04-22 12:53:42 mtheo Exp $
+ * $Id: nmxp.c,v 1.90 2009-03-10 16:36:25 mtheo Exp $
  *
  */
 
@@ -187,7 +187,7 @@ int nmxp_sendAddTimeSeriesChannel(int isock, NMXP_CHAN_LIST_NET *channelList, in
 		    while(split_channelList.number < n_channel  &&  i < channelList->number) {
 			    split_channelList.channel[split_channelList.number].key = channelList->channel[i].key;
 			    /* Not necessary, but it could help for debugging */
-			    strcpy(split_channelList.channel[split_channelList.number].name, channelList->channel[i].name);
+			    strncpy(split_channelList.channel[split_channelList.number].name, channelList->channel[i].name, NMXP_CHAN_MAX_SIZE_NAME);
 			    split_channelList.number++;
 			    i++;
 		    }
@@ -258,7 +258,7 @@ int nmxp_sendConnectRequest(int isock, char *naqs_username, char *naqs_password,
 	connectRequest.username[i] = 0;
     }
     if(naqs_username_length != 0) {
-	strcpy(connectRequest.username, naqs_username);
+	strncpy(connectRequest.username, naqs_username, NMXP_MAX_SIZE_USERNAME);
     }
 
     connectRequest.version = protocol_version;

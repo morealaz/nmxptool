@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp.h,v 1.52 2008-04-22 12:53:42 mtheo Exp $
+ * $Id: nmxp.h,v 1.53 2009-03-10 16:36:25 mtheo Exp $
  *
  */
 
@@ -999,9 +999,11 @@ typedef enum {
 } NMXP_BUFFER_FLAG;
 
 
+#define NMXP_MAX_SIZE_USERNAME 12
+
 /*! \brief Body of ConnectRequest message*/
 typedef struct {
-    char username[12];
+    char username[NMXP_MAX_SIZE_USERNAME];
     int32_t version;
     int32_t connection_time;
     int32_t crc32;

@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_base.c,v 1.76 2009-01-29 20:33:15 mtheo Exp $
+ * $Id: nmxp_base.c,v 1.77 2009-03-10 16:36:25 mtheo Exp $
  *
  */
 
@@ -463,9 +463,9 @@ NMXP_DATA_PROCESS *nmxp_processDecompressedData(char* buffer_data, int length_da
   int       idx;
   static int32_t outdata[MAX_OUTDATA];
 
-  char station_code[20];
-  char channel_code[20];
-  char network_code[20];
+  char station_code[NMXP_CHAN_MAX_SIZE_STR_PATTERN];
+  char channel_code[NMXP_CHAN_MAX_SIZE_STR_PATTERN];
+  char network_code[NMXP_CHAN_MAX_SIZE_STR_PATTERN];
 
   char *nmxp_channel_name = NULL;
   static NMXP_DATA_PROCESS pd;
@@ -506,9 +506,9 @@ NMXP_DATA_PROCESS *nmxp_processDecompressedData(char* buffer_data, int length_da
   
   pd.key = pKey;
   if(network_code[0] != 0) {
-      strcpy(pd.network, network_code);
+      strncpy(pd.network, network_code, NETWORK_LENGTH);
   } else {
-      strcpy(pd.network, network_code_default);
+      strncpy(pd.network, network_code_default, NETWORK_LENGTH);
   }
   if(station_code[0] != 0) {
       strncpy(pd.station, station_code, STATION_LENGTH);
@@ -546,9 +546,9 @@ NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data
     int32_t   pSampRate = 0;
     int32_t  *pDataPtr  = NULL;
 
-    char station_code[20];
-    char channel_code[20];
-    char network_code[20];
+    char station_code[NMXP_CHAN_MAX_SIZE_STR_PATTERN];
+    char channel_code[NMXP_CHAN_MAX_SIZE_STR_PATTERN];
+    char network_code[NMXP_CHAN_MAX_SIZE_STR_PATTERN];
 
     static NMXP_DATA_PROCESS pd;
 
@@ -697,9 +697,9 @@ NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data
 
 	pd.key = pKey;
 	if(network_code[0] != 0) {
-	    strcpy(pd.network, network_code);
+	    strncpy(pd.network, network_code, NETWORK_LENGTH);
 	} else {
-	    strcpy(pd.network, network_code_default);
+	    strncpy(pd.network, network_code_default, NETWORK_LENGTH);
 	}
 	if(station_code[0] != 0) {
 	    strncpy(pd.station, station_code, STATION_LENGTH);

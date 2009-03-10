@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_log.c,v 1.20 2008-04-11 07:50:32 mtheo Exp $
+ * $Id: nmxp_log.c,v 1.21 2009-03-10 16:36:25 mtheo Exp $
  *
  */
 
@@ -132,13 +132,14 @@ void nmxp_log_print_all(char *message, int (*a_func_log[NMXP_MAX_FUNC_LOG]) (cha
     }
 }
 
+#define MAX_SIZE_TIMESTR 100
 int nmxp_log(int level, int verb, ... )
 {
   static int staticverb = 0;
   int retvalue = 0;
   char message[MAX_LOG_MESSAGE_LENGTH];
   char message_final[MAX_LOG_MESSAGE_LENGTH];
-  char timestr[100];
+  char timestr[MAX_SIZE_TIMESTR];
   char *format;
   va_list listptr;
   time_t loc_time;
@@ -154,7 +155,7 @@ int nmxp_log(int level, int verb, ... )
     /* Build local time string and cut off the newline */
     time(&loc_time);
     /* TODO*/
-    strcpy(timestr, asctime(localtime(&loc_time)));
+    strncpy(timestr, asctime(localtime(&loc_time)), MAX_SIZE_TIMESTR);
     timestr[strlen(timestr) - 1] = '\0';
 
     retvalue = vsnprintf(message, MAX_LOG_MESSAGE_LENGTH, format, listptr);

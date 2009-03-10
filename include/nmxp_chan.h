@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_chan.h,v 1.24 2008-07-21 22:41:24 mtheo Exp $
+ * $Id: nmxp_chan.h,v 1.25 2009-03-10 16:36:25 mtheo Exp $
  *
  */
 
@@ -15,6 +15,8 @@
 #define NMXP_CHAN_H 1
 
 #include <stdint.h>
+
+#define NMXP_CHAN_MAX_SIZE_STR_PATTERN 20
 
 /*! \brief Channel list */
 typedef struct NMXP_META_CHAN_LIST {
@@ -37,10 +39,12 @@ typedef enum {
 /*! \brief Max number of channels */
 #define MAX_N_CHAN 2000
 
+#define NMXP_CHAN_MAX_SIZE_NAME 24
+
 /*! \brief The key/name info for one channel */
 typedef struct {
     int32_t key;
-    char name[24];
+    char name[NMXP_CHAN_MAX_SIZE_NAME];
 } NMXP_CHAN_KEY_NET;
 
 /*! \brief Channel list */
