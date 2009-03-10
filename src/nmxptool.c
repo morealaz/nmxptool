@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.210 2009-03-10 14:34:57 mtheo Exp $
+ * $Id: nmxptool.c,v 1.211 2009-03-10 16:44:59 mtheo Exp $
  *
  */
 
@@ -380,9 +380,9 @@ int main (int argc, char **argv) {
 		    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_EXTRA, "%s.%s.%s\n",
 			    NMXP_LOG_STR(NETCODE_OR_CURRENT_NETWORK), NMXP_LOG_STR(station_code), NMXP_LOG_STR(channel_code));
 
-		    strcpy(msr_list_chan[i_chan]->network, NETCODE_OR_CURRENT_NETWORK);
-		    strcpy(msr_list_chan[i_chan]->station, station_code);
-		    strcpy(msr_list_chan[i_chan]->channel, channel_code);
+		    strncpy(msr_list_chan[i_chan]->network, NETCODE_OR_CURRENT_NETWORK, 11);
+		    strncpy(msr_list_chan[i_chan]->station, station_code, 11);
+		    strncpy(msr_list_chan[i_chan]->channel, channel_code, 11);
 
 		    msr_list_chan[i_chan]->reclen = 512;         /* byte record length */
 		    msr_list_chan[i_chan]->encoding = DE_STEIM1;  /* Steim 1 compression */

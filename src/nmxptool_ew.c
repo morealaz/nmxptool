@@ -105,9 +105,9 @@ int nmxptool_ew_pd2ewring (NMXP_DATA_PROCESS *pd, SHM_INFO *pregionOut, MSG_LOGO
 	tbuf.trh2.endtime = (tbuf.trh2.starttime +
 		((tbuf.trh2.nsamp - 1) / tbuf.trh2.samprate));
 
-	strcpy(tbuf.trh2.net, pd->network);
-	strcpy(tbuf.trh2.sta, pd->station);
-	strcpy(tbuf.trh2.chan, pd->channel);
+	strncpy(tbuf.trh2.net, pd->network, TRACE2_NET_LEN);
+	strncpy(tbuf.trh2.sta, pd->station, TRACE2_STA_LEN);
+	strncpy(tbuf.trh2.chan, pd->channel, TRACE2_CHAN_LEN);
 
 	strncpy(tbuf.trh2.loc, LOC_NULL_STRING, 2);
 
@@ -139,9 +139,9 @@ int nmxptool_ew_pd2ewring (NMXP_DATA_PROCESS *pd, SHM_INFO *pregionOut, MSG_LOGO
 	tbuf.trh.endtime = (tbuf.trh.starttime +
 		((tbuf.trh.nsamp - 1) / tbuf.trh.samprate));
 
-	strcpy(tbuf.trh.net, pd->network);
-	strcpy(tbuf.trh.sta, pd->station);
-	strcpy(tbuf.trh.chan, pd->channel);
+	strncpy(tbuf.trh.net, pd->network, TRACE_NET_LEN);
+	strncpy(tbuf.trh.sta, pd->station, TRACE_STA_LEN);
+	strncpy(tbuf.trh.chan, pd->channel, TRACE_CHAN_LEN);
 
 	/* The decoding always produces 32-bit integers in host byte order */
 #ifdef _INTEL
@@ -336,7 +336,7 @@ int nmxptool_ew_proc_configfile (char * configfile, NMXPTOOL_PARAMS *params) {
 			return EW_FAILURE;
 		    }
 
-		    strcpy (myModName, str);
+		    strncpy (myModName, str, MAXMODNAMELEN);
 
 		    /* Lookup module ID */
 		    if ( GetModId( myModName, &myModId) != 0 ) {
@@ -354,7 +354,7 @@ int nmxptool_ew_proc_configfile (char * configfile, NMXPTOOL_PARAMS *params) {
 			return EW_FAILURE;
 		    }
 
-		    strcpy (ringName, str);
+		    strncpy (ringName, str, MAXRINGNAMELEN);
 		}
 	    }
 
