@@ -1,10 +1,180 @@
-2009-01-15 17:30
+2009-03-10 15:46
 
 	* nmxptool:
 
 	  Open-Source and Cross-Platform software for Nanometrics seismic data acquisition
 	  Matteo Quintiliani - Istituto Nazionale di Geofisica e Vulcanologia - Italy
 	  Mail bug reports and suggestions to <quintiliani@ingv.it> 
+
+2009-03-10 14:34  mtheo <quintiliani@ingv.it>
+
+	* HISTORY (1.67), configure.in (1.82), include/nmxp_data.h (1.30),
+	lib/nmxp_data.c (1.63), src/nmxptool.c (1.210),
+	src/nmxptool_getoptlong.c (1.111):
+
+	Changes from tag nmxptool_1_2_4_beta2-branch-miniseedfiles-fixed
+
+2009-03-10 14:20  mtheo <quintiliani@ingv.it>
+
+	* HISTORY (1.66.2.1):
+
+	Up to date to version 1.2.4-beta2-branchmsfiles
+
+2009-03-10 14:19  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.c (1.110.2.2):
+
+	added minor comments in help output
+
+2009-03-10 14:09  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_data.c (1.62.2.5):
+
+	comment some messages
+
+2009-03-10 14:07  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_data.h (1.29.2.3), lib/nmxp_data.c (1.62.2.4),
+	src/nmxptool.c (1.209.2.3):
+
+	Improved opening files, added a circular queue of open file
+	descriptors
+
+2009-03-10 13:02  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_data.h (1.29.2.2), lib/nmxp_data.c (1.62.2.3),
+	src/nmxptool.c (1.209.2.2):
+
+	Improved mini-seed management and writing in SDS / BUD structure
+	 char *nmxp_data_gnu_getcwd ();     int nmxp_data_mkdirp(const char
+	*filename);	int nmxp_data_seed_init(NMXP_DATA_SEED *data_seed,
+	char *default_network, char *outdirseed, NMXP_DATA_SEED_TYPEWRITE
+	type_writeseed);     int nmxp_data_seed_fopen(NMXP_DATA_SEED
+	*data_seed, char *filenameseed);     int
+	nmxp_data_seed_fclose(NMXP_DATA_SEED *data_seed);
+
+2009-03-10 12:59  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.c (1.110.2.1):
+
+	substitude gnu_getcwd() with nmxp_data_gnu_getcwd()
+
+2009-03-09 16:33  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.209.2.1):
+
+	Minor change
+
+2009-03-09 16:09  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_data.c (1.62.2.2):
+
+	Fixed what I suppose a bug
+
+2009-03-09 16:05  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_data.h (1.29.2.1), lib/nmxp_data.c (1.62.2.1):
+
+	added type NMXP_DATA_SEED_TYPEWRITE and type_writeseed to
+	NMXP_DATA_SEED
+
+2009-03-09 15:45  mtheo <quintiliani@ingv.it>
+
+	* configure.in (1.81.2.1):
+
+	Changed version to 1.2.4-beta2-branchmsfiles
+
+2009-03-09 14:54  mtheo <quintiliani@ingv.it>
+
+	* HISTORY (1.66):
+
+	Up to version 1.2.4-beta2
+
+2009-03-09 14:54  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.c (1.110):
+
+	Minor change in help output
+
+2009-02-16 07:50  mtheo <quintiliani@ingv.it>
+
+	* src/: nmxptool_getoptlong.c (1.109), nmxptool_getoptlong.h
+	(1.104), nmxptool.c (1.209):
+
+	Added option to send data to Seedlink by the function send_mseed()
+	instead of send_raw_depoch().  Option added is -K that is not
+	usable togheter with -k.
+
+2009-01-29 20:33  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_base.c (1.76):
+
+	Minor change
+
+2009-01-29 19:11  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_ew.c (1.35):
+
+	Added myModId in earthworm error message
+
+2009-01-29 13:27  mtheo <quintiliani@ingv.it>
+
+	* configure.in (1.81):
+
+	Incremented beta version
+
+2009-01-29 13:22  mtheo <quintiliani@ingv.it>
+
+	* TODO (1.23):
+
+	Up to date
+
+2009-01-29 13:12  mtheo <quintiliani@ingv.it>
+
+	* HISTORY (1.65):
+
+	Up to date
+
+2009-01-29 13:11  mtheo <quintiliani@ingv.it>
+
+	* README (1.29):
+
+	Added SeisComP templates for DOD and thanks to Roman Racine
+
+2009-01-29 13:10  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_chan.c (1.42):
+
+	Fixed bug: possible string overflow returning value from function
+	nmxp_chan_lookupName()
+
+2009-01-29 13:09  mtheo <quintiliani@ingv.it>
+
+	* Makefile.am (1.16):
+
+	Added SeisComP templates for retrieving Data On Demand with minimun
+	delay
+
+2009-01-29 13:03  mtheo <quintiliani@ingv.it>
+
+	* configure.in (1.80):
+
+	Added help for variable SEISCOMPDIR
+
+2009-01-29 12:39  mtheo <quintiliani@ingv.it>
+
+	* seiscomp_templates/136_nmxptool_dod/: chain_digiserv_station.tpl
+	(1.1), chain_digiserv_station_trig.tpl (1.1), key (1.1),
+	plugins.ini.tpl (1.1), seedlink_plugin.tpl (1.1),
+	seedlink_station.tpl (1.1):
+
+	Templates for requesting Data On Demand with minimum delay
+
+2009-01-15 16:27  mtheo <quintiliani@ingv.it>
+
+	* configure.in (1.79):
+
+	Incremented micro version to 1.2.4-beta1
 
 2009-01-15 15:46  mtheo <quintiliani@ingv.it>
 
