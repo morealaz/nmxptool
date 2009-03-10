@@ -3,9 +3,7 @@ TODO LIST
 =========
 
 HIGH PRIORITY
-  - When saving mini-SEED files into the SDS and BUD structure,
-        data must be subdivided by day.
-        At the moment each request saves data in a single file.
+  - 
 
 LOW PRIORITY
   - Add option -E in Earthworm configuration and documentation
