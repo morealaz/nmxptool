@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_data.c,v 1.62 2008-11-05 15:24:16 mtheo Exp $
+ * $Id: nmxp_data.c,v 1.63 2009-03-10 14:34:57 mtheo Exp $
  *
  */
 
@@ -19,13 +19,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include <sys/stat.h>
 
 #include "config.h"
 
 #ifdef HAVE_LIBMSEED
 #include <libmseed.h>
 #endif
-
 
 /*
 For a portable version of timegm(), set the TZ environment variable  to
@@ -675,30 +675,254 @@ double nmxp_data_tm_to_time(NMXP_TM_T *tmt) {
     return ret_d;
 }
 
-int nmxp_data_seed_init(NMXP_DATA_SEED *data_seed) {
-    data_seed->srcname[0] = 0;
-    data_seed->outfile_mseed = NULL;
-    data_seed->filename_mseed[0] = 0;
-    return 0;
+
+#ifdef HAVE_GETCWD
+/* TODO */
+#endif
+
+char *nmxp_data_gnu_getcwd () {
+    size_t size = 512;
+    while (1)
+    {
+	char *buffer = (char *) malloc (size);
+	if (getcwd (buffer, size) == buffer)
+	    return buffer;
+	free (buffer);
+	if (errno != ERANGE)
+	    return NULL;
+	size *= 2;
+    }
 }
+
+
+#ifdef HAVE_MKDIR
+/* TODO */
+#endif
+
+#ifdef HAVE_WINDOWS_H
+const char nmxp_data_sepdir = '\\';
+#else
+const char nmxp_data_sepdir = '/';
+#endif
+
+int nmxp_data_mkdirp(const char *filename) {
+#ifndef HAVE_WINDOWS_H
+    mode_t mode = S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
+#endif
+    char *dir = strdup(filename);
+    int i, l;
+    int	error=0;
+
+    if(!filename) return -1;
+    dir = strdup(filename);
+    if(!dir) return -1;
+
+    l = strlen(dir);
+    i = 0;
+    while(i < l  &&  error != -1) {
+	if(dir[i] == nmxp_data_sepdir  &&  i > 0) {
+	    dir[i] = 0;
+	    /* nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "trying to create %s...\n", dir); */
+	    if(chdir(dir) == -1) {
+#ifndef HAVE_WINDOWS_H
+		error=mkdir(dir, mode);
+#else
+		error=mkdir(dir);
+#endif
+	    }
+	    dir[i] = nmxp_data_sepdir;
+	}
+	i++;
+    }
+    if(error != -1) {
+#ifndef HAVE_WINDOWS_H
+	error=mkdir(dir, mode);
+#else
+	error=mkdir(dir);
+#endif
+    }
+
+    free(dir);
+    return error;
+}
+
 
 #ifdef HAVE_LIBMSEED
 
-/* Private function for writing mini-seed records */
-    static void nmxp_data_msr_write_handler (char *record, int reclen, void *pdata_seed) {
-	NMXP_DATA_SEED *data_seed = pdata_seed;
-	if( data_seed->outfile_mseed ) {
-	    if ( fwrite(record, reclen, 1, data_seed->outfile_mseed) != 1 ) {
-		nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_PACKETMAN,
-			"Error writing %s to output file\n", data_seed->filename_mseed);
+int nmxp_data_seed_init(NMXP_DATA_SEED *data_seed, char *outdirseed, char *default_network, NMXP_DATA_SEED_TYPEWRITE type_writeseed) {
+    int i;
+
+    if(outdirseed) {
+	strncpy(data_seed->outdirseed, outdirseed, NMXP_DATA_MAX_SIZE_FILENAME);
+    } else {
+	strncpy(data_seed->outdirseed, nmxp_data_gnu_getcwd(), NMXP_DATA_MAX_SIZE_FILENAME);
+    }
+    strncpy(data_seed->default_network, default_network, 5);
+    data_seed->type_writeseed = type_writeseed;
+
+    data_seed->n_open_files = 0;
+    data_seed->last_open_file = -1;
+    data_seed->cur_open_file = -1;
+    for(i=0; i < NMXP_DATA_MAX_NUM_OPENED_FILE; i++) {
+	data_seed->outfile_mseed[i] = NULL;
+	data_seed->filename_mseed[i][0] = 0;
+    }
+    data_seed->pd = NULL;
+
+    return 0;
+}
+
+int nmxp_data_seed_fopen(NMXP_DATA_SEED *data_seed, char *filenameseed) {
+    int i;
+    int found;
+
+    if(filenameseed) {
+	found=0;
+	i=0;
+	while(i < data_seed->n_open_files  &&  !found) {
+	    if( strcmp(filenameseed, data_seed->filename_mseed[i]) == 0) {
+		found = 1;
+	    } else {
+		i++;
 	    }
+	}
+
+	if(found) {
+	    data_seed->cur_open_file = i;
+	    /* nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_EXTRA, "Curr  [%3d/%3d] %s\n", data_seed->cur_open_file, data_seed->n_open_files,
+		    data_seed->filename_mseed[data_seed->cur_open_file]); */
 	} else {
-	    /*
-		nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_PACKETMAN,
-			"Error opening file %s\n", data_seed->filename_mseed);
-	    */
+	    data_seed->last_open_file = (data_seed->last_open_file + 1) % NMXP_DATA_MAX_NUM_OPENED_FILE;
+	    nmxp_data_seed_fclose(data_seed, data_seed->last_open_file);
+	    strncpy(data_seed->filename_mseed[data_seed->last_open_file], filenameseed, NMXP_DATA_MAX_SIZE_FILENAME);
+	    data_seed->outfile_mseed[data_seed->last_open_file] = fopen(data_seed->filename_mseed[data_seed->last_open_file], "a+");
+
+	    if(data_seed->n_open_files < NMXP_DATA_MAX_NUM_OPENED_FILE) {
+		data_seed->n_open_files++;
+	    }
+
+	    data_seed->cur_open_file = data_seed->last_open_file;
+
+	    /* nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_EXTRA, "Open  [%3d/%3d] %s\n", data_seed->cur_open_file, data_seed->n_open_files,
+		    data_seed->filename_mseed[data_seed->cur_open_file]); */
+	}
+
+    }
+
+    return 0;
+}
+
+int nmxp_data_seed_fclose(NMXP_DATA_SEED *data_seed, int i) {
+
+    if(i >= 0  &&  i < NMXP_DATA_MAX_NUM_OPENED_FILE) {
+	if(data_seed->outfile_mseed[i]) {
+	    /* nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_EXTRA, "Close [%3d/%3d] %s\n", i, data_seed->n_open_files, data_seed->filename_mseed[i]); */
+	    fclose(data_seed->outfile_mseed[i]);
+	    data_seed->outfile_mseed[i] = NULL;
+	    data_seed->filename_mseed[i][0] = 0;
 	}
     }
+
+    return 0;
+}
+
+int nmxp_data_seed_fclose_all(NMXP_DATA_SEED *data_seed) {
+    int i;
+    for(i=0; i < NMXP_DATA_MAX_NUM_OPENED_FILE; i++) {
+	nmxp_data_seed_fclose(data_seed, i);
+    }
+    data_seed->n_open_files = 0;
+    data_seed->last_open_file = -1;
+    data_seed->cur_open_file = -1;
+    return 0;
+}
+
+#define NMXP_DATA_NETCODE_OR_DEFAULT_NETWORK ( ( (data_seed->pd) && (data_seed->pd->network[0] != 0) )? data_seed->pd->network : data_seed->default_network )
+int nmxp_data_get_filename_ms(NMXP_DATA_SEED *data_seed, char *dirseedchan, char *filenameseed) {
+    int ret = 0;
+    
+    dirseedchan[0] = 0;
+    filenameseed[0] = 0;
+    if(data_seed->type_writeseed == NMXP_TYPE_WRITESEED_SDS) {
+	snprintf(dirseedchan, NMXP_DATA_MAX_SIZE_FILENAME, "%s%c%d%c%s%c%s%c%s.D", data_seed->outdirseed, nmxp_data_sepdir,
+		nmxp_data_year_from_epoch(data_seed->pd->time),
+		nmxp_data_sepdir,
+		NMXP_DATA_NETCODE_OR_DEFAULT_NETWORK,
+		nmxp_data_sepdir,
+		data_seed->pd->station,
+		nmxp_data_sepdir,
+		data_seed->pd->channel);
+	snprintf(filenameseed, NMXP_DATA_MAX_SIZE_FILENAME, "%s.%s..%s.D.%d.%03d",
+		NMXP_DATA_NETCODE_OR_DEFAULT_NETWORK,
+		data_seed->pd->station,
+		data_seed->pd->channel,
+		nmxp_data_year_from_epoch(data_seed->pd->time),
+		nmxp_data_yday_from_epoch(data_seed->pd->time));
+    } else if(data_seed->type_writeseed == NMXP_TYPE_WRITESEED_BUD) {
+	snprintf(dirseedchan, NMXP_DATA_MAX_SIZE_FILENAME, "%s%c%s%c%s", data_seed->outdirseed,
+		nmxp_data_sepdir,
+		NMXP_DATA_NETCODE_OR_DEFAULT_NETWORK,
+		nmxp_data_sepdir,
+		data_seed->pd->station);
+	snprintf(filenameseed, NMXP_DATA_MAX_SIZE_FILENAME, "%s.%s..%s.%d.%03d",
+		data_seed->pd->station,
+		NMXP_DATA_NETCODE_OR_DEFAULT_NETWORK,
+		data_seed->pd->channel,
+		nmxp_data_year_from_epoch(data_seed->pd->time),
+		nmxp_data_yday_from_epoch(data_seed->pd->time));
+    }
+
+    return ret;
+}
+
+
+/* Private function for writing mini-seed records */
+static void nmxp_data_msr_write_handler (char *record, int reclen, void *pdata_seed) {
+    int err = 0;
+    NMXP_DATA_SEED *data_seed = pdata_seed;
+    char filenameseed[NMXP_DATA_MAX_SIZE_FILENAME];
+    char dirseedchan[NMXP_DATA_MAX_SIZE_FILENAME];
+
+    if(data_seed->pd == NULL) {
+	err++;
+	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_EXTRA, "pd is NULL in nmxp_data_msr_write_handler()!\n");
+    }
+
+    if(err==0) {
+	nmxp_data_get_filename_ms(data_seed, dirseedchan, filenameseed);
+    }
+
+    if(err==0) {
+	if(chdir(dirseedchan) == -1) {
+	    /* nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_EXTRA, "Directory %s does not exist!\n", dirseedchan); */
+	    if(nmxp_data_mkdirp(dirseedchan) == -1) {
+		err++;
+		nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_EXTRA, "Directory %s has not been created!\n", dirseedchan);
+	    } else {
+		/* nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "Directory %s created!\n", dirseedchan); */
+		if(chdir(dirseedchan) == -1) {
+		    err++;
+		    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_EXTRA, "Directory %s should be created but it does not exist!\n", dirseedchan);
+		}
+	    }
+	} else {
+	    /* nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "Directory %s exists!\n", dirseedchan); */
+	}
+    }
+
+    if(err==0) {
+	nmxp_data_seed_fopen(data_seed, filenameseed);
+
+	if( data_seed->outfile_mseed[data_seed->cur_open_file] ) {
+	    if ( fwrite(record, reclen, 1, data_seed->outfile_mseed[data_seed->cur_open_file]) != 1 ) {
+		nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_PACKETMAN,
+			"Error writing %s to output file\n", data_seed->filename_mseed[data_seed->cur_open_file]);
+	    }
+	} else {
+	    /* nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_PACKETMAN, "Error opening file %s\n", data_seed->filename_mseed); */
+	}
+    }
+}
 
 
 int nmxp_data_msr_pack(NMXP_DATA_PROCESS *pd, NMXP_DATA_SEED *data_seed, void *pmsr) {
@@ -732,14 +956,16 @@ int nmxp_data_msr_pack(NMXP_DATA_PROCESS *pd, NMXP_DATA_SEED *data_seed, void *p
 	msr->datasamples = NMXP_MEM_MALLOC (sizeof(int) * (msr->numsamples)); 
 	memcpy(msr->datasamples, pd->pDataPtr, sizeof(int) * pd->nSamp); /* pointer to 32-bit integer data samples */
 
-	msr_srcname (msr, data_seed->srcname, 0);
-
 	pDataDest = msr->datasamples;
 
 	/* msr_print(msr, 2); */
 
+	data_seed->pd = pd;
+
 	/* Pack the record(s) */
-	precords = msr_pack (msr, &nmxp_data_msr_write_handler, data_seed->srcname, &psamples, 1, verbose);
+	precords = msr_pack (msr, &nmxp_data_msr_write_handler, data_seed, &psamples, 1, verbose);
+
+	data_seed->pd = NULL;
 
 	if ( precords == -1 ) {
 	    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_PACKETMAN,

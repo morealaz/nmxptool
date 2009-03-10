@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_data.h,v 1.29 2008-11-05 14:51:28 mtheo Exp $
+ * $Id: nmxp_data.h,v 1.30 2009-03-10 14:34:57 mtheo Exp $
  *
  */
 
@@ -128,11 +128,25 @@ typedef struct {
 } NMXP_DATA_PROCESS;
 
 
+/*! \brief For SDS or BUD directory structure */
+typedef enum {
+    NMXP_TYPE_WRITESEED_SDS = 0,
+    NMXP_TYPE_WRITESEED_BUD
+} NMXP_DATA_SEED_TYPEWRITE;
+
+#define NMXP_DATA_MAX_SIZE_FILENAME 1024
+#define NMXP_DATA_MAX_NUM_OPENED_FILE 200
 /*! \brief Parameter structure for functions that handle mini-seed records */
 typedef struct {
-    char srcname[50];
-    FILE *outfile_mseed;
-    char filename_mseed[500];
+    int n_open_files;
+    int last_open_file;
+    int cur_open_file;
+    FILE *outfile_mseed[NMXP_DATA_MAX_NUM_OPENED_FILE];
+    char filename_mseed[NMXP_DATA_MAX_NUM_OPENED_FILE][NMXP_DATA_MAX_SIZE_FILENAME];
+    char outdirseed[NMXP_DATA_MAX_SIZE_FILENAME];
+    char default_network[5];
+    NMXP_DATA_SEED_TYPEWRITE type_writeseed;
+    NMXP_DATA_PROCESS *pd;
 } NMXP_DATA_SEED;
 
 /*! \brief Initialize a structure NMXP_DATA_PROCESS
@@ -231,14 +245,41 @@ int nmxp_data_parse_date(const char *pstr_date, NMXP_TM_T *ret_tmt);
  */
 double nmxp_data_tm_to_time(NMXP_TM_T *tmt);
 
+/*! \brief 
+ */
+char *nmxp_data_gnu_getcwd ();
+
+/*! \brief 
+ */
+int nmxp_data_mkdirp(const char *filename);
 
 /*! \brief Initialize a structure NMXP_DATA_SEED
  *
  *  \param data_seed Pointer to a NMXP_DATA_SEED structure.
  *
  */
-int nmxp_data_seed_init(NMXP_DATA_SEED *data_seed);
+int nmxp_data_seed_init(NMXP_DATA_SEED *data_seed, char *default_network, char *outdirseed, NMXP_DATA_SEED_TYPEWRITE type_writeseed);
 
+/*! \brief Open file in a structure NMXP_DATA_SEED, in case close file before.
+ *
+ *  \param data_seed Pointer to a NMXP_DATA_SEED structure.
+ *
+ */
+int nmxp_data_seed_fopen(NMXP_DATA_SEED *data_seed, char *filenameseed);
+
+/*! \brief Close file in a structure NMXP_DATA_SEED
+ *
+ *  \param data_seed Pointer to a NMXP_DATA_SEED structure.
+ *
+ */
+int nmxp_data_seed_fclose(NMXP_DATA_SEED *data_seed, int i);
+
+/*! \brief Close all file in a structure NMXP_DATA_SEED
+ *
+ *  \param data_seed Pointer to a NMXP_DATA_SEED structure.
+ *
+ */
+int nmxp_data_seed_fclose_all(NMXP_DATA_SEED *data_seed);
 
 /*! \brief Write mini-seed records from a NMXP_DATA_PROCESS structure.
  *

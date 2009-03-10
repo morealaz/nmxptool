@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.110 2009-03-09 14:54:21 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.111 2009-03-10 14:34:57 mtheo Exp $
  *
  */
 
@@ -65,24 +65,6 @@ const NMXPTOOL_PARAMS NMXPTOOL_PARAMS_DEFAULT =
     0
 };
 
-
-#ifdef HAVE_GETCWD
-/* TODO */
-#endif
-
-char *gnu_getcwd () {
-    size_t size = 512;
-    while (1)
-    {
-	char *buffer = (char *) malloc (size);
-	if (getcwd (buffer, size) == buffer)
-	    return buffer;
-	free (buffer);
-	if (errno != ERANGE)
-	    return NULL;
-	size *= 2;
-    }
-}
 
 void nmxptool_author_support() {
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
@@ -190,7 +172,7 @@ NMXP_LOG_STR(DAP_VERSION)
 
 #ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
-       %s <option ... option> -k\n\
+       %s <option ... option> [ -k  |  -K ]\n\
              Launched as SeedLink plug-in to feed the SL-Server.\n\
 \n", NMXP_LOG_STR(PACKAGE_NAME));
 #endif
@@ -359,7 +341,7 @@ Other arguments:\n\
   -m, --writeseed=[TYPE]  Pack received data in Mini-SEED records and\n\
                           store them within a SDS or BUD structure.\n\
                           TYPE can be '%c' or '%c' (-m%c or -m%c)\n\
-                          Related to -o.\n",
+                          Packets are appended to existing files. Related to -o.\n",
 			  TYPE_WRITESEED_SDS, TYPE_WRITESEED_BUD,
 			  TYPE_WRITESEED_SDS, TYPE_WRITESEED_BUD);
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
@@ -900,7 +882,7 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 		    params->outdirseed = optarg;
 		    if(params->outdirseed) {
 			if(chdir(params->outdirseed) == 0) {
-			    params->outdirseed =  gnu_getcwd();
+			    params->outdirseed =  nmxp_data_gnu_getcwd();
 			}
 		    }
 		    break;
@@ -1130,7 +1112,7 @@ int nmxptool_check_params(NMXPTOOL_PARAMS *params) {
 	} else {    
 	}
     } else if(params->type_writeseed  && !params->outdirseed) {
-	params->outdirseed =  gnu_getcwd();
+	params->outdirseed =  nmxp_data_gnu_getcwd();
 	nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "Set output dir to %s.\n",
 		params->outdirseed);
 #endif
