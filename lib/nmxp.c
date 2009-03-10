@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp.c,v 1.90 2009-03-10 16:36:25 mtheo Exp $
+ * $Id: nmxp.c,v 1.91 2009-03-10 16:57:07 mtheo Exp $
  *
  */
 
@@ -533,7 +533,7 @@ NMXP_META_CHAN_LIST *nmxp_getMetaChannelList(char * hostname, int portnum, NMXP_
     NMXP_CHANNELINFOREQUEST channelInfoRequestBody;
     NMXP_CHANNELINFORESPONSE *channelInfo;
 
-    char str_start[200], str_end[200];
+    char str_start[NMXP_DATA_MAX_SIZE_DATE], str_end[NMXP_DATA_MAX_SIZE_DATE];
     str_start[0] = 0;
     str_end[0] = 0;
     
@@ -750,7 +750,7 @@ int nmxp_raw_stream_manage(NMXP_RAW_STREAM_DATA *p, NMXP_DATA_PROCESS *a_pd, int
     double latency = 0.0;
     int j=0, k=0;
     int i_func_pd;
-    char str_time[200];
+    char str_time[NMXP_DATA_MAX_SIZE_DATE];
     NMXP_DATA_PROCESS *pd = NULL;
     int y, w;
     int count_null_element = 0;

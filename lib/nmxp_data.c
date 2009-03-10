@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_data.c,v 1.64 2009-03-10 15:06:06 mtheo Exp $
+ * $Id: nmxp_data.c,v 1.65 2009-03-10 16:57:07 mtheo Exp $
  *
  */
 
@@ -184,7 +184,7 @@ int nmxp_data_to_str(char *out_str, double time_d) {
     }
     tm_start_time = gmtime(&time_t_start_time);
     
-    sprintf(out_str, "%04d.%03d,%02d:%02d:%02d.%04d",
+    snprintf(out_str, NMXP_DATA_MAX_SIZE_DATE, "%04d.%03d,%02d:%02d:%02d.%04d",
 	    tm_start_time->tm_year + 1900,
 	    /*
 	    tm_start_time->tm_mon + 1,
@@ -352,7 +352,7 @@ double nmxp_data_latency(NMXP_DATA_PROCESS *pd) {
 
 int nmxp_data_log(NMXP_DATA_PROCESS *pd, int flag_sample) {
 
-    char str_start[200], str_end[200];
+    char str_start[NMXP_DATA_MAX_SIZE_DATE], str_end[NMXP_DATA_MAX_SIZE_DATE];
     int i;
 
     str_start[0] = 0;

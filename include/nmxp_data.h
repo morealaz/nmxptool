@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_data.h,v 1.30 2009-03-10 14:34:57 mtheo Exp $
+ * $Id: nmxp_data.h,v 1.31 2009-03-10 16:57:07 mtheo Exp $
  *
  */
 
@@ -97,6 +97,8 @@ typedef struct {
     int32_t length;
 } NMXP_MESSAGE_HEADER;
 
+
+#define NMXP_DATA_MAX_SIZE_DATE 200
 
 /*! \brief Length in bytes of channel strings */
 #define NETWORK_LENGTH 10

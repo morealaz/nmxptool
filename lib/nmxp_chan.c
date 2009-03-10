@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_chan.c,v 1.43 2009-03-10 16:36:25 mtheo Exp $
+ * $Id: nmxp_chan.c,v 1.44 2009-03-10 16:57:07 mtheo Exp $
  *
  */
 
@@ -320,7 +320,7 @@ NMXP_CHAN_LIST_NET *nmxp_chan_subset(NMXP_CHAN_LIST *channelList, NMXP_DATATYPE 
 			    ret_channelList->channel[ret_channelList->number].key =        channelList->channel[i_chan_found].key;
 			    strncpy(ret_channelList->channel[ret_channelList->number].name, channelList->channel[i_chan_found].name, NMXP_CHAN_MAX_SIZE_NAME);
 			    nmxp_chan_cpy_sta_chan(sta_chan_code_pattern, station_code, channel_code, network_code);
-			    sprintf(ret_channelList->channel[ret_channelList->number].name, "%s.%s",
+			    snprintf(ret_channelList->channel[ret_channelList->number].name, NMXP_CHAN_MAX_SIZE_NAME, "%s.%s",
 				    (network_code[0] != 0)? network_code : network_code_default, channelList->channel[i_chan_found].name);
 			    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CHANNEL, "Added %s for %s.\n",
 				    ret_channelList->channel[ret_channelList->number].name, sta_chan_code_pattern);
@@ -633,7 +633,7 @@ NMXP_META_CHAN_LIST *nmxp_meta_chan_set_network(NMXP_META_CHAN_LIST *chan_list, 
 
 void nmxp_meta_chan_print(NMXP_META_CHAN_LIST *chan_list) {
     NMXP_META_CHAN_LIST *iter = chan_list;
-    char str_start_time[200], str_end_time[200];
+    char str_start_time[NMXP_DATA_MAX_SIZE_DATE], str_end_time[NMXP_DATA_MAX_SIZE_DATE];
     int i_chan = 0;
 
     str_start_time[0] = 0;
@@ -662,7 +662,7 @@ void nmxp_meta_chan_print(NMXP_META_CHAN_LIST *chan_list) {
 
 void nmxp_meta_chan_print_with_match(NMXP_META_CHAN_LIST *chan_list, char *sta_chan_list) {
     NMXP_META_CHAN_LIST *iter = chan_list;
-    char str_start_time[200], str_end_time[200];
+    char str_start_time[NMXP_DATA_MAX_SIZE_DATE], str_end_time[NMXP_DATA_MAX_SIZE_DATE];
     int i_chan = 0;
     int ret_match = 0;
     int istalist, ista;
