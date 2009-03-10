@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_data.h,v 1.31 2009-03-10 16:57:07 mtheo Exp $
+ * $Id: nmxp_data.h,v 1.32 2009-03-10 17:01:50 mtheo Exp $
  *
  */
 
@@ -101,20 +101,20 @@ typedef struct {
 #define NMXP_DATA_MAX_SIZE_DATE 200
 
 /*! \brief Length in bytes of channel strings */
-#define NETWORK_LENGTH 10
+#define NMXP_DATA_NETWORK_LENGTH 10
 
 /*! \brief Length in bytes of station strings */
-#define STATION_LENGTH 10
+#define NMXP_DATA_STATION_LENGTH 10
 
 /*! \brief Length in bytes of channel strings */
-#define CHANNEL_LENGTH 10
+#define NMXP_DATA_CHANNEL_LENGTH 10
 
 /*! \brief Parameter structure for functions that process data */
 typedef struct {
     int32_t key;			/*!< \brief Channel Key */
-    char network[NETWORK_LENGTH];	/*!< \brief Network code */
-    char station[STATION_LENGTH];	/*!< \brief Station code */
-    char channel[CHANNEL_LENGTH];	/*!< \brief Channel code */
+    char network[NMXP_DATA_NETWORK_LENGTH];	/*!< \brief Network code */
+    char station[NMXP_DATA_STATION_LENGTH];	/*!< \brief Station code */
+    char channel[NMXP_DATA_CHANNEL_LENGTH];	/*!< \brief Channel code */
     int32_t packet_type;			/*!< \brief Packet type */
     int32_t x0;				/*!< \brief First sample. It is significant only if x0n_significant != 0 */
     int32_t xn;				/*!< \brief Last sample. It is significant only if x0n_significant != 0 */

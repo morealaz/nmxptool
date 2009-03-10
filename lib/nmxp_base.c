@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_base.c,v 1.77 2009-03-10 16:36:25 mtheo Exp $
+ * $Id: nmxp_base.c,v 1.78 2009-03-10 17:01:50 mtheo Exp $
  *
  */
 
@@ -506,15 +506,15 @@ NMXP_DATA_PROCESS *nmxp_processDecompressedData(char* buffer_data, int length_da
   
   pd.key = pKey;
   if(network_code[0] != 0) {
-      strncpy(pd.network, network_code, NETWORK_LENGTH);
+      strncpy(pd.network, network_code, NMXP_DATA_NETWORK_LENGTH);
   } else {
-      strncpy(pd.network, network_code_default, NETWORK_LENGTH);
+      strncpy(pd.network, network_code_default, NMXP_DATA_NETWORK_LENGTH);
   }
   if(station_code[0] != 0) {
-      strncpy(pd.station, station_code, STATION_LENGTH);
+      strncpy(pd.station, station_code, NMXP_DATA_STATION_LENGTH);
   }
   if(channel_code[0] != 0) {
-      strncpy(pd.channel, channel_code, CHANNEL_LENGTH);
+      strncpy(pd.channel, channel_code, NMXP_DATA_CHANNEL_LENGTH);
   }
   pd.packet_type = NMXP_MSG_DECOMPRESSED;
   pd.x0 = -1;
@@ -697,15 +697,15 @@ NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data
 
 	pd.key = pKey;
 	if(network_code[0] != 0) {
-	    strncpy(pd.network, network_code, NETWORK_LENGTH);
+	    strncpy(pd.network, network_code, NMXP_DATA_NETWORK_LENGTH);
 	} else {
-	    strncpy(pd.network, network_code_default, NETWORK_LENGTH);
+	    strncpy(pd.network, network_code_default, NMXP_DATA_NETWORK_LENGTH);
 	}
 	if(station_code[0] != 0) {
-	    strncpy(pd.station, station_code, STATION_LENGTH);
+	    strncpy(pd.station, station_code, NMXP_DATA_STATION_LENGTH);
 	}
 	if(channel_code[0] != 0) {
-	    strncpy(pd.channel, channel_code, CHANNEL_LENGTH);
+	    strncpy(pd.channel, channel_code, NMXP_DATA_CHANNEL_LENGTH);
 	}
 	pd.packet_type = nmx_ptype;
 	pd.x0 = nmx_x0;
