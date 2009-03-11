@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_data.c,v 1.65 2009-03-10 16:57:07 mtheo Exp $
+ * $Id: nmxp_data.c,v 1.66 2009-03-11 06:06:57 mtheo Exp $
  *
  */
 
@@ -667,6 +667,7 @@ int nmxp_data_parse_date(const char *pstr_date, NMXP_TM_T *ret_tmt) {
     return ret;
 }
 
+
 double nmxp_data_tm_to_time(NMXP_TM_T *tmt) {
     double ret_d = 0.0;
     
@@ -687,7 +688,7 @@ double nmxp_data_tm_to_time(NMXP_TM_T *tmt) {
 #endif
 
 char *nmxp_data_gnu_getcwd () {
-    size_t size = 512;
+    size_t size = NMXP_DATA_MAX_SIZE_FILENAME;
     while (1)
     {
 	char *buffer = (char *) malloc (size);
@@ -701,6 +702,47 @@ char *nmxp_data_gnu_getcwd () {
 }
 
 
+int nmxp_data_dir_exists (char *dirname) {
+    int ret = 0;
+    char *cur_dir = NULL;
+
+    if(dirname) {
+	cur_dir = nmxp_data_gnu_getcwd();
+	if(chdir(dirname) == -1) {
+	    /* ERROR */
+	} else {
+	    ret = 1;
+	}
+	if(cur_dir) {
+	    chdir(cur_dir);
+	    free(cur_dir);
+	}
+    }
+
+    return ret;
+}
+
+
+char *nmxp_data_dir_abspath (char *dirname) {
+    char *ret = NULL;
+    char *cur_dir = NULL;
+
+    if(dirname) {
+	cur_dir = nmxp_data_gnu_getcwd();
+	if(chdir(dirname) == -1) {
+	    /* ERROR */
+	} else {
+	    ret = nmxp_data_gnu_getcwd();
+	}
+	if(cur_dir) {
+	    chdir(cur_dir);
+	    free(cur_dir);
+	}
+    }
+
+    return ret;
+}
+
 #ifdef HAVE_MKDIR
 /* TODO */
 #endif
@@ -711,17 +753,34 @@ const char nmxp_data_sepdir = '\\';
 const char nmxp_data_sepdir = '/';
 #endif
 
-int nmxp_data_mkdirp(const char *filename) {
+
+int nmxp_data_mkdir(const char *dirname) {
+    int ret = 0;
 #ifndef HAVE_WINDOWS_H
     mode_t mode = S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
 #endif
-    char *dir = strdup(filename);
+#ifndef HAVE_WINDOWS_H
+    ret=mkdir(dirname, mode);
+#else
+    ret=mkdir(dirname);
+#endif
+    return ret;
+}
+
+
+int nmxp_data_mkdirp(const char *filename) {
+    char *cur_dir = NULL;
+    char *dir = NULL;
     int i, l;
     int	error=0;
 
-    if(!filename) return -1;
+    if(!filename)
+	return -1;
     dir = strdup(filename);
-    if(!dir) return -1;
+    if(!dir)
+	return -1;
+
+    cur_dir = nmxp_data_gnu_getcwd();
 
     l = strlen(dir);
     i = 0;
@@ -730,25 +789,22 @@ int nmxp_data_mkdirp(const char *filename) {
 	    dir[i] = 0;
 	    /* nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "trying to create %s...\n", dir); */
 	    if(chdir(dir) == -1) {
-#ifndef HAVE_WINDOWS_H
-		error=mkdir(dir, mode);
-#else
-		error=mkdir(dir);
-#endif
+		error=nmxp_data_mkdir(dir);
 	    }
 	    dir[i] = nmxp_data_sepdir;
 	}
 	i++;
     }
     if(error != -1) {
-#ifndef HAVE_WINDOWS_H
-	error=mkdir(dir, mode);
-#else
-	error=mkdir(dir);
-#endif
+	error=nmxp_data_mkdir(dir);
     }
 
     free(dir);
+
+    if(cur_dir) {
+	chdir(cur_dir);
+	free(cur_dir);
+    }
     return error;
 }
 
@@ -757,11 +813,18 @@ int nmxp_data_mkdirp(const char *filename) {
 
 int nmxp_data_seed_init(NMXP_DATA_SEED *data_seed, char *outdirseed, char *default_network, NMXP_DATA_SEED_TYPEWRITE type_writeseed) {
     int i;
+    char *dirname = NULL;
 
     if(outdirseed) {
-	strncpy(data_seed->outdirseed, outdirseed, NMXP_DATA_MAX_SIZE_FILENAME);
+	dirname = nmxp_data_dir_abspath(outdirseed);
+	strncpy(data_seed->outdirseed, dirname, NMXP_DATA_MAX_SIZE_FILENAME);
     } else {
-	strncpy(data_seed->outdirseed, nmxp_data_gnu_getcwd(), NMXP_DATA_MAX_SIZE_FILENAME);
+	dirname = nmxp_data_gnu_getcwd();
+	strncpy(data_seed->outdirseed, dirname, NMXP_DATA_MAX_SIZE_FILENAME);
+    }
+    if(dirname) {
+	free(dirname);
+	dirname = NULL;
     }
     strncpy(data_seed->default_network, default_network, 5);
     data_seed->type_writeseed = type_writeseed;
@@ -778,15 +841,22 @@ int nmxp_data_seed_init(NMXP_DATA_SEED *data_seed, char *outdirseed, char *defau
     return 0;
 }
 
-int nmxp_data_seed_fopen(NMXP_DATA_SEED *data_seed, char *filenameseed) {
+
+int nmxp_data_seed_fopen(NMXP_DATA_SEED *data_seed) {
     int i;
     int found;
+    int err;
+    char dirseedchan[NMXP_DATA_MAX_SIZE_FILENAME];
+    char filename_mseed[NMXP_DATA_MAX_SIZE_FILENAME];
+    char filename_mseed_fullpath[NMXP_DATA_MAX_SIZE_FILENAME];
 
-    if(filenameseed) {
+    nmxp_data_get_filename_ms(data_seed, dirseedchan, filename_mseed);
+
+    if(filename_mseed) {
 	found=0;
 	i=0;
 	while(i < data_seed->n_open_files  &&  !found) {
-	    if( strcmp(filenameseed, data_seed->filename_mseed[i]) == 0) {
+	    if( strcmp(filename_mseed, data_seed->filename_mseed[i]) == 0) {
 		found = 1;
 	    } else {
 		i++;
@@ -798,25 +868,49 @@ int nmxp_data_seed_fopen(NMXP_DATA_SEED *data_seed, char *filenameseed) {
 	    /* nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_EXTRA, "Curr  [%3d/%3d] %s\n", data_seed->cur_open_file, data_seed->n_open_files,
 		    data_seed->filename_mseed[data_seed->cur_open_file]); */
 	} else {
-	    data_seed->last_open_file = (data_seed->last_open_file + 1) % NMXP_DATA_MAX_NUM_OPENED_FILE;
-	    nmxp_data_seed_fclose(data_seed, data_seed->last_open_file);
-	    strncpy(data_seed->filename_mseed[data_seed->last_open_file], filenameseed, NMXP_DATA_MAX_SIZE_FILENAME);
-	    data_seed->outfile_mseed[data_seed->last_open_file] = fopen(data_seed->filename_mseed[data_seed->last_open_file], "a+");
 
-	    if(data_seed->n_open_files < NMXP_DATA_MAX_NUM_OPENED_FILE) {
-		data_seed->n_open_files++;
+	    err = 0;
+	    if(!nmxp_data_dir_exists(dirseedchan)) {
+		/* nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_EXTRA, "Directory %s does not exist!\n", dirseedchan); */
+		if(nmxp_data_mkdirp(dirseedchan) == -1) {
+		    err++;
+		    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_EXTRA, "Directory %s has not been created!\n", dirseedchan);
+		} else {
+		    /* nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "Directory %s created!\n", dirseedchan); */
+		    if(!nmxp_data_dir_exists(dirseedchan)) {
+			err++;
+			nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_EXTRA, "Directory %s should be created but it does not exist!\n", dirseedchan);
+		    }
+		}
+	    } else {
+		/* nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "Directory %s exists!\n", dirseedchan); */
 	    }
 
-	    data_seed->cur_open_file = data_seed->last_open_file;
+	    if(err==0) {
+		data_seed->last_open_file = (data_seed->last_open_file + 1) % NMXP_DATA_MAX_NUM_OPENED_FILE;
+		nmxp_data_seed_fclose(data_seed, data_seed->last_open_file);
+		strncpy(data_seed->filename_mseed[data_seed->last_open_file], filename_mseed, NMXP_DATA_MAX_SIZE_FILENAME);
+		snprintf(filename_mseed_fullpath, NMXP_DATA_MAX_SIZE_FILENAME, "%s%c%s",
+			dirseedchan, nmxp_data_sepdir,
+			data_seed->filename_mseed[data_seed->last_open_file]);
+		data_seed->outfile_mseed[data_seed->last_open_file] = fopen(filename_mseed_fullpath, "a+");
+
+		if(data_seed->n_open_files < NMXP_DATA_MAX_NUM_OPENED_FILE) {
+		    data_seed->n_open_files++;
+		}
+
+		data_seed->cur_open_file = data_seed->last_open_file;
+	    }
 
 	    /* nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_EXTRA, "Open  [%3d/%3d] %s\n", data_seed->cur_open_file, data_seed->n_open_files,
-		    data_seed->filename_mseed[data_seed->cur_open_file]); */
+	       data_seed->filename_mseed[data_seed->cur_open_file]); */
 	}
 
     }
 
     return 0;
 }
+
 
 int nmxp_data_seed_fclose(NMXP_DATA_SEED *data_seed, int i) {
 
@@ -886,8 +980,6 @@ int nmxp_data_get_filename_ms(NMXP_DATA_SEED *data_seed, char *dirseedchan, char
 static void nmxp_data_msr_write_handler (char *record, int reclen, void *pdata_seed) {
     int err = 0;
     NMXP_DATA_SEED *data_seed = pdata_seed;
-    char filenameseed[NMXP_DATA_MAX_SIZE_FILENAME];
-    char dirseedchan[NMXP_DATA_MAX_SIZE_FILENAME];
 
     if(data_seed->pd == NULL) {
 	err++;
@@ -895,29 +987,7 @@ static void nmxp_data_msr_write_handler (char *record, int reclen, void *pdata_s
     }
 
     if(err==0) {
-	nmxp_data_get_filename_ms(data_seed, dirseedchan, filenameseed);
-    }
-
-    if(err==0) {
-	if(chdir(dirseedchan) == -1) {
-	    /* nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_EXTRA, "Directory %s does not exist!\n", dirseedchan); */
-	    if(nmxp_data_mkdirp(dirseedchan) == -1) {
-		err++;
-		nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_EXTRA, "Directory %s has not been created!\n", dirseedchan);
-	    } else {
-		/* nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "Directory %s created!\n", dirseedchan); */
-		if(chdir(dirseedchan) == -1) {
-		    err++;
-		    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_EXTRA, "Directory %s should be created but it does not exist!\n", dirseedchan);
-		}
-	    }
-	} else {
-	    /* nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "Directory %s exists!\n", dirseedchan); */
-	}
-    }
-
-    if(err==0) {
-	nmxp_data_seed_fopen(data_seed, filenameseed);
+	nmxp_data_seed_fopen(data_seed);
 
 	if( data_seed->outfile_mseed[data_seed->cur_open_file] ) {
 	    if ( fwrite(record, reclen, 1, data_seed->outfile_mseed[data_seed->cur_open_file]) != 1 ) {

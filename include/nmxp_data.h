@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_data.h,v 1.32 2009-03-10 17:01:50 mtheo Exp $
+ * $Id: nmxp_data.h,v 1.33 2009-03-11 06:06:57 mtheo Exp $
  *
  */
 
@@ -247,13 +247,38 @@ int nmxp_data_parse_date(const char *pstr_date, NMXP_TM_T *ret_tmt);
  */
 double nmxp_data_tm_to_time(NMXP_TM_T *tmt);
 
-/*! \brief 
+
+/*! \brief Return path of the current directory
+ *
+ * Return value need to be freed!
  */
 char *nmxp_data_gnu_getcwd ();
 
-/*! \brief 
+
+/*! \brief Check if the directory exists
+ *
+ * \retval 1 exists, 0 otherwise.
+ */
+int nmxp_data_dir_exists (char *dirname);
+
+
+/*! \brief Check if the directory exists
+ *
+ * Return value need to be freed!
+ */
+char *nmxp_data_dir_abspath (char *dirname);
+
+
+/*! \brief Create the directory.
+ * Wrapper for mkdir() over different systems.
+ */
+int nmxp_data_mkdir(const char *dirname);
+
+
+/*! \brief Create the directory and subdirectories if is needed
  */
 int nmxp_data_mkdirp(const char *filename);
+
 
 /*! \brief Initialize a structure NMXP_DATA_SEED
  *
@@ -265,9 +290,10 @@ int nmxp_data_seed_init(NMXP_DATA_SEED *data_seed, char *default_network, char *
 /*! \brief Open file in a structure NMXP_DATA_SEED, in case close file before.
  *
  *  \param data_seed Pointer to a NMXP_DATA_SEED structure.
+ *  \param possible argument is pd
  *
  */
-int nmxp_data_seed_fopen(NMXP_DATA_SEED *data_seed, char *filenameseed);
+int nmxp_data_seed_fopen(NMXP_DATA_SEED *data_seed);
 
 /*! \brief Close file in a structure NMXP_DATA_SEED
  *
@@ -282,6 +308,13 @@ int nmxp_data_seed_fclose(NMXP_DATA_SEED *data_seed, int i);
  *
  */
 int nmxp_data_seed_fclose_all(NMXP_DATA_SEED *data_seed);
+
+
+/*! \brief
+ *
+ */
+int nmxp_data_get_filename_ms(NMXP_DATA_SEED *data_seed, char *dirseedchan, char *filenameseed);
+
 
 /*! \brief Write mini-seed records from a NMXP_DATA_PROCESS structure.
  *
