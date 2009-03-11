@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp.h,v 1.53 2009-03-10 16:36:25 mtheo Exp $
+ * $Id: nmxp.h,v 1.54 2009-03-11 16:34:08 mtheo Exp $
  *
  */
 
@@ -15,7 +15,7 @@
  *
  * <center>
  * Matteo Quintiliani
- * 
+ *
  * <i>
  * Istituto Nazionale di Geofisica e Vulcanologia<br />
  * Centro Nazionale Terremoti
@@ -1159,6 +1159,7 @@ int nmxp_sendDataRequest(int isock, int32_t key, int32_t start_time, int32_t end
  * \param hostname host name
  * \param portnum port number
  * \param datatype Type of data contained in the channel.
+ * \param func_cond Pointer to function for exit condition from loop.
  *
  * \return Channel list. It will need to be freed.
  *
@@ -1177,6 +1178,7 @@ NMXP_CHAN_LIST *nmxp_getAvailableChannelList(char * hostname, int portnum, NMXP_
  * \param datas_password DataServer password.
  * \param flag_request_channelinfo Request information about Network.
  * \param[out] pchannelList pointer to a pointer of channel list.
+ * \param func_cond Pointer to function for exit condition from loop.
  *
  * \return Channel list. It will need to be freed.
  *

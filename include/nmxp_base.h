@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_base.h,v 1.32 2008-04-22 12:53:42 mtheo Exp $
+ * $Id: nmxp_base.h,v 1.33 2009-03-11 16:34:08 mtheo Exp $
  *
  */
 
@@ -32,6 +32,7 @@
  *
  *  \param hostname	hostname
  *  \param portNum	port number
+ *  \param func_cond Pointer to function for exit condition from loop.
  *
  *  \retval sd A descriptor referencing the socket.
  *  \retval -1 "Empty host name", "Cannot lookup host", ...
@@ -202,7 +203,7 @@ unsigned int nmxp_sleep(unsigned int sleep_time);
  *  \retval ....
  *
  */
-unsigned int nmxp_usleep(unsigned int sleep_time);
+unsigned int nmxp_usleep(unsigned int usleep_time);
 
 #endif
 

@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_data.h,v 1.33 2009-03-11 06:06:57 mtheo Exp $
+ * $Id: nmxp_data.h,v 1.34 2009-03-11 16:34:08 mtheo Exp $
  *
  */
 
@@ -283,6 +283,9 @@ int nmxp_data_mkdirp(const char *filename);
 /*! \brief Initialize a structure NMXP_DATA_SEED
  *
  *  \param data_seed Pointer to a NMXP_DATA_SEED structure.
+ *  \param default_network String containing default network code.
+ *  \param outdirseed Root output directory for SDS or BUD structure.
+ *  \param type_writeseed Declare SDS or BUD structure.
  *
  */
 int nmxp_data_seed_init(NMXP_DATA_SEED *data_seed, char *default_network, char *outdirseed, NMXP_DATA_SEED_TYPEWRITE type_writeseed);
@@ -290,7 +293,8 @@ int nmxp_data_seed_init(NMXP_DATA_SEED *data_seed, char *default_network, char *
 /*! \brief Open file in a structure NMXP_DATA_SEED, in case close file before.
  *
  *  \param data_seed Pointer to a NMXP_DATA_SEED structure.
- *  \param possible argument is pd
+ *  
+ *  N.B. nmxp_data_seed_fopen() reads information from data_seed->pd.
  *
  */
 int nmxp_data_seed_fopen(NMXP_DATA_SEED *data_seed);
@@ -298,6 +302,7 @@ int nmxp_data_seed_fopen(NMXP_DATA_SEED *data_seed);
 /*! \brief Close file in a structure NMXP_DATA_SEED
  *
  *  \param data_seed Pointer to a NMXP_DATA_SEED structure.
+ *  \param i Index of the file descriptor to delete.
  *
  */
 int nmxp_data_seed_fclose(NMXP_DATA_SEED *data_seed, int i);

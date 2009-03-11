@@ -24,8 +24,6 @@
 
 /*! \brief 
  *
- * \param 
- * \param 
  *
  */
 inline int nmxp_mem_null_function();
