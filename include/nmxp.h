@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp.h,v 1.54 2009-03-11 16:34:08 mtheo Exp $
+ * $Id: nmxp.h,v 1.55 2009-03-11 16:52:32 mtheo Exp $
  *
  */
 
@@ -583,10 +583,10 @@ DAP Arguments:
   -s, --start_time=DATE   Start time in date format.
   -e, --end_time=DATE     End time in date format.
                           DATE can be in formats:
-                              <date>,<time> | <date>
+                              \<date\>,\<time\> | \<date\>
                           where:
-                              <date> = yyyy/mm/dd | yyy.jjj
-                              <time> = hh:mm:ss | hh:mm
+                              \<date\> = yyyy/mm/dd | yyy.jjj
+                              \<time\> = hh:mm:ss | hh:mm
   -t, --interval=SECs     Time interval from start_time.
   -d, --delay=SECs        Receive continuosly data with delay [60..86400].
   -u, --username=USER     DataServer username.
