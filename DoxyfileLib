@@ -151,7 +151,8 @@ MULTILINE_CPP_IS_BRIEF = NO
 # If set to NO, the detailed description appears after the member 
 # documentation.
 
-DETAILS_AT_TOP         = NO
+# obsolete message
+# DETAILS_AT_TOP         = NO
 
 # If the INHERIT_DOCS tag is set to YES (the default) then an undocumented 
 # member inherits the documentation from any documented member that it 
