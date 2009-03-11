@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.111 2009-03-10 14:34:57 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.112 2009-03-11 06:05:23 mtheo Exp $
  *
  */
 
@@ -881,8 +881,12 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 		case 'o':
 		    params->outdirseed = optarg;
 		    if(params->outdirseed) {
-			if(chdir(params->outdirseed) == 0) {
-			    params->outdirseed =  nmxp_data_gnu_getcwd();
+			if(nmxp_data_dir_exists(params->outdirseed)) {
+			    params->outdirseed =  nmxp_data_dir_abspath(params->outdirseed);
+			} else {
+			    ret_errors++;
+			    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY,
+				    "Mini-SEED output directory %s does not exists!\n", NMXP_LOG_STR(params->outdirseed));
 			}
 		    }
 		    break;
@@ -1105,7 +1109,7 @@ int nmxptool_check_params(NMXPTOOL_PARAMS *params) {
 
 #ifdef HAVE_LIBMSEED
     } else if(params->outdirseed) {
-	if(chdir(params->outdirseed) == -1) {
+	if(!nmxp_data_dir_exists(params->outdirseed)) {
 	    /* ERROR */
 	    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_EXTRA, "Output directory %s does not exist!\n", params->outdirseed);
 	    ret = -1;
