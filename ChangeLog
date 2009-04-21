@@ -1,10 +1,119 @@
-2009-03-10 15:46
+2009-04-21 14:31
 
 	* nmxptool:
 
 	  Open-Source and Cross-Platform software for Nanometrics seismic data acquisition
 	  Matteo Quintiliani - Istituto Nazionale di Geofisica e Vulcanologia - Italy
 	  Mail bug reports and suggestions to <quintiliani@ingv.it> 
+
+2009-04-21 12:19  mtheo <quintiliani@ingv.it>
+
+	* HISTORY (1.68):
+
+	Up to date
+
+2009-04-06 15:32  mtheo <quintiliani@ingv.it>
+
+	* seiscomp_templates/: 135_nmxptool/seedlink_plugin.tpl (1.14),
+	136_nmxptool_dod/seedlink_plugin.tpl (1.2):
+
+	Added source port into channel file name
+
+2009-03-11 16:55  mtheo <quintiliani@ingv.it>
+
+	* DoxyfileLib (1.47):
+
+	Commented DETAILS_AT_TOP, it is obsolete
+
+2009-03-11 16:52  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp.h (1.55):
+
+	Changed some tags
+
+2009-03-11 16:36  mtheo <quintiliani@ingv.it>
+
+	* configure.in (1.84):
+
+	Incremented beta version to 1.2.4-beta5
+
+2009-03-11 16:34  mtheo <quintiliani@ingv.it>
+
+	* include/: nmxp.h (1.54), nmxp_base.h (1.33), nmxp_data.h (1.34),
+	nmxp_memory.h (1.8):
+
+	added some documentation
+
+2009-03-11 16:33  mtheo <quintiliani@ingv.it>
+
+	* DoxyfileLib (1.46):
+
+	incremented micro version to 1.2.4
+
+2009-03-11 06:06  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_data.h (1.33), lib/nmxp_data.c (1.66):
+
+	Improved management of mini-seed structure SDS/BUD Added some
+	function for directory management Do not change the current
+	directory anymore
+
+2009-03-11 06:05  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.c (1.112):
+
+	Do not change current directory anymore
+
+2009-03-10 17:01  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_data.h (1.32), lib/nmxp_base.c (1.78):
+
+	Substitude *_LENGTH with NMXP_DATA_*_LENGTH
+
+2009-03-10 16:57  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_data.h (1.31), lib/nmxp.c (1.91), lib/nmxp_chan.c
+	(1.44), lib/nmxp_data.c (1.65):
+
+	Declared NMXP_DATA_MAX_SIZE_DATE and set to 200
+
+2009-03-10 16:56  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_log.c (1.22):
+
+	Substitude sprintf() with snprintf()
+
+2009-03-10 16:44  mtheo <quintiliani@ingv.it>
+
+	* src/: nmxptool.c (1.211), nmxptool_ew.c (1.36):
+
+	Substitude strcpy() with strncpy()
+
+2009-03-10 16:36  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp.h (1.53), include/nmxp_chan.h (1.25), lib/nmxp.c
+	(1.90), lib/nmxp_base.c (1.77), lib/nmxp_chan.c (1.43),
+	lib/nmxp_log.c (1.21), lib/nmxp_win.c (1.3):
+
+	Substitude strcpy() with strncpy()
+
+2009-03-10 16:04  mtheo <quintiliani@ingv.it>
+
+	* configure.in (1.83):
+
+	Incremented beta version to 1.2.4-beta4
+
+2009-03-10 15:06  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_data.c (1.64):
+
+	Added include for windows
+
+2009-03-10 14:58  mtheo <quintiliani@ingv.it>
+
+	* TODO (1.24):
+
+	Up to date
 
 2009-03-10 14:34  mtheo <quintiliani@ingv.it>
 
