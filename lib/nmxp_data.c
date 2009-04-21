@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_data.c,v 1.66 2009-03-11 06:06:57 mtheo Exp $
+ * $Id: nmxp_data.c,v 1.67 2009-04-21 14:42:05 mtheo Exp $
  *
  */
 
@@ -832,7 +832,9 @@ int nmxp_data_seed_init(NMXP_DATA_SEED *data_seed, char *outdirseed, char *defau
     data_seed->n_open_files = 0;
     data_seed->last_open_file = -1;
     data_seed->cur_open_file = -1;
+    data_seed->err_general = 0;
     for(i=0; i < NMXP_DATA_MAX_NUM_OPENED_FILE; i++) {
+	data_seed->err_outfile_mseed[i] = 0;
 	data_seed->outfile_mseed[i] = NULL;
 	data_seed->filename_mseed[i][0] = 0;
     }
@@ -845,7 +847,7 @@ int nmxp_data_seed_init(NMXP_DATA_SEED *data_seed, char *outdirseed, char *defau
 int nmxp_data_seed_fopen(NMXP_DATA_SEED *data_seed) {
     int i;
     int found;
-    int err;
+    int err = 0;
     char dirseedchan[NMXP_DATA_MAX_SIZE_FILENAME];
     char filename_mseed[NMXP_DATA_MAX_SIZE_FILENAME];
     char filename_mseed_fullpath[NMXP_DATA_MAX_SIZE_FILENAME];
@@ -869,16 +871,17 @@ int nmxp_data_seed_fopen(NMXP_DATA_SEED *data_seed) {
 		    data_seed->filename_mseed[data_seed->cur_open_file]); */
 	} else {
 
-	    err = 0;
 	    if(!nmxp_data_dir_exists(dirseedchan)) {
 		/* nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_EXTRA, "Directory %s does not exist!\n", dirseedchan); */
 		if(nmxp_data_mkdirp(dirseedchan) == -1) {
 		    err++;
+		    data_seed->err_general++;
 		    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_EXTRA, "Directory %s has not been created!\n", dirseedchan);
 		} else {
 		    /* nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "Directory %s created!\n", dirseedchan); */
 		    if(!nmxp_data_dir_exists(dirseedchan)) {
 			err++;
+			data_seed->err_general++;
 			nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_EXTRA, "Directory %s should be created but it does not exist!\n", dirseedchan);
 		    }
 		}
@@ -887,19 +890,29 @@ int nmxp_data_seed_fopen(NMXP_DATA_SEED *data_seed) {
 	    }
 
 	    if(err==0) {
-		data_seed->last_open_file = (data_seed->last_open_file + 1) % NMXP_DATA_MAX_NUM_OPENED_FILE;
-		nmxp_data_seed_fclose(data_seed, data_seed->last_open_file);
-		strncpy(data_seed->filename_mseed[data_seed->last_open_file], filename_mseed, NMXP_DATA_MAX_SIZE_FILENAME);
+		int app;
+		/* data_seed->last_open_file = (data_seed->last_open_file + 1) % NMXP_DATA_MAX_NUM_OPENED_FILE; */
+		app = (data_seed->last_open_file + 1) % NMXP_DATA_MAX_NUM_OPENED_FILE;
+		nmxp_data_seed_fclose(data_seed, app);
+		strncpy(data_seed->filename_mseed[app], filename_mseed, NMXP_DATA_MAX_SIZE_FILENAME);
 		snprintf(filename_mseed_fullpath, NMXP_DATA_MAX_SIZE_FILENAME, "%s%c%s",
 			dirseedchan, nmxp_data_sepdir,
-			data_seed->filename_mseed[data_seed->last_open_file]);
-		data_seed->outfile_mseed[data_seed->last_open_file] = fopen(filename_mseed_fullpath, "a+");
+			data_seed->filename_mseed[app]);
 
-		if(data_seed->n_open_files < NMXP_DATA_MAX_NUM_OPENED_FILE) {
-		    data_seed->n_open_files++;
+		data_seed->outfile_mseed[app] = fopen(filename_mseed_fullpath, "a+");
+
+		if(data_seed->outfile_mseed[app] == NULL) {
+		    err++;
+		    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_PACKETMAN, "Error opening file %s\n", filename_mseed_fullpath);
+		} else {
+
+		    if(data_seed->n_open_files < NMXP_DATA_MAX_NUM_OPENED_FILE) {
+			data_seed->n_open_files++;
+		    }
+
+		    data_seed->last_open_file = app;
+		    data_seed->cur_open_file = data_seed->last_open_file;
 		}
-
-		data_seed->cur_open_file = data_seed->last_open_file;
 	    }
 
 	    /* nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_EXTRA, "Open  [%3d/%3d] %s\n", data_seed->cur_open_file, data_seed->n_open_files,
@@ -908,7 +921,7 @@ int nmxp_data_seed_fopen(NMXP_DATA_SEED *data_seed) {
 
     }
 
-    return 0;
+    return err;
 }
 
 
@@ -987,15 +1000,16 @@ static void nmxp_data_msr_write_handler (char *record, int reclen, void *pdata_s
     }
 
     if(err==0) {
-	nmxp_data_seed_fopen(data_seed);
 
-	if( data_seed->outfile_mseed[data_seed->cur_open_file] ) {
-	    if ( fwrite(record, reclen, 1, data_seed->outfile_mseed[data_seed->cur_open_file]) != 1 ) {
-		nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_PACKETMAN,
-			"Error writing %s to output file\n", data_seed->filename_mseed[data_seed->cur_open_file]);
+	err = nmxp_data_seed_fopen(data_seed);
+
+	if(err==0) {
+	    if( data_seed->outfile_mseed[data_seed->cur_open_file] ) {
+		if ( fwrite(record, reclen, 1, data_seed->outfile_mseed[data_seed->cur_open_file]) != 1 ) {
+		    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_PACKETMAN,
+			    "Error writing %s to output file\n", data_seed->filename_mseed[data_seed->cur_open_file]);
+		}
 	    }
-	} else {
-	    /* nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_PACKETMAN, "Error opening file %s\n", data_seed->filename_mseed); */
 	}
     }
 }

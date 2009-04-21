@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_data.h,v 1.34 2009-03-11 16:34:08 mtheo Exp $
+ * $Id: nmxp_data.h,v 1.35 2009-04-21 14:42:05 mtheo Exp $
  *
  */
 
@@ -143,6 +143,8 @@ typedef struct {
     int n_open_files;
     int last_open_file;
     int cur_open_file;
+    int err_general;
+    int err_outfile_mseed[NMXP_DATA_MAX_NUM_OPENED_FILE];
     FILE *outfile_mseed[NMXP_DATA_MAX_NUM_OPENED_FILE];
     char filename_mseed[NMXP_DATA_MAX_NUM_OPENED_FILE][NMXP_DATA_MAX_SIZE_FILENAME];
     char outdirseed[NMXP_DATA_MAX_SIZE_FILENAME];
