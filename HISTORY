@@ -2,12 +2,13 @@
 nmxptool Release History
 #########################
 
-* Release 1.2.4-beta3    (2009/03/10) 
+* Release 1.2.4-beta3    (2009/04/21) 
     - Improved saving of mini-SEED files into SDS and BUD structure,
         now it is possible to store mini-SEED in near-real-time from NaqsServer.
     - Added feature: packets converted in mini-SEED records can be directly sent
         to the Seedlink server by the function send_mseed(), in place of using
         the function send_raw_depoch(). (option -K or -k).
+    - Changed SeisComP templates adding source port to the file name of channel list.
     - Added SeisComP templates for retrieving Data On Demand with minimun delay.
     - Fixed bug: possible string overflow in nmxp_chan_lookupName().
 
