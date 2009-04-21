@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.211 2009-03-10 16:44:59 mtheo Exp $
+ * $Id: nmxptool.c,v 1.212 2009-04-21 14:42:40 mtheo Exp $
  *
  */
 
@@ -54,8 +54,15 @@
 
 int if_dap_condition_only_one_time = 0;
 
-#define DAP_CONDITION(params_struct) ( params_struct.start_time != 0.0 || params_struct.delay > 0 )
-#define EXIT_CONDITION (!nmxptool_sigcondition_read()  &&  !ew_check_flag_terminate  &&  !if_dap_condition_only_one_time)
+#define DAP_CONDITION(params_struct) (params_struct.start_time != 0.0 || params_struct.delay > 0)
+
+#define EXIT_CONDITION_PRELIM (!nmxptool_sigcondition_read()  &&  !ew_check_flag_terminate  &&  !if_dap_condition_only_one_time)
+#ifdef HAVE_LIBMSEED
+#define EXIT_CONDITION ( EXIT_CONDITION_PRELIM  &&  data_seed.err_general==0 )
+#else
+#define EXIT_CONDITION ( EXIT_CONDITION_PRELIM )
+#endif
+		    
 
 #define CURRENT_NETWORK ( (params.network)? params.network : DEFAULT_NETWORK )
 #define NETCODE_OR_CURRENT_NETWORK ( (network_code[0] != 0)? network_code : CURRENT_NETWORK )
@@ -264,6 +271,7 @@ int main (int argc, char **argv) {
     }
 
 #ifdef HAVE_LIBMSEED
+    data_seed.err_general = 0;
     if(params.type_writeseed) {
 	ms_loginit((void*)&nmxptool_log_miniseed, NULL, (void*)&nmxptool_logerr_miniseed, "error: ");
 	/* Init mini-SEED variables */
@@ -321,6 +329,7 @@ int main (int argc, char **argv) {
 	nmxptool_ew_attach();
     }
 #endif
+
 
     /* Exit only on request */
     while(EXIT_CONDITION) {
@@ -404,7 +413,11 @@ int main (int argc, char **argv) {
     times_flow = 0;
     recv_errno = 0;
 
-    while(times_flow < 2  &&  recv_errno == 0 && !nmxptool_sigcondition_read()) {
+    while(times_flow < 2  &&  recv_errno == 0 && !nmxptool_sigcondition_read()
+#ifdef HAVE_LIBMSEED
+	    &&  data_seed.err_general==0
+#endif
+	    ) {
 
 	if(params.statefile) {
 	    nmxptool_chanseq_load_states(channelList_subset, channelList_Seq, params.statefile);
@@ -471,14 +484,22 @@ int main (int argc, char **argv) {
 
 	default_start_time = (params.start_time > 0.0)? params.start_time : nmxp_data_gmtime_now() - params.max_data_to_retrieve;
 
-	while(exitdapcondition  &&  !nmxptool_sigcondition_read()) {
+	while(exitdapcondition  &&  !nmxptool_sigcondition_read()
+#ifdef HAVE_LIBMSEED
+		&&  data_seed.err_general==0
+#endif
+	     ) {
 
 	    /* Start loop for sending requests */
 	    request_chan=0;
 	    request_SOCKET_OK = NMXP_SOCKET_OK;
 
 	    /* For each channel */
-	    while(request_SOCKET_OK == NMXP_SOCKET_OK  &&  request_chan < channelList_subset->number  &&  exitdapcondition && !nmxptool_sigcondition_read()) {
+	    while(request_SOCKET_OK == NMXP_SOCKET_OK  &&  request_chan < channelList_subset->number  &&  exitdapcondition && !nmxptool_sigcondition_read()
+#ifdef HAVE_LIBMSEED
+		    &&  data_seed.err_general==0
+#endif
+		    ) {
 
 		if(params.statefile) {
 		    if(channelList_Seq[request_chan].after_start_time > 0) {
@@ -568,7 +589,11 @@ int main (int argc, char **argv) {
 		    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_EXTRA, "ret = %d, type = %d, length = %d, recv_errno = %d\n",
 			    ret, type, length, recv_errno);
 
-		    while(ret == NMXP_SOCKET_OK   &&    type != NMXP_MSG_READY) {
+		    while(ret == NMXP_SOCKET_OK   &&    type != NMXP_MSG_READY  && !nmxptool_sigcondition_read()
+#ifdef HAVE_LIBMSEED
+			    &&  data_seed.err_general==0
+#endif
+			 ) {
 
 			/* Process a packet and return value in NMXP_DATA_PROCESS structure */
 			pd = nmxp_processCompressedData(buffer, length, channelList_subset, NETCODE_OR_CURRENT_NETWORK);
@@ -799,7 +824,11 @@ int main (int argc, char **argv) {
 
 	skip_current_packet = 0;
 
-	while(exitpdscondition && !nmxptool_sigcondition_read()) {
+	while(exitpdscondition && !nmxptool_sigcondition_read()
+#ifdef HAVE_LIBMSEED
+		&&  data_seed.err_general==0
+#endif
+	     ) {
 
 	    /* Process Compressed or Decompressed Data */
 	    pd = nmxp_receiveData(naqssock, channelList_subset, NETCODE_OR_CURRENT_NETWORK, params.timeoutrecv, &recv_errno);
