@@ -1,10 +1,29 @@
-2009-04-21 14:31
+2009-04-21 16:58
 
 	* nmxptool:
 
 	  Open-Source and Cross-Platform software for Nanometrics seismic data acquisition
 	  Matteo Quintiliani - Istituto Nazionale di Geofisica e Vulcanologia - Italy
 	  Mail bug reports and suggestions to <quintiliani@ingv.it> 
+
+2009-04-21 14:46  mtheo <quintiliani@ingv.it>
+
+	* configure.in (1.85):
+
+	Incremented beta version to 1.2.4-beta6
+
+2009-04-21 14:42  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.212):
+
+	Added checks for data_seed.err_general
+
+2009-04-21 14:42  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_data.h (1.35), lib/nmxp_data.c (1.67):
+
+	Added important check on creating directories and files for SDS or
+	BUD
 
 2009-04-21 12:19  mtheo <quintiliani@ingv.it>
 
