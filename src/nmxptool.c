@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.212 2009-04-21 14:42:40 mtheo Exp $
+ * $Id: nmxptool.c,v 1.213 2009-05-19 13:30:30 mtheo Exp $
  *
  */
 
@@ -1118,6 +1118,10 @@ void flushing_raw_data_stream() {
     if(params.stc == -1) {
 	to_cur_chan = 0;
 	while(to_cur_chan < channelList_subset->number) {
+
+	    /* Check if we need to send heartbeat message */
+	    nmxptool_ew_send_heartbeat_if_needed();
+
 	    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_RAWSTREAM, "Flushing data for channel %s\n",
 		    NMXP_LOG_STR(channelList_subset->channel[to_cur_chan].name));
 	    nmxp_raw_stream_manage(&(channelList_Seq[to_cur_chan].raw_stream_buffer), NULL, p_func_pd, n_func_pd);
