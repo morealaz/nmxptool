@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.213 2009-05-19 13:30:30 mtheo Exp $
+ * $Id: nmxptool.c,v 1.214 2009-05-19 13:43:56 mtheo Exp $
  *
  */
 
@@ -1119,8 +1119,20 @@ void flushing_raw_data_stream() {
 	to_cur_chan = 0;
 	while(to_cur_chan < channelList_subset->number) {
 
-	    /* Check if we need to send heartbeat message */
-	    nmxptool_ew_send_heartbeat_if_needed();
+#ifdef HAVE_EARTHWORMOBJS
+	    if(params.ew_configuration_file) {
+
+		/* Check if we are being asked to terminate */
+		if( (ew_check_flag_terminate = nmxptool_ew_check_flag_terminate()) ) {
+		    logit ("t", "nmxptool terminating on request\n");
+		    nmxptool_ew_send_error(NMXPTOOL_EW_ERR_TERMREQ, NULL, params.hostname);
+		}
+
+		/* Check if we need to send heartbeat message */
+		nmxptool_ew_send_heartbeat_if_needed();
+
+	    }
+#endif
 
 	    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_RAWSTREAM, "Flushing data for channel %s\n",
 		    NMXP_LOG_STR(channelList_subset->channel[to_cur_chan].name));
