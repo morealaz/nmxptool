@@ -1,4 +1,6 @@
 AUTOMAKE_OPTIONS = gnu
+ACLOCAL_AMFLAGS = -I m4
+
 bin_PROGRAMS = nmxptool
 
 nmxptool_SOURCES  = nmxptool.c

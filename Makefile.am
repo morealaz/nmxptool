@@ -1,4 +1,5 @@
 # mtheo
+ACLOCAL_AMFLAGS = -I m4
 
 SUBDIRS = lib src
 dist_doc_DATA = BUGS HISTORY README earthworm seiscomp_templates makefile.sol makefile.ux doc/html doc/man

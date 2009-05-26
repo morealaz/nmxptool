@@ -1,4 +1,5 @@
 AUTOMAKE_OPTIONS = gnu
+ACLOCAL_AMFLAGS = -I m4
 
 lib_LIBRARIES = libnmxp.a
 libnmxp_a_CFLAGS = -I../include
