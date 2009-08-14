@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_data.c,v 1.67 2009-04-21 14:42:05 mtheo Exp $
+ * $Id: nmxp_data.c,v 1.68 2009-08-14 12:59:25 mtheo Exp $
  *
  */
 
@@ -691,10 +691,10 @@ char *nmxp_data_gnu_getcwd () {
     size_t size = NMXP_DATA_MAX_SIZE_FILENAME;
     while (1)
     {
-	char *buffer = (char *) malloc (size);
+	char *buffer = (char *) NMXP_MEM_MALLOC(size);
 	if (getcwd (buffer, size) == buffer)
 	    return buffer;
-	free (buffer);
+	NMXP_MEM_FREE (buffer);
 	if (errno != ERANGE)
 	    return NULL;
 	size *= 2;
@@ -715,7 +715,7 @@ int nmxp_data_dir_exists (char *dirname) {
 	}
 	if(cur_dir) {
 	    chdir(cur_dir);
-	    free(cur_dir);
+	    NMXP_MEM_FREE(cur_dir);
 	}
     }
 
@@ -736,7 +736,7 @@ char *nmxp_data_dir_abspath (char *dirname) {
 	}
 	if(cur_dir) {
 	    chdir(cur_dir);
-	    free(cur_dir);
+	    NMXP_MEM_FREE(cur_dir);
 	}
     }
 
@@ -776,7 +776,7 @@ int nmxp_data_mkdirp(const char *filename) {
 
     if(!filename)
 	return -1;
-    dir = strdup(filename);
+    dir = NMXP_MEM_STRDUP(filename);
     if(!dir)
 	return -1;
 
@@ -799,11 +799,11 @@ int nmxp_data_mkdirp(const char *filename) {
 	error=nmxp_data_mkdir(dir);
     }
 
-    free(dir);
+    NMXP_MEM_FREE(dir);
 
     if(cur_dir) {
 	chdir(cur_dir);
-	free(cur_dir);
+	NMXP_MEM_FREE(cur_dir);
     }
     return error;
 }
@@ -823,7 +823,7 @@ int nmxp_data_seed_init(NMXP_DATA_SEED *data_seed, char *outdirseed, char *defau
 	strncpy(data_seed->outdirseed, dirname, NMXP_DATA_MAX_SIZE_FILENAME);
     }
     if(dirname) {
-	free(dirname);
+	NMXP_MEM_FREE(dirname);
 	dirname = NULL;
     }
     strncpy(data_seed->default_network, default_network, 5);
