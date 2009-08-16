@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp.c,v 1.91 2009-03-10 16:57:07 mtheo Exp $
+ * $Id: nmxp.c,v 1.92 2009-08-16 07:16:40 mtheo Exp $
  *
  */
 
@@ -55,6 +55,10 @@ int nmxp_receiveChannelList(int isock, NMXP_CHAN_LIST **pchannelList) {
 
     if(type != NMXP_MSG_CHANNELLIST) {
 	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_PACKETMAN, "Type %d is not NMXP_MSG_CHANNELLIST!\n", type);
+	if(buffer) {
+	    NMXP_MEM_FREE(buffer);
+	    buffer = NULL;
+	}
     } else {
 
 	*pchannelList = buffer;

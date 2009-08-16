@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_memory.c,v 1.10 2009-08-16 07:11:53 mtheo Exp $
+ * $Id: nmxp_memory.c,v 1.11 2009-08-16 07:16:40 mtheo Exp $
  *
  */
 
@@ -50,8 +50,8 @@ static NMXP_MEM_SOURCE_FILE_LINE_STAT sfs[MAX_MEM_SFS];
 static int i_sfs = 0;
 
 
-inline int nmxp_mem_add_sfs(char *source_file_line, int t) {
-    int cur_times;
+inline long int nmxp_mem_add_sfs(char *source_file_line, int t) {
+    long int cur_times;
     int i;
     i=0;
     while(i < i_sfs
@@ -70,13 +70,13 @@ inline int nmxp_mem_add_sfs(char *source_file_line, int t) {
 	    cur_times = -1000000;
 	}
     } else {
-	sfs[i].times+=t
-	    cur_times = sfs[i].times;
+	sfs[i].times+=t;
+	cur_times = sfs[i].times;
     }
     return cur_times;
 }
 
-inline int nmxp_mem_print_sfs() {
+inline void nmxp_mem_print_sfs() {
     int i;
     i=0;
     while(i < i_sfs) {
@@ -90,6 +90,7 @@ inline int nmxp_mem_print_sfs() {
 inline int nmxp_mem_add_ptr(void *ptr, size_t size, char *source_file_line, struct timeval *tv) {
     int ret = -1;
     if(i_nms < MAX_MEM_STRUCTS) {
+	nmxp_mem_add_sfs(source_file_line, 1);
 	nms[i_nms].p = ptr;
 	nms[i_nms].size = size;
 	strncpy(nms[i_nms].source_file_line, source_file_line, MAX_LEN_SOURCE_FILE_LINE);
@@ -97,7 +98,6 @@ inline int nmxp_mem_add_ptr(void *ptr, size_t size, char *source_file_line, stru
 	nms[i_nms].tv.tv_usec = tv->tv_usec;
 	ret = i_nms;
 	i_nms++;
-	nmxp_mem_add_sfs(source_file_line, 1);
     } else {
 	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY, "nmxp_mem_add_ptr i_nms > MAX_MEM_STRUCTS %d > %d\n", i_nms, MAX_MEM_STRUCTS);
 	ret = -1;
@@ -122,6 +122,7 @@ inline int nmxp_mem_rem_ptr(void *ptr, struct timeval *tv, int *size) {
 	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY, "nmxp_mem_rem_ptr %010p not found i=%d\n", ptr, i);
 	i = -1;
     } else {
+	nmxp_mem_add_sfs(nms[i].source_file_line, -1);
 	/* shift */
 	tv->tv_sec = nms[i].tv.tv_sec;
 	tv->tv_usec = nms[i].tv.tv_usec;
@@ -136,7 +137,6 @@ inline int nmxp_mem_rem_ptr(void *ptr, struct timeval *tv, int *size) {
 	    j++;
 	}
 	i_nms--;
-	nmxp_mem_add_sfs(source_file_line, -1);
     }
     return i;
 }
