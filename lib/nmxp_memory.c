@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_memory.c,v 1.11 2009-08-16 07:16:40 mtheo Exp $
+ * $Id: nmxp_memory.c,v 1.12 2009-08-16 07:31:18 mtheo Exp $
  *
  */
 
@@ -79,8 +79,9 @@ inline long int nmxp_mem_add_sfs(char *source_file_line, int t) {
 inline void nmxp_mem_print_sfs() {
     int i;
     i=0;
+    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "\n");
     while(i < i_sfs) {
-	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "%4d: %10ld \%sn",
+	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "%4d: %10ld %s\n",
 		i+1, sfs[i].times, sfs[i].source_file_line
 		);
 	i++;
