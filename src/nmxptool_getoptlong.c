@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.112 2009-03-11 06:05:23 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.113 2009-08-16 08:58:21 mtheo Exp $
  *
  */
 
@@ -124,6 +124,11 @@ void nmxptool_supports() {
 #else
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "NO");
 #endif
+
+#ifdef NMXP_MEM_DEBUG
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, ". Enabled memdebug");
+#endif
+
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, ".\n");
 }
 
