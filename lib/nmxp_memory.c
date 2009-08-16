@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_memory.c,v 1.9 2008-07-21 22:04:45 mtheo Exp $
+ * $Id: nmxp_memory.c,v 1.10 2009-08-16 07:11:53 mtheo Exp $
  *
  */
 
@@ -35,11 +35,57 @@ typedef struct {
     struct timeval tv;
 } NMXP_MEM_STRUCT;
 
+typedef struct {
+    char source_file_line[MAX_LEN_SOURCE_FILE_LINE];
+    long int times;
+} NMXP_MEM_SOURCE_FILE_LINE_STAT;
+
 #define MAX_MEM_STRUCTS (4096 * 16)
 
 static NMXP_MEM_STRUCT nms[MAX_MEM_STRUCTS];
 static int i_nms = 0;
 
+#define MAX_MEM_SFS (1024)
+static NMXP_MEM_SOURCE_FILE_LINE_STAT sfs[MAX_MEM_SFS];
+static int i_sfs = 0;
+
+
+inline int nmxp_mem_add_sfs(char *source_file_line, int t) {
+    int cur_times;
+    int i;
+    i=0;
+    while(i < i_sfs
+	    && i < MAX_MEM_SFS
+	    &&  strcmp(sfs[i].source_file_line, source_file_line)!=0) {
+	i++;
+    }
+    if(i >= i_sfs) {
+	if(i_sfs < MAX_MEM_SFS) {
+	    strncpy(sfs[i_sfs].source_file_line, source_file_line, MAX_LEN_SOURCE_FILE_LINE);
+	    sfs[i_sfs].times=t;
+	    i_sfs++;
+	    cur_times = t;
+	} else {
+	    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY, "nmxp_mem_add_sfs i_sfs > MAX_MEM_SFS %d > %d\n", i_sfs, MAX_MEM_SFS);
+	    cur_times = -1000000;
+	}
+    } else {
+	sfs[i].times+=t
+	    cur_times = sfs[i].times;
+    }
+    return cur_times;
+}
+
+inline int nmxp_mem_print_sfs() {
+    int i;
+    i=0;
+    while(i < i_sfs) {
+	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "%4d: %10ld \%sn",
+		i+1, sfs[i].times, sfs[i].source_file_line
+		);
+	i++;
+    }
+}
 
 inline int nmxp_mem_add_ptr(void *ptr, size_t size, char *source_file_line, struct timeval *tv) {
     int ret = -1;
@@ -51,6 +97,7 @@ inline int nmxp_mem_add_ptr(void *ptr, size_t size, char *source_file_line, stru
 	nms[i_nms].tv.tv_usec = tv->tv_usec;
 	ret = i_nms;
 	i_nms++;
+	nmxp_mem_add_sfs(source_file_line, 1);
     } else {
 	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY, "nmxp_mem_add_ptr i_nms > MAX_MEM_STRUCTS %d > %d\n", i_nms, MAX_MEM_STRUCTS);
 	ret = -1;
@@ -89,12 +136,13 @@ inline int nmxp_mem_rem_ptr(void *ptr, struct timeval *tv, int *size) {
 	    j++;
 	}
 	i_nms--;
+	nmxp_mem_add_sfs(source_file_line, -1);
     }
     return i;
 }
 
 
-inline int nmxp_mem_print_ptr(int print_items, char *source_file, int line) {
+inline int nmxp_mem_print_ptr(int print_items, int print_sfs, char *source_file, int line) {
     int i;
     static int old_tot_size = 0;
     int tot_size;
@@ -120,6 +168,10 @@ inline int nmxp_mem_print_ptr(int print_items, char *source_file, int line) {
 	    }
 	}
 	old_tot_size = tot_size;
+    }
+
+    if(print_sfs) {
+	nmxp_mem_print_sfs();
     }
 
     nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "nmxp_mem_print_ptr() tot %d  %s:%d\n", tot_size, source_file, line);
