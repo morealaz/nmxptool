@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_listen.c,v 1.8 2008-11-07 22:44:10 mtheo Exp $
+ * $Id: nmxptool_listen.c,v 1.9 2009-08-16 07:12:16 mtheo Exp $
  *
  */
 
@@ -231,7 +231,7 @@ int nmxptool_fd_command(int new_fd, int command) {
     switch(command) {
 
 	case COMMAND_MEM:
-	    snprintf(str_tot_mem, 30, "%d\n", NMXP_MEM_PRINT_PTR(0));
+	    snprintf(str_tot_mem, 30, "%d\n", NMXP_MEM_PRINT_PTR(0, 1));
 	    nmxptool_send_ctrl(new_fd, str_tot_mem);
 	    break;
 

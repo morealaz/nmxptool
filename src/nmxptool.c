@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.214 2009-05-19 13:43:56 mtheo Exp $
+ * $Id: nmxptool.c,v 1.215 2009-08-16 07:12:16 mtheo Exp $
  *
  */
 
@@ -334,7 +334,7 @@ int main (int argc, char **argv) {
     /* Exit only on request */
     while(EXIT_CONDITION) {
 
-    NMXP_MEM_PRINT_PTR(0);
+    NMXP_MEM_PRINT_PTR(0, 1);
 
     /* Get list of available channels and get a subset list of params.channels */
     if( DAP_CONDITION(params) ) {
@@ -1096,7 +1096,7 @@ int main (int argc, char **argv) {
 	params.channels = NULL;
     }
 
-    NMXP_MEM_PRINT_PTR(1);
+    NMXP_MEM_PRINT_PTR(1, 1);
 
     main_ret = nmxptool_sigcondition_read();
     nmxptool_sigocondition_destroy();
@@ -1323,7 +1323,7 @@ Channel      Ind S      SeqNo        x-1  nIt    lat     LastSampleTime         
 /* Set sigcondition to received signal value  */
 static void ShutdownHandler(int sig) {
 
-    NMXP_MEM_PRINT_PTR(0);
+    NMXP_MEM_PRINT_PTR(0, 1);
 
     /* Safe Thread Synchronization */
     nmxptool_sigcondition_write(sig);
@@ -1344,7 +1344,7 @@ static void AlarmHandler(int sig) {
 
     nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "%s received signal %d!\n", NMXP_LOG_STR(PACKAGE_NAME), sig);
 
-    NMXP_MEM_PRINT_PTR(0);
+    NMXP_MEM_PRINT_PTR(0, 1);
 
     nmxptool_print_info_raw_stream(NULL);
 }
