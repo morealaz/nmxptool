@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.216 2009-08-17 08:19:46 mtheo Exp $
+ * $Id: nmxptool.c,v 1.217 2009-08-17 08:57:32 mtheo Exp $
  *
  */
 
@@ -146,7 +146,7 @@ int main (int argc, char **argv) {
     char str_end_time[200] = "";
 
     NMXP_MSG_SERVER type;
-    void *buffer = NULL;
+    char buffer[NMXP_MAX_LENGTH_DATA_BUFFER];
     int32_t length;
     int ret;
     int main_ret = 0;
@@ -584,7 +584,7 @@ int main (int argc, char **argv) {
 		    }
 
 		    /* DAP Step 6: Receive Data until receiving a Ready message */
-		    ret = nmxp_receiveMessage(naqssock, &type, &buffer, &length, 0, &recv_errno);
+		    ret = nmxp_receiveMessage(naqssock, &type, buffer, &length, 0, &recv_errno, NMXP_MAX_LENGTH_DATA_BUFFER);
 
 		    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_EXTRA, "ret = %d, type = %d, length = %d, recv_errno = %d\n",
 			    ret, type, length, recv_errno);
@@ -653,7 +653,7 @@ int main (int argc, char **argv) {
 
 			if(params.flag_writefile  &&  outfile) {
 			    /* Write buffer to the output file */
-			    if(outfile && buffer && length > 0) {
+			    if(outfile && length > 0) {
 				int32_t length_int = length;
 				nmxp_data_swap_4b((int32_t *) &length_int);
 				fwrite(&length_int, sizeof(length_int), 1, outfile);
@@ -672,7 +672,7 @@ int main (int argc, char **argv) {
 
 
 			/* Receive Data */
-			ret = nmxp_receiveMessage(naqssock, &type, &buffer, &length, 0, &recv_errno);
+			ret = nmxp_receiveMessage(naqssock, &type, buffer, &length, 0, &recv_errno, NMXP_MAX_LENGTH_DATA_BUFFER);
 			/* nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CONNFLOW, "ret = %d, type = %d\n", ret, type); */
 		    }
 

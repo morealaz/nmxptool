@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp.c,v 1.93 2009-08-17 08:19:46 mtheo Exp $
+ * $Id: nmxp.c,v 1.94 2009-08-17 08:57:10 mtheo Exp $
  *
  */
 
@@ -46,33 +46,37 @@ int nmxp_receiveChannelList(int isock, NMXP_CHAN_LIST **pchannelList) {
     int recv_errno;
 
     NMXP_MSG_SERVER type;
-    void *buffer;
+    char buffer[NMXP_MAX_LENGTH_DATA_BUFFER];
     int32_t length;
 
     *pchannelList = NULL;
 
-    ret = nmxp_receiveMessage(isock, &type, &buffer, &length, 0, &recv_errno);
+    ret = nmxp_receiveMessage(isock, &type, buffer, &length, 0, &recv_errno, NMXP_MAX_LENGTH_DATA_BUFFER);
 
     if(type != NMXP_MSG_CHANNELLIST) {
 	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_PACKETMAN, "Type %d is not NMXP_MSG_CHANNELLIST!\n", type);
-	if(buffer) {
-	    NMXP_MEM_FREE(buffer);
-	    buffer = NULL;
-	}
     } else {
+	(*pchannelList) = (NMXP_CHAN_LIST *) NMXP_MEM_MALLOC(length);
 
-	*pchannelList = buffer;
-	(*pchannelList)->number = ntohl((*pchannelList)->number);
+	if( (*pchannelList) != NULL) {
 
-	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CHANNEL, "number of channels %d\n", (*pchannelList)->number);
-	
-	/* TODO check*/
+	    memmove((*pchannelList), buffer, length);
 
-	for(i=0; i < (*pchannelList)->number; i++) {
-	    (*pchannelList)->channel[i].key = ntohl((*pchannelList)->channel[i].key);
-	    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CHANNEL, "%12d %s\n",
-		    (*pchannelList)->channel[i].key,
-		    NMXP_LOG_STR((*pchannelList)->channel[i].name));
+	    (*pchannelList)->number = ntohl((*pchannelList)->number);
+
+	    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CHANNEL, "number of channels %d\n", (*pchannelList)->number);
+
+	    /* TODO check*/
+
+	    for(i=0; i < (*pchannelList)->number; i++) {
+		(*pchannelList)->channel[i].key = ntohl((*pchannelList)->channel[i].key);
+		nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CHANNEL, "%12d %s\n",
+			(*pchannelList)->channel[i].key,
+			NMXP_LOG_STR((*pchannelList)->channel[i].name));
+	    }
+	} else {
+	    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_PACKETMAN, "nmxp_receiveChannelList() Error allocating pchannelList!\n");
+	    ret = NMXP_SOCKET_ERROR;
 	}
 
     }
@@ -217,11 +221,11 @@ int nmxp_sendAddTimeSeriesChannel(int isock, NMXP_CHAN_LIST_NET *channelList, in
 
 NMXP_DATA_PROCESS *nmxp_receiveData(int isock, NMXP_CHAN_LIST_NET *channelList, const char *network_code, int timeoutsec, int *recv_errno ) {
     NMXP_MSG_SERVER type;
-    void *buffer = NULL;
+    char buffer[NMXP_MAX_LENGTH_DATA_BUFFER];
     int32_t length;
     NMXP_DATA_PROCESS *pd = NULL;
 
-    if(nmxp_receiveMessage(isock, &type, &buffer, &length, timeoutsec, recv_errno) == NMXP_SOCKET_OK) {
+    if(nmxp_receiveMessage(isock, &type, buffer, &length, timeoutsec, recv_errno, NMXP_MAX_LENGTH_DATA_BUFFER) == NMXP_SOCKET_OK) {
 	if(type == NMXP_MSG_COMPRESSED) {
 	    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN, "Type %d is NMXP_MSG_COMPRESSED!\n", type);
 	    pd = nmxp_processCompressedData(buffer, length, channelList, network_code);
@@ -531,11 +535,11 @@ NMXP_META_CHAN_LIST *nmxp_getMetaChannelList(char * hostname, int portnum, NMXP_
     int recv_errno;
     
     NMXP_MSG_SERVER type;
-    void *buffer = NULL;
+    char buffer[NMXP_MAX_LENGTH_DATA_BUFFER];
     int32_t length;
     NMXP_PRECISLISTREQUEST precisListRequestBody;
     NMXP_CHANNELINFOREQUEST channelInfoRequestBody;
-    NMXP_CHANNELINFORESPONSE *channelInfo;
+    NMXP_CHANNELINFORESPONSE *channelInfo = NULL;
 
     char str_start[NMXP_DATA_MAX_SIZE_DATE], str_end[NMXP_DATA_MAX_SIZE_DATE];
     str_start[0] = 0;
@@ -565,29 +569,36 @@ NMXP_META_CHAN_LIST *nmxp_getMetaChannelList(char * hostname, int portnum, NMXP_
 	return NULL;
     }
 
-
-
-
     /* DAP Step 5: Send Data Request */
     nmxp_sendHeader(naqssock, NMXP_MSG_CHANNELLISTREQUEST, 0);
+
     /* DAP Step 6: Receive Data until receiving a Ready message */
-    ret_sock = nmxp_receiveMessage(naqssock, &type, &buffer, &length, 0, &recv_errno);
+    ret_sock = nmxp_receiveMessage(naqssock, &type, buffer, &length, 0, &recv_errno, NMXP_MAX_LENGTH_DATA_BUFFER);
     nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_EXTRA, "ret_sock = %d, type = %d, length = %d\n", ret_sock, type, length);
 
     while(ret_sock == NMXP_SOCKET_OK   &&    type != NMXP_MSG_READY) {
-	channelList = buffer;
+	if(channelList) {
+	    NMXP_MEM_FREE(channelList);
+	    channelList = NULL;
+	}
+	channelList = (NMXP_CHAN_LIST *) NMXP_MEM_MALLOC(length);
+	if(channelList) {
+	    memmove(channelList, buffer, length);
 
-	channelList->number = ntohl(channelList->number);
+	    channelList->number = ntohl(channelList->number);
 
-	for(i = 0; i < channelList->number; i++) {
-	    channelList->channel[i].key = ntohl(channelList->channel[i].key);
-	    if(getDataTypeFromKey(channelList->channel[i].key) == datatype) {
-		nmxp_meta_chan_add(&chan_list, channelList->channel[i].key, channelList->channel[i].name, 0, 0, NULL, NMXP_META_SORT_NAME);
+	    for(i = 0; i < channelList->number; i++) {
+		channelList->channel[i].key = ntohl(channelList->channel[i].key);
+		if(getDataTypeFromKey(channelList->channel[i].key) == datatype) {
+		    nmxp_meta_chan_add(&chan_list, channelList->channel[i].key, channelList->channel[i].name, 0, 0, NULL, NMXP_META_SORT_NAME);
+		}
 	    }
+	} else {
+	    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY, "nmxp_getMetaChannelList() Error allocating channelList.\n");
 	}
 
 	/* Receive Message */
-	ret_sock = nmxp_receiveMessage(naqssock, &type, &buffer, &length, 0, &recv_errno);
+	ret_sock = nmxp_receiveMessage(naqssock, &type, buffer, &length, 0, &recv_errno, NMXP_MAX_LENGTH_DATA_BUFFER);
 	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_EXTRA, "ret_sock = %d, type = %d, length = %d\n", ret_sock, type, length);
     }
 
@@ -601,37 +612,46 @@ NMXP_META_CHAN_LIST *nmxp_getMetaChannelList(char * hostname, int portnum, NMXP_
 
 
     /* DAP Step 6: Receive Data until receiving a Ready message */
-    ret_sock = nmxp_receiveMessage(naqssock, &type, &buffer, &length, 0, &recv_errno);
+    ret_sock = nmxp_receiveMessage(naqssock, &type, buffer, &length, 0, &recv_errno, NMXP_MAX_LENGTH_DATA_BUFFER);
     nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_EXTRA, "ret_sock = %d, type = %d, length = %d\n", ret_sock, type, length);
 
     while(ret_sock == NMXP_SOCKET_OK   &&    type != NMXP_MSG_READY) {
-	precisChannelList = buffer;
+	if(precisChannelList) {
+	    NMXP_MEM_FREE(precisChannelList);
+	    precisChannelList = NULL;
+	}
+	precisChannelList = (NMXP_CHAN_PRECISLIST *) NMXP_MEM_MALLOC(length);
+	if(precisChannelList) {
+	    memmove(precisChannelList, buffer, length);
 
-	precisChannelList->number = ntohl(precisChannelList->number);
-	for(i = 0; i < precisChannelList->number; i++) {
-	    precisChannelList->channel[i].key = ntohl(precisChannelList->channel[i].key);
-	    precisChannelList->channel[i].start_time = ntohl(precisChannelList->channel[i].start_time);
-	    precisChannelList->channel[i].end_time = ntohl(precisChannelList->channel[i].end_time);
+	    precisChannelList->number = ntohl(precisChannelList->number);
+	    for(i = 0; i < precisChannelList->number; i++) {
+		precisChannelList->channel[i].key = ntohl(precisChannelList->channel[i].key);
+		precisChannelList->channel[i].start_time = ntohl(precisChannelList->channel[i].start_time);
+		precisChannelList->channel[i].end_time = ntohl(precisChannelList->channel[i].end_time);
 
-	    nmxp_data_to_str(str_start, precisChannelList->channel[i].start_time);
-	    nmxp_data_to_str(str_end, precisChannelList->channel[i].end_time);
+		nmxp_data_to_str(str_start, precisChannelList->channel[i].start_time);
+		nmxp_data_to_str(str_end, precisChannelList->channel[i].end_time);
 
-	    if(!nmxp_meta_chan_set_times(chan_list, precisChannelList->channel[i].key, precisChannelList->channel[i].start_time, precisChannelList->channel[i].end_time)) {
-		nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANNEL, "Key %d not found for %s!\n",
-			precisChannelList->channel[i].key,
-			NMXP_LOG_STR(precisChannelList->channel[i].name));
+		if(!nmxp_meta_chan_set_times(chan_list, precisChannelList->channel[i].key, precisChannelList->channel[i].start_time, precisChannelList->channel[i].end_time)) {
+		    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANNEL, "Key %d not found for %s!\n",
+			    precisChannelList->channel[i].key,
+			    NMXP_LOG_STR(precisChannelList->channel[i].name));
+		}
+
+		/*
+		   nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "%12d %12s %10d %10d %20s %20s\n",
+		   precisChannelList->channel[i].key, NMXP_LOG_STR(precisChannelList->channel[i].name),
+		   precisChannelList->channel[i].start_time, precisChannelList->channel[i].end_time,
+		   NMXP_LOG_STR(str_start), NMXP_LOG_STR(str_end));
+		   */
 	    }
-
-	    /*
-	    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "%12d %12s %10d %10d %20s %20s\n",
-		    precisChannelList->channel[i].key, NMXP_LOG_STR(precisChannelList->channel[i].name),
-		    precisChannelList->channel[i].start_time, precisChannelList->channel[i].end_time,
-		    NMXP_LOG_STR(str_start), NMXP_LOG_STR(str_end));
-		    */
+	} else {
+	    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY, "nmxp_getMetaChannelList() Error allocating precisChannelList.\n");
 	}
 
 	/* Receive Message */
-	ret_sock = nmxp_receiveMessage(naqssock, &type, &buffer, &length, 0, &recv_errno);
+	ret_sock = nmxp_receiveMessage(naqssock, &type, buffer, &length, 0, &recv_errno, NMXP_MAX_LENGTH_DATA_BUFFER);
 	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_EXTRA, "ret_sock = %d, type = %d, length = %d\n", ret_sock, type, length);
     }
 
@@ -646,19 +666,30 @@ NMXP_META_CHAN_LIST *nmxp_getMetaChannelList(char * hostname, int portnum, NMXP_
 		nmxp_sendMessage(naqssock, NMXP_MSG_CHANNELINFOREQUEST, &channelInfoRequestBody, sizeof(NMXP_CHANNELINFOREQUEST));
 
 		/* DAP Step 6: Receive Data until receiving a Ready message */
-		ret_sock = nmxp_receiveMessage(naqssock, &type, &buffer, &length, 0, &recv_errno);
+		ret_sock = nmxp_receiveMessage(naqssock, &type, buffer, &length, 0, &recv_errno, NMXP_MAX_LENGTH_DATA_BUFFER);
 		nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_EXTRA, "ret_sock = %d, type = %d, length = %d\n", ret_sock, type, length);
 
 		while(ret_sock == NMXP_SOCKET_OK   &&    type != NMXP_MSG_READY) {
-		    channelInfo = buffer;
-		    channelInfo->key = ntohl(channelInfo->key);
-
-		    if(!nmxp_meta_chan_set_network(chan_list, channelInfo->key, channelInfo->network)) {
-			nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANNEL, "Key %d (%d) not found for %s!\n",
-				iter->key, channelInfo->key, NMXP_LOG_STR(iter->name));
+		    if(channelInfo) {
+			NMXP_MEM_FREE(channelInfo);
+			channelInfo = NULL;
 		    }
+		    channelInfo = (NMXP_CHANNELINFORESPONSE *) NMXP_MEM_MALLOC(length);
+		    if(channelInfo) {
+			memmove(channelInfo, buffer, length);
+
+			channelInfo->key = ntohl(channelInfo->key);
+
+			if(!nmxp_meta_chan_set_network(chan_list, channelInfo->key, channelInfo->network)) {
+			    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANNEL, "Key %d (%d) not found for %s!\n",
+				    iter->key, channelInfo->key, NMXP_LOG_STR(iter->name));
+			}
+		    } else {
+			nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY, "nmxp_getMetaChannelList() Error allocating precisChannelList.\n");
+		    }
+
 		    /* Receive Message */
-		    ret_sock = nmxp_receiveMessage(naqssock, &type, &buffer, &length, 0, &recv_errno);
+		    ret_sock = nmxp_receiveMessage(naqssock, &type, buffer, &length, 0, &recv_errno, NMXP_MAX_LENGTH_DATA_BUFFER);
 		    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_EXTRA, "ret_sock = %d, type = %d, length = %d\n", ret_sock, type, length);
 		}
 	    }
