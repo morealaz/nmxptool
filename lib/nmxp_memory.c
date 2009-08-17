@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_memory.c,v 1.12 2009-08-16 07:31:18 mtheo Exp $
+ * $Id: nmxp_memory.c,v 1.13 2009-08-17 12:37:36 mtheo Exp $
  *
  */
 
@@ -188,12 +188,17 @@ inline char *nmxp_mem_source_file_line(char *source_file, int line) {
 }
 
 
+#define NMXP_SEG_MALLOC 1024
 inline void *nmxp_mem_malloc(size_t size, char *source_file, int line) {
     void *ret = NULL;
     struct timeval tv;
     int i;
     char source_file_line[MAX_LEN_SOURCE_FILE_LINE];
-    
+    size_t old_size;
+
+    old_size = size;
+    size = ( ( ( (old_size - 1) / NMXP_SEG_MALLOC ) ) + 1) * NMXP_SEG_MALLOC;
+
     gettimeofday(&tv, NULL);
     ret = malloc(size);
     strncpy(source_file_line, nmxp_mem_source_file_line(source_file, line), MAX_LEN_SOURCE_FILE_LINE);
@@ -211,19 +216,24 @@ inline char *nmxp_mem_strdup(const char *str, char *source_file, int line) {
     struct timeval tv;
     int i;
     char source_file_line[MAX_LEN_SOURCE_FILE_LINE];
+    size_t old_size;
 
     gettimeofday(&tv, NULL);
-    ret = strdup(str);
+
     if(str) {
-	size = strlen(str);
-    } else {
-	size = 0;
+	old_size = strlen(str) + 1;
+	size = ( ( ( (old_size - 1) / NMXP_SEG_MALLOC ) ) + 1) * NMXP_SEG_MALLOC;
+
+	ret = (char *) malloc(size);
+	strcpy(ret, str);
+
+	strncpy(source_file_line, nmxp_mem_source_file_line(source_file, line), MAX_LEN_SOURCE_FILE_LINE);
+	i = nmxp_mem_add_ptr(ret, size, source_file_line, &tv);
+	if(debug_log_single  ||  i == -1) {
+	    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "nmxp_mem_strdup %d.%d %010p+%d %s_%d\n", tv.tv_sec, tv.tv_usec, ret, size, source_file_line, i);
+	}
     }
-    strncpy(source_file_line, nmxp_mem_source_file_line(source_file, line), MAX_LEN_SOURCE_FILE_LINE);
-    i = nmxp_mem_add_ptr(ret, size, source_file_line, &tv);
-    if(debug_log_single  ||  i == -1) {
-	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "nmxp_mem_strdup %d.%d %010p+%d %s_%d\n", tv.tv_sec, tv.tv_usec, ret, size, source_file_line, i);
-    }
+
     return ret;
 }
 
