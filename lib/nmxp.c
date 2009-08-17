@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp.c,v 1.92 2009-08-16 07:16:40 mtheo Exp $
+ * $Id: nmxp.c,v 1.93 2009-08-17 08:19:46 mtheo Exp $
  *
  */
 
@@ -727,10 +727,6 @@ void nmxp_raw_stream_free(NMXP_RAW_STREAM_DATA *raw_stream_buffer) {
 	if(raw_stream_buffer->pdlist) {
 	    for(j=0; j<raw_stream_buffer->n_pdlist; j++) {
 		if(raw_stream_buffer->pdlist[j]) {
-		    if(raw_stream_buffer->pdlist[j]->buffer) {
-			NMXP_MEM_FREE(raw_stream_buffer->pdlist[j]->buffer);
-			raw_stream_buffer->pdlist[j]->buffer = NULL;
-		    }
 		    if(raw_stream_buffer->pdlist[j]->pDataPtr) {
 			NMXP_MEM_FREE(raw_stream_buffer->pdlist[j]->pDataPtr);
 			raw_stream_buffer->pdlist[j]->pDataPtr = NULL;
@@ -771,12 +767,6 @@ int nmxp_raw_stream_manage(NMXP_RAW_STREAM_DATA *p, NMXP_DATA_PROCESS *a_pd, int
 	/* Allocate memory for pd and copy a_pd */
 	pd = (NMXP_DATA_PROCESS *) NMXP_MEM_MALLOC(sizeof(NMXP_DATA_PROCESS));
 	memcpy(pd, a_pd, sizeof(NMXP_DATA_PROCESS));
-	if(a_pd->length > 0) {
-	    pd->buffer = NMXP_MEM_MALLOC(pd->length);
-	    memcpy(pd->buffer, a_pd->buffer, a_pd->length);
-	} else {
-	    pd->buffer = NULL;
-	}
 	if(a_pd->nSamp *  sizeof(int) > 0) {
 	    pd->pDataPtr = (int *) NMXP_MEM_MALLOC(a_pd->nSamp * sizeof(int));
 	    memcpy(pd->pDataPtr, a_pd->pDataPtr, a_pd->nSamp * sizeof(int));
@@ -849,10 +839,6 @@ int nmxp_raw_stream_manage(NMXP_RAW_STREAM_DATA *p, NMXP_DATA_PROCESS *a_pd, int
 	    }
 
 	    /* Free handled packet */
-	    if(p->pdlist[0]->buffer) {
-		NMXP_MEM_FREE(p->pdlist[0]->buffer);
-		p->pdlist[0]->buffer = NULL;
-	    }
 	    if(p->pdlist[0]->pDataPtr) {
 		NMXP_MEM_FREE(p->pdlist[0]->pDataPtr);
 		p->pdlist[0]->pDataPtr = NULL;
@@ -997,10 +983,6 @@ int nmxp_raw_stream_manage(NMXP_RAW_STREAM_DATA *p, NMXP_DATA_PROCESS *a_pd, int
     if(j > 0) {
 	for(k=0; k < p->n_pdlist; k++) {
 	    if(k < j) {
-		if(p->pdlist[k]->buffer) {
-		    NMXP_MEM_FREE(p->pdlist[k]->buffer);
-		    p->pdlist[k]->buffer = NULL;
-		}
 		if(p->pdlist[k]->pDataPtr) {
 		    NMXP_MEM_FREE(p->pdlist[k]->pDataPtr);
 		    p->pdlist[k]->pDataPtr = NULL;

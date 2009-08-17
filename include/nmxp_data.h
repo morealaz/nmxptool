@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_data.h,v 1.35 2009-04-21 14:42:05 mtheo Exp $
+ * $Id: nmxp_data.h,v 1.36 2009-08-17 08:19:46 mtheo Exp $
  *
  */
 
@@ -122,8 +122,6 @@ typedef struct {
     int32_t oldest_seq_no;			/*!< \brief Oldest Sequence number */
     int32_t seq_no;				/*!< \brief Sequence number */
     double time;			/*!< \brief Time first sample. Epochs. */
-    void *buffer;			/*!< \brief Nanometrics packet data  */
-    int32_t length;				/*!< \brief Packet length */
     int *pDataPtr;			/*!< \brief Array of samples */
     int32_t nSamp;				/*!< \brief Number or samples */
     int32_t sampRate;			/*!< \brief Sample rate */

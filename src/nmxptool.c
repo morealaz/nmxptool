@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.215 2009-08-16 07:12:16 mtheo Exp $
+ * $Id: nmxptool.c,v 1.216 2009-08-17 08:19:46 mtheo Exp $
  *
  */
 
@@ -671,12 +671,6 @@ int main (int argc, char **argv) {
 			}
 
 
-			/* Free pd->buffer */
-			if(pd->buffer) {
-			    NMXP_MEM_FREE(pd->buffer);
-			    pd->buffer = NULL;
-			}
-
 			/* Receive Data */
 			ret = nmxp_receiveMessage(naqssock, &type, &buffer, &length, 0, &recv_errno);
 			/* nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CONNFLOW, "ret = %d, type = %d\n", ret, type); */
@@ -978,11 +972,6 @@ int main (int argc, char **argv) {
 		/* Store x_1 */
 		if(pd->nSamp > 0) {
 		    channelList_Seq[cur_chan].x_1 = pd->pDataPtr[pd->nSamp-1];
-		}
-		/* Free pd->buffer */
-		if(pd->buffer) {
-		    NMXP_MEM_FREE(pd->buffer);
-		    pd->buffer = NULL;
 		}
 	    }
 

@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_base.c,v 1.78 2009-03-10 17:01:50 mtheo Exp $
+ * $Id: nmxp_base.c,v 1.79 2009-08-17 08:19:46 mtheo Exp $
  *
  */
 
@@ -524,8 +524,6 @@ NMXP_DATA_PROCESS *nmxp_processDecompressedData(char* buffer_data, int length_da
   /* pd.oldest_seq_no = ;*/
   /* pd.seq_no = ;*/
   pd.time = pTime;
-  pd.buffer = buffer_data;
-  pd.length = length_data;
   pd.nSamp = pNSamp;
   pd.pDataPtr = pDataPtr;
   pd.sampRate = pSampRate;
@@ -714,8 +712,6 @@ NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data
 	pd.oldest_seq_no = nmx_oldest_sequence_number;
 	pd.seq_no = nmx_seqno;
 	pd.time = pTime;
-	pd.buffer = buffer_data;
-	pd.length = length_data;
 	pd.nSamp = pNSamp;
 	pd.pDataPtr = pDataPtr;
 	pd.sampRate = pSampRate;

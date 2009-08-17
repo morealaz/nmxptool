@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_data.c,v 1.68 2009-08-14 12:59:25 mtheo Exp $
+ * $Id: nmxp_data.c,v 1.69 2009-08-17 08:19:46 mtheo Exp $
  *
  */
 
@@ -90,8 +90,6 @@ int nmxp_data_init(NMXP_DATA_PROCESS *pd) {
     pd->oldest_seq_no = -1;
     pd->seq_no = -1;
     pd->time = -1.0;
-    pd->buffer = NULL;
-    pd->length = 0;
     pd->pDataPtr = NULL;
     pd->nSamp = 0;
     pd->sampRate = -1;
@@ -364,7 +362,7 @@ int nmxp_data_log(NMXP_DATA_PROCESS *pd, int flag_sample) {
 
 	/* nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN, "%12d %5s.%3s rate=%03d (%s - %s) [%d, %d] pts=%04d (%d, %d, %d, %d) lat=%.1f len=%d\n", */
 	/* printf("%10d %5s.%3s 03dHz (%s - %s) lat=%.1fs [%d, %d] pts=%04d (%d, %d, %d, %d) len=%d\n", */
-	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "%s.%s.%3s %3dHz (%s - %s) lat %.1fs [%d, %d] (%d) %4dpts (%d, %d, %d, %d, %d) %d\n",
+	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "%s.%s.%3s %3dHz (%s - %s) lat %.1fs [%d, %d] (%d) %4dpts (%d, %d, %d, %d, %d)\n",
 		/* pd->key, */
 		NMXP_LOG_STR(pd->network),
 		(strlen(pd->station) == 0)? "XXXX" : NMXP_LOG_STR(pd->station),
@@ -381,8 +379,7 @@ int nmxp_data_log(NMXP_DATA_PROCESS *pd, int flag_sample) {
 		(pd->pDataPtr == NULL)? 0 : pd->pDataPtr[0],
 		(pd->pDataPtr == NULL || pd->nSamp < 1)? 0 : pd->pDataPtr[pd->nSamp-1],
 		pd->xn,
-		pd->x0n_significant,
-		pd->length
+		pd->x0n_significant
 	      );
 
 	if(pd->pDataPtr  &&  flag_sample != 0  &&  pd->nSamp > 0) {
