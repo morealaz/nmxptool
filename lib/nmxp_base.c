@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_base.c,v 1.79 2009-08-17 08:19:46 mtheo Exp $
+ * $Id: nmxp_base.c,v 1.80 2009-08-17 08:47:13 mtheo Exp $
  *
  */
 
@@ -410,23 +410,26 @@ int32_t nmxp_display_error_from_server(char *buffer, int32_t length) {
     return reason;
 }
 
-int nmxp_receiveMessage(int isock, NMXP_MSG_SERVER *type, void **buffer, int32_t *length, int timeoutsec, int *recv_errno ) {
+int nmxp_receiveMessage(int isock, NMXP_MSG_SERVER *type, void *buffer, int32_t *length, int timeoutsec, int *recv_errno, int buffer_length) {
     int ret;
-    *buffer = NULL;
     *length = 0;
 
     ret = nmxp_receiveHeader(isock, type, length, timeoutsec, recv_errno);
 
     if( ret == NMXP_SOCKET_OK  ) {
-	if (*length > 0) {
-	    *buffer = NMXP_MEM_MALLOC(*length);
-	    ret = nmxp_recv_ctrl(isock, *buffer, *length, 0, recv_errno);
+
+	if(*length > buffer_length) {
+	    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY, "nmxp_receiveMessage(): size of received messagge is bigger than buffer. (%d > %d). \n",
+		    *length, buffer_length);
+	    ret = NMXP_SOCKET_ERROR;
+	} else if (*length > 0) {
+	    ret = nmxp_recv_ctrl(isock, buffer, *length, 0, recv_errno);
 
 	    if(*type == NMXP_MSG_TERMINATESUBSCRIPTION) {
 		nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_PACKETMAN, "Received TerminateSubscritption.\n");
-		nmxp_display_error_from_server(*buffer, *length);
+		nmxp_display_error_from_server(buffer, *length);
 	    } else if(*type == NMXP_MSG_ERROR) {
-		nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_PACKETMAN, "Received ErrorMessage: %s\n", NMXP_LOG_STR(*buffer));
+		nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_PACKETMAN, "Received ErrorMessage: %s\n", NMXP_LOG_STR(buffer));
 	    } else {
 		nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_PACKETMAN, "Received message type: %d  length=%d\n", *type, *length);
 	    }

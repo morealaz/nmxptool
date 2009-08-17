@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_base.h,v 1.33 2009-03-11 16:34:08 mtheo Exp $
+ * $Id: nmxp_base.h,v 1.34 2009-08-17 08:47:13 mtheo Exp $
  *
  */
 
@@ -147,18 +147,17 @@ int nmxp_sendMessage(int isock, NMXP_MSG_CLIENT type, void *buffer, int32_t leng
  *
  * \param isock A descriptor referencing the socket.
  * \param[out] type Type of message within \ref NMXP_MSG_SERVER.
- * \param[out] buffer Data buffer. It will need to be freed!
+ * \param buffer Pointer to the Data buffer.
  * \param[out] length Length in bytes.
  * \param timeoutsec Time-out in seconds
  * \param[out] recv_errno errno value after recv()
- *
- * \warning buffer will need to be freed!
+ * \param buffer_length Max length of Data buffer.
  *
  * \retval NMXP_SOCKET_OK on success
  * \retval NMXP_SOCKET_ERROR on error
  *
  */
-int nmxp_receiveMessage(int isock, NMXP_MSG_SERVER *type, void **buffer, int32_t *length, int timeoutsec, int *recv_errno );
+int nmxp_receiveMessage(int isock, NMXP_MSG_SERVER *type, void *buffer, int32_t *length, int timeoutsec, int *recv_errno, int buffer_length);
 
 
 /*! \brief Process Compressed Data message by function func_processData().
