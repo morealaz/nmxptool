@@ -1,10 +1,218 @@
-2009-04-21 16:58
+2009-08-31 14:30
 
 	* nmxptool:
 
 	  Open-Source and Cross-Platform software for Nanometrics seismic data acquisition
 	  Matteo Quintiliani - Istituto Nazionale di Geofisica e Vulcanologia - Italy
 	  Mail bug reports and suggestions to <quintiliani@ingv.it> 
+
+2009-08-31 12:17  mtheo <quintiliani@ingv.it>
+
+	* configure.in (1.89):
+
+	Incremented version to 1.2.4-beta10
+
+2009-08-31 12:16  mtheo <quintiliani@ingv.it>
+
+	* configure.in (1.88), include/nmxp_base.h (1.35),
+	include/nmxp_chan.h (1.26), lib/nmxp.c (1.95), lib/nmxp_base.c
+	(1.81), lib/nmxp_chan.c (1.45), lib/nmxp_crc32.c (1.7),
+	lib/nmxp_data.c (1.70), lib/nmxp_log.c (1.23), src/nmxptool.c
+	(1.218), src/nmxptool_ew.h (1.15):
+
+	Fixed bugs from branch nmxptool_1_2_4_beta8_fixing_MTSAFE2
+
+2009-08-31 10:50  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.217.2.3):
+
+	Added mutex for waiting for terminating of function
+	p_nmxp_sendAddTimeSeriesChannel()
+
+2009-08-31 10:08  mtheo <quintiliani@ingv.it>
+
+	* configure.in (1.87.2.3):
+
+	Incremented betabug version to 1.2.4-beta8-fixing_MTSAFE2
+
+2009-08-31 10:07  mtheo <quintiliani@ingv.it>
+
+	* configure.in (1.87.2.2):
+
+	Incremented betabug version to 1.2.4-beta8-fixing_MTSAFE1
+
+2009-08-31 09:59  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.217.2.2):
+
+	Fixed minor bug freeing pd and made joinable request channel
+	function
+
+2009-08-31 09:44  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_chan.h (1.25.2.1), lib/nmxp_chan.c (1.44.2.1),
+	lib/nmxp_base.c (1.80.2.2):
+
+	nmxp_chan_lookupName() allocated returned value
+
+2009-08-31 09:36  mtheo <quintiliani@ingv.it>
+
+	* configure.in (1.87.2.1):
+
+	Added -D_POSIX_PTHREAD_SEMANTICS and commented AC_FUNC_MALLOC
+
+2009-08-31 09:34  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.217.2.1):
+
+	pd is not static and changed function name to
+	nmxptool_AlarmHandler()
+
+2009-08-31 09:26  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp.c (1.94.2.1):
+
+	Improvements
+
+2009-08-31 09:22  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_base.h (1.34.2.1):
+
+	Changed nmxp_strerror() for MT-Safe purposes
+
+2009-08-31 09:21  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_base.c (1.80.2.1):
+
+	Fixed bug: made MT-Safe. pd is not static and changed
+	nmxp_strerror()
+
+2009-08-31 09:11  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_data.c (1.69.2.1):
+
+	Fixed bug: made MT-Safe substituting time functions()
+
+2009-08-31 08:22  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_crc32.c (1.6.6.1):
+
+	Removed static variable for MT-Safe purposes
+
+2009-08-31 08:19  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_log.c (1.22.2.1):
+
+	Fixed bug: made thread-safe nmxp_log_get_prefix() and using MT-safe
+	time functions
+
+2009-08-31 08:00  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_ew.h (1.14.6.1):
+
+	Defined _LOGITMT for thread-safe ew logit()
+
+2009-08-17 12:37  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_memory.c (1.13):
+
+	Added size allocation of multiple of NMXP_SEG_MALLOC=1024
+
+2009-08-17 09:15  mtheo <quintiliani@ingv.it>
+
+	* configure.in (1.87):
+
+	Incremented beta version to 1.2.4-beta8
+
+2009-08-17 08:57  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp.c (1.94), src/nmxptool.c (1.217):
+
+	Changed parameter for function nmxp_receiveMessage()
+
+2009-08-17 08:47  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_data.h (1.37):
+
+	Set value for NMXP_MAX_LENGTH_DATA_BUFFER
+
+2009-08-17 08:47  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_base.h (1.34), lib/nmxp_base.c (1.80):
+
+	Changed parameter for the function nmxp_receiveMessage()
+
+2009-08-17 08:19  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_data.h (1.36), lib/nmxp.c (1.93), lib/nmxp_base.c
+	(1.79), lib/nmxp_data.c (1.69), src/nmxptool.c (1.216):
+
+	Removed fields buffer and length from structure NMXP_DATA_PROCESS
+
+2009-08-16 09:03  mtheo <quintiliani@ingv.it>
+
+	* configure.in (1.86):
+
+	Incremented beta version to 1.2.4-beta7
+
+2009-08-16 08:58  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.c (1.113):
+
+	Added message if memdebug has been enabled
+
+2009-08-16 07:31  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_memory.c (1.12):
+
+	Fixed bug in logging
+
+2009-08-16 07:16  mtheo <quintiliani@ingv.it>
+
+	* lib/: nmxp.c (1.92), nmxp_memory.c (1.11):
+
+	Fixed problem in compilation
+
+2009-08-16 07:12  mtheo <quintiliani@ingv.it>
+
+	* src/: nmxptool.c (1.215), nmxptool_listen.c (1.9):
+
+	Added a parameter to NMXP_MEM_PRINT_PTR()
+
+2009-08-16 07:11  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_memory.h (1.9), lib/nmxp_memory.c (1.10):
+
+	Added functions nmxp_mem_add_sfs() and nmxp_mem_print_sfs()
+
+2009-08-14 12:59  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_data.c (1.68):
+
+	Substituted malloc(), free() and strdup() with NMXP_MEM_XXXX
+	functions
+
+2009-05-26 12:01  mtheo <quintiliani@ingv.it>
+
+	* Makefile.am (1.17), lib/Makefile.am (1.13), src/Makefile.am
+	(1.12):
+
+	Added ACLOCAL_AMFLAGS = -I m4
+
+2009-05-19 13:43  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.214):
+
+	Added check for ew configuration in function
+	flushing_raw_data_stream() before calling
+	nmxptool_ew_send_heartbeat_if_needed()
+
+2009-05-19 13:30  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.213):
+
+	Added call to nmxptool_ew_send_heartbeat_if_needed() in function
+	flushing_raw_data_stream()
 
 2009-04-21 14:46  mtheo <quintiliani@ingv.it>
 
