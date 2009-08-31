@@ -7,12 +7,11 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_log.c,v 1.22 2009-03-10 16:56:40 mtheo Exp $
+ * $Id: nmxp_log.c,v 1.23 2009-08-31 12:16:41 mtheo Exp $
  *
  */
 
 #include "nmxp_log.h"
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -35,9 +34,10 @@ void nmxp_log_set_prefix(char *prefix) {
     }
 }
 
-const char *nmxp_log_get_prefix() {
-    return nmxp_log_prefix;
+void nmxp_log_get_prefix(char *ret, int size ) {
+    strncpy(ret, nmxp_log_prefix,size);
 }
+
 
 const char *nmxp_log_version() {
     static char ret_str[MAX_LOG_MESSAGE_LENGTH] = "";
@@ -139,8 +139,10 @@ int nmxp_log(int level, int verb, ... )
   int retvalue = 0;
   char message[MAX_LOG_MESSAGE_LENGTH];
   char message_final[MAX_LOG_MESSAGE_LENGTH];
+  char prefix[MAX_LOG_MESSAGE_LENGTH];  
   char timestr[MAX_SIZE_TIMESTR];
   char *format;
+
   va_list listptr;
   time_t loc_time;
 
@@ -154,19 +156,22 @@ int nmxp_log(int level, int verb, ... )
 
     /* Build local time string and cut off the newline */
     time(&loc_time);
-    /* TODO*/
-    strncpy(timestr, asctime(localtime(&loc_time)), MAX_SIZE_TIMESTR);
+    /*use reentrant ctime_r -D_POSIX_PTHREAD_SEMANTICS*/
+    ctime_r(&loc_time,timestr);
+
     timestr[strlen(timestr) - 1] = '\0';
-
+ 
     retvalue = vsnprintf(message, MAX_LOG_MESSAGE_LENGTH, format, listptr);
-
+    nmxp_log_get_prefix(prefix,MAX_LOG_MESSAGE_LENGTH);
     switch(level) {
 	case NMXP_LOG_ERR:
-	    snprintf(message_final, MAX_LOG_MESSAGE_LENGTH, "%s - %s error: %s", timestr, nmxp_log_get_prefix(), message);
+	    //snprintf(message_final, MAX_LOG_MESSAGE_LENGTH, "%s - %s error: %s", timestr, nmxp_log_get_prefix(), message);
+	    snprintf(message_final, MAX_LOG_MESSAGE_LENGTH, "%s - %s error: %s", timestr, prefix, message);            
 	    nmxp_log_print_all(message_final, p_func_log_err, n_func_log_err);
 	    break;
 	case NMXP_LOG_WARN:
-	    snprintf(message_final, MAX_LOG_MESSAGE_LENGTH, "%s - %s warning: %s", timestr, nmxp_log_get_prefix(), message);
+	    //snprintf(message_final, MAX_LOG_MESSAGE_LENGTH, "%s - %s warning: %s", timestr, nmxp_log_get_prefix(), message);
+	    snprintf(message_final, MAX_LOG_MESSAGE_LENGTH, "%s - %s warning: %s", timestr, prefix, message);            
 	    nmxp_log_print_all(message_final, p_func_log, n_func_log);
 	    break;
 	case NMXP_LOG_NORM_NO:
@@ -174,11 +179,13 @@ int nmxp_log(int level, int verb, ... )
 	    nmxp_log_print_all(message_final, p_func_log, n_func_log);
 	    break;
 	case NMXP_LOG_NORM_PKG:
-	    snprintf(message_final, MAX_LOG_MESSAGE_LENGTH, "%s: %s", nmxp_log_get_prefix(), message);
+	    //snprintf(message_final, MAX_LOG_MESSAGE_LENGTH, "%s: %s", nmxp_log_get_prefix(), message);
+	    snprintf(message_final, MAX_LOG_MESSAGE_LENGTH, "%s: %s", prefix, message);            
 	    nmxp_log_print_all(message_final, p_func_log, n_func_log);
 	    break;
 	default:
-	    snprintf(message_final, MAX_LOG_MESSAGE_LENGTH, "%s - %s: %s", timestr, nmxp_log_get_prefix(), message);
+	    //snprintf(message_final, MAX_LOG_MESSAGE_LENGTH, "%s - %s: %s", timestr, nmxp_log_get_prefix(), message);
+	    snprintf(message_final, MAX_LOG_MESSAGE_LENGTH, "%s - %s: %s", timestr, prefix, message);            
 	    nmxp_log_print_all(message_final, p_func_log, n_func_log);
 	    break;
     }

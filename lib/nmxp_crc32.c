@@ -2,16 +2,14 @@
  *
  * \brief Computing a 32 bit CRC.
  *
- * $Id: nmxp_crc32.c,v 1.6 2008-02-24 15:10:52 mtheo Exp $
+ * $Id: nmxp_crc32.c,v 1.7 2009-08-31 12:16:41 mtheo Exp $
  *
  *
  */
 
 #include "nmxp_crc32.h"
 
-static uint32_t crc32_tab[256];
-
-void crc32_init_table () {
+void crc32_init_table (uint32_t crc32_tab[256]) {
     unsigned int i, j;
     uint32_t h = 1;
     crc32_tab[0] = 0;
@@ -27,8 +25,9 @@ void crc32_init_table () {
 uint32_t crc32(uint32_t crc32val, const char *s, uint32_t len)
 {
 	uint32_t i;
+	uint32_t crc32_tab[256];
 
-	crc32_init_table();
+	crc32_init_table(crc32_tab);
 
 	crc32val ^= 0xffffffff;
 	for (i = 0;  i < len;  i ++) {

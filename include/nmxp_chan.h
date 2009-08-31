@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_chan.h,v 1.25 2009-03-10 16:36:25 mtheo Exp $
+ * $Id: nmxp_chan.h,v 1.26 2009-08-31 12:16:41 mtheo Exp $
  *
  */
 
@@ -178,6 +178,8 @@ int nmxp_chan_lookupKeyIndex(int32_t key, NMXP_CHAN_LIST_NET *channelList);
  * \param channelList Channel list.
  *
  * \return Name of channel with key. NULL on error.
+ *
+ * \warning Returned value will need to be freed!
  *
  */
 char *nmxp_chan_lookupName(int32_t key, NMXP_CHAN_LIST_NET *channelList);

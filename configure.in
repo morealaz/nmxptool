@@ -11,7 +11,7 @@ m4_define([major_version], [1])
 m4_define([minor_version], [2])
 m4_define([micro_version], [4])
 # Comment build_version for stable release
-m4_define([build_version], [beta8])
+m4_define([build_version], [beta9])
 
 m4_ifdef([build_version], [
 	  m4_define([version],
@@ -118,6 +118,8 @@ AM_CONDITIONAL(ENABLE_MEMDEBUG, test x$enable_memdebug != xno)
 AM_CONDITIONAL(ENABLE_DLL_PTHREAD, test x$DLL_PTHREAD != x)
 AC_ARG_VAR(DIR_PTHREAD, [Directory containing PThread DDL library])
 AC_ARG_VAR(DLL_PTHREAD, [Name of PThread DLL library - i.e. pthreadVC2.dll])
+
+CFLAGS="$CFLAGS -D_POSIX_PTHREAD_SEMANTICS"
 
 # Checks for header files.
 AC_HEADER_STDC
@@ -257,7 +259,7 @@ AC_STRUCT_TM
 # AC_CHECK_SIZEOF([long int])
 
 # Checks for library functions.
-AC_FUNC_MALLOC
+# AC_FUNC_MALLOC
 AC_FUNC_MKTIME
 AC_FUNC_SELECT_ARGTYPES
 AC_FUNC_STRERROR_R

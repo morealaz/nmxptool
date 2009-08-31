@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_data.c,v 1.69 2009-08-17 08:19:46 mtheo Exp $
+ * $Id: nmxp_data.c,v 1.70 2009-08-31 12:16:41 mtheo Exp $
  *
  */
 
@@ -41,31 +41,29 @@ UTC, call mktime() and restore the value of TZ.  Something like
 
 time_t my_timegm (struct tm *tm) {
     time_t ret;
+    /*TODO stefano avoid static*/
+    static char first_time = 1;
+    char *tz;
+
 #ifndef HAVE_SETENV
 #ifndef HAVE_UNDERSCORE_TIMEZONE
-
 #warning Computation of packet latencies could be wrong if local time is not equal to UTC.
-    static int first_time = 1;
     if(first_time) {
 	    first_time = 0;
 	    nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "Computation of packet latencies could be wrong if local time is not equal to UTC.\n");
     }
-
 #endif
-#else
-    char *tz;
-
-    tz = getenv("TZ");
-    setenv("TZ", "", 1);
-    tzset();
 #endif
+
     ret = mktime(tm);
+
 #ifdef HAVE_SETENV
-    if (tz)
+    if(first_time) {
+	first_time = 0;
+	tz = getenv("TZ");
 	setenv("TZ", tz, 1);
-    else
-	unsetenv("TZ");
-    tzset();
+	tzset();
+    }
 #endif
 
 #ifdef HAVE_UNDERSCORE_TIMEZONE
@@ -173,25 +171,26 @@ int nmxp_data_unpack_bundle (int32_t *outdata, unsigned char *indata, int32_t *p
 
 int nmxp_data_to_str(char *out_str, double time_d) {
     time_t time_t_start_time;
-    struct tm *tm_start_time;
+    struct tm tm_start_time;
 
     if(time_d > 0.0) {
 	    time_t_start_time = (time_t) time_d;
     } else {
 	    time_t_start_time = 0;
     }
-    tm_start_time = gmtime(&time_t_start_time);
-    
+
+    gmtime_r(&time_t_start_time, &tm_start_time);
+
     snprintf(out_str, NMXP_DATA_MAX_SIZE_DATE, "%04d.%03d,%02d:%02d:%02d.%04d",
-	    tm_start_time->tm_year + 1900,
+	    tm_start_time.tm_year + 1900,
 	    /*
-	    tm_start_time->tm_mon + 1,
-	    tm_start_time->tm_mday,
+	    tm_start_time.tm_mon + 1,
+	    tm_start_time.tm_mday,
 	    */
-	    tm_start_time->tm_yday + 1,
-	    tm_start_time->tm_hour,
-	    tm_start_time->tm_min,
-	    tm_start_time->tm_sec,
+	    tm_start_time.tm_yday + 1,
+	    tm_start_time.tm_hour,
+	    tm_start_time.tm_min,
+	    tm_start_time.tm_sec,
 	    (time_t_start_time == 0)? 0 : (int) (  ((time_d - (double) time_t_start_time)) * 10000.0 )
 	   );
     
@@ -200,31 +199,31 @@ int nmxp_data_to_str(char *out_str, double time_d) {
 
 int nmxp_data_year_from_epoch(double time_d) {
     time_t time_t_start_time;
-    struct tm *tm_start_time;
+    struct tm tm_start_time;
 
     if(time_d > 0.0) {
 	    time_t_start_time = (time_t) time_d;
     } else {
 	    time_t_start_time = 0;
     }
-    tm_start_time = gmtime(&time_t_start_time);
-    
-    return tm_start_time->tm_year + 1900;
+    /*Use reentrant to be trhead safe*/
+    gmtime_r(&time_t_start_time,&tm_start_time);    
+    return tm_start_time.tm_year + 1900;
 }
 
 
 int nmxp_data_yday_from_epoch(double time_d) {
     time_t time_t_start_time;
-    struct tm *tm_start_time;
+    struct tm tm_start_time;
 
     if(time_d > 0.0) {
 	    time_t_start_time = (time_t) time_d;
     } else {
 	    time_t_start_time = 0;
-    }
-    tm_start_time = gmtime(&time_t_start_time);
-    
-    return tm_start_time->tm_yday + 1;
+    } 
+    /*Use reentrant to be trhead safe*/
+    gmtime_r(&time_t_start_time,&tm_start_time);    
+    return tm_start_time.tm_yday + 1;
 }
 
 int nmxp_data_trim(NMXP_DATA_PROCESS *pd, double trim_start_time, double trim_end_time, unsigned char exclude_bitmap) {
@@ -325,14 +324,7 @@ int nmxp_data_trim(NMXP_DATA_PROCESS *pd, double trim_start_time, double trim_en
 
 time_t nmxp_data_gmtime_now() {
     time_t time_now;
-    struct tm *tm_now;
-    NMXP_TM_T tmt_now;
     time(&time_now);
-    tm_now = gmtime(&time_now);
-    memcpy(&(tmt_now.t), tm_now, sizeof(struct tm));
-    tmt_now.d = 0;
-    time_now = nmxp_data_tm_to_time(&tmt_now);
-
     return time_now;
 }
 
@@ -434,7 +426,7 @@ int nmxp_data_parse_date(const char *pstr_date, NMXP_TM_T *ret_tmt) {
     int flag_finished = 0;
 
     time_t time_now;
-    struct tm *tm_now;
+    struct tm tm_now;
 
     int month_days[12] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
     int m, d, day_sum, jday;
@@ -460,19 +452,19 @@ int nmxp_data_parse_date(const char *pstr_date, NMXP_TM_T *ret_tmt) {
 
     /* initialize ret_tmt */
     time(&time_now);
-    tm_now = gmtime(&time_now);
+    gmtime_r(&time_now,&tm_now);
 
     ret_tmt->t.tm_sec = 0 ;
     ret_tmt->t.tm_min = 0;
     ret_tmt->t.tm_hour = 0;
-    ret_tmt->t.tm_mday = tm_now->tm_mday;
-    ret_tmt->t.tm_mon = tm_now->tm_mon;
-    ret_tmt->t.tm_year = tm_now->tm_year;
-    ret_tmt->t.tm_wday = tm_now->tm_wday;
-    ret_tmt->t.tm_yday = tm_now->tm_yday;
-    ret_tmt->t.tm_isdst = tm_now->tm_isdst;
+    ret_tmt->t.tm_mday = tm_now.tm_mday;
+    ret_tmt->t.tm_mon = tm_now.tm_mon;
+    ret_tmt->t.tm_year = tm_now.tm_year;
+    ret_tmt->t.tm_wday = tm_now.tm_wday;
+    ret_tmt->t.tm_yday = tm_now.tm_yday;
+    ret_tmt->t.tm_isdst = tm_now.tm_isdst;
 #ifdef HAVE_STRUCT_TM_TM_GMTOFF
-    ret_tmt->t.tm_gmtoff = tm_now->tm_gmtoff;
+    ret_tmt->t.tm_gmtoff = tm_now.tm_gmtoff;
 #endif
     ret_tmt->d = 0;
 

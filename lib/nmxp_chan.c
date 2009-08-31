@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_chan.c,v 1.44 2009-03-10 16:57:07 mtheo Exp $
+ * $Id: nmxp_chan.c,v 1.45 2009-08-31 12:16:41 mtheo Exp $
  *
  */
 
@@ -231,7 +231,7 @@ int nmxp_chan_lookupKeyIndex(int32_t key, NMXP_CHAN_LIST_NET *channelList)
 char *nmxp_chan_lookupName(int32_t key, NMXP_CHAN_LIST_NET *channelList)
 {
     int i_chan = 0;
-    static char ret[NMXP_CHAN_MAX_SIZE_NAME];
+    char *ret = (char *) NMXP_MEM_MALLOC(NMXP_CHAN_MAX_SIZE_NAME);
 
     ret[0] = 0;
 
@@ -243,6 +243,7 @@ char *nmxp_chan_lookupName(int32_t key, NMXP_CHAN_LIST_NET *channelList)
     }
 
     if(ret[0] == 0) {
+	NMXP_MEM_FREE(ret);
 	return NULL;
     } else {
 	return ret;
@@ -338,6 +339,8 @@ NMXP_CHAN_LIST_NET *nmxp_chan_subset(NMXP_CHAN_LIST *channelList, NMXP_DATATYPE 
 					i_chan_duplicated, channelList->channel[i_chan_duplicated].key);
 			    }
 
+			    NMXP_MEM_FREE(nmxp_channel_name);
+			    nmxp_channel_name = NULL;
 			}
 		    }
 	    }

@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_base.c,v 1.80 2009-08-17 08:47:13 mtheo Exp $
+ * $Id: nmxp_base.c,v 1.81 2009-08-31 12:16:41 mtheo Exp $
  *
  */
 
@@ -41,6 +41,7 @@
 
 int nmxp_openSocket(char *hostname, int portNum, int (*func_cond)(void))
 {
+  /*TODO stefano avoid static*/
   static int sleepTime = 1;
   int isock = -1;
   struct hostent *hostinfo = NULL;
@@ -227,19 +228,19 @@ int nmxp_setsockopt_RCVTIMEO(int isock, int timeoutsec) {
 #define MAXLEN_RECV_ERRNO_STR 200
 
 char *nmxp_strerror(int errno_value) {
-    static char ret_recv_errno_str[MAXLEN_RECV_ERRNO_STR];
+    char * ret_recv_errno_str;
 #ifdef HAVE_WINDOWS_H
     char *recv_errno_str;
 #else
 
 #ifdef HAVE_STRERROR_R
-    char recv_errno_str[MAXLEN_RECV_ERRNO_STR];
+    char recv_errno_str[MAXLEN_RECV_ERRNO_STR]="";
 #else
-    char *recv_errno_str;
+    char *recv_errno_str=NULL; 
 #endif
 
 #endif
-
+    ret_recv_errno_str= (char *) NMXP_MEM_MALLOC (MAXLEN_RECV_ERRNO_STR * sizeof(char));
     ret_recv_errno_str[0] = 0;
 
 #ifdef HAVE_WINDOWS_H
@@ -319,7 +320,7 @@ int nmxp_recv_ctrl(int isock, void *buffer, int length, int timeoutsec, int *rec
 	  nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CONNFLOW, "nmxp_recv_ctrl(): %s (errno=%d recvCount=%d length=%d cc=%d)\n",
 		  NMXP_LOG_STR(recv_errno_str), *recv_errno, recvCount, length, cc);
       }
-
+       NMXP_MEM_FREE(recv_errno_str);
       /* TO IMPROVE 
        * Fixed bug receiving zero byte from recv() 'TCP FIN or EOF received'
        * */
@@ -356,14 +357,14 @@ int nmxp_sendHeader(int isock, NMXP_MSG_CLIENT type, int32_t length)
 int nmxp_receiveHeader(int isock, NMXP_MSG_SERVER *type, int32_t *length, int timeoutsec, int *recv_errno )
 {  
     int ret ;
-    NMXP_MESSAGE_HEADER msg;
+    NMXP_MESSAGE_HEADER msg={0};
 
     ret = nmxp_recv_ctrl(isock, &msg, sizeof(NMXP_MESSAGE_HEADER), timeoutsec, recv_errno);
 
     *type = 0;
     *length = 0;
 
-    if(ret == NMXP_SOCKET_OK) {
+    if((ret == NMXP_SOCKET_OK) && (msg.type != 0)) {
 	msg.signature = ntohl(msg.signature);
 	msg.type      = ntohl(msg.type);
 	msg.length    = ntohl(msg.length);
@@ -464,25 +465,26 @@ NMXP_DATA_PROCESS *nmxp_processDecompressedData(char* buffer_data, int length_da
   int32_t  *pDataPtr  = NULL;
   int       swap      = 0;
   int       idx;
-  static int32_t outdata[MAX_OUTDATA];
+  int32_t  *outdata   = NULL;
+
 
   char station_code[NMXP_CHAN_MAX_SIZE_STR_PATTERN];
   char channel_code[NMXP_CHAN_MAX_SIZE_STR_PATTERN];
   char network_code[NMXP_CHAN_MAX_SIZE_STR_PATTERN];
 
   char *nmxp_channel_name = NULL;
-  static NMXP_DATA_PROCESS pd;
+  NMXP_DATA_PROCESS *pd   = NULL;
 
   /* copy the header contents into local fields and swap */
   memcpy(&netInt, &buffer_data[0], 4);
   pKey = ntohl(netInt);
   if ( pKey != netInt ) { swap = 1; }
 
-  nmxp_data_init(&pd);
-
+  nmxp_data_init(pd);
+  outdata = (int32_t *) NMXP_MEM_MALLOC(MAX_OUTDATA*sizeof(int32_t));
   nmxp_channel_name = nmxp_chan_lookupName(pKey, channelList);
 
-  if(nmxp_channel_name) {
+  if(nmxp_channel_name != NULL) {
 
   memcpy(&pTime, &buffer_data[4], 8);
   if ( swap ) { nmxp_data_swap_8b(&pTime); }
@@ -506,36 +508,40 @@ NMXP_DATA_PROCESS *nmxp_processDecompressedData(char* buffer_data, int length_da
     nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_PACKETMAN, "Channel name not in STA.CHAN format: %s\n",
 	    NMXP_LOG_STR(nmxp_channel_name));
   }
-  
-  pd.key = pKey;
+
+  pd->key = pKey;
   if(network_code[0] != 0) {
-      strncpy(pd.network, network_code, NMXP_DATA_NETWORK_LENGTH);
+      strncpy(pd->network, network_code, NMXP_DATA_NETWORK_LENGTH);
   } else {
-      strncpy(pd.network, network_code_default, NMXP_DATA_NETWORK_LENGTH);
+      strncpy(pd->network, network_code_default, NMXP_DATA_NETWORK_LENGTH);
   }
   if(station_code[0] != 0) {
-      strncpy(pd.station, station_code, NMXP_DATA_STATION_LENGTH);
+      strncpy(pd->station, station_code, NMXP_DATA_STATION_LENGTH);
   }
   if(channel_code[0] != 0) {
-      strncpy(pd.channel, channel_code, NMXP_DATA_CHANNEL_LENGTH);
+      strncpy(pd->channel, channel_code, NMXP_DATA_CHANNEL_LENGTH);
   }
-  pd.packet_type = NMXP_MSG_DECOMPRESSED;
-  pd.x0 = -1;
-  pd.xn = -1;
-  pd.x0n_significant = 0;
+  pd->packet_type = NMXP_MSG_DECOMPRESSED;
+  pd->x0 = -1;
+  pd->xn = -1;
+  pd->x0n_significant = 0;
+  pd->time = pTime;
+  pd->nSamp = pNSamp;
+  pd->pDataPtr = pDataPtr;
+  pd->sampRate = pSampRate;
+
+
+
   /* TODO*/
   /* pd.oldest_seq_no = ;*/
   /* pd.seq_no = ;*/
-  pd.time = pTime;
-  pd.nSamp = pNSamp;
-  pd.pDataPtr = pDataPtr;
-  pd.sampRate = pSampRate;
 
+  NMXP_MEM_FREE(nmxp_channel_name);
   } else {
       nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_PACKETMAN, "Channel name not found for key %d\n", pKey);
   }
 
-  return &pd;
+  return pd;
 }
 
 
@@ -551,7 +557,9 @@ NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data
     char channel_code[NMXP_CHAN_MAX_SIZE_STR_PATTERN];
     char network_code[NMXP_CHAN_MAX_SIZE_STR_PATTERN];
 
-    static NMXP_DATA_PROCESS pd;
+    NMXP_DATA_PROCESS *pd = NULL;
+
+
 
     int32_t nmx_rate_code_to_sample_rate[32] = {
 	0,1,2,5,10,20,40,50,
@@ -572,13 +580,17 @@ NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data
 
 	int32_t comp_bytecount;
 	unsigned char *indata;
-	static int32_t outdata[MAX_OUTDATA];
+        int32_t * outdata = NULL;
+
 	int32_t nout, i, k;
 	int32_t prev_xn;
 	const uint32_t high_scale = 4096 * 2048;
 	const uint32_t high_scale_p = 4096 * 4096;
 
 	char *nmxp_channel_name = NULL;
+
+        pd= (NMXP_DATA_PROCESS *) NMXP_MEM_MALLOC(sizeof(NMXP_DATA_PROCESS));
+        memset(pd,0,sizeof(NMXP_DATA_PROCESS));
 
 	/* TOREMOVE int my_order = get_my_wordorder();*/
 	int my_host_is_bigendian = nmxp_data_bigendianhost();
@@ -645,8 +657,8 @@ NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data
 
 	pSampRate = this_sample_rate;
 
-	nmxp_data_init(&pd);
-
+	nmxp_data_init(pd);
+        outdata = (int32_t *) NMXP_MEM_MALLOC(MAX_OUTDATA*sizeof(int32_t));
 	nmxp_channel_name = nmxp_chan_lookupName(pKey, channelList);
 
 	if(nmxp_channel_name) {
@@ -693,37 +705,38 @@ NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data
 	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN, "Unpacked %d samples.\n", nout);
 
 	pDataPtr = outdata;
-
 	pNSamp = nout;
 
-	pd.key = pKey;
+        pd->key = pKey;
 	if(network_code[0] != 0) {
-	    strncpy(pd.network, network_code, NMXP_DATA_NETWORK_LENGTH);
+	    strncpy(pd->network, network_code, NMXP_DATA_NETWORK_LENGTH);
 	} else {
-	    strncpy(pd.network, network_code_default, NMXP_DATA_NETWORK_LENGTH);
+	    strncpy(pd->network, network_code_default, NMXP_DATA_NETWORK_LENGTH);
 	}
 	if(station_code[0] != 0) {
-	    strncpy(pd.station, station_code, NMXP_DATA_STATION_LENGTH);
+	    strncpy(pd->station, station_code, NMXP_DATA_STATION_LENGTH);
 	}
 	if(channel_code[0] != 0) {
-	    strncpy(pd.channel, channel_code, NMXP_DATA_CHANNEL_LENGTH);
+	    strncpy(pd->channel, channel_code, NMXP_DATA_CHANNEL_LENGTH);
 	}
-	pd.packet_type = nmx_ptype;
-	pd.x0 = nmx_x0;
-	pd.xn = pDataPtr[nout];
-	pd.x0n_significant = 1;
-	pd.oldest_seq_no = nmx_oldest_sequence_number;
-	pd.seq_no = nmx_seqno;
-	pd.time = pTime;
-	pd.nSamp = pNSamp;
-	pd.pDataPtr = pDataPtr;
-	pd.sampRate = pSampRate;
+	pd->packet_type = nmx_ptype;
+	pd->x0 = nmx_x0;
+	pd->xn = pDataPtr[nout];
+	pd->x0n_significant = 1;
+	pd->oldest_seq_no = nmx_oldest_sequence_number;
+	pd->seq_no = nmx_seqno;
+	pd->time = pTime;
+	pd->nSamp = pNSamp;
+	pd->pDataPtr = pDataPtr;
+	pd->sampRate = pSampRate;
 
+	NMXP_MEM_FREE(nmxp_channel_name);
 	} else {
 	    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_PACKETMAN, "Channel name not found for key %d\n", pKey);
 	}
 
-	return &pd;
+	return pd;
+
 }
 
 

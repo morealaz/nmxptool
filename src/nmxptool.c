@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.217 2009-08-17 08:57:32 mtheo Exp $
+ * $Id: nmxptool.c,v 1.218 2009-08-31 12:16:41 mtheo Exp $
  *
  */
 
@@ -68,7 +68,7 @@ int if_dap_condition_only_one_time = 0;
 #define NETCODE_OR_CURRENT_NETWORK ( (network_code[0] != 0)? network_code : CURRENT_NETWORK )
 
 static void ShutdownHandler(int sig);
-static void AlarmHandler(int sig);
+static void nmxptool_AlarmHandler(int sig);
 
 void flushing_raw_data_stream();
 
@@ -94,6 +94,7 @@ int nmxptool_msr_send_mseed(NMXP_DATA_PROCESS *pd);
 #endif
 
 #ifdef HAVE_PTHREAD_H
+pthread_mutex_t mutex_sendAddTimeSeriesChannel = PTHREAD_MUTEX_INITIALIZER;
 pthread_t thread_request_channels;
 pthread_attr_t attr_request_channels;
 void *status_thread;
@@ -109,7 +110,10 @@ int already_listen = 0;
 
 
 /* Global variable for main program and handling terminitation program */
-NMXPTOOL_PARAMS params;
+/*dare un default Stefano*/
+NMXPTOOL_PARAMS params={0};
+
+
 int naqssock = 0;
 FILE *outfile = NULL;
 NMXP_CHAN_LIST *channelList = NULL;
@@ -146,7 +150,7 @@ int main (int argc, char **argv) {
     char str_end_time[200] = "";
 
     NMXP_MSG_SERVER type;
-    char buffer[NMXP_MAX_LENGTH_DATA_BUFFER];
+    char buffer[NMXP_MAX_LENGTH_DATA_BUFFER]={0};
     int32_t length;
     int ret;
     int main_ret = 0;
@@ -156,8 +160,9 @@ int main (int argc, char **argv) {
 
     int times_flow = 0;
 
-    int recv_errno = 0;
-
+    int recv_errno = 0; 
+    char *recv_errno_str;
+  
     char filename[500] = "";
     char station_code[20] = "", channel_code[20] = "", network_code[20] = "";
 
@@ -170,11 +175,15 @@ int main (int argc, char **argv) {
 
     NMXP_DATA_PROCESS *pd = NULL;
 
+#ifdef HAVE_PTHREAD_H
+    pthread_mutex_init(&mutex_sendAddTimeSeriesChannel, NULL);
+#endif
+
 #ifndef HAVE_WINDOWS_H
     /* Signal handling, use POSIX calls with standardized semantics */
     struct sigaction sa;
 
-    sa.sa_handler = AlarmHandler;
+    sa.sa_handler = nmxptool_AlarmHandler;
     sa.sa_flags = SA_RESTART;
     sigemptyset(&sa.sa_mask);
     sigaction(SIGALRM, &sa, NULL);
@@ -191,7 +200,7 @@ int main (int argc, char **argv) {
     /* Signal handling, use function signal() */
 
     /*
-    signal(SIGALRM, AlarmHandler);
+    signal(SIGALRM, nmxptool_AlarmHandler);
     */
 
     signal(SIGINT, ShutdownHandler);
@@ -544,7 +553,7 @@ int main (int argc, char **argv) {
 		    nmxp_data_to_str(str_end_time, params.end_time);
 		    nmxptool_str_time_to_filename(str_start_time);
 		    nmxptool_str_time_to_filename(str_end_time);
-
+/*Possible bug params not inited*/
 		    if(params.flag_writefile) {
 			/* Open output file */
 			if(nmxp_chan_cpy_sta_chan(channelList_subset->channel[request_chan].name, station_code, channel_code, network_code)) {
@@ -595,7 +604,15 @@ int main (int argc, char **argv) {
 #endif
 			 ) {
 
-			/* Process a packet and return value in NMXP_DATA_PROCESS structure */
+			/* Process a packet and return value in NMXP_DATA_PROCESS structure */ /*STEFANO*/
+                        
+			if (pd != NULL) {
+			    if (pd->pDataPtr != NULL) {
+				NMXP_MEM_FREE(pd->pDataPtr);
+			    }
+			    NMXP_MEM_FREE(pd);
+			}
+
 			pd = nmxp_processCompressedData(buffer, length, channelList_subset, NETCODE_OR_CURRENT_NETWORK);
 			nmxp_data_trim(pd, params.start_time, params.end_time, 0);
 
@@ -794,7 +811,7 @@ int main (int argc, char **argv) {
 		(params.flag_buffered)? NMXP_BUFFER_YES : NMXP_BUFFER_NO, params.n_channel, params.usec, 1);
 #else
 	pthread_attr_init(&attr_request_channels);
-	pthread_attr_setdetachstate(&attr_request_channels, PTHREAD_CREATE_JOINABLE);
+	pthread_attr_setdetachstate(&attr_request_channels, PTHREAD_CREATE_DETACHED);
 	pthread_create(&thread_request_channels, &attr_request_channels, p_nmxp_sendAddTimeSeriesChannel, (void *)NULL);
 	pthread_attr_destroy(&attr_request_channels);
 #endif
@@ -817,6 +834,7 @@ int main (int argc, char **argv) {
 	exitpdscondition = 1;
 
 	skip_current_packet = 0;
+	/* begin  main PDS loop */
 
 	while(exitpdscondition && !nmxptool_sigcondition_read()
 #ifdef HAVE_LIBMSEED
@@ -854,7 +872,9 @@ int main (int argc, char **argv) {
 
 #ifdef HAVE_EARTHWORMOBJS
 		    if(params.ew_configuration_file) {
-			nmxptool_ew_send_error(NMXPTOOL_EW_ERR_RECVDATA, nmxp_strerror(recv_errno), params.hostname);
+                        recv_errno_str=nmxp_strerror(recv_errno);
+			nmxptool_ew_send_error(NMXPTOOL_EW_ERR_RECVDATA, recv_errno_str, params.hostname);
+			free(recv_errno_str);
 		    }
 #endif
 		    exitpdscondition = 0;
@@ -898,8 +918,10 @@ int main (int argc, char **argv) {
 			if(pd->nSamp > first_nsample_to_remove) {
 			    pd->nSamp -= first_nsample_to_remove;
 			    pd->time = cur_after_start_time;
-			    pd->pDataPtr += first_nsample_to_remove;
-			    pd->x0 = pd->pDataPtr[0];
+			    /*Here you are!!!! sposta il puntatore, la free come fa?*/
+			    //pd->pDataPtr += first_nsample_to_remove;
+			    //pd->x0 = pd->pDataPtr[0];
+			    pd->x0 = pd->pDataPtr[first_nsample_to_remove];
 			} else {
 			    skip_current_packet = 1;
 			}
@@ -998,10 +1020,23 @@ int main (int argc, char **argv) {
 		    (params.flag_buffered)? NMXP_BUFFER_YES : NMXP_BUFFER_NO, params.n_channel, params.usec, 0);
 #endif
 
+	    if (pd != NULL) {
+		if (pd->pDataPtr != NULL) {
+		    NMXP_MEM_FREE(pd->pDataPtr);
+		}
+		NMXP_MEM_FREE(pd);
+	    }
+            
 	} /* End main PDS loop */
 
 #ifdef HAVE_PTHREAD_H
-	pthread_join(thread_request_channels, &status_thread);
+	// pthread_join(thread_request_channels, &status_thread);
+#endif
+
+#ifdef HAVE_PTHREAD_H
+	// Waiting for p_nmxp_sendAddTimeSeriesChannel()
+	pthread_mutex_lock (&mutex_sendAddTimeSeriesChannel);
+	pthread_mutex_unlock (&mutex_sendAddTimeSeriesChannel);
 #endif
 
 	/* Flush raw data stream for each channel */
@@ -1091,6 +1126,11 @@ int main (int argc, char **argv) {
     nmxptool_sigocondition_destroy();
 
     nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CONNFLOW, "return code %d\n", main_ret);
+
+#ifdef HAVE_PTHREAD_H
+    pthread_mutex_destroy(&mutex_sendAddTimeSeriesChannel);
+#endif
+
     return main_ret;
 } /* End MAIN */
 
@@ -1328,7 +1368,7 @@ static void ShutdownHandler(int sig) {
 
 
 /* Signal handler routine, print info about Raw Stream data buffer */
-static void AlarmHandler(int sig) {
+static void nmxptool_AlarmHandler(int sig) {
     /* TODO Safe Thread Synchronization */
 
     nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "%s received signal %d!\n", NMXP_LOG_STR(PACKAGE_NAME), sig);
@@ -1490,6 +1530,8 @@ void *p_nmxp_sendAddTimeSeriesChannel(void *arg) {
     int times_channel = 0;
     double estimated_time = 0.0;
 
+    pthread_mutex_lock (&mutex_sendAddTimeSeriesChannel);
+
     if(params.n_channel == 0) {
 	times_channel = 1;
     } else {
@@ -1516,6 +1558,8 @@ void *p_nmxp_sendAddTimeSeriesChannel(void *arg) {
 	}
     }
     nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CONNFLOW, "End requests of channels!\n");
+
+    pthread_mutex_unlock (&mutex_sendAddTimeSeriesChannel);
 
     pthread_exit(NULL);
 }

@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_base.h,v 1.34 2009-08-17 08:47:13 mtheo Exp $
+ * $Id: nmxp_base.h,v 1.35 2009-08-31 12:16:41 mtheo Exp $
  *
  */
 
@@ -78,7 +78,7 @@ int nmxp_setsockopt_RCVTIMEO(int isock, int timeoutsec);
 
 /*! \brief Wrapper to strerror, strerror_r or WSAGetLastErrorMessage
  *
- * \return String message of errno_value. It is static, not need to be freed.
+ * \return String message of errno_value. It is not static, need to be freed.
  *
  */
 char *nmxp_strerror(int errno_value);

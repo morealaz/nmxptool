@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp.c,v 1.94 2009-08-17 08:57:10 mtheo Exp $
+ * $Id: nmxp.c,v 1.95 2009-08-31 12:16:41 mtheo Exp $
  *
  */
 
@@ -46,39 +46,41 @@ int nmxp_receiveChannelList(int isock, NMXP_CHAN_LIST **pchannelList) {
     int recv_errno;
 
     NMXP_MSG_SERVER type;
-    char buffer[NMXP_MAX_LENGTH_DATA_BUFFER];
+    char buffer[NMXP_MAX_LENGTH_DATA_BUFFER]={0};
     int32_t length;
 
     *pchannelList = NULL;
 
     ret = nmxp_receiveMessage(isock, &type, buffer, &length, 0, &recv_errno, NMXP_MAX_LENGTH_DATA_BUFFER);
+    
+    /*TODO controllare ret*/
+    if (ret == NMXP_SOCKET_OK) {
+        if(type != NMXP_MSG_CHANNELLIST) {
+            nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_PACKETMAN, "Type %d is not NMXP_MSG_CHANNELLIST!\n", type);
+        } else {
+            (*pchannelList) = (NMXP_CHAN_LIST *) NMXP_MEM_MALLOC(length);
 
-    if(type != NMXP_MSG_CHANNELLIST) {
-	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_PACKETMAN, "Type %d is not NMXP_MSG_CHANNELLIST!\n", type);
-    } else {
-	(*pchannelList) = (NMXP_CHAN_LIST *) NMXP_MEM_MALLOC(length);
+            if( (*pchannelList) != NULL) {
 
-	if( (*pchannelList) != NULL) {
+                memmove((*pchannelList), buffer, length);
 
-	    memmove((*pchannelList), buffer, length);
+                (*pchannelList)->number = ntohl((*pchannelList)->number);
 
-	    (*pchannelList)->number = ntohl((*pchannelList)->number);
+                nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CHANNEL, "number of channels %d\n", (*pchannelList)->number);
 
-	    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CHANNEL, "number of channels %d\n", (*pchannelList)->number);
+                /* TODO check*/
 
-	    /* TODO check*/
-
-	    for(i=0; i < (*pchannelList)->number; i++) {
-		(*pchannelList)->channel[i].key = ntohl((*pchannelList)->channel[i].key);
-		nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CHANNEL, "%12d %s\n",
-			(*pchannelList)->channel[i].key,
-			NMXP_LOG_STR((*pchannelList)->channel[i].name));
-	    }
-	} else {
-	    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_PACKETMAN, "nmxp_receiveChannelList() Error allocating pchannelList!\n");
-	    ret = NMXP_SOCKET_ERROR;
-	}
-
+                for(i=0; i < (*pchannelList)->number; i++) {
+                    (*pchannelList)->channel[i].key = ntohl((*pchannelList)->channel[i].key);
+                    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CHANNEL, "%12d %s\n",
+                            (*pchannelList)->channel[i].key,
+                            NMXP_LOG_STR((*pchannelList)->channel[i].name));
+                }
+            } else {
+                nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_PACKETMAN, "nmxp_receiveChannelList() Error allocating pchannelList!\n");
+                ret = NMXP_SOCKET_ERROR;
+            }
+        }
     }
 
     return ret;
@@ -136,6 +138,7 @@ int nmxp_sendAddTimeSeriesChannel_raw(int isock, NMXP_CHAN_LIST_NET *channelList
 int nmxp_sendAddTimeSeriesChannel(int isock, NMXP_CHAN_LIST_NET *channelList, int32_t shortTermCompletion, int32_t out_format, NMXP_BUFFER_FLAG buffer_flag, int n_channel, int n_usec, int flag_restart) {
     static int i = 0;
     static int first_time = 1;
+    /*TODO avoid static Stefano*/
     static struct timeval last_tp_now;
 
     char s_channels[MAX_LEN_S_CHANNELS];
@@ -221,7 +224,7 @@ int nmxp_sendAddTimeSeriesChannel(int isock, NMXP_CHAN_LIST_NET *channelList, in
 
 NMXP_DATA_PROCESS *nmxp_receiveData(int isock, NMXP_CHAN_LIST_NET *channelList, const char *network_code, int timeoutsec, int *recv_errno ) {
     NMXP_MSG_SERVER type;
-    char buffer[NMXP_MAX_LENGTH_DATA_BUFFER];
+    char buffer[NMXP_MAX_LENGTH_DATA_BUFFER]={0};
     int32_t length;
     NMXP_DATA_PROCESS *pd = NULL;
 
@@ -744,6 +747,8 @@ void nmxp_raw_stream_init(NMXP_RAW_STREAM_DATA *raw_stream_buffer, int32_t max_t
     raw_stream_buffer->max_pdlist_items = max_tolerable_latency * 4;
     raw_stream_buffer->timeoutrecv = timeoutrecv;
     raw_stream_buffer->n_pdlist = 0;
+
+    raw_stream_buffer->pdlist=NULL;
     raw_stream_buffer->pdlist = (NMXP_DATA_PROCESS **) NMXP_MEM_MALLOC(raw_stream_buffer->max_pdlist_items * sizeof(NMXP_DATA_PROCESS *));
     for(j=0; j<raw_stream_buffer->max_pdlist_items; j++) {
 	raw_stream_buffer->pdlist[j] = NULL;
@@ -797,6 +802,10 @@ int nmxp_raw_stream_manage(NMXP_RAW_STREAM_DATA *p, NMXP_DATA_PROCESS *a_pd, int
 
 	/* Allocate memory for pd and copy a_pd */
 	pd = (NMXP_DATA_PROCESS *) NMXP_MEM_MALLOC(sizeof(NMXP_DATA_PROCESS));
+	if (pd == NULL) {
+	    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_RAWSTREAM,"nmxp_raw_stream_manage(): Error allocating memory\n");
+	    exit(-1);
+	}
 	memcpy(pd, a_pd, sizeof(NMXP_DATA_PROCESS));
 	if(a_pd->nSamp *  sizeof(int) > 0) {
 	    pd->pDataPtr = (int *) NMXP_MEM_MALLOC(a_pd->nSamp * sizeof(int));
@@ -889,7 +898,8 @@ int nmxp_raw_stream_manage(NMXP_RAW_STREAM_DATA *p, NMXP_DATA_PROCESS *a_pd, int
 	}
     } else {
 	if(pd) {
-	    p->pdlist[p->n_pdlist++] = pd;
+	    p->pdlist[p->n_pdlist] = pd;
+            p->n_pdlist++;
 	}
     }
 
@@ -1021,10 +1031,12 @@ int nmxp_raw_stream_manage(NMXP_RAW_STREAM_DATA *p, NMXP_DATA_PROCESS *a_pd, int
 		if(p->pdlist[k]) {
 		    NMXP_MEM_FREE(p->pdlist[k]);
 		    p->pdlist[k] = NULL;
+                    /*nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_RAWSTREAM, "Freeing p->pdlist[%d]\n", k);*/
 		}
 	    }
 	    if(k + j < p->n_pdlist) {
 		p->pdlist[k] = p->pdlist[k+j];
+                p->pdlist[k+j]=NULL;
 	    } else {
 		p->pdlist[k] = NULL;
 	    }

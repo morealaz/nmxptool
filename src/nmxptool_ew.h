@@ -31,6 +31,9 @@
 
 #define NMXPTOOL_EW_MAXSZE_MSG 1024
 
+#define _LOGITMT 1
+
+
 typedef struct {
     unsigned int error;
     char message[NMXPTOOL_EW_MAXSZE_MSG];
