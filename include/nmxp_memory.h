@@ -27,7 +27,7 @@
  *
  *
  */
-inline int nmxp_mem_null_function();
+int nmxp_mem_null_function();
 
 #else
 
