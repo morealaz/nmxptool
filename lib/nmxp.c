@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp.c,v 1.95 2009-08-31 12:16:41 mtheo Exp $
+ * $Id: nmxp.c,v 1.96 2009-09-01 08:54:03 mtheo Exp $
  *
  */
 
@@ -820,7 +820,7 @@ int nmxp_raw_stream_manage(NMXP_RAW_STREAM_DATA *p, NMXP_DATA_PROCESS *a_pd, int
     /* From here, use only pd */
 
     /* First time */
-    if(p->last_seq_no_sent == -1  &&  pd) {
+    if(p->last_seq_no_sent == -1  &&  pd != NULL) {
 	if(p->timeoutrecv == 0) {
 	    p->last_seq_no_sent = pd->seq_no - 1;
 	    p->last_sample_time = pd->time;
@@ -844,8 +844,10 @@ int nmxp_raw_stream_manage(NMXP_RAW_STREAM_DATA *p, NMXP_DATA_PROCESS *a_pd, int
     }
 
     /* Add pd and sort array, in case handle the first item */
-    if( (p->n_pdlist >= p->max_pdlist_items || latency >= p->max_tolerable_latency)
-	    && p->timeoutrecv <= 0 ) {
+    if( ( (p->n_pdlist >= p->max_pdlist_items || latency >= p->max_tolerable_latency) && p->timeoutrecv <= 0 ) 
+	    ||
+	    ( p->n_pdlist >= p->max_pdlist_items &&  p->timeoutrecv > 0)
+	    ) {
 
 	/* Supposing p->pdlist is ordered, handle the first item and over write it.  */
 	if(p->n_pdlist > 0) {
@@ -897,13 +899,14 @@ int nmxp_raw_stream_manage(NMXP_RAW_STREAM_DATA *p, NMXP_DATA_PROCESS *a_pd, int
 	    }
 	}
     } else {
-	if(pd) {
+	if(pd != NULL) {
 	    p->pdlist[p->n_pdlist] = pd;
             p->n_pdlist++;
 	}
     }
 
     /* Check if some element in pdlist is NULL and remove it */
+    count_null_element = 0;
     y=0;
     while(y < p->n_pdlist) {
 	if(p->pdlist[y] == NULL) {
@@ -954,7 +957,7 @@ int nmxp_raw_stream_manage(NMXP_RAW_STREAM_DATA *p, NMXP_DATA_PROCESS *a_pd, int
     */
 
     /* Condition for time-out (pd is NULL) */
-    if(!pd && p->n_pdlist > 0) {
+    if(pd == NULL && p->n_pdlist > 0) {
 	/* Log before changing values */
 	nmxp_data_to_str(str_time, p->pdlist[0]->time);
 	nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_RAWSTREAM,
