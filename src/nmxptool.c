@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.219 2009-09-01 08:55:26 mtheo Exp $
+ * $Id: nmxptool.c,v 1.220 2009-09-24 04:23:58 mtheo Exp $
  *
  */
 
@@ -616,6 +616,12 @@ int main (int argc, char **argv) {
 			}
 
 			pd = nmxp_processCompressedData(buffer, length, channelList_subset, NETCODE_OR_CURRENT_NETWORK);
+
+			/* Force value for timing_quality if declared in the command-line */
+			if(pd && params.timing_quality != -1) {
+			    pd->timing_quality = params.timing_quality;
+			}
+
 			nmxp_data_trim(pd, params.start_time, params.end_time, 0);
 
 			/* To prevent to manage a packet with zero sample after nmxp_data_trim() */
@@ -846,6 +852,11 @@ int main (int argc, char **argv) {
 
 	    /* Process Compressed or Decompressed Data */
 	    pd = nmxp_receiveData(naqssock, channelList_subset, NETCODE_OR_CURRENT_NETWORK, params.timeoutrecv, &recv_errno);
+
+	    /* Force value for timing_quality if declared in the command-line */
+	    if(pd && params.timing_quality != -1) {
+		pd->timing_quality = params.timing_quality;
+	    }
 
 	    if(!pd) {
 		pd_null_count++;
@@ -1245,7 +1256,8 @@ void *nmxptool_print_params(void *arg) {
 
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
     double buffered_time: %f\n\
-    char type_writeseed: %c\n\
+    char type_writeseed: %d\n\
+    int timing_quality: %d\n\
     int flag_listchannels: %d\n\
     int flag_listchannelsnaqs: %d\n\
     int flag_request_channelinfo: %d\n\
@@ -1258,6 +1270,7 @@ void *nmxptool_print_params(void *arg) {
 ",
     params.buffered_time,
     params.type_writeseed,
+    params.timing_quality,
     params.flag_listchannels,
     params.flag_listchannelsnaqs,
     params.flag_request_channelinfo,
@@ -1491,9 +1504,8 @@ int nmxptool_print_seq_no(NMXP_DATA_PROCESS *pd) {
 int nmxptool_send_raw_depoch(NMXP_DATA_PROCESS *pd) {
     /* TODO Set values */
     const int usec_correction = 0;
-    const int timing_quality = 100;
 
-    return send_raw_depoch(pd->station, pd->channel, pd->time, usec_correction, timing_quality,
+    return send_raw_depoch(pd->station, pd->channel, pd->time, usec_correction, pd->timing_quality,
 	    pd->pDataPtr, pd->nSamp);
 }
 #endif
