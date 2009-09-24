@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.h,v 1.104 2009-02-16 07:50:46 mtheo Exp $
+ * $Id: nmxptool_getoptlong.h,v 1.105 2009-09-24 04:20:50 mtheo Exp $
  *
  */
 
@@ -76,6 +76,10 @@
 
 #define DEFAULT_LISTEN_PORT	-1
 
+#define DEFAULT_TIMING_QUALITY	-1
+#define DEFAULT_TIMING_QUALITY_MINIMUM  0
+#define DEFAULT_TIMING_QUALITY_MAXIMUM  100
+
 /*! \brief Struct that stores information about parameter of the program */
 typedef struct {
     char *hostname;
@@ -106,6 +110,7 @@ typedef struct {
     int32_t max_data_to_retrieve;
     int networkdelay;  /* sleep 'networkdelay' seconds before reconnect */
     int listen_port;  /*  */
+    int timing_quality;  /* timing quality parameter for functions send_raw*() */
     int flag_listchannels;
     int flag_listchannelsnaqs;
     int flag_request_channelinfo;

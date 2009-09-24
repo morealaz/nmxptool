@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.113 2009-08-16 08:58:21 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.114 2009-09-24 04:20:49 mtheo Exp $
  *
  */
 
@@ -54,6 +54,7 @@ const NMXPTOOL_PARAMS NMXPTOOL_PARAMS_DEFAULT =
     DEFAULT_MAX_TIME_TO_RETRIEVE,
     DEFAULT_NETWORKDELAY,
     DEFAULT_LISTEN_PORT,
+    DEFAULT_TIMING_QUALITY,
     0,
     0,
     0,
@@ -379,6 +380,12 @@ Other arguments:\n\
 #endif
 #endif
 
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
+  -Q, --timing_quality=TQ This value is used for the functions send_raw*().\n\
+                          TQ is %d or in [%d..%d] (default %d).\n",
+			  DEFAULT_TIMING_QUALITY, DEFAULT_TIMING_QUALITY_MINIMUM, DEFAULT_TIMING_QUALITY_MAXIMUM,
+			  DEFAULT_TIMING_QUALITY);
+
 #ifndef HAVE_WINDOWS_H
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
   -E, --testport=PORT     Accept 'telnet' connection on PORT\n\
@@ -576,6 +583,7 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 	{"slinkms",      required_argument, NULL, 'K'},
 #endif
 #endif
+	{"timing_quality", required_argument, NULL, 'Q'},
 #ifndef HAVE_WINDOWS_H
 	{"socketport",   required_argument, NULL, 'E'},
 #endif
@@ -595,6 +603,8 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
     strcat(optstr, "m:");
     strcat(optstr, "o:");
 #endif
+
+    strcat(optstr, "Q:");
 
 #ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
     strcat(optstr, "k:");
@@ -800,6 +810,9 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 		    break;
 #endif
 #endif
+		case 'Q':
+		    params->timing_quality = atoi(optarg);
+		    break;
 
 #ifndef HAVE_WINDOWS_H
 		case 'E':
@@ -1012,7 +1025,8 @@ void nmxptool_log_params(NMXPTOOL_PARAMS *params) {
 
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_EXTRA, "\
     double buffered_time: %f\n\
-    char type_writeseed: %c\n\
+    char type_writeseed: %d\n\
+    int timing_quality: %d\n\
     int flag_listchannels: %d\n\
     int flag_listchannelsnaqs: %d\n\
     int flag_request_channelinfo: %d\n\
@@ -1025,6 +1039,7 @@ void nmxptool_log_params(NMXPTOOL_PARAMS *params) {
 ",
     params->buffered_time,
     params->type_writeseed,
+    params->timing_quality,
     params->flag_listchannels,
     params->flag_listchannelsnaqs,
     params->flag_request_channelinfo,
@@ -1157,6 +1172,13 @@ int nmxptool_check_params(NMXPTOOL_PARAMS *params) {
     } else if(params->stc != -1 && params->timeoutrecv > 0) {
 	params->timeoutrecv = 0;
 	nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "<timeoutrecv> ignored since not defined --stc=-1.\n");
+    }
+
+    if( params->timing_quality != DEFAULT_TIMING_QUALITY &&
+	    ( params->timing_quality < DEFAULT_TIMING_QUALITY_MINIMUM ||  params->timing_quality > DEFAULT_TIMING_QUALITY_MAXIMUM) ) {
+	ret = -1;
+	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "<timing_quality> could be %d or within [%d .. %d].\n",
+		DEFAULT_TIMING_QUALITY, DEFAULT_TIMING_QUALITY_MINIMUM, DEFAULT_TIMING_QUALITY_MAXIMUM);
     }
 
     if(params->usec == 0  &&  params->n_channel == 0) {
