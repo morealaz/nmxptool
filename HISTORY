@@ -2,7 +2,9 @@
 nmxptool Release History
 #########################
 
-* Release 1.2.4-beta9    (2009/08/31) 
+* Release 1.2.4-beta11    (2009/09/24) 
+    - Fixed major bugs: made code thread safe substituting functions
+        and removing static variables from own functions. (S. Pintore)
     - Improved saving of mini-SEED files into SDS and BUD structure,
         now it is possible to store mini-SEED in near-real-time from NaqsServer.
     - Added feature: packets converted in mini-SEED records can be directly sent
@@ -10,8 +12,7 @@ nmxptool Release History
         the function send_raw_depoch(). (option -K or -k).
     - Changed SeisComP templates adding source port to the file name of channel list.
     - Added SeisComP templates for retrieving Data On Demand with minimun delay.
-    - Fixed major bugs: made code thread safe substituting functions
-        and removing static variables from own functions.
+    - Added minor feature: declare timing_quality from the command-line. (option -Q).
 
 * Release 1.2.3    (2009/01/15) 
     - Added feature: mini-SEED files can be saved directly within a
