@@ -6,7 +6,7 @@
 # Author: Matteo Quintiliani - I.N.G.V. - quintiliani@ingv.it
 ############################################################################
 
-NMXPTOOLBIN=../src/nmxptool
+NMXPTOOLBIN=../../src/nmxptool
 
 NAQSERVERS="naqs1a.int.ingv.it naqs2a.int.ingv.it naqs1b.int.ingv.it naqs2b.int.ingv.it"
 NAQSPORT=28000
