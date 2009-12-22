@@ -1,10 +1,79 @@
-2009-08-31 14:30
+2009-12-22 11:09
 
 	* nmxptool:
 
 	  Open-Source and Cross-Platform software for Nanometrics seismic data acquisition
 	  Matteo Quintiliani - Istituto Nazionale di Geofisica e Vulcanologia - Italy
 	  Mail bug reports and suggestions to <quintiliani@ingv.it> 
+
+2009-12-22 09:54  mtheo <quintiliani@ingv.it>
+
+	* configure.in (1.91):
+
+	Release version 1.2.4
+
+2009-12-22 09:54  mtheo <quintiliani@ingv.it>
+
+	* HISTORY (1.71):
+
+	Up to date
+
+2009-09-24 04:27  mtheo <quintiliani@ingv.it>
+
+	* HISTORY (1.70):
+
+	Up to date
+
+2009-09-24 04:23  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.220):
+
+	Added option -Q for timing_quality
+
+2009-09-24 04:20  mtheo <quintiliani@ingv.it>
+
+	* src/: nmxptool_getoptlong.c (1.114), nmxptool_getoptlong.h
+	(1.105):
+
+	Added option timing_quality
+
+2009-09-24 04:19  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_data.h (1.38), lib/nmxp_data.c (1.71):
+
+	Added field timing_quality to the structure NMXP_DATA_PROCESS
+
+2009-09-01 09:20  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_memory.h (1.10), lib/nmxp_memory.c (1.14):
+
+	Declared nmxp_mem_null_function() non inline
+
+2009-09-01 09:16  mtheo <quintiliani@ingv.it>
+
+	* configure.in (1.90):
+
+	Incremented version to 1.2.4-beta11
+
+2009-09-01 08:55  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.219):
+
+	Fixed minor bug: added function nmxptool_listen_print_seq_no() only
+	when socket listen is enabled
+
+2009-09-01 08:54  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp.c (1.96):
+
+	Fixed bug in time-out management: changed condition for flushing
+	items when buffer of packets is full
+
+2009-08-31 12:23  mtheo <quintiliani@ingv.it>
+
+	* HISTORY (1.69):
+
+	Up to date
 
 2009-08-31 12:17  mtheo <quintiliani@ingv.it>
 

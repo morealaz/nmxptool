@@ -2,7 +2,7 @@
 nmxptool Release History
 #########################
 
-* Release 1.2.4-beta11    (2009/09/24) 
+* Release 1.2.4    (2009/12/22) 
     - Fixed major bugs: made code thread safe substituting functions
         and removing static variables from own functions. (S. Pintore)
     - Improved saving of mini-SEED files into SDS and BUD structure,
