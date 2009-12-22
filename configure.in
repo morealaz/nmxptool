@@ -119,7 +119,6 @@ AM_CONDITIONAL(ENABLE_DLL_PTHREAD, test x$DLL_PTHREAD != x)
 AC_ARG_VAR(DIR_PTHREAD, [Directory containing PThread DDL library])
 AC_ARG_VAR(DLL_PTHREAD, [Name of PThread DLL library - i.e. pthreadVC2.dll])
 
-CFLAGS="$CFLAGS -D_POSIX_PTHREAD_SEMANTICS"
 
 # Checks for header files.
 AC_HEADER_STDC
@@ -162,6 +161,7 @@ AS_IF([test "x$enable_ew" != xno],
       [
     AS_IF([test "x$EW_HOME" != x], 
 	  [
+	   CFLAGS="$CFLAGS -m32"
 	   CFLAGS="$CFLAGS -I$EW_HOME/$EW_VERSION/include $GLOBALFLAGS"
 	AC_CHECK_HEADERS([earthworm.h kom.h transport.h trace_buf.h],
 			 [AC_DEFINE([HAVE_EARTHWORMFILES_H], [1], [Define if you have earthworm header file])],
@@ -182,6 +182,7 @@ AS_IF([test "x$enable_ew" != xno],
 		case "$OSTYPE" in
 		solaris*)
 		    EWOS=solaris
+		    CFLAGS="$CFLAGS -D_POSIX_PTHREAD_SEMANTICS"
 		;;
 		darwin*)
 		    EWOS=unix
