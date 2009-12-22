@@ -61,7 +61,7 @@ architectures.
 
   Optional libraries:
 
-    * libmseed-2.1.4 or later: http://www.iris.edu/manuals/
+    * libmseed-2.3 or later: http://www.iris.edu/software/libraries/
       The Mini-SEED library. A C library framework for manipulating and
       managing SEED data records.  Author: Chad Trabant, IRIS DMC
 
@@ -156,7 +156,7 @@ architectures.
 
      src/nmxptool --version
 
-     nmxptool 1.2.3, tool for Nanometrics Protocols
+     nmxptool 1.2.4, tool for Nanometrics Protocols
               Private Data Stream 1.4, Data Access Protocol 1.0
               Enabled features: libmseed YES, SeedLink YES, Earthworm YES.
               Using pthread: YES.
