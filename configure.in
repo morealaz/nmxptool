@@ -9,9 +9,9 @@ m4_define([full_package_name], [nmxptool])
 dnl These three define the plug-in version number
 m4_define([major_version], [1])
 m4_define([minor_version], [2])
-m4_define([micro_version], [5])
+m4_define([micro_version], [4])
 # Comment build_version for stable release
-m4_define([build_version], [-beta1])
+# m4_define([build_version], [-beta1])
 
 m4_ifdef([build_version], [
 	  m4_define([version],
@@ -90,6 +90,9 @@ AC_ARG_ENABLE([seedlink],
 ) 
 
 case "$OSTYPE" in
+solaris*)
+    CFLAGS="$CFLAGS -D_POSIX_PTHREAD_SEMANTICS"
+;;
 win32*)
     WINSOURCES=$OSTYPE
 ;;
@@ -182,7 +185,6 @@ AS_IF([test "x$enable_ew" != xno],
 		case "$OSTYPE" in
 		solaris*)
 		    EWOS=solaris
-		    CFLAGS="$CFLAGS -D_POSIX_PTHREAD_SEMANTICS"
 		;;
 		darwin*)
 		    EWOS=unix
