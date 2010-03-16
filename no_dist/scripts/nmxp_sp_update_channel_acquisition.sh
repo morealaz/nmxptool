@@ -9,29 +9,37 @@
 NMXPTOOLBIN=../../src/nmxptool
 SLINKTOOLBIN=/Users/mtheo/Desktop/soft/unix_sources/src/slinktool/slinktool
 
-DATASERVERS="naqs1a.int.ingv.it naqs2a.int.ingv.it naqs1b.int.ingv.it naqs2b.int.ingv.it"
-NAQSERVERS="naqs1a.int.ingv.it naqs2a.int.ingv.it naqs1b.int.ingv.it naqs2b.int.ingv.it"
-NAQSPORT=28000
-DATAPORT=28002
+DATASERVERS="naqs1a.int.ingv.it:28002 naqs2a.int.ingv.it:28002 naqs1b.int.ingv.it:28002 naqs2b.int.ingv.it:28002"
+NAQSERVERS="naqs1a.int.ingv.it:28000 naqs2a.int.ingv.it:28000 naqs1b.int.ingv.it:28000 naqs2b.int.ingv.it:28000 naqs2b.int.ingv.it:26000"
+SLSERVERS="hsl2.int.ingv.it:18000 gaia-cda1.int.ingv.it:18000 gaia-cda2.int.ingv.it:18000 gaia-cda3.int.ingv.it:18000 discovery.rm.ingv.it:39962"
 
-SLSERVERS="hsl2.int.ingv.it gaia-cda1.int.ingv.it gaia-cda2.int.ingv.it gaia-cda3.int.ingv.it"
-SLPORT=18000
+echo "DELETE FROM cha_lnk_address WHERE id > 0;"
 
-for NAQSSERVER in ${NAQSERVERS}; do
+# NaqsServers
+for NAQSSERVERPORT in ${NAQSERVERS}; do
+
+    NAQSSERVER=`echo ${NAQSSERVERPORT} | cut -d':' -f 1`
+    NAQSPORT=`echo ${NAQSSERVERPORT} | cut -d':' -f 2`
+
     ${NMXPTOOLBIN} -H ${NAQSSERVER} -P ${NAQSPORT} -L | sed -e "s/[ ][ ]*/ /g" | cut -f 3 -d' ' | tr '.' ' ' | sed -e "s/\([^ ][^ ]*\) \([^ ][^ ]*\)/CALL sp_update_channel_acquisition('', '\1', '\2', '', 0, '${NAQSSERVER}', ${NAQSPORT}, 'NaqsServer');/"
 done
 
-for DATASERVER in ${DATASERVERS}; do
+
+# DataServers
+for DATASERVERPORT in ${DATASERVERS}; do
+
+    DATASERVER=`echo ${DATASERVERPORT} | cut -d':' -f 1`
+    DATAPORT=`echo ${DATASERVERPORT} | cut -d':' -f 2`
+
     ${NMXPTOOLBIN} -H ${DATASERVER} -D ${DATAPORT} -l | sed -e "s/[ ][ ]*/ /g" | cut -f 3 -d' ' | tr '.' ' ' | sed -e "s/\([^ ][^ ]*\) \([^ ][^ ]*\)/CALL sp_update_channel_acquisition('', '\1', '\2', '', 0, '${DATASERVER}', ${DATAPORT}, 'DataServer');/"
 done
 
 
-for SLSERVER in ${SLSERVERS}; do
+# SeedLink Servers
+for SLSERVERPORT in ${SLSERVERS}; do
 
-    # BRUTAL calls for hsl1.int.ingv.it
-    if [ "${SLSERVER}" == "hsl2.int.ingv.it" ]; then
-	${SLINKTOOLBIN} -Q ${SLSERVER}:${SLPORT} | grep " D " | gsed -r "~ s/^(.{9})([ ]{2})/\1--/" | sed -e "s/[ ][ ]*/ /g" | sed -e "s/\([^ ][^ ]*\) \([^ ][^ ]*\) \([^ ][^ ]*\) \([^ ][^ ]*\).*$/CALL sp_update_channel_acquisition('\1', '\2', '\4', '\3', 0, 'hsl1.int.ingv.it', ${SLPORT}, 'SeedLink');/g"
-    fi
+    SLSERVER=`echo ${SLSERVERPORT} | cut -d':' -f 1`
+    SLPORT=`echo ${SLSERVERPORT} | cut -d':' -f 2`
 
     ${SLINKTOOLBIN} -Q ${SLSERVER}:${SLPORT} | grep " D " | gsed -r "~ s/^(.{9})([ ]{2})/\1--/" | sed -e "s/[ ][ ]*/ /g" | sed -e "s/\([^ ][^ ]*\) \([^ ][^ ]*\) \([^ ][^ ]*\) \([^ ][^ ]*\).*$/CALL sp_update_channel_acquisition('\1', '\2', '\4', '\3', 0, '${SLSERVER}', ${SLPORT}, 'SeedLink');/g"
 
