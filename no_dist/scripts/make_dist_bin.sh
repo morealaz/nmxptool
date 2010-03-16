@@ -9,8 +9,8 @@
 #
 
 EWSOURCE=earthworm_sources_nmxptool
-LIBMSEEDSOURCE=libmseed-2.1.4
-NMXPSOURCE=nmxptool-1.2.3
+LIBMSEEDSOURCE=libmseed-2.3
+NMXPSOURCE=nmxptool-1.2.4
 
 EW_HOME="`pwd`"
 EW_VERSION="$EWSOURCE"
