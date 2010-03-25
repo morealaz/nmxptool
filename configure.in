@@ -9,9 +9,9 @@ m4_define([full_package_name], [nmxptool])
 dnl These three define the plug-in version number
 m4_define([major_version], [1])
 m4_define([minor_version], [2])
-m4_define([micro_version], [5])
+m4_define([micro_version], [4])
 # Comment build_version for stable release
-m4_define([build_version], [-beta1])
+# m4_define([build_version], [beta1])
 
 m4_ifdef([build_version], [
 	  m4_define([version],
@@ -164,7 +164,7 @@ AS_IF([test "x$enable_ew" != xno],
       [
     AS_IF([test "x$EW_HOME" != x], 
 	  [
-	   CFLAGS="$CFLAGS -m32"
+	   # CFLAGS="$CFLAGS -m32"
 	   CFLAGS="$CFLAGS -I$EW_HOME/$EW_VERSION/include $GLOBALFLAGS"
 	AC_CHECK_HEADERS([earthworm.h kom.h transport.h trace_buf.h],
 			 [AC_DEFINE([HAVE_EARTHWORMFILES_H], [1], [Define if you have earthworm header file])],

@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.h,v 1.105 2009-09-24 04:20:50 mtheo Exp $
+ * $Id: nmxptool_getoptlong.h,v 1.106 2010-03-25 12:53:15 mtheo Exp $
  *
  */
 
@@ -31,11 +31,11 @@
 #define DEFAULT_RATE_MAXIMUM   	1000
 #define DEFAULT_RATE     	-1
 
-#define DEFAULT_DELAY_MINIMUM  	60
+#define DEFAULT_DELAY_MINIMUM  	30
 #define DEFAULT_DELAY_MAXIMUM  	(86400 * 31)
 #define DEFAULT_DELAY    	0
 
-#define DEFAULT_MAX_TOLERABLE_LATENCY_MINIMUM	60
+#define DEFAULT_MAX_TOLERABLE_LATENCY_MINIMUM	10
 #define DEFAULT_MAX_TOLERABLE_LATENCY_MAXIMUM	600
 #define DEFAULT_MAX_TOLERABLE_LATENCY 		600
 
