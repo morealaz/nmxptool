@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_chan.c,v 1.45 2009-08-31 12:16:41 mtheo Exp $
+ * $Id: nmxp_chan.c,v 1.46 2010-04-12 13:23:43 mtheo Exp $
  *
  */
 
@@ -174,7 +174,7 @@ int nmxp_chan_match(const char *net_dot_station_dot_channel, char *pattern)
     l = strlen(cha_sdc);
     if(l != 3) {
 	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANNEL, "Channel %s has not valid CHAN format!\n",
-		NMXP_LOG_STR(pattern));
+		NMXP_LOG_STR(net_dot_station_dot_channel));
 	return -1;
     }
 
