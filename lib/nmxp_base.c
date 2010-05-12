@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_base.c,v 1.81 2009-08-31 12:16:41 mtheo Exp $
+ * $Id: nmxp_base.c,v 1.82 2010-05-12 09:27:19 mtheo Exp $
  *
  */
 
@@ -474,6 +474,10 @@ NMXP_DATA_PROCESS *nmxp_processDecompressedData(char* buffer_data, int length_da
 
   char *nmxp_channel_name = NULL;
   NMXP_DATA_PROCESS *pd   = NULL;
+
+  pd= (NMXP_DATA_PROCESS *) NMXP_MEM_MALLOC(sizeof(NMXP_DATA_PROCESS));
+  memset(pd,0,sizeof(NMXP_DATA_PROCESS));
+
 
   /* copy the header contents into local fields and swap */
   memcpy(&netInt, &buffer_data[0], 4);
