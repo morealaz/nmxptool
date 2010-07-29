@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_data.c,v 1.71 2009-09-24 04:19:51 mtheo Exp $
+ * $Id: nmxp_data.c,v 1.72 2010-07-29 19:05:27 racine Exp $
  *
  */
 
@@ -607,7 +607,7 @@ int nmxp_data_parse_date(const char *pstr_date, NMXP_TM_T *ret_tmt) {
 		    strncpy(err_message, "Error parsing ten thousandth of second!", MAX_LENGTH_ERR_MESSAGE);
 		    ret = -1;
 		} else {
-		    strncat(str_tt, pEnd, 20);
+		    strncat(str_tt, pEnd, 20 - strlen(str_tt));
 		    k=0;
 		    while(k<5) {
 			if(str_tt[k] == 0) {
@@ -842,9 +842,9 @@ int nmxp_data_seed_fopen(NMXP_DATA_SEED *data_seed) {
     char filename_mseed[NMXP_DATA_MAX_SIZE_FILENAME];
     char filename_mseed_fullpath[NMXP_DATA_MAX_SIZE_FILENAME];
 
+    filename_mseed[0] = 0;
     nmxp_data_get_filename_ms(data_seed, dirseedchan, filename_mseed);
-
-    if(filename_mseed) {
+    if(strlen(filename_mseed)) {
 	found=0;
 	i=0;
 	while(i < data_seed->n_open_files  &&  !found) {
@@ -1041,7 +1041,8 @@ int nmxp_data_msr_pack(NMXP_DATA_PROCESS *pd, NMXP_DATA_SEED *data_seed, void *p
 	/* msr_print(msr, 2); */
 
 	data_seed->pd = pd;
-
+        /* set the quality indicator */
+        msr->dataquality = pd->quality_indicator;
 	/* Pack the record(s) */
 	precords = msr_pack (msr, &nmxp_data_msr_write_handler, data_seed, &psamples, 1, verbose);
 
@@ -1055,6 +1056,8 @@ int nmxp_data_msr_pack(NMXP_DATA_PROCESS *pd, NMXP_DATA_SEED *data_seed, void *p
 		    "Packed %d samples into %d records for %s.%s.%s x0=%d xn=%d\n",
 		    psamples, precords, pd->network, pd->station, pd->channel, pDataDest[0], pDataDest[msr->numsamples-1]);
 	}
+	/* fixes memory leak, added 2010-07-26, RR */
+	NMXP_MEM_FREE(msr->datasamples);
 
     }
     }

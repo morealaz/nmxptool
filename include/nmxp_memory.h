@@ -18,7 +18,7 @@
 
 #define NMXP_MEM_MALLOC(size) malloc(size)
 #define NMXP_MEM_STRDUP(str) strdup(str)
-#define NMXP_MEM_FREE(ptr) free(ptr)
+ #define NMXP_MEM_FREE(ptr) free(ptr); ptr=NULL;
 #define NMXP_MEM_PRINT_PTR(print_items, print_sfs) nmxp_mem_null_function()
 #define NMXP_MEM_PRINT_SFS() nmxp_mem_null_function()
 

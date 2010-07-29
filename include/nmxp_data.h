@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_data.h,v 1.38 2009-09-24 04:19:51 mtheo Exp $
+ * $Id: nmxp_data.h,v 1.39 2010-07-29 19:05:27 racine Exp $
  *
  */
 
@@ -127,6 +127,8 @@ typedef struct {
     int32_t nSamp;				/*!< \brief Number or samples */
     int32_t sampRate;			/*!< \brief Sample rate */
     int timing_quality;			/*!< \brief Timing quality for functions send_raw*() */
+    char quality_indicator;             /*!< \brief Quality indicator D, R, Q or M, new in Seed 2.4 */
+        
 } NMXP_DATA_PROCESS;
 
 

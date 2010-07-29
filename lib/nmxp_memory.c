@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_memory.c,v 1.14 2009-09-01 09:20:27 mtheo Exp $
+ * $Id: nmxp_memory.c,v 1.15 2010-07-29 19:05:27 racine Exp $
  *
  */
 
@@ -258,6 +258,8 @@ inline void nmxp_mem_free(void *ptr, char *source_file, int line) {
 	    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "nmxp_mem_free   %d.%d %010p+%d %s_%d\n", tv.tv_sec, tv.tv_usec, ptr, size, source_file_line, i);
 	}
 	free(ptr);
+	/* prevents double frees, added 2010-07-26, RR */
+	ptr = NULL;
     }
 }
 
