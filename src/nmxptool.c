@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.221 2010-08-20 05:52:31 racine Exp $
+ * $Id: nmxptool.c,v 1.222 2010-08-20 05:53:58 racine Exp $
  *
  */
 
@@ -1577,7 +1577,5 @@ void *p_nmxp_sendAddTimeSeriesChannel(void *arg) {
     pthread_exit(NULL);
 }
 #endif
-
-/* comment for testing CVS */
 
 
