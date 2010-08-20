@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.220 2009-09-24 04:23:58 mtheo Exp $
+ * $Id: nmxptool.c,v 1.221 2010-08-20 05:52:31 racine Exp $
  *
  */
 
@@ -110,7 +110,6 @@ int already_listen = 0;
 
 
 /* Global variable for main program and handling terminitation program */
-/*dare un default Stefano*/
 NMXPTOOL_PARAMS params={0};
 
 
@@ -1578,5 +1577,7 @@ void *p_nmxp_sendAddTimeSeriesChannel(void *arg) {
     pthread_exit(NULL);
 }
 #endif
+
+/* comment for testing CVS */
 
 
