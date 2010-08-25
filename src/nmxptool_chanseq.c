@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_chanseq.c,v 1.1 2008-04-09 07:58:07 mtheo Exp $
+ * $Id: nmxptool_chanseq.c,v 1.2 2010-08-25 20:37:48 racine Exp $
  *
  */
 
@@ -175,7 +175,7 @@ void nmxptool_chanseq_load_states(NMXP_CHAN_LIST_NET *chan_list, NMXPTOOL_CHAN_S
 
     if(statefile) {
 	strncpy(statefilefilename, statefile, MAX_LEN_FILENAME);
-	strncat(statefilefilename, NMXP_STR_STATE_EXT, MAX_LEN_FILENAME);
+	strncat(statefilefilename, NMXP_STR_STATE_EXT, MAX_LEN_FILENAME - strlen(statefile));
 	fstatefile = fopen(statefilefilename, "r");
 	if(fstatefile == NULL) {
 	    fstatefileINPUT = fopen(statefile, "r");
@@ -202,7 +202,7 @@ void nmxptool_chanseq_load_states(NMXP_CHAN_LIST_NET *chan_list, NMXPTOOL_CHAN_S
 
     if(statefile) {
 	strncpy(statefilefilename, statefile, MAX_LEN_FILENAME);
-	strncat(statefilefilename, NMXP_STR_STATE_EXT, MAX_LEN_FILENAME);
+	strncat(statefilefilename, NMXP_STR_STATE_EXT, MAX_LEN_FILENAME - strlen(statefile));
 	fstatefile = fopen(statefilefilename, "r");
 	if(fstatefile == NULL) {
 	    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANSTATE, "Unable to read channel states from %s!\n",

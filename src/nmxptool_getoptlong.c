@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.114 2009-09-24 04:20:49 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.115 2010-08-25 20:37:48 racine Exp $
  *
  */
 
@@ -22,7 +22,6 @@
 #include "nmxp.h"
 
 #include "nmxptool_getoptlong.h"
-
 
 const NMXPTOOL_PARAMS NMXPTOOL_PARAMS_DEFAULT =
 {
@@ -55,6 +54,8 @@ const NMXPTOOL_PARAMS NMXPTOOL_PARAMS_DEFAULT =
     DEFAULT_NETWORKDELAY,
     DEFAULT_LISTEN_PORT,
     DEFAULT_TIMING_QUALITY,
+    DEFAULT_QUALITY_INDICATOR,
+    DEFAULT_ENCODING,
     0,
     0,
     0,
@@ -353,6 +354,12 @@ Other arguments:\n\
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
   -o, --outdirseed=DIR    Output directory for SDS or BUD structure.\n\
                           Related to -m (default is current directory).\n");
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
+  -q, --quality_indicator=IND Set the quality indicator to the given character. Seed 2.4 \n\
+                                supports D (indeterminate), R (raw data), Q (quality controlled data) \n\
+                                and M (data center modified). Defaults to D.\n");
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
+  -x, --encoding=ENC Set the encoding. Either steim1 or steim2, defaults to steim1\n");
 #endif
 
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
@@ -454,7 +461,7 @@ char *get_channel_list_argument_from_state_file(const char *filename) {
 		strncpy(ret_channel_string, str_chan, MAXSIZECHANNELSTRINGARGUMENT);
 	    } else {
 		strncat(ret_channel_string, ",", MAXSIZECHANNELSTRINGARGUMENT);
-		strncat(ret_channel_string, str_chan, MAXSIZECHANNELSTRINGARGUMENT);
+		strncat(ret_channel_string, str_chan, MAXSIZECHANNELSTRINGARGUMENT-3);
 	    }
 	}
 	fclose(fstatefile);
@@ -573,6 +580,8 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 #ifdef HAVE_LIBMSEED
 	{"writeseed",    required_argument, NULL, 'm'},
 	{"outdirseed",   required_argument, NULL, 'o'},
+	{"quality_indicator", required_argument, NULL, 'q'},
+	{"encoding", required_argument, NULL, 'x'},
 #endif
 	{"writefile",    no_argument,       NULL, 'w'},
 #ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
@@ -602,6 +611,8 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 #ifdef HAVE_LIBMSEED
     strcat(optstr, "m:");
     strcat(optstr, "o:");
+    strcat(optstr, "q:");
+    strcat(optstr, "x:");
 #endif
 
     strcat(optstr, "Q:");
@@ -904,10 +915,36 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 			} else {
 			    ret_errors++;
 			    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY,
-				    "Mini-SEED output directory %s does not exists!\n", NMXP_LOG_STR(params->outdirseed));
+				    "Mini-SEED output directory %s does not exist!\n", NMXP_LOG_STR(params->outdirseed));
 			}
 		    }
 		    break;
+                case 'q':
+                    switch(optarg[0]) {
+                      case 'D':
+                      case 'R':
+                      case 'Q':
+                      case 'M':
+                        params->quality_indicator = optarg[0];
+                        break;
+                      default:
+                        ret_errors++;
+                        nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY,
+                               "Quality indicator %s is invalid! Must be D, R, Q or M!\n", NMXP_LOG_STR(optarg));
+                        break;
+                    }
+                    break;
+                case 'x':
+                   if (strcmp(optarg,"steim1") == 0) {
+                     params->encoding = DE_STEIM1;
+                   } else if (strcmp(optarg,"steim2") == 0) {
+                     params->encoding = DE_STEIM2;
+                   } else {
+                     ret_errors++;
+                     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY,
+                        "Encoding %s is invalid! Must either be steim1 or steim2!\n",NMXP_LOG_STR(optarg));
+                   }
+                break;
 #endif
 
 		case 'w':

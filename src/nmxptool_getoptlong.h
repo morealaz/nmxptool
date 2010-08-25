@@ -7,12 +7,17 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.h,v 1.106 2010-03-25 12:53:15 mtheo Exp $
+ * $Id: nmxptool_getoptlong.h,v 1.107 2010-08-25 20:37:48 racine Exp $
  *
  */
 
 #ifndef NMXPTOOL_GETLONG_H
 #define NMXPTOOL_GETLONG_H 1
+
+#ifdef HAVE_LIBMSEED
+#include <libmseed.h>
+#endif
+
 
 #include <getopt.h>
 #include <stdint.h>
@@ -65,6 +70,15 @@
 #define DEFAULT_NETWORKDELAY_MINIMUM	3
 #define DEFAULT_NETWORKDELAY_MAXIMUM	60
 
+
+/* RR */
+#define DEFAULT_QUALITY_INDICATOR 'D'
+#ifdef HAVE_LIBMSEED
+#define DEFAULT_ENCODING DE_STEIM1
+#else
+#define DEFAULT_ENCODING 0
+#endif
+
 /* Empiric constant values TODO */
 #define DEFAULT_N_CHANNEL		9
 #define DEFAULT_N_CHANNEL_MINIMUM	3
@@ -111,6 +125,9 @@ typedef struct {
     int networkdelay;  /* sleep 'networkdelay' seconds before reconnect */
     int listen_port;  /*  */
     int timing_quality;  /* timing quality parameter for functions send_raw*() */
+    /* RR */
+    char quality_indicator;
+    int8_t encoding;    
     int flag_listchannels;
     int flag_listchannelsnaqs;
     int flag_request_channelinfo;

@@ -7,12 +7,11 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.222 2010-08-20 05:53:58 racine Exp $
+ * $Id: nmxptool.c,v 1.223 2010-08-25 20:37:48 racine Exp $
  *
  */
 
 #include "config.h"
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -160,7 +159,7 @@ int main (int argc, char **argv) {
     int times_flow = 0;
 
     int recv_errno = 0; 
-    char *recv_errno_str;
+/*     char *recv_errno_str; */
   
     char filename[500] = "";
     char station_code[20] = "", channel_code[20] = "", network_code[20] = "";
@@ -398,13 +397,13 @@ int main (int argc, char **argv) {
 
 		    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_EXTRA, "%s.%s.%s\n",
 			    NMXP_LOG_STR(NETCODE_OR_CURRENT_NETWORK), NMXP_LOG_STR(station_code), NMXP_LOG_STR(channel_code));
-
 		    strncpy(msr_list_chan[i_chan]->network, NETCODE_OR_CURRENT_NETWORK, 11);
 		    strncpy(msr_list_chan[i_chan]->station, station_code, 11);
 		    strncpy(msr_list_chan[i_chan]->channel, channel_code, 11);
 
 		    msr_list_chan[i_chan]->reclen = 512;         /* byte record length */
-		    msr_list_chan[i_chan]->encoding = DE_STEIM1;  /* Steim 1 compression */
+
+		    msr_list_chan[i_chan]->encoding = params.encoding;  /* Steim 1 compression by default */
 
 		} else {
 		    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANNEL,
@@ -604,7 +603,6 @@ int main (int argc, char **argv) {
 			    &&  data_seed.err_general==0
 #endif
 			 ) {
-
 			/* Process a packet and return value in NMXP_DATA_PROCESS structure */ /*STEFANO*/
                         
 			if (pd != NULL) {
@@ -620,6 +618,12 @@ int main (int argc, char **argv) {
 			if(pd && params.timing_quality != -1) {
 			    pd->timing_quality = params.timing_quality;
 			}
+
+                        /* set the data quality indicator */			
+			if (pd) {
+                          pd->quality_indicator = params.quality_indicator;
+                        }
+			                                                                          
 
 			nmxp_data_trim(pd, params.start_time, params.end_time, 0);
 
@@ -829,7 +833,7 @@ int main (int argc, char **argv) {
 	    already_listen = 1;
 	    pthread_attr_init(&attr_socket_listen);
 	    pthread_attr_setdetachstate(&attr_socket_listen, PTHREAD_CREATE_DETACHED);
-	    pthread_create(&thread_socket_listen, &attr_socket_listen, nmxptool_listen, (void *)params.listen_port);
+	    pthread_create(&thread_socket_listen, &attr_socket_listen, nmxptool_listen, (void *) &params.listen_port);
 	    pthread_attr_destroy(&attr_socket_listen);
 	}
 #endif
@@ -848,15 +852,30 @@ int main (int argc, char **argv) {
 		&&  data_seed.err_general==0
 #endif
 	     ) {
-
+	    
+	    /* added 2010-07-26, RR */
+            if (pd != NULL) {
+              if (pd->pDataPtr != NULL) {
+                NMXP_MEM_FREE(pd->pDataPtr);
+              }
+              NMXP_MEM_FREE(pd);
+            } 
 	    /* Process Compressed or Decompressed Data */
 	    pd = nmxp_receiveData(naqssock, channelList_subset, NETCODE_OR_CURRENT_NETWORK, params.timeoutrecv, &recv_errno);
+
+            
+            
 
 	    /* Force value for timing_quality if declared in the command-line */
 	    if(pd && params.timing_quality != -1) {
 		pd->timing_quality = params.timing_quality;
 	    }
-
+            
+            /* set the data quality indicator */
+            if (pd) {
+              pd->quality_indicator = params.quality_indicator;
+            }
+                                                                                                            
 	    if(!pd) {
 		pd_null_count++;
 		if((pd_null_count * params.timeoutrecv) >= timeoutrecv_warning) {
@@ -1096,7 +1115,7 @@ int main (int argc, char **argv) {
 	    if(*msr_list_chan) {
 		for(i_chan = 0; i_chan < channelList_subset->number; i_chan++) {
 		    if(msr_list_chan[i_chan]) {
-			msr_free(&(msr_list_chan[i_chan]));
+			msr_free(&(msr_list_chan[i_chan])); 
 		    }
 		}
 	    }
@@ -1453,12 +1472,14 @@ int nmxptool_msr_send_mseed(NMXP_DATA_PROCESS *pd) {
 
 		msr->numsamples = pd->nSamp;
 		msr->datasamples = NMXP_MEM_MALLOC (sizeof(int) * (msr->numsamples)); 
+                msr->dataquality = pd->quality_indicator;
+		        
 		memcpy(msr->datasamples, pd->pDataPtr, sizeof(int) * pd->nSamp); /* pointer to 32-bit integer data samples */
 
 		/* msr_print(msr, 2); */
 
 		precords = msr_pack (msr, &nmxptool_msr_send_mseed_handler, pd, &psamples, flush, verbose);
-
+                NMXP_MEM_FREE(msr->datasamples);
 		if ( precords == -1 ) {
 		    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_PACKETMAN,
 			    "Cannot pack records %s.%s.%s\n", pd->network, pd->station, pd->channel);

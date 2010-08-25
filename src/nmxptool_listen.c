@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_listen.c,v 1.9 2009-08-16 07:12:16 mtheo Exp $
+ * $Id: nmxptool_listen.c,v 1.10 2010-08-25 20:37:48 racine Exp $
  *
  */
 
@@ -365,7 +365,7 @@ int nmxptool_listen_print_seq_no(NMXP_DATA_PROCESS *pd) {
 
 void *nmxptool_listen(void *arg)
 {
-	int port_socket_listen = (int) arg;
+	int port_socket_listen = *(int*)arg;
 	int sockfd, new_fd;  // listen on sock_fd, new connection on new_fd
 	struct sockaddr_in my_addr;	// my address information
 	struct sockaddr_in their_addr; // connector's address information
