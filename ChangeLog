@@ -1,10 +1,31 @@
-2010-08-26 11:21
+2010-08-26 15:22
 
 	* nmxptool:
 
 	  Open-Source and Cross-Platform software for Nanometrics seismic data acquisition
 	  Matteo Quintiliani - Istituto Nazionale di Geofisica e Vulcanologia - Italy
 	  Mail bug reports and suggestions to <quintiliani@ingv.it> 
+
+2010-08-26 12:52  mtheo <quintiliani@ingv.it>
+
+	* HISTORY (1.73):
+
+	Up to date HISTORY
+
+2010-08-26 12:49  mtheo <quintiliani@ingv.it>
+
+	* src/: nmxptool.c (1.225), nmxptool_ew.c (1.37),
+	nmxptool_getoptlong.c (1.117):
+
+	Since NaqsServer 2.1 has eventually implemented
+	Short-Term-Completion I enabled this option for Earthworm module
+	configuration
+
+2010-08-26 12:46  mtheo <quintiliani@ingv.it>
+
+	* earthworm/nmxptool.d (1.36):
+
+	Added parameter ShortTermCompletion
 
 2010-08-26 08:01  mtheo <quintiliani@ingv.it>
 
