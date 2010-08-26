@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.115 2010-08-25 20:37:48 racine Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.116 2010-08-26 07:53:23 mtheo Exp $
  *
  */
 
@@ -317,6 +317,62 @@ DEFAULT_PORT_DAP,
 DEFAULT_DELAY_MINIMUM,
 (DEFAULT_DELAY_MAXIMUM / 86400));
 
+#ifdef HAVE_LIBMSEED
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
+Mini-SEED arguments:\n");
+
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
+  -m, --writeseed=[TYPE]  Pack received data in Mini-SEED records and\n\
+                          store them within a SDS or BUD structure.\n\
+                          TYPE can be '%c' or '%c' (-m%c or -m%c)\n\
+                          Packets are appended to existing files. Related to -o.\n",
+			  TYPE_WRITESEED_SDS, TYPE_WRITESEED_BUD,
+			  TYPE_WRITESEED_SDS, TYPE_WRITESEED_BUD);
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
+  -o, --outdirseed=DIR    Output directory for SDS or BUD structure.\n\
+                          Related to -m (default is current directory).\n");
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
+  -q, --quality_indicator=IND\n\
+                          Set the quality indicator to the given character.\n\
+                          Seed 2.4 supports D (indeterminate), R (raw data),\n\
+                          Q (quality controlled data) and M (data center modified).\n\
+                          (Default is '%c').\n", DEFAULT_QUALITY_INDICATOR);
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
+  -x, --encoding=ENC      Set the mini-SEED encoding. Either 'steim1' or 'steim2'.\n\
+                          (Default is 'steim1').\n");
+#endif
+
+
+#ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
+SeedLink arguments:\n");
+
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
+  -k, --slink=PLUGINID    Send received data to SeedLink as a plug-in.\n\
+                          Data are sent by send_raw_depoch().\n\
+                          This option, inside the file seedlink.ini, must be\n\
+                          the last without adding value for PLUGINID!\n\
+                          PLUGINID is set by SeisComP daemon.\n\
+                          Not usable together with -K.\n");
+
+#ifdef HAVE_LIBMSEED
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
+  -K, --slinkms=PLUGINID  Send received data to SeedLink as a plug-in.\n\
+                          This option is similar to previous -k,\n\
+                          using -K the program converts data into mini-SEED\n\
+                          records and sends them by the function send_mseed()\n\
+                          instead of send_raw_depoch().\n\
+                          Not usable together with -k.\n");
+#endif
+
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
+  -Q, --timing_quality=TQ This value is used for the functions send_raw*().\n\
+                          TQ is %d or in [%d..%d] (default %d).\n",
+			  DEFAULT_TIMING_QUALITY, DEFAULT_TIMING_QUALITY_MINIMUM, DEFAULT_TIMING_QUALITY_MAXIMUM,
+			  DEFAULT_TIMING_QUALITY);
+
+#endif
+
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
 Other arguments:\n\
   -N, --network=NET       Default output Network code. (default '%s').\n\
@@ -343,55 +399,8 @@ Other arguments:\n\
 	    NMXP_LOG_D_ANY
 		);
 
-#ifdef HAVE_LIBMSEED
-    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
-  -m, --writeseed=[TYPE]  Pack received data in Mini-SEED records and\n\
-                          store them within a SDS or BUD structure.\n\
-                          TYPE can be '%c' or '%c' (-m%c or -m%c)\n\
-                          Packets are appended to existing files. Related to -o.\n",
-			  TYPE_WRITESEED_SDS, TYPE_WRITESEED_BUD,
-			  TYPE_WRITESEED_SDS, TYPE_WRITESEED_BUD);
-    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
-  -o, --outdirseed=DIR    Output directory for SDS or BUD structure.\n\
-                          Related to -m (default is current directory).\n");
-    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
-  -q, --quality_indicator=IND Set the quality indicator to the given character. Seed 2.4 \n\
-                                supports D (indeterminate), R (raw data), Q (quality controlled data) \n\
-                                and M (data center modified). Defaults to D.\n");
-    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
-  -x, --encoding=ENC Set the encoding. Either steim1 or steim2, defaults to steim1\n");
-#endif
-
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
   -w, --writefile         Dump received packets to a file.\n");
-
-#ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
-    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
-  -k, --slink=PLUGINID    Send received data to SeedLink as a plug-in.\n\
-                          Data are sent by send_raw_depoch().\n\
-                          This option, inside the file seedlink.ini, must be\n\
-                          the last without adding value for PLUGINID!\n\
-                          PLUGINID is set by SeisComP daemon.\n\
-                          Not usable together with -K.\n");
-#endif
-
-#ifdef HAVE_LIBMSEED
-#ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
-    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
-  -K, --slinkms=PLUGINID  Send received data to SeedLink as a plug-in.\n\
-                          This option is similar to previous -k,\n\
-                          using -K the program converts data into mini-SEED\n\
-                          records and sends them by the function send_mseed()\n\
-                          instead of send_raw_depoch().\n\
-                          Not usable together with -k.\n");
-#endif
-#endif
-
-    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
-  -Q, --timing_quality=TQ This value is used for the functions send_raw*().\n\
-                          TQ is %d or in [%d..%d] (default %d).\n",
-			  DEFAULT_TIMING_QUALITY, DEFAULT_TIMING_QUALITY_MINIMUM, DEFAULT_TIMING_QUALITY_MAXIMUM,
-			  DEFAULT_TIMING_QUALITY);
 
 #ifndef HAVE_WINDOWS_H
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
@@ -592,7 +601,9 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 	{"slinkms",      required_argument, NULL, 'K'},
 #endif
 #endif
+#ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
 	{"timing_quality", required_argument, NULL, 'Q'},
+#endif
 #ifndef HAVE_WINDOWS_H
 	{"socketport",   required_argument, NULL, 'E'},
 #endif
@@ -615,9 +626,9 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
     strcat(optstr, "x:");
 #endif
 
-    strcat(optstr, "Q:");
 
 #ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
+    strcat(optstr, "Q:");
     strcat(optstr, "k:");
 #endif
 
@@ -821,9 +832,12 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 		    break;
 #endif
 #endif
+
+#ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
 		case 'Q':
 		    params->timing_quality = atoi(optarg);
 		    break;
+#endif
 
 #ifndef HAVE_WINDOWS_H
 		case 'E':
@@ -1211,12 +1225,14 @@ int nmxptool_check_params(NMXPTOOL_PARAMS *params) {
 	nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "<timeoutrecv> ignored since not defined --stc=-1.\n");
     }
 
+#ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
     if( params->timing_quality != DEFAULT_TIMING_QUALITY &&
 	    ( params->timing_quality < DEFAULT_TIMING_QUALITY_MINIMUM ||  params->timing_quality > DEFAULT_TIMING_QUALITY_MAXIMUM) ) {
 	ret = -1;
 	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "<timing_quality> could be %d or within [%d .. %d].\n",
 		DEFAULT_TIMING_QUALITY, DEFAULT_TIMING_QUALITY_MINIMUM, DEFAULT_TIMING_QUALITY_MAXIMUM);
     }
+#endif
 
     if(params->usec == 0  &&  params->n_channel == 0) {
 	/* Do nothing */
