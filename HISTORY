@@ -3,9 +3,11 @@ nmxptool Release History
 #########################
 
 * Release 1.2.5-beta1    (2010/08/26) 
-    - Fixed some memory leaks and potential other memory bugs. (R. Racine)
+    - Added feature: enabled ShortTermCompletion for Earthworm configuration.
+      Short-Term-Completion has been implemented in NaqsServer version 2.1.
     - Added capability, using libmseed, to choose between steim1 and steim2
       compression (option -x), and data quality indicator (option -q). (R. Racine)
+    - Fixed some memory leaks and potential other memory bugs. (R. Racine)
 
 * Release 1.2.4    (2009/12/22) 
     - Fixed major bugs: made code thread safe substituting functions
