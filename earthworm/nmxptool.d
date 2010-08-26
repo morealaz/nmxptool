@@ -33,7 +33,15 @@ NmxpPortDAP          28002               # Port number of DataServer(Default 280
 #PassDAP              mypass             # DataServer password. Commented if 'none'.
                                          # It is equivalent to the option -p.
 
-MaxTolerableLatency  120                 # Max tolerable latency for each channel.
+#ShortTermCompletion  60                  # ShortTermCompletion, NOT use 'MaxTolerableLatency'.
+                                         #  0 decompressed packets are received in chronological
+                                         #    order without waiting for missing packets.
+                                         # [1..300] decompressed packets are received in
+                                         #    chronological order but waiting for missing packets
+                                         #    at most SECs seconds.
+
+MaxTolerableLatency  60                  # Raw Stream, NOT use 'ShortTermCompletion'.
+                                         # Max tolerable latency for each channel.
                                          # (Default 600 sec.) [60..600].
                                          # Enable NaqsServer to send out retransmission requests
                                          # for missed packets. Inside the section NetworkInterface
@@ -93,8 +101,9 @@ ChannelFile   /home/ew/naqs1a.list.txt   # List of channel patterns, as in 'Chan
                                          # This file will not be modified by nmxptool.
                                          # Load/Save time of last sample of each channel in a file
                                          # with the same name, same directory, appending suffix ".nmxpstate"
-                                         # Allow data continuity between program restarts.
-                                         # Related to 'MaxDataToRetrieve', it enables request of recent packets.
+                                         # If ShortTermCompletion is NOT set, then it enables request of
+                                         # recent packets and  allows data continuity between program restarts.
+                                         # Related to 'MaxDataToRetrieve', 
                                          # It is equivalent to the option -F. Related to 'MaxDataToRetrieve'.
 
     # DO NOT USE parameters 'Channel' and 'ChannelFile' together.
