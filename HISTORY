@@ -2,6 +2,11 @@
 nmxptool Release History
 #########################
 
+* Release 1.2.5-beta1    (2010/08/26) 
+    - Fixed some memory leaks and potential other memory bugs. (R. Racine)
+    - Added capability, using libmseed, to choose between steim1 and steim2
+      compression (option -x), and data quality indicator (option -q). (R. Racine)
+
 * Release 1.2.4    (2009/12/22) 
     - Fixed major bugs: made code thread safe substituting functions
         and removing static variables from own functions. (S. Pintore)
