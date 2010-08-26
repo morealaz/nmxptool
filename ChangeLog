@@ -1,10 +1,120 @@
-2009-12-22 11:09
+2010-08-26 11:21
 
 	* nmxptool:
 
 	  Open-Source and Cross-Platform software for Nanometrics seismic data acquisition
 	  Matteo Quintiliani - Istituto Nazionale di Geofisica e Vulcanologia - Italy
 	  Mail bug reports and suggestions to <quintiliani@ingv.it> 
+
+2010-08-26 08:01  mtheo <quintiliani@ingv.it>
+
+	* HISTORY (1.72):
+
+	Up to date HISTORY
+
+2010-08-26 07:53  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool_getoptlong.c (1.116):
+
+	Changed look-and-feel of the help output
+
+2010-08-26 07:52  mtheo <quintiliani@ingv.it>
+
+	* src/nmxptool.c (1.224):
+
+	Restored variable recv_errno_str, used by earthworm feature
+
+2010-08-25 20:37  racine <racine@sed.ethz.ch>
+
+	* src/: nmxptool.c (1.223), nmxptool_chanseq.c (1.2),
+	nmxptool_getoptlong.c (1.115), nmxptool_getoptlong.h (1.107),
+	nmxptool_listen.c (1.10):
+
+	Fixed memory leak, libmseed users can now chose beteween steim1 and
+	steim2 and chose the data quality header
+
+2010-08-20 05:52  racine <racine@sed.ethz.ch>
+
+	* src/: nmxptool.c (1.221), nmxptool.c (1.222):
+
+	Test CVS
+
+2010-07-29 19:05  racine <racine@sed.ethz.ch>
+
+	* include/nmxp_data.h (1.39), include/nmxp_memory.h (1.11),
+	lib/nmxp_data.c (1.72), lib/nmxp_memory.c (1.15):
+
+	fixed some memory leaks and potential other memory bugs, added
+	capability to choose between steim1 and steim2 (using libmseed) and
+	data quality indicator (using libmseed)
+
+2010-05-12 09:27  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_base.c (1.82):
+
+	Fixed bug in nmxp_processDecompressedData(), memory allocation was
+	missing
+
+2010-05-12 09:26  mtheo <quintiliani@ingv.it>
+
+	* configure.in (1.97):
+
+	Incremented to version 1.2.5-beta1
+
+2010-04-12 13:23  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_chan.c (1.46):
+
+	Fixed minor bug. Output the corrected value for channel
+
+2010-03-25 12:58  mtheo <quintiliani@ingv.it>
+
+	* README (1.33):
+
+	Minor change
+
+2010-03-25 12:53  mtheo <quintiliani@ingv.it>
+
+	* README (1.32), configure.in (1.96), src/nmxptool_getoptlong.h
+	(1.106):
+
+	Fixed the right surname of Paul
+
+2010-03-16 10:15  mtheo <quintiliani@ingv.it>
+
+	* configure.in (1.95):
+
+	Up to date to version 1.2.5-beta1
+
+2010-01-13 04:44  mtheo <quintiliani@ingv.it>
+
+	* configure.in (1.94):
+
+	Fixed bug setting -D_POSIX_PTHREAD_SEMANTICS for Solaris
+
+2009-12-22 13:44  mtheo <quintiliani@ingv.it>
+
+	* configure.in (1.93):
+
+	Incremented version to 1.2.5-beta1
+
+2009-12-22 10:45  mtheo <quintiliani@ingv.it>
+
+	* README (1.31):
+
+	Added Stefano Pintore
+
+2009-12-22 10:19  mtheo <quintiliani@ingv.it>
+
+	* README (1.30):
+
+	Minor change
+
+2009-12-22 10:10  mtheo <quintiliani@ingv.it>
+
+	* configure.in (1.92):
+
+	Minor change
 
 2009-12-22 09:54  mtheo <quintiliani@ingv.it>
 
