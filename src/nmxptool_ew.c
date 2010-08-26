@@ -103,7 +103,7 @@ int nmxptool_ew_pd2ewring (NMXP_DATA_PROCESS *pd, SHM_INFO *pregionOut, MSG_LOGO
 	tbuf.trh2.starttime = pd->time;
 	tbuf.trh2.samprate = pd->sampRate;
 	tbuf.trh2.endtime = (tbuf.trh2.starttime +
-		((tbuf.trh2.nsamp - 1) / tbuf.trh2.samprate));
+		(((double) tbuf.trh2.nsamp - 1.0) / (double) tbuf.trh2.samprate));
 
 	strncpy(tbuf.trh2.net, pd->network, TRACE2_NET_LEN);
 	strncpy(tbuf.trh2.sta, pd->station, TRACE2_STA_LEN);
@@ -137,7 +137,7 @@ int nmxptool_ew_pd2ewring (NMXP_DATA_PROCESS *pd, SHM_INFO *pregionOut, MSG_LOGO
 	tbuf.trh.starttime = pd->time;
 	tbuf.trh.samprate = pd->sampRate;
 	tbuf.trh.endtime = (tbuf.trh.starttime +
-		((tbuf.trh.nsamp - 1) / tbuf.trh.samprate));
+		(((double) tbuf.trh.nsamp - 1.0) / (double) tbuf.trh.samprate));
 
 	strncpy(tbuf.trh.net, pd->network, TRACE_NET_LEN);
 	strncpy(tbuf.trh.sta, pd->station, TRACE_STA_LEN);
@@ -200,7 +200,7 @@ int nmxptool_ew_nmx2ew(NMXP_DATA_PROCESS *pd) {
 
 
 /***************************************************************************
- * nmxptoo_ew_configure():
+ * nmxptool_ew_configure():
  * Process configuration parameters.
  *
  ***************************************************************************/
@@ -211,39 +211,37 @@ void nmxptool_ew_configure (char ** argvec, NMXPTOOL_PARAMS *params) {
 
     /* Read module config file */
     if ( nmxptool_ew_proc_configfile (argvec[1], params) == EW_FAILURE ) {
-	fprintf (stderr, "%s: configure() failed \n", argvec[0]);
+	logit("et", "%s: configure() failed \n", argvec[0]);
 	exit (EW_FAILURE);
     }
 
-    params->stc=-1;
-
     /* Read node configuration info */
     if ( GetLocalInst( &myInstId) != 0 ) {
-	fprintf(stderr, "%s: Error getting myInstId.\n", PACKAGE_NAME );
+	logit("et", "%s: Error getting myInstId.\n", PACKAGE_NAME );
 	exit (EW_FAILURE);
     }
 
     /* Lookup the ring key */
     if ((ringKey = GetKey (ringName) ) == -1) {
-	fprintf (stderr,
+	logit("et",
 		"%s:  Invalid ring name <%s>; exitting!\n", PACKAGE_NAME, ringName);
 	exit (EW_FAILURE);
     }
 
     /* Look up message types of interest */
     if (GetType ("TYPE_HEARTBEAT", &typeHeartbeat) != 0) {
-	fprintf (stderr, 
+	logit("et", 
 		"%s: Invalid message type <TYPE_HEARTBEAT>; exitting!\n", PACKAGE_NAME);
 	exit (EW_FAILURE);
     }
     if (GetType ("TYPE_ERROR", &typeError) != 0) {
-	fprintf (stderr, 
+	logit("et", 
 		"%s: Invalid message type <TYPE_ERROR>; exitting!\n", PACKAGE_NAME);
 	exit (EW_FAILURE);
     }
 
     if (GetType ("TYPE_TRACEBUF", &typeWaveform) != 0) {
-	fprintf (stderr, 
+	logit("et", 
 		"%s: Invalid message type <TYPE_TRACEBUF>; exitting!\n", PACKAGE_NAME);
 	exit (EW_FAILURE);
     }
@@ -286,6 +284,8 @@ int nmxptool_ew_proc_configfile (char * configfile, NMXPTOOL_PARAMS *params) {
     char    		*str;
     int      		nfiles;
     int      		success;
+    int                 flag_MaxTolerableLatency = 0;
+    int                 flag_ShortTermCompletion = 0;
 
     char *sep = NULL;
 
@@ -298,7 +298,7 @@ int nmxptool_ew_proc_configfile (char * configfile, NMXPTOOL_PARAMS *params) {
     /* Open the main configuration file */
     nfiles = k_open (configfile);
     if (nfiles == 0) {
-	fprintf (stderr,
+	logit("et",
 		"%s: Error opening command file <%s>; exiting!\n", PACKAGE_NAME,
 		configfile);
 	return EW_FAILURE;
@@ -320,7 +320,7 @@ int nmxptool_ew_proc_configfile (char * configfile, NMXPTOOL_PARAMS *params) {
 		success = nfiles + 1;
 		nfiles  = k_open (&com[1]);
 		if (nfiles != success) {
-		    fprintf (stderr, 
+		    logit("et", 
 			    "%s: Error opening command file <%s>; exiting!\n", PACKAGE_NAME,
 			    &com[1]);
 		    return EW_FAILURE;
@@ -332,7 +332,7 @@ int nmxptool_ew_proc_configfile (char * configfile, NMXPTOOL_PARAMS *params) {
 	    if (k_its ("MyModuleId")) {
 		if ( (str = k_str ()) ) {
 		    if (strlen(str) >= MAXMODNAMELEN) {
-			fprintf(stderr, "MyModId too long; max is %d\n", MAXMODNAMELEN -1);
+			logit("et", "MyModId too long; max is %d\n", MAXMODNAMELEN -1);
 			return EW_FAILURE;
 		    }
 
@@ -340,7 +340,7 @@ int nmxptool_ew_proc_configfile (char * configfile, NMXPTOOL_PARAMS *params) {
 
 		    /* Lookup module ID */
 		    if ( GetModId( myModName, &myModId) != 0 ) {
-			fprintf( stderr, "%s: Error getting myModId.\n", PACKAGE_NAME );
+			logit("et", "%s: Error getting myModId.\n", PACKAGE_NAME );
 			exit (EW_FAILURE);
 		    }
 		}
@@ -349,7 +349,7 @@ int nmxptool_ew_proc_configfile (char * configfile, NMXPTOOL_PARAMS *params) {
 	    else if (k_its ("RingName")) {
 		if ( (str = k_str ()) ) {
 		    if (strlen(str) >= MAXRINGNAMELEN) {
-			fprintf(stderr, "OutRing name too long; max is %d\n", 
+			logit("et", "OutRing name too long; max is %d\n", 
 				MAXRINGNAMELEN - 1);
 			return EW_FAILURE;
 		    }
@@ -373,7 +373,7 @@ int nmxptool_ew_proc_configfile (char * configfile, NMXPTOOL_PARAMS *params) {
 	    else if (k_its ("NmxpHost")) {
 		if ( (str = k_str ()) ) {
 		    if (strlen(str) >= MAXADDRLEN) {
-			fprintf(stderr, "nmxphost too long; max is %d characters\n",
+			logit("et", "nmxphost too long; max is %d characters\n",
 				MAXADDRLEN);
 			return EW_FAILURE;
 		    }
@@ -411,6 +411,21 @@ int nmxptool_ew_proc_configfile (char * configfile, NMXPTOOL_PARAMS *params) {
 
 	    else if (k_its ("MaxTolerableLatency")) {
 		params->max_tolerable_latency = k_int();
+		flag_MaxTolerableLatency = 1;
+		if(flag_ShortTermCompletion) {
+		    logit("et", "You can use either MaxTolerableLatency or ShortTermCompletion\n");
+		    return EW_FAILURE;
+		}
+	    }
+
+	    else if (k_its ("ShortTermCompletion")) {
+		params->stc = k_int();
+		params->rate = 0; // original sample rate
+		flag_ShortTermCompletion = 1;
+		if(flag_MaxTolerableLatency) {
+		    logit("et", "You can use either MaxTolerableLatency or ShortTermCompletion\n");
+		    return EW_FAILURE;
+		}
 	    }
 
 	    else if (k_its ("MaxDataToRetrieve")) {
@@ -420,7 +435,7 @@ int nmxptool_ew_proc_configfile (char * configfile, NMXPTOOL_PARAMS *params) {
 	    else if (k_its ("DefaultNetworkCode")) {
 		if ( (str = k_str ()) ) {
 		    if(params->network) {
-			fprintf(stderr, "DefaultNetworkCode has been replicated!\n");
+			logit("et", "DefaultNetworkCode has been replicated!\n");
 			return EW_FAILURE;
 		    } else {
 			params->network = NMXP_MEM_STRDUP(str);
@@ -466,7 +481,6 @@ int nmxptool_ew_proc_configfile (char * configfile, NMXPTOOL_PARAMS *params) {
 
 	    else if (k_its ("ChannelFile")) {
 		if ( (str = k_str ()) ) {
-		    params->flag_buffered = 1;
 		    params->statefile = (char *) NMXP_MEM_MALLOC(512 * sizeof(char));
 		    strncpy(params->statefile, str, 512);
 		    if(params->channels == NULL) {
@@ -489,14 +503,14 @@ int nmxptool_ew_proc_configfile (char * configfile, NMXPTOOL_PARAMS *params) {
 
 	    /* Unknown command */ 
 	    else {
-		fprintf (stderr, "%s: <%s> Unknown command in <%s>.\n", PACKAGE_NAME,
+		logit("et", "%s: <%s> Unknown command in <%s>.\n", PACKAGE_NAME,
 			com, configfile);
 		continue;
 	    }
 
 	    /* See if there were any errors processing the command */
 	    if (k_err ()) {
-		fprintf (stderr, 
+		logit("et", 
 			"%s: Bad command in <%s>; exiting!\n\t%s\n", PACKAGE_NAME,
 			configfile, k_com());
 		return EW_FAILURE;
@@ -510,24 +524,29 @@ int nmxptool_ew_proc_configfile (char * configfile, NMXPTOOL_PARAMS *params) {
 
     /* Check for required parameters */
     if ( myModName[0] == '\0' ) {
-	fprintf (stderr, "%s: No MyModId parameter found in %s\n", PACKAGE_NAME,
+	logit("et", "%s: No MyModId parameter found in %s\n", PACKAGE_NAME,
 		configfile);
 	return EW_FAILURE;
     }
     if ( ringName[0] == '\0' ) {
-	fprintf (stderr, "%s: No OutRing parameter found in %s\n", PACKAGE_NAME,
+	logit("et", "%s: No OutRing parameter found in %s\n", PACKAGE_NAME,
 		configfile);
 	return EW_FAILURE;
     }
     if ( heartbeatInt == -1 ) {
-	fprintf (stderr, "%s: No HeartBeatInterval parameter found in %s\n", PACKAGE_NAME,
+	logit("et", "%s: No HeartBeatInterval parameter found in %s\n", PACKAGE_NAME,
 		configfile);
 	return EW_FAILURE;
     }
     if ( logSwitch == -1 ) {
-	fprintf (stderr, "%s: No LogFile parameter found in %s\n", PACKAGE_NAME,
+	logit("et", "%s: No LogFile parameter found in %s\n", PACKAGE_NAME,
 		configfile);
 	return EW_FAILURE;
+    }
+
+    if(params->stc == -1  &&  params->statefile) {
+	params->flag_buffered = 1;
+	logit("et", "Enable buffer for requesting also recent packets into the past.\n");
     }
 
     return EW_SUCCESS;

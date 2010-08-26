@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.116 2010-08-26 07:53:23 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.117 2010-08-26 12:49:04 mtheo Exp $
  *
  */
 
@@ -207,9 +207,9 @@ Main arguments:\n\
                           Load/Save time of the last sample of each channel\n\
                           into a file with the same name, same directory,\n\
                           appending the suffix '%s'.\n\
-                          Allow data continuity when short disconnections occur.\n\
-                          Related to -A and -f, it enables -b.\n\
-                          DO NOT USE with -C.\n",
+                          If Short-Term-Completion is NOT set, then it enables -b,\n\
+                          allows data continuity when short disconnections occur.\n\
+                          Related to -A and -f. DO NOT USE with -C.\n",
 			  NMXP_STR_STATE_EXT
 );
 
@@ -251,8 +251,10 @@ PDS arguments for NaqsServer:\n\
                            0 for original sample rate and decompressed data.\n\
                           >0 for specified sample rate and decompressed data.\n\
   -b, --buffered          Request also recent packets into the past.\n\
+                          At present not usable with Short-Term-Completion.\n\
   -B, --buffdate=DATE     Request also recent packets into the past\n\
-                          but consider only samples after DATE.\n",
+                          but consider only samples after DATE.\n\
+                          At present not usable with Short-Term-Completion.\n",
 	    DEFAULT_PORT_PDS,
 	    DEFAULT_STC,
 	    DEFAULT_RATE);
@@ -846,7 +848,6 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 #endif
 
 		case 'F':
-		    params->flag_buffered = 1;
 		    params->statefile = optarg;
 		    if(params->channels == NULL) {
 			params->channels = get_channel_list_argument_from_state_file(params->statefile);
