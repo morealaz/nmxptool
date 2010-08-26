@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.223 2010-08-25 20:37:48 racine Exp $
+ * $Id: nmxptool.c,v 1.224 2010-08-26 07:52:20 mtheo Exp $
  *
  */
 
@@ -159,7 +159,7 @@ int main (int argc, char **argv) {
     int times_flow = 0;
 
     int recv_errno = 0; 
-/*     char *recv_errno_str; */
+    char *recv_errno_str;
   
     char filename[500] = "";
     char station_code[20] = "", channel_code[20] = "", network_code[20] = "";
@@ -905,7 +905,7 @@ int main (int argc, char **argv) {
 		    if(params.ew_configuration_file) {
                         recv_errno_str=nmxp_strerror(recv_errno);
 			nmxptool_ew_send_error(NMXPTOOL_EW_ERR_RECVDATA, recv_errno_str, params.hostname);
-			free(recv_errno_str);
+			NMXP_MEM_FREE(recv_errno_str);
 		    }
 #endif
 		    exitpdscondition = 0;
