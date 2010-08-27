@@ -24,6 +24,7 @@ binary_distdir_FILES= \
         bin/nmxptool${EXEEXT} \
         earthworm/nmxptool.d \
         earthworm/nmxptool.desc \
+        earthworm/nmxptool.list.txt \
 	earthworm/nmxptool_cmd.html \
 	earthworm/nmxptool_ovr.html \
         seiscomp_templates
@@ -77,6 +78,7 @@ install-ew-conf:
 	test -d "${EW_PARAMS}"
 	${INSTALL_DATA} 'earthworm/nmxptool.d' '${EW_PARAMS}/nmxptool.d'
 	${INSTALL_DATA} 'earthworm/nmxptool.desc' '${EW_PARAMS}/nmxptool.desc'
+	${INSTALL_DATA} 'earthworm/nmxptool.list.txt' '${EW_PARAMS}/nmxptool.list.txt'
 
 install-ew-doc:
 	test -d "${EW_HOME}/${EW_VERSION}/ewdoc/WEB_DOC/cmd"
