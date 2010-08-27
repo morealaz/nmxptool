@@ -101,8 +101,8 @@ ChannelFile   /home/ew/naqs1a.list.txt   # List of channel patterns, as in 'Chan
                                          # This file will not be modified by nmxptool.
                                          # Load/Save time of last sample of each channel in a file
                                          # with the same name, same directory, appending suffix ".nmxpstate"
-                                         # If ShortTermCompletion is NOT set, then it enables request of
-                                         # recent packets and  allows data continuity between program restarts.
+                                         # It enables request of recent packets in order to allow data
+                                         # continuity when short disconnections occur or between program restarts.
                                          # Related to 'MaxDataToRetrieve', 
                                          # It is equivalent to the option -F. Related to 'MaxDataToRetrieve'.
 
