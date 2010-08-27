@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.117 2010-08-26 12:49:04 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.118 2010-08-27 06:51:27 mtheo Exp $
  *
  */
 
@@ -207,8 +207,8 @@ Main arguments:\n\
                           Load/Save time of the last sample of each channel\n\
                           into a file with the same name, same directory,\n\
                           appending the suffix '%s'.\n\
-                          If Short-Term-Completion is NOT set, then it enables -b,\n\
-                          allows data continuity when short disconnections occur.\n\
+                          It enables the option -b in order to allow data continuity\n\
+                          when short disconnections occur or between program restarts.\n\
                           Related to -A and -f. DO NOT USE with -C.\n",
 			  NMXP_STR_STATE_EXT
 );
@@ -251,10 +251,8 @@ PDS arguments for NaqsServer:\n\
                            0 for original sample rate and decompressed data.\n\
                           >0 for specified sample rate and decompressed data.\n\
   -b, --buffered          Request also recent packets into the past.\n\
-                          At present not usable with Short-Term-Completion.\n\
   -B, --buffdate=DATE     Request also recent packets into the past\n\
-                          but consider only samples after DATE.\n\
-                          At present not usable with Short-Term-Completion.\n",
+                          but consider only samples after DATE.\n",
 	    DEFAULT_PORT_PDS,
 	    DEFAULT_STC,
 	    DEFAULT_RATE);
@@ -1001,6 +999,12 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 	    optind++;
 	}
 	putchar ('\n');
+    }
+
+    if(params->statefile) {
+	params->flag_buffered = 1;
+	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY,
+		"Enable buffer for requesting also recent packets into the past.\n");
     }
 
     return ret_errors;

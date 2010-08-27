@@ -544,7 +544,7 @@ int nmxptool_ew_proc_configfile (char * configfile, NMXPTOOL_PARAMS *params) {
 	return EW_FAILURE;
     }
 
-    if(params->stc == -1  &&  params->statefile) {
+    if(params->statefile) {
 	params->flag_buffered = 1;
 	logit("et", "Enable buffer for requesting also recent packets into the past.\n");
     }
