@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.120 2010-08-27 09:08:13 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.121 2010-08-27 10:10:30 mtheo Exp $
  *
  */
 
@@ -766,6 +766,9 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 		case 'S':
 		    params->stc = atoi(optarg);
 		    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "Short-Term-Completion %d.\n", params->stc);
+		    if(params->stc >= 0) {
+			params->rate = 0; // original sample rate
+		    }
 		    break;
 
 		case 'R':
