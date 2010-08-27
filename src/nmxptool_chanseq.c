@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_chanseq.c,v 1.2 2010-08-25 20:37:48 racine Exp $
+ * $Id: nmxptool_chanseq.c,v 1.3 2010-08-27 06:56:35 mtheo Exp $
  *
  */
 
@@ -74,20 +74,22 @@ int nmxptool_chanseq_check_and_log_gap(double time1, double time2, const double 
     } else if (gap < -gap_tollerance) {
 	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_GAP, "Overlap %.2f sec. for %s.%s from %s to %s!\n",
 		gap, NMXP_LOG_STR(station), NMXP_LOG_STR(channel), NMXP_LOG_STR(str_time1), NMXP_LOG_STR(str_time2));
-	ret = 1;
+	ret = -1;
     }
     return ret;
 }
 
 
 #define GAP_TOLLERANCE 0.001
-void nmxptool_chanseq_gap(NMXPTOOL_CHAN_SEQ *chan_list_seq_item, NMXP_DATA_PROCESS *pd) {
+int nmxptool_chanseq_gap(NMXPTOOL_CHAN_SEQ *chan_list_seq_item, NMXP_DATA_PROCESS *pd) {
+    int ret = 0;
     char str_pd_time[200] = "";
     if(!chan_list_seq_item->significant && pd->nSamp > 0) {
 	chan_list_seq_item->significant = 1;
     } else {
 	if(chan_list_seq_item->significant && pd->nSamp > 0) {
-	    if(nmxptool_chanseq_check_and_log_gap(pd->time, chan_list_seq_item->last_time, GAP_TOLLERANCE, pd->station, pd->channel)) {
+	    ret = nmxptool_chanseq_check_and_log_gap(pd->time, chan_list_seq_item->last_time, GAP_TOLLERANCE, pd->station, pd->channel);
+	    if(ret != 0) {
 		chan_list_seq_item->x_1 = 0;
 		nmxp_data_to_str(str_pd_time, pd->time);
 		nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_EXTRA, "%s.%s x0 set to zero at %s!\n",
@@ -98,6 +100,7 @@ void nmxptool_chanseq_gap(NMXPTOOL_CHAN_SEQ *chan_list_seq_item, NMXP_DATA_PROCE
     if(chan_list_seq_item->significant && pd->nSamp > 0) {
 	chan_list_seq_item->last_time = pd->time + ((double) pd->nSamp / (double) pd->sampRate);
     }
+    return ret;
 }
 
 
@@ -158,7 +161,7 @@ void nmxptool_chanseq_save_states(NMXP_CHAN_LIST_NET *chan_list, NMXPTOOL_CHAN_S
 }
 
 
-void nmxptool_chanseq_load_states(NMXP_CHAN_LIST_NET *chan_list, NMXPTOOL_CHAN_SEQ *chan_list_seq, char *statefile) {
+void nmxptool_chanseq_load_states(NMXP_CHAN_LIST_NET *chan_list, NMXPTOOL_CHAN_SEQ *chan_list_seq, char *statefile, int32_t stc) {
     FILE *fstatefile = NULL;
     FILE *fstatefileINPUT = NULL;
 #define MAXSIZE_LINE 2048
@@ -242,22 +245,25 @@ void nmxptool_chanseq_load_states(NMXP_CHAN_LIST_NET *chan_list, NMXPTOOL_CHAN_S
 		}
 		if(cur_chan < chan_list->number) {
 		    if( s_rawtime_f_calc != DEFAULT_BUFFERED_TIME  && s_rawtime_f_calc != 0.0 ) {
-			chan_list_seq[cur_chan].after_start_time                   = s_rawtime_f_calc;
 			chan_list_seq[cur_chan].last_time                          = s_rawtime_f_calc;
 			chan_list_seq[cur_chan].raw_stream_buffer.last_sample_time = s_rawtime_f_calc;
-			nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CHANSTATE, "For channel %s (%d %d) starting from %s. %f.\n",
-				NMXP_LOG_STR(s_chan), cur_chan, chan_list->channel[cur_chan].key,
-				NMXP_LOG_STR(s_rawtime_s), s_rawtime_f_calc); 
 		    } else if( s_noraw_time_f_calc != DEFAULT_BUFFERED_TIME ) {
-			chan_list_seq[cur_chan].after_start_time                   = s_noraw_time_f_calc;
 			chan_list_seq[cur_chan].last_time                          = s_noraw_time_f_calc;
 			chan_list_seq[cur_chan].raw_stream_buffer.last_sample_time = s_noraw_time_f_calc;
-			nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CHANSTATE, "For channel %s (%d %d) starting from %s. %f.\n",
-				NMXP_LOG_STR(s_chan), cur_chan, chan_list->channel[cur_chan].key,
-				NMXP_LOG_STR(s_noraw_time_s), s_noraw_time_f_calc); 
 		    } else {
 			nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANSTATE, "For channel %s there is not valid start_time.\n",
 				NMXP_LOG_STR(s_chan)); 
+		    }
+		    if(stc == -1) {
+			chan_list_seq[cur_chan].after_start_time                   = s_rawtime_f_calc;
+			nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CHANSTATE, "For channel %s (%d %d) starting from %s. %f.\n",
+				NMXP_LOG_STR(s_chan), cur_chan, chan_list->channel[cur_chan].key,
+				NMXP_LOG_STR(s_rawtime_s), s_rawtime_f_calc); 
+		    } else {
+			chan_list_seq[cur_chan].after_start_time                   = s_noraw_time_f_calc;
+			nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CHANSTATE, "For channel %s (%d %d) starting from %s. %f.\n",
+				NMXP_LOG_STR(s_chan), cur_chan, chan_list->channel[cur_chan].key,
+				NMXP_LOG_STR(s_noraw_time_s), s_noraw_time_f_calc); 
 		    }
 		} else {
 		    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANSTATE, "Channel %s not found! (%d %s)\n",

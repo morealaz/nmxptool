@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_chanseq.h,v 1.1 2008-04-09 07:58:07 mtheo Exp $
+ * $Id: nmxptool_chanseq.h,v 1.2 2010-08-27 06:56:35 mtheo Exp $
  *
  */
 
@@ -28,10 +28,10 @@ typedef struct {
 void nmxptool_chanseq_init(NMXPTOOL_CHAN_SEQ **pchan_list_seq, int number, double default_after_start_time, int32_t max_tolerable_latency, int32_t timeoutrecv);
 void nmxptool_chanseq_free(NMXPTOOL_CHAN_SEQ **pchan_list_seq, int number);
 int  nmxptool_chanseq_check_and_log_gap(double time1, double time2, const double gap_tollerance, const char *station, const char *channel);
-void nmxptool_chanseq_gap(NMXPTOOL_CHAN_SEQ *chan_list_seq_item, NMXP_DATA_PROCESS *pd);
+int nmxptool_chanseq_gap(NMXPTOOL_CHAN_SEQ *chan_list_seq_item, NMXP_DATA_PROCESS *pd);
 
 void nmxptool_chanseq_save_states(NMXP_CHAN_LIST_NET *chan_list, NMXPTOOL_CHAN_SEQ *chan_list_seq, char *statefile);
-void nmxptool_chanseq_load_states(NMXP_CHAN_LIST_NET *chan_list, NMXPTOOL_CHAN_SEQ *chan_list_seq, char *statefile);
+void nmxptool_chanseq_load_states(NMXP_CHAN_LIST_NET *chan_list, NMXPTOOL_CHAN_SEQ *chan_list_seq, char *statefile, int32_t stc);
 
 #endif
 
