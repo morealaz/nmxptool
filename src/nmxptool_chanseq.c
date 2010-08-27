@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_chanseq.c,v 1.3 2010-08-27 06:56:35 mtheo Exp $
+ * $Id: nmxptool_chanseq.c,v 1.4 2010-08-27 07:53:18 mtheo Exp $
  *
  */
 
@@ -120,7 +120,7 @@ void nmxptool_chanseq_save_states(NMXP_CHAN_LIST_NET *chan_list, NMXPTOOL_CHAN_S
 
     if(statefile) {
 	strncpy(statefilefilename, statefile, MAX_LEN_FILENAME);
-	strncat(statefilefilename, NMXP_STR_STATE_EXT, MAX_LEN_FILENAME);
+	strncat(statefilefilename, NMXP_STR_STATE_EXT, MAX_LEN_FILENAME - strlen(statefilefilename));
 	fstatefile = fopen(statefilefilename, "w");
 	if(fstatefile == NULL) {
 	    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANSTATE, "Unable to write channel states into %s!\n",

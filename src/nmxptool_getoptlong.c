@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.118 2010-08-27 06:51:27 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.119 2010-08-27 07:53:18 mtheo Exp $
  *
  */
 
@@ -469,8 +469,8 @@ char *get_channel_list_argument_from_state_file(const char *filename) {
 	    if(ret_channel_string[0] == 0) {
 		strncpy(ret_channel_string, str_chan, MAXSIZECHANNELSTRINGARGUMENT);
 	    } else {
-		strncat(ret_channel_string, ",", MAXSIZECHANNELSTRINGARGUMENT);
-		strncat(ret_channel_string, str_chan, MAXSIZECHANNELSTRINGARGUMENT-3);
+		strncat(ret_channel_string, ",", MAXSIZECHANNELSTRINGARGUMENT - strlen(ret_channel_string));
+		strncat(ret_channel_string, str_chan, MAXSIZECHANNELSTRINGARGUMENT - strlen(ret_channel_string));
 	    }
 	}
 	fclose(fstatefile);

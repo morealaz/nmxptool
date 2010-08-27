@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp.c,v 1.96 2009-09-01 08:54:03 mtheo Exp $
+ * $Id: nmxp.c,v 1.97 2010-08-27 07:53:18 mtheo Exp $
  *
  */
 
@@ -206,8 +206,8 @@ int nmxp_sendAddTimeSeriesChannel(int isock, NMXP_CHAN_LIST_NET *channelList, in
 			snprintf(s_channels, MAX_LEN_S_CHANNELS, "%.0f/%d chan %d of %d:",
 				(double)diff_usec/1000.0, split_channelList.number, i, channelList->number);
 			    for(j=0; j < split_channelList.number; j++) {
-				strncat(s_channels, " ", MAX_LEN_S_CHANNELS);
-				strncat(s_channels, NMXP_LOG_STR(split_channelList.channel[j].name), MAX_LEN_S_CHANNELS);
+				strncat(s_channels, " ", MAX_LEN_S_CHANNELS - strlen(s_channels));
+				strncat(s_channels, NMXP_LOG_STR(split_channelList.channel[j].name), MAX_LEN_S_CHANNELS - strlen(s_channels));
 			    }
 			    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CONNFLOW, "%s\n", s_channels);
 			    ret = nmxp_sendAddTimeSeriesChannel_raw(isock, &split_channelList, shortTermCompletion, out_format, buffer_flag);
