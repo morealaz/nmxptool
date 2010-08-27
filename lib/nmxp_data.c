@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_data.c,v 1.73 2010-08-27 07:53:37 mtheo Exp $
+ * $Id: nmxp_data.c,v 1.74 2010-08-27 12:32:34 mtheo Exp $
  *
  */
 
@@ -1018,6 +1018,7 @@ int nmxp_data_msr_pack(NMXP_DATA_PROCESS *pd, NMXP_DATA_SEED *data_seed, void *p
     int psamples;
     int precords;
     flag verbose = 0;
+    flag flag_flush = 1;
 
     int *pDataDest = NULL;
 
@@ -1026,12 +1027,9 @@ int nmxp_data_msr_pack(NMXP_DATA_PROCESS *pd, NMXP_DATA_SEED *data_seed, void *p
 
 	/* Populate MSRecord values */
 
-	/* TODO */
-	/* msr->starttime = ms_seedtimestr2hptime ("2004,350,00:00:00.00"); */
 	msr->starttime = MS_EPOCH2HPTIME(pd->time);
 	msr->samprate = pd->sampRate;
 
-	/* msr->byteorder = 0; */         /* big endian byte order */
 	msr->byteorder = nmxp_data_bigendianhost ();
 
 	msr->sequence_number = pd->seq_no % 1000000;
@@ -1050,7 +1048,7 @@ int nmxp_data_msr_pack(NMXP_DATA_PROCESS *pd, NMXP_DATA_SEED *data_seed, void *p
         /* set the quality indicator */
         msr->dataquality = pd->quality_indicator;
 	/* Pack the record(s) */
-	precords = msr_pack (msr, &nmxp_data_msr_write_handler, data_seed, &psamples, 1, verbose);
+	precords = msr_pack (msr, &nmxp_data_msr_write_handler, data_seed, &psamples, flag_flush, verbose);
 
 	data_seed->pd = NULL;
 
