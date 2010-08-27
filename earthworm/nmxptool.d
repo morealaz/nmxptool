@@ -97,7 +97,7 @@ DefaultNetworkCode   IV                  # Default network code where in 'Channe
                                          # Condition: TotalNumberOfChannels * (mSECs/nC) < 15 sec. 
                                          # Related to -F and -b. 0/0 for disabling.
 
-ChannelFile   /home/ew/naqs1a.list.txt   # List of channel patterns, as in 'Channel'. One for each line.
+ChannelFile   /home/ew/nmxptool.list.txt # List of channel patterns, as in 'Channel'. One for each line.
                                          # This file will not be modified by nmxptool.
                                          # Load/Save time of last sample of each channel in a file
                                          # with the same name, same directory, appending suffix ".nmxpstate"

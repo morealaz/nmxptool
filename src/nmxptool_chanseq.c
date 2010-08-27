@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_chanseq.c,v 1.4 2010-08-27 07:53:18 mtheo Exp $
+ * $Id: nmxptool_chanseq.c,v 1.5 2010-08-27 09:02:14 mtheo Exp $
  *
  */
 
@@ -266,6 +266,9 @@ void nmxptool_chanseq_load_states(NMXP_CHAN_LIST_NET *chan_list, NMXPTOOL_CHAN_S
 				NMXP_LOG_STR(s_noraw_time_s), s_noraw_time_f_calc); 
 		    }
 		} else {
+		    if(line[strlen(line)-1] == 10  || line[strlen(line)-1] == 13) {
+			line[strlen(line)-1] = 0;
+		    }
 		    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANSTATE, "Channel %s not found! (%d %s)\n",
 			    NMXP_LOG_STR(s_chan), strlen(line), NMXP_LOG_STR(line)); 
 		}
