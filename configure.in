@@ -3,6 +3,8 @@
 
 AC_PREREQ(2.61)
 
+AC_CONFIG_MACRO_DIR([m4])
+
 dnl Name your program here
 m4_define([full_package_name], [nmxptool])
 
