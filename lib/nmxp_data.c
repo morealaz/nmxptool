@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_data.c,v 1.72 2010-07-29 19:05:27 racine Exp $
+ * $Id: nmxp_data.c,v 1.73 2010-08-27 07:53:37 mtheo Exp $
  *
  */
 
@@ -704,7 +704,9 @@ int nmxp_data_dir_exists (char *dirname) {
 	    ret = 1;
 	}
 	if(cur_dir) {
-	    chdir(cur_dir);
+	    if(chdir(cur_dir) == -1) {
+		/* ERROR */
+	    }
 	    NMXP_MEM_FREE(cur_dir);
 	}
     }
@@ -725,7 +727,9 @@ char *nmxp_data_dir_abspath (char *dirname) {
 	    ret = nmxp_data_gnu_getcwd();
 	}
 	if(cur_dir) {
-	    chdir(cur_dir);
+	    if(chdir(cur_dir) == -1) {
+		/* ERROR */
+	    }
 	    NMXP_MEM_FREE(cur_dir);
 	}
     }
@@ -792,7 +796,9 @@ int nmxp_data_mkdirp(const char *filename) {
     NMXP_MEM_FREE(dir);
 
     if(cur_dir) {
-	chdir(cur_dir);
+	if(chdir(cur_dir) == -1) {
+	    /* ERROR */
+	}
 	NMXP_MEM_FREE(cur_dir);
     }
     return error;

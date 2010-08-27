@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_listen.c,v 1.10 2010-08-25 20:37:48 racine Exp $
+ * $Id: nmxptool_listen.c,v 1.11 2010-08-27 07:53:59 mtheo Exp $
  *
  */
 
@@ -306,7 +306,9 @@ void *nmxptool_p_man_sockfd(void *arg) {
 	/* TODO if error NMXP_MEM_FREE(fd_hc); */
 	pthread_mutex_unlock (&mutex_occ);
 	
-	read(fd_hc->fd, command, MAX_LEN_COMMAND);
+	if(read(fd_hc->fd, command, MAX_LEN_COMMAND) == -1) {
+	    /* ERROR */
+	}
 
 	if( (last_command = nmxptool_command(command)) != -1 ) {
 	    last_str_command = nmxptool_command_clean(command);

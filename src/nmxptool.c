@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.226 2010-08-27 06:57:06 mtheo Exp $
+ * $Id: nmxptool.c,v 1.227 2010-08-27 07:53:47 mtheo Exp $
  *
  */
 
@@ -159,7 +159,9 @@ int main (int argc, char **argv) {
     int times_flow = 0;
 
     int recv_errno = 0; 
+#ifdef HAVE_EARTHWORMOBJS
     char *recv_errno_str;
+#endif
   
     char filename[500] = "";
     char station_code[20] = "", channel_code[20] = "", network_code[20] = "";

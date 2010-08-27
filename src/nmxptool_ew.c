@@ -455,8 +455,8 @@ int nmxptool_ew_proc_configfile (char * configfile, NMXPTOOL_PARAMS *params) {
 			params->channels = (char *) NMXP_MEM_MALLOC(MAXSIZECHANNELSTRING);
 			strncpy(params->channels, str, MAXSIZECHANNELSTRING);
 		    } else {
-			strncat(params->channels, ",", MAXSIZECHANNELSTRING);
-			strncat(params->channels, str, MAXSIZECHANNELSTRING);
+			strncat(params->channels, ",", MAXSIZECHANNELSTRING - strlen(params->channels));
+			strncat(params->channels, str, MAXSIZECHANNELSTRING - strlen(params->channels));
 		    }
 		}
 	    }
