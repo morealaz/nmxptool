@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.119 2010-08-27 07:53:18 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.120 2010-08-27 09:08:13 mtheo Exp $
  *
  */
 
@@ -446,8 +446,10 @@ char *get_channel_list_argument_from_state_file(const char *filename) {
     char *ret_channel_string = NULL;
     char line[MAXSIZE_LINE_CHAN_STATE];
     char str_chan[MAXSIZE_CHANNEL_STRING];
-    int k;
+    int k, c;
     FILE *fstatefile = NULL;
+    int i;
+    int flag_insert = 1;
 
     fstatefile = fopen(filename, "r");
 
@@ -457,24 +459,62 @@ char *get_channel_list_argument_from_state_file(const char *filename) {
 	ret_channel_string[0] = 0;
 	while(fgets(line, MAXSIZE_LINE_CHAN_STATE, fstatefile) != NULL) {
 	    k = 0;
+	    c = 0;
+
+	    /* eat any white spaces and tabs at the beginning */
 	    while(line[k] != 0
-		    &&  line[k] != ' '
+		    &&  (line[k] == ' ' ||  line[k] == '\t')
+		    &&  k < MAXSIZE_CHANNEL_STRING) {
+		k++;
+	    }
+
+	    /* copy any character up to the end of the line or # character */
+	    while(line[k] != 0
+		    &&  line[k] != '#'
 		    &&  line[k] != 10
 		    &&  line[k] != 13
 		    &&  k < MAXSIZE_CHANNEL_STRING) {
-		str_chan[k] = line[k];
+		str_chan[c] = line[k];
 		k++;
+		c++;
 	    }
-	    str_chan[k] = 0;
-	    if(ret_channel_string[0] == 0) {
-		strncpy(ret_channel_string, str_chan, MAXSIZECHANNELSTRINGARGUMENT);
+	    str_chan[c] = 0;
+
+	    /* remove possible white spaces and tabs from the end of the str_chan */
+	    i = strlen(str_chan);
+	    while(i > 0) {
+		    if(str_chan[i] == ' ' || str_chan[i] == '\t') {
+			str_chan[i] = 0;
+		    }
+		    i--;
+	    }
+
+	    /* check if str_chan is blank, before insert into the channel list */
+	    flag_insert = 0;
+	    i = 0;
+	    while(i < strlen(str_chan)  &&  !flag_insert) {
+		if(str_chan[i] != ' ') {
+		    flag_insert = 1;
+		}
+		i++;
+	    }
+
+	    if(flag_insert) {
+		if(ret_channel_string[0] == 0) {
+		    strncpy(ret_channel_string, str_chan, MAXSIZECHANNELSTRINGARGUMENT);
+		} else {
+		    strncat(ret_channel_string, ",", MAXSIZECHANNELSTRINGARGUMENT - strlen(ret_channel_string));
+		    strncat(ret_channel_string, str_chan, MAXSIZECHANNELSTRINGARGUMENT - strlen(ret_channel_string));
+		}
 	    } else {
-		strncat(ret_channel_string, ",", MAXSIZECHANNELSTRINGARGUMENT - strlen(ret_channel_string));
-		strncat(ret_channel_string, str_chan, MAXSIZECHANNELSTRINGARGUMENT - strlen(ret_channel_string));
+		nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CHANSTATE, "Discarded '%s' from station file %s:\n%s",
+			NMXP_LOG_STR(str_chan), NMXP_LOG_STR(filename), NMXP_LOG_STR(line));
 	    }
 	}
 	fclose(fstatefile);
     }
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_CHANSTATE, "Channel list: %s\n",
+	    NMXP_LOG_STR(ret_channel_string));
     return ret_channel_string;
 }
 
