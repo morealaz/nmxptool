@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_base.c,v 1.82 2010-05-12 09:27:19 mtheo Exp $
+ * $Id: nmxp_base.c,v 1.83 2010-08-27 07:38:05 mtheo Exp $
  *
  */
 
@@ -255,9 +255,13 @@ char *nmxp_strerror(int errno_value) {
 
 #endif
 
+#ifndef HAVE_STRERROR_R
     if(recv_errno_str) {
+#endif
 	strncpy(ret_recv_errno_str, recv_errno_str, MAXLEN_RECV_ERRNO_STR);
+#ifndef HAVE_STRERROR_R
     }
+#endif
 
     return ret_recv_errno_str;
 }
