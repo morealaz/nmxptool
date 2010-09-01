@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_data.c,v 1.74 2010-08-27 12:32:34 mtheo Exp $
+ * $Id: nmxp_data.c,v 1.75 2010-09-01 20:18:23 mtheo Exp $
  *
  */
 
@@ -834,7 +834,8 @@ int nmxp_data_seed_init(NMXP_DATA_SEED *data_seed, char *outdirseed, char *defau
 	data_seed->outfile_mseed[i] = NULL;
 	data_seed->filename_mseed[i][0] = 0;
     }
-    data_seed->pd = NULL;
+
+    data_seed->pmsr = NULL;
 
     return 0;
 }
@@ -946,39 +947,40 @@ int nmxp_data_seed_fclose_all(NMXP_DATA_SEED *data_seed) {
     return 0;
 }
 
-#define NMXP_DATA_NETCODE_OR_DEFAULT_NETWORK ( ( (data_seed->pd) && (data_seed->pd->network[0] != 0) )? data_seed->pd->network : data_seed->default_network )
+#define NMXP_DATA_NETCODE_OR_DEFAULT_NETWORK ( ( (msr) && (msr->network[0] != 0) )? msr->network : data_seed->default_network )
 int nmxp_data_get_filename_ms(NMXP_DATA_SEED *data_seed, char *dirseedchan, char *filenameseed) {
     int ret = 0;
+    MSRecord *msr = data_seed->pmsr;
     
     dirseedchan[0] = 0;
     filenameseed[0] = 0;
     if(data_seed->type_writeseed == NMXP_TYPE_WRITESEED_SDS) {
 	snprintf(dirseedchan, NMXP_DATA_MAX_SIZE_FILENAME, "%s%c%d%c%s%c%s%c%s.D", data_seed->outdirseed, nmxp_data_sepdir,
-		nmxp_data_year_from_epoch(data_seed->pd->time),
+		nmxp_data_year_from_epoch(MS_HPTIME2EPOCH(msr->starttime)),
 		nmxp_data_sepdir,
 		NMXP_DATA_NETCODE_OR_DEFAULT_NETWORK,
 		nmxp_data_sepdir,
-		data_seed->pd->station,
+		msr->station,
 		nmxp_data_sepdir,
-		data_seed->pd->channel);
+		msr->channel);
 	snprintf(filenameseed, NMXP_DATA_MAX_SIZE_FILENAME, "%s.%s..%s.D.%d.%03d",
 		NMXP_DATA_NETCODE_OR_DEFAULT_NETWORK,
-		data_seed->pd->station,
-		data_seed->pd->channel,
-		nmxp_data_year_from_epoch(data_seed->pd->time),
-		nmxp_data_yday_from_epoch(data_seed->pd->time));
+		msr->station,
+		msr->channel,
+		nmxp_data_year_from_epoch(MS_HPTIME2EPOCH(msr->starttime)),
+		nmxp_data_yday_from_epoch(MS_HPTIME2EPOCH(msr->starttime)));
     } else if(data_seed->type_writeseed == NMXP_TYPE_WRITESEED_BUD) {
 	snprintf(dirseedchan, NMXP_DATA_MAX_SIZE_FILENAME, "%s%c%s%c%s", data_seed->outdirseed,
 		nmxp_data_sepdir,
 		NMXP_DATA_NETCODE_OR_DEFAULT_NETWORK,
 		nmxp_data_sepdir,
-		data_seed->pd->station);
+		msr->station);
 	snprintf(filenameseed, NMXP_DATA_MAX_SIZE_FILENAME, "%s.%s..%s.%d.%03d",
-		data_seed->pd->station,
+		msr->station,
 		NMXP_DATA_NETCODE_OR_DEFAULT_NETWORK,
-		data_seed->pd->channel,
-		nmxp_data_year_from_epoch(data_seed->pd->time),
-		nmxp_data_yday_from_epoch(data_seed->pd->time));
+		msr->channel,
+		nmxp_data_year_from_epoch(MS_HPTIME2EPOCH(msr->starttime)),
+		nmxp_data_yday_from_epoch(MS_HPTIME2EPOCH(msr->starttime)));
     }
 
     return ret;
@@ -989,10 +991,11 @@ int nmxp_data_get_filename_ms(NMXP_DATA_SEED *data_seed, char *dirseedchan, char
 static void nmxp_data_msr_write_handler (char *record, int reclen, void *pdata_seed) {
     int err = 0;
     NMXP_DATA_SEED *data_seed = pdata_seed;
+    MSRecord *msr = data_seed->pmsr;
 
-    if(data_seed->pd == NULL) {
+    if(msr == NULL) {
 	err++;
-	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_EXTRA, "pd is NULL in nmxp_data_msr_write_handler()!\n");
+	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_EXTRA, "msr is NULL in nmxp_data_msr_write_handler()!\n");
     }
 
     if(err==0) {
@@ -1018,53 +1021,139 @@ int nmxp_data_msr_pack(NMXP_DATA_PROCESS *pd, NMXP_DATA_SEED *data_seed, void *p
     int psamples;
     int precords;
     flag verbose = 0;
-    flag flag_flush = 1;
+    int i;
+    int *newdatasamples = NULL;
+    int *ptrdatasamples = NULL;
 
-    int *pDataDest = NULL;
+    /* Set pointer to the current miniseed record buffer */
+    data_seed->pmsr = pmsr;
+
+    /* Populate MSRecord values */
+    msr->byteorder = nmxp_data_bigendianhost ();
+    msr->sampletype = 'i';      /* declare type to be 32-bit integers */
 
     if(pd) {
-    if(pd->nSamp > 0) {
 
-	/* Populate MSRecord values */
-
-	msr->starttime = MS_EPOCH2HPTIME(pd->time);
+	msr->dataquality = pd->quality_indicator;
 	msr->samprate = pd->sampRate;
+	/* msr->sequence_number = pd->seq_no % 1000000; */
 
-	msr->byteorder = nmxp_data_bigendianhost ();
+	/* Set starttime,  datasamples and numsamples */
+	if(msr->datasamples == NULL) {
+	    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN,
+		    "New datasamples for %s.%s.%s (%d)\n",
+		    msr->network, msr->station, msr->channel, pd->nSamp);
+	    msr->starttime = MS_EPOCH2HPTIME(pd->time);
+	    msr->datasamples = NMXP_MEM_MALLOC (sizeof(int) * (pd->nSamp)); 
+	    memcpy(msr->datasamples, pd->pDataPtr, sizeof(int) * pd->nSamp); /* pointer to 32-bit integer data samples */
+	    msr->numsamples = pd->nSamp;
+	} else {
+	    /* Check if data is contiguous */
+	    if(
+		    ( ( MS_HPTIME2EPOCH(msr->starttime) + ( msr->numsamples * ( 1.0 / msr->samprate ) ) ) - pd->time )
+		    <
+		    ( 1.0 / (2.0 * msr->samprate) )
+	      ) {
+		/* Add samples */
+		nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN,
+			"Add datasamples for %s.%s.%s (%d)\n",
+			msr->network, msr->station, msr->channel, pd->nSamp);
+		newdatasamples = NMXP_MEM_MALLOC (sizeof(int) * (msr->numsamples + pd->nSamp)); 
+		memcpy(newdatasamples, msr->datasamples, sizeof(int) * msr->numsamples); /* pointer to 32-bit integer data samples */
+		memcpy(newdatasamples + msr->numsamples, pd->pDataPtr, sizeof(int) * pd->nSamp); /* pointer to 32-bit integer data samples */
+		msr->numsamples += pd->nSamp;
+		NMXP_MEM_FREE(msr->datasamples);
+		msr->datasamples = newdatasamples;
+		newdatasamples = NULL;
+	    } else {
+		/* Pack the record flushing data and go on */
+		precords = msr_pack (msr, &nmxp_data_msr_write_handler, data_seed, &psamples, 1, verbose);
 
-	msr->sequence_number = pd->seq_no % 1000000;
+		if ( precords == -1 ) {
+		    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_PACKETMAN,
+			    "Cannot pack records %s.%s.%s\n", msr->network, msr->station, msr->channel);
+		} else {
+		    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN,
+			    "Packed forced %d samples into %d records for %s.%s.%s\n",
+			    psamples, precords, msr->network, msr->station, msr->channel);
+		}
 
-	msr->sampletype = 'i';      /* declare type to be 32-bit integers */
+		if(msr->datasamples) {
+		    NMXP_MEM_FREE(msr->datasamples);
+		    msr->datasamples = NULL;
+		}
+		msr->starttime = MS_EPOCH2HPTIME(pd->time);
+		msr->datasamples = NMXP_MEM_MALLOC (sizeof(int) * (pd->nSamp)); 
+		memcpy(msr->datasamples, pd->pDataPtr, sizeof(int) * pd->nSamp); /* pointer to 32-bit integer data samples */
+		msr->numsamples = pd->nSamp;
 
-	msr->numsamples = pd->nSamp;
-	msr->datasamples = NMXP_MEM_MALLOC (sizeof(int) * (msr->numsamples)); 
-	memcpy(msr->datasamples, pd->pDataPtr, sizeof(int) * pd->nSamp); /* pointer to 32-bit integer data samples */
+	    }
 
-	pDataDest = msr->datasamples;
+	}
 
-	/* msr_print(msr, 2); */
-
-	data_seed->pd = pd;
-        /* set the quality indicator */
-        msr->dataquality = pd->quality_indicator;
-	/* Pack the record(s) */
-	precords = msr_pack (msr, &nmxp_data_msr_write_handler, data_seed, &psamples, flag_flush, verbose);
-
-	data_seed->pd = NULL;
+	/* Pack the record(s) without flushing data if it is not necessary */
+	precords = msr_pack (msr, &nmxp_data_msr_write_handler, data_seed, &psamples, 0, verbose);
 
 	if ( precords == -1 ) {
 	    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_PACKETMAN,
-		    "Cannot pack records %s.%s.%s\n", pd->network, pd->station, pd->channel);
+		    "Cannot pack records %s.%s.%s\n", msr->network, msr->station, msr->channel);
 	} else {
 	    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN,
-		    "Packed %d samples into %d records for %s.%s.%s x0=%d xn=%d\n",
-		    psamples, precords, pd->network, pd->station, pd->channel, pDataDest[0], pDataDest[msr->numsamples-1]);
-	}
-	/* fixes memory leak, added 2010-07-26, RR */
-	NMXP_MEM_FREE(msr->datasamples);
+		    "Packed %d samples into %d records for %s.%s.%s\n",
+		    psamples, precords, msr->network, msr->station, msr->channel);
 
+	    if(psamples > 0) {
+
+		if(psamples == msr->numsamples) {
+		    /* Remove all samples allocated */
+		    NMXP_MEM_FREE(msr->datasamples);
+		    msr->datasamples = NULL;
+		    msr->numsamples = 0;
+		} else if(psamples < msr->numsamples) {
+		    /* Cut remaining not used samples yet */
+		    ptrdatasamples = msr->datasamples;
+		    for(i=0; i < msr->numsamples - psamples; i++) {
+			ptrdatasamples[i] = ptrdatasamples[i + psamples];
+		    }
+		    ptrdatasamples = NULL;
+		    msr->numsamples -= psamples;
+		} else {
+		    /* TODO impossible! */
+		    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_ANY,
+			    "Impossible.\n");
+		}
+
+	    } else {
+		/* Do nothing */
+	    }
+
+	}
+
+    } else {
+	/* Flush all remaining samples */
+	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN,
+		"Flush all remaining samples for  %s.%s.%s\n", msr->network, msr->station, msr->channel);
+
+	if(msr->datasamples) {
+	    /* Pack the record(s) flushing data */
+	    precords = msr_pack (msr, &nmxp_data_msr_write_handler, data_seed, &psamples, 1, verbose);
+	    if ( precords == -1 ) {
+		nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_PACKETMAN,
+			"Cannot pack records %s.%s.%s\n", msr->network, msr->station, msr->channel);
+	    } else {
+		nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN,
+			"Packed forced %d samples into %d records for %s.%s.%s\n",
+			psamples, precords, msr->network, msr->station, msr->channel);
+	    }
+
+	    NMXP_MEM_FREE(msr->datasamples);
+	    msr->datasamples = NULL;
+	    msr->numsamples = 0;
+	}
     }
-    }
+
+    /* Reset pointer to the current miniseed record buffer */
+    data_seed->pmsr = NULL;
 
     return ret;
 }

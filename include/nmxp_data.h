@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_data.h,v 1.39 2010-07-29 19:05:27 racine Exp $
+ * $Id: nmxp_data.h,v 1.40 2010-09-01 20:18:23 mtheo Exp $
  *
  */
 
@@ -128,7 +128,6 @@ typedef struct {
     int32_t sampRate;			/*!< \brief Sample rate */
     int timing_quality;			/*!< \brief Timing quality for functions send_raw*() */
     char quality_indicator;             /*!< \brief Quality indicator D, R, Q or M, new in Seed 2.4 */
-        
 } NMXP_DATA_PROCESS;
 
 
@@ -152,7 +151,8 @@ typedef struct {
     char outdirseed[NMXP_DATA_MAX_SIZE_FILENAME];
     char default_network[5];
     NMXP_DATA_SEED_TYPEWRITE type_writeseed;
-    NMXP_DATA_PROCESS *pd;
+    /* pmsr is used like (void *) but it has to be a pointer to MSRecord !!! */
+    void *pmsr;
 } NMXP_DATA_SEED;
 
 /*! \brief Initialize a structure NMXP_DATA_PROCESS
@@ -327,7 +327,7 @@ int nmxp_data_get_filename_ms(NMXP_DATA_SEED *data_seed, char *dirseedchan, char
 
 /*! \brief Write mini-seed records from a NMXP_DATA_PROCESS structure.
  *
- * \param pd Pointer to struct NMXP_DATA_PROCESS.
+ * \param pd Pointer to struct NMXP_DATA_PROCESS. If it is NULL then flush all data into mini-SEED file.
  * \param data_seed Pointer to struct NMXP_DATA_SEED.
  * \param pmsr Pointer to mini-SEED record.
  *
