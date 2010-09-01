@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.121 2010-08-27 10:10:30 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.122 2010-09-01 20:13:12 mtheo Exp $
  *
  */
 
@@ -56,6 +56,7 @@ const NMXPTOOL_PARAMS NMXPTOOL_PARAMS_DEFAULT =
     DEFAULT_TIMING_QUALITY,
     DEFAULT_QUALITY_INDICATOR,
     DEFAULT_ENCODING,
+    DEFAULT_RECLEN_MINISEED,
     0,
     0,
     0,
@@ -340,6 +341,11 @@ Mini-SEED arguments:\n");
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
   -x, --encoding=ENC      Set the mini-SEED encoding. Either 'steim1' or 'steim2'.\n\
                           (Default is 'steim1').\n");
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
+  -r, --reclen            Specify the desired mini-SEED record length in bytes\n\
+                          which must be expressible as 2 raised to the power of X\n\
+                          where X is between (and including) 8 to 20.\n\
+                          (Default is %d).\n", DEFAULT_RECLEN_MINISEED);
 #endif
 
 
@@ -584,6 +590,9 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
     char one_time_option[255];
     int c;
 
+    int flag_reclen_pow = 0;
+    int reclen_pow = DEFAULT_RECLEN_MINIMUM;
+
     /*
     int len_int, j;
     char unit = 'X';
@@ -630,7 +639,8 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 	{"writeseed",    required_argument, NULL, 'm'},
 	{"outdirseed",   required_argument, NULL, 'o'},
 	{"quality_indicator", required_argument, NULL, 'q'},
-	{"encoding", required_argument, NULL, 'x'},
+	{"encoding",     required_argument, NULL, 'x'},
+	{"reclen",       required_argument, NULL, 'r'},
 #endif
 	{"writefile",    no_argument,       NULL, 'w'},
 #ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
@@ -664,6 +674,7 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
     strcat(optstr, "o:");
     strcat(optstr, "q:");
     strcat(optstr, "x:");
+    strcat(optstr, "r:");
 #endif
 
 
@@ -963,6 +974,7 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 				"Syntax error in option -%c %s!\n", c, NMXP_LOG_STR(optarg));
 		    }
 		    break;
+
 		case 'o':
 		    params->outdirseed = optarg;
 		    if(params->outdirseed) {
@@ -975,6 +987,7 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 			}
 		    }
 		    break;
+
                 case 'q':
                     switch(optarg[0]) {
                       case 'D':
@@ -989,18 +1002,41 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
                                "Quality indicator %s is invalid! Must be D, R, Q or M!\n", NMXP_LOG_STR(optarg));
                         break;
                     }
-                    break;
-                case 'x':
-                   if (strcmp(optarg,"steim1") == 0) {
-                     params->encoding = DE_STEIM1;
-                   } else if (strcmp(optarg,"steim2") == 0) {
-                     params->encoding = DE_STEIM2;
-                   } else {
-                     ret_errors++;
-                     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY,
-                        "Encoding %s is invalid! Must either be steim1 or steim2!\n",NMXP_LOG_STR(optarg));
-                   }
-                break;
+		    break;
+
+		case 'x':
+		    if (strcmp(optarg,"steim1") == 0) {
+			params->encoding = DE_STEIM1;
+		    } else if (strcmp(optarg,"steim2") == 0) {
+			params->encoding = DE_STEIM2;
+		    } else {
+			ret_errors++;
+			nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY,
+				"Encoding %s is invalid! Must either be steim1 or steim2!\n",NMXP_LOG_STR(optarg));
+		    }
+		    break;
+
+		case 'r':
+		    params->reclen = atoi(optarg);
+		    if(params->reclen >= DEFAULT_RECLEN_MINIMUM  &&  params->reclen <= DEFAULT_RECLEN_MAXIMUM) {
+			flag_reclen_pow = 0;
+			while(!flag_reclen_pow  &&  reclen_pow <= DEFAULT_RECLEN_MAXIMUM) {
+			    if(params->reclen == reclen_pow) {
+				flag_reclen_pow = 1;
+			    }
+			    reclen_pow *= 2;
+			}
+			if(!flag_reclen_pow) {
+			    ret_errors++;
+			    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY,
+				    "reclen must expressible as 2 raised to the power of X where X is between (and including) 8 to 20.\n");
+			}
+		    } else {
+			ret_errors++;
+			nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY,
+				"reclen must expressible as 2 raised to the power of X where X is between (and including) 8 to 20.\n");
+		    }
+		    break;
 #endif
 
 		case 'w':

@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.h,v 1.107 2010-08-25 20:37:48 racine Exp $
+ * $Id: nmxptool_getoptlong.h,v 1.108 2010-09-01 20:13:12 mtheo Exp $
  *
  */
 
@@ -79,6 +79,14 @@
 #define DEFAULT_ENCODING 0
 #endif
 
+
+#define DEFAULT_RECLEN_POW8   (2 * 2 * 2 * 2 * 2 * 2 * 2 * 2)
+#define DEFAULT_RECLEN_POW10  (DEFAULT_RECLEN_POW8 * 2 * 2)
+#define DEFAULT_RECLEN_POW20  (DEFAULT_RECLEN_POW10 * DEFAULT_RECLEN_POW10)
+#define DEFAULT_RECLEN_MINIMUM DEFAULT_RECLEN_POW8
+#define DEFAULT_RECLEN_MAXIMUM DEFAULT_RECLEN_POW20
+#define DEFAULT_RECLEN_MINISEED 512
+
 /* Empiric constant values TODO */
 #define DEFAULT_N_CHANNEL		9
 #define DEFAULT_N_CHANNEL_MINIMUM	3
@@ -128,6 +136,7 @@ typedef struct {
     /* RR */
     char quality_indicator;
     int8_t encoding;    
+    int reclen;    
     int flag_listchannels;
     int flag_listchannelsnaqs;
     int flag_request_channelinfo;

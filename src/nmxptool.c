@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.227 2010-08-27 07:53:47 mtheo Exp $
+ * $Id: nmxptool.c,v 1.228 2010-09-01 20:13:12 mtheo Exp $
  *
  */
 
@@ -403,9 +403,13 @@ int main (int argc, char **argv) {
 		    strncpy(msr_list_chan[i_chan]->station, station_code, 11);
 		    strncpy(msr_list_chan[i_chan]->channel, channel_code, 11);
 
-		    msr_list_chan[i_chan]->reclen = 512;         /* byte record length */
-
+		    msr_list_chan[i_chan]->reclen   = params.reclen;     /* Byte record length */
 		    msr_list_chan[i_chan]->encoding = params.encoding;  /* Steim 1 compression by default */
+
+		    /* Reset some values */
+		    msr_list_chan[i_chan]->sequence_number = 0;
+		    msr_list_chan[i_chan]->datasamples = NULL;
+		    msr_list_chan[i_chan]->numsamples = 0;
 
 		} else {
 		    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANNEL,
@@ -755,6 +759,14 @@ int main (int argc, char **argv) {
 
 #ifdef HAVE_LIBMSEED
 	if(params.type_writeseed) {
+	    if(*msr_list_chan) {
+		for(i_chan = 0; i_chan < channelList_subset->number; i_chan++) {
+		    if(msr_list_chan[i_chan]) {
+			/* Flush remaining samples */
+			nmxp_data_msr_pack(NULL, &data_seed, msr_list_chan[i_chan]);
+		    }
+		}
+	    }
 	    nmxp_data_seed_fclose_all(&data_seed);
 	}
 #endif
@@ -1084,6 +1096,14 @@ int main (int argc, char **argv) {
 
 #ifdef HAVE_LIBMSEED
 	if(params.type_writeseed) {
+	    if(*msr_list_chan) {
+		for(i_chan = 0; i_chan < channelList_subset->number; i_chan++) {
+		    if(msr_list_chan[i_chan]) {
+			/* Flush remaining samples */
+			nmxp_data_msr_pack(NULL, &data_seed, msr_list_chan[i_chan]);
+		    }
+		}
+	    }
 	    nmxp_data_seed_fclose_all(&data_seed);
 	}
 #endif
@@ -1425,6 +1445,7 @@ static void nmxptool_AlarmHandler(int sig) {
 #ifdef HAVE_LIBMSEED
 int nmxptool_write_miniseed(NMXP_DATA_PROCESS *pd) {
     int cur_chan;
+
     int ret = 0;
     if( (cur_chan = nmxp_chan_lookupKeyIndex(pd->key, channelList_subset)) != -1) {
 
@@ -1458,7 +1479,6 @@ int nmxptool_msr_send_mseed(NMXP_DATA_PROCESS *pd) {
     int psamples;
     int precords;
     flag verbose = 0;
-    flag flush = 1;
 
     if( (cur_chan = nmxp_chan_lookupKeyIndex(pd->key, channelList_subset)) != -1) {
 
@@ -1487,7 +1507,7 @@ int nmxptool_msr_send_mseed(NMXP_DATA_PROCESS *pd) {
 
 		/* msr_print(msr, 2); */
 
-		precords = msr_pack (msr, &nmxptool_msr_send_mseed_handler, pd, &psamples, flush, verbose);
+		precords = msr_pack (msr, &nmxptool_msr_send_mseed_handler, pd, &psamples, 1, verbose);
                 NMXP_MEM_FREE(msr->datasamples);
 		if ( precords == -1 ) {
 		    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_PACKETMAN,
