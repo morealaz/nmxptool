@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_data.c,v 1.76 2010-09-02 08:00:33 mtheo Exp $
+ * $Id: nmxp_data.c,v 1.77 2010-09-02 10:02:12 mtheo Exp $
  *
  */
 
@@ -1026,7 +1026,7 @@ int nmxp_data_msr_pack(NMXP_DATA_PROCESS *pd, NMXP_DATA_SEED *data_seed, void *p
     int *newdatasamples = NULL;
     int *ptrdatasamples = NULL;
     double gap_overlap;
-    double end_time;
+    double expected_next_time;
     char str_time1[200];
     char str_time2[200];
 
@@ -1052,13 +1052,15 @@ int nmxp_data_msr_pack(NMXP_DATA_PROCESS *pd, NMXP_DATA_SEED *data_seed, void *p
 	    msr->datasamples = NMXP_MEM_MALLOC (sizeof(int) * (pd->nSamp)); 
 	    memcpy(msr->datasamples, pd->pDataPtr, sizeof(int) * pd->nSamp); /* pointer to 32-bit integer data samples */
 	    msr->numsamples = pd->nSamp;
+
 	} else {
 
-	    end_time = (double) MS_HPTIME2EPOCH(msr->starttime) + ( (double) msr->numsamples * ( 1.0 / (double) msr->samprate ) );
-	    gap_overlap = pd->time - end_time;
+	    expected_next_time = (double) MS_HPTIME2EPOCH(msr->starttime) + ( (double) msr->numsamples * ( 1.0 / (double) msr->samprate ) );
+	    gap_overlap = pd->time - expected_next_time;
 
 	    /* Check if data is contiguous */
 	    if( fabs(gap_overlap) < fabs( 1.0 / (2.0 * (double) msr->samprate) ) ) {
+
 		/* Add samples */
 		nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN,
 			"Add datasamples for %s.%s.%s (%d)\n",
@@ -1070,9 +1072,12 @@ int nmxp_data_msr_pack(NMXP_DATA_PROCESS *pd, NMXP_DATA_SEED *data_seed, void *p
 		NMXP_MEM_FREE(msr->datasamples);
 		msr->datasamples = newdatasamples;
 		newdatasamples = NULL;
+
 	    } else {
 
-		nmxp_data_to_str(str_time1, end_time);
+		/* Gap or Overlap, then flush remaining samples and go on */
+
+		nmxp_data_to_str(str_time1, expected_next_time);
 		nmxp_data_to_str(str_time2, pd->time);
 
 		nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY,
@@ -1080,7 +1085,7 @@ int nmxp_data_msr_pack(NMXP_DATA_PROCESS *pd, NMXP_DATA_SEED *data_seed, void *p
 			gap_overlap,
 			msr->network, msr->station, msr->channel, NMXP_LOG_STR(str_time1), NMXP_LOG_STR(str_time2));
 
-		/* Pack the record flushing data and go on */
+		/* Pack the record(s) flushing data */
 		precords = msr_pack (msr, &nmxp_data_msr_write_handler, data_seed, &psamples, 1, verbose);
 
 		if ( precords == -1 ) {
@@ -1127,7 +1132,7 @@ int nmxp_data_msr_pack(NMXP_DATA_PROCESS *pd, NMXP_DATA_SEED *data_seed, void *p
 		    msr->datasamples = NULL;
 		    msr->numsamples = 0;
 		} else if(psamples < msr->numsamples) {
-		    /* Cut remaining not used samples yet */
+		    /* Shift remaining samples not used yet */
 		    ptrdatasamples = msr->datasamples;
 		    for(i=0; i < msr->numsamples - psamples; i++) {
 			ptrdatasamples[i] = ptrdatasamples[i + psamples];
@@ -1147,13 +1152,16 @@ int nmxp_data_msr_pack(NMXP_DATA_PROCESS *pd, NMXP_DATA_SEED *data_seed, void *p
 	}
 
     } else {
+
 	/* Flush all remaining samples */
 	nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN,
 		"Flush all remaining samples for  %s.%s.%s\n", msr->network, msr->station, msr->channel);
 
 	if(msr->datasamples) {
+
 	    /* Pack the record(s) flushing data */
 	    precords = msr_pack (msr, &nmxp_data_msr_write_handler, data_seed, &psamples, 1, verbose);
+
 	    if ( precords == -1 ) {
 		nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_PACKETMAN,
 			"Cannot pack records %s.%s.%s\n", msr->network, msr->station, msr->channel);
@@ -1168,7 +1176,9 @@ int nmxp_data_msr_pack(NMXP_DATA_PROCESS *pd, NMXP_DATA_SEED *data_seed, void *p
 	    NMXP_MEM_FREE(msr->datasamples);
 	    msr->datasamples = NULL;
 	    msr->numsamples = 0;
+
 	}
+
     }
 
     /* Reset pointer to the current miniseed record buffer */
