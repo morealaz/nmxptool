@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_data.c,v 1.75 2010-09-01 20:18:23 mtheo Exp $
+ * $Id: nmxp_data.c,v 1.76 2010-09-02 08:00:33 mtheo Exp $
  *
  */
 
@@ -21,6 +21,7 @@
 #include <errno.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <math.h>
 
 #ifdef HAVE_WINDOWS_H
 #include <windows.h>
@@ -1024,6 +1025,10 @@ int nmxp_data_msr_pack(NMXP_DATA_PROCESS *pd, NMXP_DATA_SEED *data_seed, void *p
     int i;
     int *newdatasamples = NULL;
     int *ptrdatasamples = NULL;
+    double gap_overlap;
+    double end_time;
+    char str_time1[200];
+    char str_time2[200];
 
     /* Set pointer to the current miniseed record buffer */
     data_seed->pmsr = pmsr;
@@ -1048,12 +1053,12 @@ int nmxp_data_msr_pack(NMXP_DATA_PROCESS *pd, NMXP_DATA_SEED *data_seed, void *p
 	    memcpy(msr->datasamples, pd->pDataPtr, sizeof(int) * pd->nSamp); /* pointer to 32-bit integer data samples */
 	    msr->numsamples = pd->nSamp;
 	} else {
+
+	    end_time = (double) MS_HPTIME2EPOCH(msr->starttime) + ( (double) msr->numsamples * ( 1.0 / (double) msr->samprate ) );
+	    gap_overlap = pd->time - end_time;
+
 	    /* Check if data is contiguous */
-	    if(
-		    ( ( MS_HPTIME2EPOCH(msr->starttime) + ( msr->numsamples * ( 1.0 / msr->samprate ) ) ) - pd->time )
-		    <
-		    ( 1.0 / (2.0 * msr->samprate) )
-	      ) {
+	    if( fabs(gap_overlap) < fabs( 1.0 / (2.0 * (double) msr->samprate) ) ) {
 		/* Add samples */
 		nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN,
 			"Add datasamples for %s.%s.%s (%d)\n",
@@ -1066,6 +1071,15 @@ int nmxp_data_msr_pack(NMXP_DATA_PROCESS *pd, NMXP_DATA_SEED *data_seed, void *p
 		msr->datasamples = newdatasamples;
 		newdatasamples = NULL;
 	    } else {
+
+		nmxp_data_to_str(str_time1, end_time);
+		nmxp_data_to_str(str_time2, pd->time);
+
+		nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY,
+			"Gap %.2f sec. for %s.%s.%s from %s to %s saving mini-SEED records.\n",
+			gap_overlap,
+			msr->network, msr->station, msr->channel, NMXP_LOG_STR(str_time1), NMXP_LOG_STR(str_time2));
+
 		/* Pack the record flushing data and go on */
 		precords = msr_pack (msr, &nmxp_data_msr_write_handler, data_seed, &psamples, 1, verbose);
 
@@ -1082,6 +1096,7 @@ int nmxp_data_msr_pack(NMXP_DATA_PROCESS *pd, NMXP_DATA_SEED *data_seed, void *p
 		    NMXP_MEM_FREE(msr->datasamples);
 		    msr->datasamples = NULL;
 		}
+
 		msr->starttime = MS_EPOCH2HPTIME(pd->time);
 		msr->datasamples = NMXP_MEM_MALLOC (sizeof(int) * (pd->nSamp)); 
 		memcpy(msr->datasamples, pd->pDataPtr, sizeof(int) * pd->nSamp); /* pointer to 32-bit integer data samples */
@@ -1103,6 +1118,8 @@ int nmxp_data_msr_pack(NMXP_DATA_PROCESS *pd, NMXP_DATA_SEED *data_seed, void *p
 		    psamples, precords, msr->network, msr->station, msr->channel);
 
 	    if(psamples > 0) {
+
+		msr->starttime += ( (double) psamples * ( 1.0 / (double) msr->samprate ) );
 
 		if(psamples == msr->numsamples) {
 		    /* Remove all samples allocated */
@@ -1145,6 +1162,8 @@ int nmxp_data_msr_pack(NMXP_DATA_PROCESS *pd, NMXP_DATA_SEED *data_seed, void *p
 			"Packed forced %d samples into %d records for %s.%s.%s\n",
 			psamples, precords, msr->network, msr->station, msr->channel);
 	    }
+
+	    msr->starttime += ( (double) psamples * ( 1.0 / (double) msr->samprate ) );
 
 	    NMXP_MEM_FREE(msr->datasamples);
 	    msr->datasamples = NULL;
