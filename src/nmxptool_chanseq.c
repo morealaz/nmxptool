@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_chanseq.c,v 1.5 2010-08-27 09:02:14 mtheo Exp $
+ * $Id: nmxptool_chanseq.c,v 1.6 2010-09-02 08:01:11 mtheo Exp $
  *
  */
 
@@ -60,7 +60,7 @@ void nmxptool_chanseq_free(NMXPTOOL_CHAN_SEQ **pchan_list_seq, int number) {
 }
 
 
-int nmxptool_chanseq_check_and_log_gap(double time1, double time2, const double gap_tollerance, const char *station, const char *channel) {
+int nmxptool_chanseq_check_and_log_gap(double time1, double time2, const double gap_tollerance, const char *station, const char *channel, const char *network) {
     char str_time1[200];
     char str_time2[200];
     int ret = 0;
@@ -68,12 +68,12 @@ int nmxptool_chanseq_check_and_log_gap(double time1, double time2, const double 
     nmxp_data_to_str(str_time1, time1);
     nmxp_data_to_str(str_time2, time2);
     if(gap > gap_tollerance) {
-	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_GAP, "Gap %.2f sec. for %s.%s from %s to %s!\n",
-		gap, NMXP_LOG_STR(station), NMXP_LOG_STR(channel), NMXP_LOG_STR(str_time2), NMXP_LOG_STR(str_time1));
+	nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "Gap %.2f sec. for %s.%s.%s from %s to %s!\n",
+		gap, NMXP_LOG_STR(network), NMXP_LOG_STR(station), NMXP_LOG_STR(channel), NMXP_LOG_STR(str_time2), NMXP_LOG_STR(str_time1));
 	ret = 1;
     } else if (gap < -gap_tollerance) {
-	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_GAP, "Overlap %.2f sec. for %s.%s from %s to %s!\n",
-		gap, NMXP_LOG_STR(station), NMXP_LOG_STR(channel), NMXP_LOG_STR(str_time1), NMXP_LOG_STR(str_time2));
+	nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "Overlap %.2f sec. for %s.%s.%s from %s to %s!\n",
+		gap, NMXP_LOG_STR(network), NMXP_LOG_STR(station), NMXP_LOG_STR(channel), NMXP_LOG_STR(str_time1), NMXP_LOG_STR(str_time2));
 	ret = -1;
     }
     return ret;
@@ -88,7 +88,7 @@ int nmxptool_chanseq_gap(NMXPTOOL_CHAN_SEQ *chan_list_seq_item, NMXP_DATA_PROCES
 	chan_list_seq_item->significant = 1;
     } else {
 	if(chan_list_seq_item->significant && pd->nSamp > 0) {
-	    ret = nmxptool_chanseq_check_and_log_gap(pd->time, chan_list_seq_item->last_time, GAP_TOLLERANCE, pd->station, pd->channel);
+	    ret = nmxptool_chanseq_check_and_log_gap(pd->time, chan_list_seq_item->last_time, GAP_TOLLERANCE, pd->station, pd->channel, pd->network);
 	    if(ret != 0) {
 		chan_list_seq_item->x_1 = 0;
 		nmxp_data_to_str(str_pd_time, pd->time);
