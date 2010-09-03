@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.122 2010-09-01 20:13:12 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.123 2010-09-03 06:58:16 mtheo Exp $
  *
  */
 
@@ -590,8 +590,10 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
     char one_time_option[255];
     int c;
 
+#ifdef HAVE_LIBMSEED
     int flag_reclen_pow = 0;
     int reclen_pow = DEFAULT_RECLEN_MINIMUM;
+#endif
 
     /*
     int len_int, j;

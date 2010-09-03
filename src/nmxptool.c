@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.228 2010-09-01 20:13:12 mtheo Exp $
+ * $Id: nmxptool.c,v 1.229 2010-09-03 06:58:16 mtheo Exp $
  *
  */
 
@@ -134,7 +134,10 @@ int ew_check_flag_terminate = 0;
 int main (int argc, char **argv) {
     int32_t connection_time;
     int request_SOCKET_OK;
-    int i_chan, cur_chan = 0;
+#ifdef HAVE_LIBMSEED
+    int i_chan =0;
+#endif
+    int cur_chan = 0;
     int to_cur_chan = 0;
     int request_chan;
     int exitpdscondition;
