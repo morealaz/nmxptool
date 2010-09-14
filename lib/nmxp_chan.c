@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_chan.c,v 1.46 2010-04-12 13:23:43 mtheo Exp $
+ * $Id: nmxp_chan.c,v 1.47 2010-09-14 09:38:52 mtheo Exp $
  *
  */
 
@@ -416,7 +416,7 @@ void nmxp_chan_print_channelList(NMXP_CHAN_LIST *channelList) {
 }
 
 
-void nmxp_chan_print_channelList_with_match(NMXP_CHAN_LIST *channelList, char *sta_chan_list) {
+void nmxp_chan_print_channelList_with_match(NMXP_CHAN_LIST *channelList, char *sta_chan_list, int flag_statefile) {
     int chan_number = 0;
     int i_chan = 0;
     int ret_match = 0;
@@ -452,12 +452,19 @@ void nmxp_chan_print_channelList_with_match(NMXP_CHAN_LIST *channelList, char *s
 		ret_match = 1;
 	    }
 	    if(ret_match == 1) {
-		nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "%04d %12d %6s%c%-11s\n",
-			i_chan+1,
-			channelList->channel[i_chan].key,
-			"    ",
-			' ',
-			NMXP_LOG_STR(channelList->channel[i_chan].name));
+		if(flag_statefile) {
+		    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "%-11s # %12d\n",
+			    NMXP_LOG_STR(channelList->channel[i_chan].name),
+			    channelList->channel[i_chan].key
+			    );
+		} else {
+		    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "%04d %12d %6s%c%-11s\n",
+			    i_chan+1,
+			    channelList->channel[i_chan].key,
+			    "    ",
+			    ' ',
+			    NMXP_LOG_STR(channelList->channel[i_chan].name));
+		}
 	    }
 	}
     } else {

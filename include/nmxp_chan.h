@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_chan.h,v 1.26 2009-08-31 12:16:41 mtheo Exp $
+ * $Id: nmxp_chan.h,v 1.27 2010-09-14 09:38:52 mtheo Exp $
  *
  */
 
@@ -241,9 +241,11 @@ void nmxp_chan_print_channelList(NMXP_CHAN_LIST *channelList);
  *
  * \param channelList Channel List
  * \param sta_chan_list Channel pattern list
+ * \param flag_statefile If it is not zero the output can be redirected to
+ * create an input state file. Otherwise a more human readable output.
  *
  */
-void nmxp_chan_print_channelList_with_match(NMXP_CHAN_LIST *channelList, char *sta_chan_list);
+void nmxp_chan_print_channelList_with_match(NMXP_CHAN_LIST *channelList, char *sta_chan_list, int flag_statefile);
 
 
 /*! Print channel information

@@ -2,16 +2,18 @@
 nmxptool Release History
 #########################
 
-* Release 1.2.5-beta1    (2010/09/01) 
+* Release 1.2.5-beta1    (2010/09/14) 
     - Improved saving of mini-SEED files, now data samples are saved using
         the whole available space within the mini-SEED records.
-    - Added capability to choose the mini-SEED record length (option -r).
+    - Added capability, using libmseed, to choose mini-SEED record length (option -r).
     - Added capability, using libmseed, to choose between steim1 and steim2
         compression (option -x), and data quality indicator (option -q). (R. Racine)
     - Added feature: enabled ShortTermCompletion also in Earthworm configuration.
         (Short-Term-Completion has been implemented in NaqsServer version 2.1)
     - Added feature: within state file it is now allowed to insert white spaces,
          tabs, and comment string by '#'. (involved option -F)
+    - Changed the output list of channels from NaqsServer, in order to create
+         automatically a state file. (involved option -L)
     - Fixed some memory leaks and potential other memory bugs. (R. Racine)
 
 * Release 1.2.4    (2009/12/22) 

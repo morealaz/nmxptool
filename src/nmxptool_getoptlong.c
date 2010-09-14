@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.123 2010-09-03 06:58:16 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.124 2010-09-14 09:38:52 mtheo Exp $
  *
  */
 
@@ -210,7 +210,7 @@ Main arguments:\n\
                           appending the suffix '%s'.\n\
                           It enables the option -b in order to allow data continuity\n\
                           when short disconnections occur or between program restarts.\n\
-                          Related to -A and -f. DO NOT USE with -C.\n",
+                          Related to -L, -A and -f. DO NOT USE with -C.\n",
 			  NMXP_STR_STATE_EXT
 );
 
@@ -271,6 +271,8 @@ DEFAULT_USEC / 1000, DEFAULT_N_CHANNEL, NMXP_MAX_MSCHAN_MSEC / 1000);
 
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
   -L, --listchannelsnaqs  List of the available Time Series channels on NaqsServer.\n\
+                          The output list of channels can be redirected to a file\n\
+                          which can be used as an input statefile for the option -F.\n\
   -M, --maxlatency=SECs   Max tolerable latency (default %d) [%d..%d].\n\
                           Enable NaqsServer to send out retransmission requests\n\
                           for missed packets. Inside the section NetworkInterface\n\

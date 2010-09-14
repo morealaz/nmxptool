@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.229 2010-09-03 06:58:16 mtheo Exp $
+ * $Id: nmxptool.c,v 1.230 2010-09-14 09:38:52 mtheo Exp $
  *
  */
 
@@ -270,7 +270,7 @@ int main (int argc, char **argv) {
 	    channelList = nmxp_getAvailableChannelList(params.hostname, params.portnumberpds, NMXP_DATA_TIMESERIES, nmxptool_sigcondition_read);
 
 	    /* nmxp_chan_print_channelList(channelList); */
-	    nmxp_chan_print_channelList_with_match(channelList, params.channels);
+	    nmxp_chan_print_channelList_with_match(channelList, params.channels, 1);
 
 	    return 1;
 
