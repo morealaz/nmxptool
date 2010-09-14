@@ -1,10 +1,48 @@
-2010-09-01 22:58
+2010-09-14 16:50
 
 	* nmxptool:
 
 	  Open-Source and Cross-Platform software for Nanometrics seismic data acquisition
 	  Matteo Quintiliani - Istituto Nazionale di Geofisica e Vulcanologia - Italy
 	  Mail bug reports and suggestions to <quintiliani@ingv.it> 
+
+2010-09-14 09:38  mtheo <quintiliani@ingv.it>
+
+	* HISTORY (1.77), include/nmxp_chan.h (1.27), lib/nmxp_chan.c
+	(1.47), src/nmxptool.c (1.230), src/nmxptool_getoptlong.c (1.124):
+
+	Changed the output list of channels from NaqsServer, in order to
+	create automatically a state file. (involved option -L)
+
+2010-09-03 11:04  mtheo <quintiliani@ingv.it>
+
+	* configure.in (1.99):
+
+	Incremented beta version to 1.2.5-beta2
+
+2010-09-03 06:58  mtheo <quintiliani@ingv.it>
+
+	* src/: nmxptool.c (1.229), nmxptool_getoptlong.c (1.123):
+
+	Added some variable declarations within #define
+
+2010-09-02 10:02  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_data.c (1.77):
+
+	Minor change and comments
+
+2010-09-02 08:01  mtheo <quintiliani@ingv.it>
+
+	* src/: nmxptool_chanseq.c (1.6), nmxptool_chanseq.h (1.3):
+
+	Minor change: added network code in output gap/overlap message
+
+2010-09-02 08:00  mtheo <quintiliani@ingv.it>
+
+	* lib/nmxp_data.c (1.76):
+
+	Fixed problem in gap/overlap computation
 
 2010-09-01 20:28  mtheo <quintiliani@ingv.it>
 
