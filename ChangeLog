@@ -1,10 +1,26 @@
-2010-09-14 16:50
+2010-09-15 15:45
 
 	* nmxptool:
 
 	  Open-Source and Cross-Platform software for Nanometrics seismic data acquisition
 	  Matteo Quintiliani - Istituto Nazionale di Geofisica e Vulcanologia - Italy
 	  Mail bug reports and suggestions to <quintiliani@ingv.it> 
+
+2010-09-15 13:14  mtheo <quintiliani@ingv.it>
+
+	* HISTORY (1.78), src/nmxptool.c (1.231), src/nmxptool_getoptlong.c
+	(1.125):
+
+	Added signal handling to force to close a connection and open again
+	without quitting the program. Only for connection in near real-time
+	to NaqsServer. (Signal -USR1).
+
+2010-09-15 13:14  mtheo <quintiliani@ingv.it>
+
+	* include/nmxp_base.h (1.36), lib/nmxp_base.c (1.84):
+
+	Disabled non-blocking receive, setting the highest time-out to
+	NMXP_HIGHEST_TIMEOUT
 
 2010-09-14 09:38  mtheo <quintiliani@ingv.it>
 
