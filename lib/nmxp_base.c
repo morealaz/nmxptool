@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_base.c,v 1.83 2010-08-27 07:38:05 mtheo Exp $
+ * $Id: nmxp_base.c,v 1.84 2010-09-15 13:14:33 mtheo Exp $
  *
  */
 
@@ -37,7 +37,6 @@
 #endif
 
 #define MAX_OUTDATA 4096
-
 
 int nmxp_openSocket(char *hostname, int portNum, int (*func_cond)(void))
 {
@@ -152,7 +151,6 @@ int nmxp_send_ctrl(int isock, void* buffer, int length)
 #warning Managing non-blocking I/O using select()
 int nmxp_recv_select_timeout(int s, char *buf, int len, int timeout)
 {
-#define HIGHEST_TIMEOUT 30
     fd_set fds;
     int n;
     struct timeval tv;
@@ -165,10 +163,10 @@ int nmxp_recv_select_timeout(int s, char *buf, int len, int timeout)
     /* set up the struct timeval for the timeout*/
     if(timeout == 0) {
 	if(message_times == 0) {
-	    nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "nmxp_recv_select_timeout(): timeout = %d\n", HIGHEST_TIMEOUT);
+	    nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "nmxp_recv_select_timeout(): timeout = %d\n", NMXP_HIGHEST_TIMEOUT);
 	    message_times++;
 	}
-	timeout = HIGHEST_TIMEOUT;
+	timeout = NMXP_HIGHEST_TIMEOUT;
     }
     tv.tv_sec = timeout;
     tv.tv_usec = 0;
@@ -196,6 +194,10 @@ int nmxp_setsockopt_RCVTIMEO(int isock, int timeoutsec) {
 #endif
 
 #endif
+
+    if(timeoutsec == 0) {
+	timeoutsec = NMXP_HIGHEST_TIMEOUT;
+    }
 
     if(timeoutsec > 0) {
 #ifdef HAVE_WINDOWS_H

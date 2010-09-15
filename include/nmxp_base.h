@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxp_base.h,v 1.35 2009-08-31 12:16:41 mtheo Exp $
+ * $Id: nmxp_base.h,v 1.36 2010-09-15 13:14:33 mtheo Exp $
  *
  */
 
@@ -27,6 +27,8 @@
 /*! Return message for error on socket.*/
 #define NMXP_SOCKET_ERROR      -1
 
+/*! Maximum time out for receiving data (seconds). */
+#define NMXP_HIGHEST_TIMEOUT 30
 
 /*! \brief Looks up target host, opens a socket and connects
  *
