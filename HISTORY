@@ -14,6 +14,9 @@ nmxptool Release History
          tabs, and comment string by '#'. (involved option -F)
     - Changed the output list of channels from NaqsServer, in order to create
          automatically a state file. (involved option -L)
+    - Added signal handling to force to close a connection and open again
+         without quitting the program. Only for connection in near real-time
+         to NaqsServer. (Signal -USR1).
     - Fixed some memory leaks and potential other memory bugs. (R. Racine)
 
 * Release 1.2.4    (2009/12/22) 

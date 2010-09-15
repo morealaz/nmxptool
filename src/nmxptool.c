@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool.c,v 1.230 2010-09-14 09:38:52 mtheo Exp $
+ * $Id: nmxptool.c,v 1.231 2010-09-15 13:14:49 mtheo Exp $
  *
  */
 
@@ -68,6 +68,7 @@ int if_dap_condition_only_one_time = 0;
 
 static void ShutdownHandler(int sig);
 static void nmxptool_AlarmHandler(int sig);
+static void CloseConnectionHandler(int sig);
 
 void flushing_raw_data_stream();
 
@@ -113,6 +114,7 @@ NMXPTOOL_PARAMS params={0};
 
 
 int naqssock = 0;
+int flag_force_close_connection = 0;
 FILE *outfile = NULL;
 NMXP_CHAN_LIST *channelList = NULL;
 NMXP_CHAN_LIST_NET *channelList_subset = NULL;
@@ -190,6 +192,9 @@ int main (int argc, char **argv) {
     sa.sa_flags = SA_RESTART;
     sigemptyset(&sa.sa_mask);
     sigaction(SIGALRM, &sa, NULL);
+
+    sa.sa_handler = CloseConnectionHandler;
+    sigaction(SIGUSR1, &sa, NULL);
 
     sa.sa_handler = ShutdownHandler;
     sigaction(SIGINT, &sa, NULL);
@@ -860,11 +865,12 @@ int main (int argc, char **argv) {
 
 	/* TODO*/
 	exitpdscondition = 1;
+	flag_force_close_connection = 0;
 
 	skip_current_packet = 0;
 	/* begin  main PDS loop */
 
-	while(exitpdscondition && !nmxptool_sigcondition_read()
+	while(exitpdscondition && !nmxptool_sigcondition_read() && !flag_force_close_connection
 #ifdef HAVE_LIBMSEED
 		&&  data_seed.err_general==0
 #endif
@@ -1442,6 +1448,24 @@ static void nmxptool_AlarmHandler(int sig) {
 
     nmxptool_print_info_raw_stream(NULL);
 }
+
+/* Force closing connection  */
+static void CloseConnectionHandler(int sig) {
+    /* TODO Safe Thread Synchronization */
+
+    NMXP_MEM_PRINT_PTR(0, 1);
+
+    flag_force_close_connection = 1;
+
+    /* If nmxptool is not receiving data then unblock recv() */
+    if(naqssock > 0) {
+	nmxp_setsockopt_RCVTIMEO(naqssock, 1);
+    }
+
+    nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "%s received signal %d! Force to close connection and open again.\n", NMXP_LOG_STR(PACKAGE_NAME), sig);
+
+} /* End of CloseConnectionHandler() */
+
 
 
 

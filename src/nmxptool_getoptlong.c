@@ -7,7 +7,7 @@
  * 	Istituto Nazionale di Geofisica e Vulcanologia - Italy
  *	quintiliani@ingv.it
  *
- * $Id: nmxptool_getoptlong.c,v 1.124 2010-09-14 09:38:52 mtheo Exp $
+ * $Id: nmxptool_getoptlong.c,v 1.125 2010-09-15 13:14:49 mtheo Exp $
  *
  */
 
@@ -427,6 +427,9 @@ Signal handling:\n\
                           to immediately attempt to gracefully terminate.\n\
                           It may take several seconds to complete exiting.\n\
    ALRM                   Print current info about Raw Stream buffer.\n\
+   USR1                   Force to close a connection and open again\n\
+                          without quitting the program. Only for connection\n\
+                          in near real-time to NaqsServer.\n\
    HUP PIPE               Ignored. (SIG_IGN)\n\
 \n", NMXP_LOG_STR(PACKAGE_NAME));
 
