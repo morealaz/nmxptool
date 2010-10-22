@@ -12,6 +12,8 @@ dist-hook:
 	ln -f -s ${EWMAKEFILEUX} makefile.ux
 	rm -rf `find $(distdir)/earthworm -name CVS`
 	rm -rf `find $(distdir)/seiscomp_templates -name CVS`
+	rm -rf `find $(distdir)/earthworm -name .svn`
+	rm -rf `find $(distdir)/seiscomp_templates -name .svn`
 
 binary_distdir_FILES= \
 	AUTHORS \
@@ -52,6 +54,7 @@ endif
 	cd ${binary_distdir} && ${AMTAR} xpf ../${TMPTARFILE}
 	rm -f ${TMPTARFILE}
 	rm -fr `find ${binary_distdir} -name CVS`
+	rm -fr `find ${binary_distdir} -name .svn`
 	${AMTAR} chvf - ${binary_distdir} |  GZIP=$(GZIP_ENV) gzip -c > ${binary_distdir}.tar.gz
 	rm -fr ${binary_distdir}
 
