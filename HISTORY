@@ -2,7 +2,7 @@
 nmxptool Release History
 #########################
 
-* Release 1.2.5-beta1    (2010/09/14) 
+* Release 2.0.0    (2010/10/22) 
     - Improved saving of mini-SEED files, now data samples are saved using
         the whole available space within the mini-SEED records.
     - Added capability, using libmseed, to choose mini-SEED record length (option -r).
