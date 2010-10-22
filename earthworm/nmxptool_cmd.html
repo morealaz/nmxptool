@@ -8,7 +8,7 @@
 <center>
 <h1>Earthworm Modules: <br>
 nmxptool configuration file </h1>
-<i>(last revised 31 March, 2008)</i></center>
+<i>(last revised 22 October, 2010)</i></center>
 Page Index:<br>
 1. <a href="#function">Functional command listing</a><br>
 2. <a href="#alphabet">Alphabetic command listing &amp; description</a><br>
@@ -52,6 +52,7 @@ Nanometrics server and connection parameters:<br>
 <a href="#PassDAP">PassDAP</a>			optional<br>
 <a href="#ForceTraceBuf1">ForceTraceBuf1</a>		optional<br>
 <a href="#MaxTolerableLatency">MaxTolerableLatency</a>	optional<br>
+<a href="#ShortTermCompletion">ShortTermCompletion</a>	optional<br>
 <a href="#MaxDataToRetrieve">MaxDataToRetrieve</a>	optional<br>
 <a href="#TimeoutRecv">TimeoutRecv</a>		optional<br>
 <a href="#mschan">mschan</a>			optional<br>
@@ -205,8 +206,7 @@ stdout and stderr is suppressed.
 <hr><!-- command name as anchor inside quotes -->
 <pre><a name="MaxTolerableLatency"><b>MaxTolerableLatency <font color="red">seconds</font>                                  ReadConfig              nmxptool parameters<br></b><!-- command args ... -->           <br></a></pre>
 <blockquote><!-- command description goes here --> Specifies the max tolerable latency for raw stream connection. For enabling NaqsServer to send out retransmission requests for missed packets set RetxRequest (read <a href="#advanced_description">Advanced Description</a>).
-If RetxRequest is not enabled then <a href="#MaxTolerableLatency">MaxTolerableLatency</a> is ineffective.\n\
-    Range is [60..600].
+If RetxRequest is not enabled then <a href="#MaxTolerableLatency">MaxTolerableLatency</a> is ineffective. Range is [60..600]. NOT use with parameter <a href="#ShortTermCompletion">ShortTermCompletion</a>.
   <pre><!-- Default and example go here   --><br>Default:  600<br>Example:  MaxTolerableLatency  200</pre>
 </blockquote>
 
@@ -271,6 +271,21 @@ is a character string (valid strings are listed in earthworm.d) that
 relates (in earthworm.d) to a unique number for the key to the shared
 memory region.
   <pre><!-- Default and example go here   --><br>Default:  none<br>Example:  RingName WAVE_RING<br></pre>
+</blockquote>
+
+<hr><!-- command name as anchor inside quotes -->
+<pre><a name="ShortTermCompletion"><b>ShortTermCompletion <font color="red">seconds</font>                                  ReadConfig              nmxptool parameters<br></b><!-- command args ... -->           <br></a></pre>
+<blockquote><!-- command description goes here --> Specifies the Short-Term-Completion for Buffered stream connection. Ranges:<br />
+    <table border=0 cellpadding=0 cellspacing=0>
+	<tr>
+	    <td><b>0</b></td><td>&nbsp;&nbsp;&nbsp;</td><td> decompressed packets are received in chronological order without waiting for missing packets.</td>
+	</tr>
+	<tr>
+	    <td><b>[1..300]</b></td><td>&nbsp;&nbsp;&nbsp;</td><td> decompressed packets are received in chronological order but waiting for missing packets at most SECs seconds.</td>
+	</tr>
+    </table>
+    NOT use with parameter <a href="#MaxTolerableLatency">MaxTolerableLatency</a>.
+  <pre><!-- Default and example go here   --><br>No default<br>Example:  ShortTermCompletion  120</pre>
 </blockquote>
 
 <hr><!-- command name as anchor inside quotes -->
@@ -370,7 +385,15 @@ NmxpPortDAP          28002               # Port number of DataServer(Default 280
 #PassDAP              mypass             # DataServer password. Commented if 'none'.
                                          # It is equivalent to the option -p.
 
-MaxTolerableLatency  120                 # Max tolerable latency for each channel.
+#ShortTermCompletion  60                  # ShortTermCompletion, NOT use 'MaxTolerableLatency'.
+                                         #  0 decompressed packets are received in chronological
+                                         #    order without waiting for missing packets.
+                                         # [1..300] decompressed packets are received in
+                                         #    chronological order but waiting for missing packets
+                                         #    at most SECs seconds.
+
+MaxTolerableLatency  60                  # Raw Stream, NOT use 'ShortTermCompletion'.
+                                         # Max tolerable latency for each channel.
                                          # (Default 600 sec.) [60..600].
                                          # Enable NaqsServer to send out retransmission requests
                                          # for missed packets. Inside the section NetworkInterface
@@ -426,12 +449,13 @@ DefaultNetworkCode   IV                  # Default network code where in 'Channe
                                          # Condition: TotalNumberOfChannels * (mSECs/nC) < 15 sec. 
                                          # Related to -F and -b. 0/0 for disabling.
 
-ChannelFile   /home/ew/naqs1a.list.txt   # List of channel patterns, as in 'Channel'. One for each line.
+ChannelFile   /home/ew/nmxptool.list.txt # List of channel patterns, as in 'Channel'. One for each line.
                                          # This file will not be modified by nmxptool.
                                          # Load/Save time of last sample of each channel in a file
                                          # with the same name, same directory, appending suffix ".nmxpstate"
-                                         # Allow data continuity between program restarts.
-                                         # Related to 'MaxDataToRetrieve', it enables request of recent packets.
+                                         # It enables request of recent packets in order to allow data
+                                         # continuity when short disconnections occur or between program restarts.
+                                         # Related to 'MaxDataToRetrieve', 
                                          # It is equivalent to the option -F. Related to 'MaxDataToRetrieve'.
 
     # DO NOT USE parameters 'Channel' and 'ChannelFile' together.
