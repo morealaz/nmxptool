@@ -318,7 +318,11 @@ architectures.
                                  to immediately attempt to gracefully terminate. 
                                  It may take several seconds to complete exiting.
 
-         Signals ALRM          : Print current info about Raw Stream buffer.
+         Signal  ALRM          : Print current info about Raw Stream buffer.
+
+         Signal  USR1          : Force to close a connection and open again
+                                 without quitting the program. Only for connection
+                                 in near real-time to NaqsServer.
 
          Signals HUP PIPE      : Ignored. (SIG_IGN)
 
