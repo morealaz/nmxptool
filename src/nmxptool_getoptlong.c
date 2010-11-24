@@ -40,6 +40,7 @@ const NMXPTOOL_PARAMS NMXPTOOL_PARAMS_DEFAULT =
     DEFAULT_RATE,
     NULL,
     DEFAULT_DELAY,
+    DEFAULT_SPANINTERVAL,
     DEFAULT_MAX_TOLERABLE_LATENCY,
     DEFAULT_TIMEOUTRECV,
     DEFAULT_VERBOSE_LEVEL,
@@ -308,7 +309,10 @@ DAP arguments for DataServer:\n\
                           TIME is in seconds, otherwise append 'm' for minutes\n\
                           'h' for hours or 'd' for days. [1 sec .. %d days]\n\
                           DO NOT USE with -e.\n\
-  -d, --delay=TIME        Receive continuosly data with delay [%d sec .. %d days].\n\
+  -d, --delay=TIME        Receive continuosly data with a fixed delay [%d sec .. %d days].\n\
+  -a, --span_data=TIME    How much data is requested every time when receiving\n\
+                          with a fixed delay [%d sec .. %d days]. (default %ds).\n\
+                          Condition: span_data < delay - %ds. Related to -d.\n\
   -u, --username=USER     DataServer username.\n\
   -p, --password=PASS     DataServer password.\n\
   -l, --listchannels      List of the available Time Series channels on DataServer.\n\
@@ -318,7 +322,12 @@ DAP arguments for DataServer:\n\
 DEFAULT_PORT_DAP,
 (DEFAULT_INTERVAL_MAXIMUM / 86400),
 DEFAULT_DELAY_MINIMUM,
-(DEFAULT_DELAY_MAXIMUM / 86400));
+(DEFAULT_DELAY_MAXIMUM / 86400),
+DEFAULT_SPANINTERVAL_MINIMUM,
+(DEFAULT_SPANINTERVAL_MAXIMUM / 86400),
+DEFAULT_SPANINTERVAL,
+NMXP_DAP_TIMEOUT_KEEPALIVE
+    );
 
 #ifdef HAVE_LIBMSEED
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
@@ -628,6 +637,7 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 	{"end_time",     required_argument, NULL, 'e'},
 	{"interval",     required_argument, NULL, 't'},
 	{"delay",        required_argument, NULL, 'd'},
+	{"span_data",    required_argument, NULL, 'a'},
 	{"username",     required_argument, NULL, 'u'},
 	{"password",     required_argument, NULL, 'p'},
 	{"maxlatency",   required_argument, NULL, 'M'},
@@ -671,7 +681,7 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 	{0, 0, 0, 0}
     };
 
-    char optstr[300] = "H:P:D:C:N:n:S:R:s:e:t:d:u:p:M:T:v:B:A:F:f:gGblLiwhV";
+    char optstr[300] = "H:P:D:C:N:n:S:R:s:e:t:d:a:u:p:M:T:v:B:A:F:f:gGblLiwhV";
 
     int option_index = 0;
 
@@ -817,6 +827,10 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 
 		case 'd':
 		    ret_errors += nmxptool_read_time(optarg, &(params->delay) );
+		    break;
+
+		case 'a':
+		    ret_errors += nmxptool_read_time(optarg, &(params->span_data) );
 		    break;
 
 		case 'u':
@@ -1248,6 +1262,15 @@ int nmxptool_check_params(NMXPTOOL_PARAMS *params) {
 	ret = -1;
 	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "<delay> has to be in the interval [%d..%d] secs.\n",
 		DEFAULT_DELAY_MINIMUM, DEFAULT_DELAY_MAXIMUM);
+    } else if(params->span_data < DEFAULT_SPANINTERVAL_MINIMUM || params->span_data > DEFAULT_SPANINTERVAL_MAXIMUM) {
+	ret = -1;
+	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "<span_data> has to be in the interval [%d..%d] secs.\n",
+		DEFAULT_SPANINTERVAL_MINIMUM, DEFAULT_SPANINTERVAL_MAXIMUM);
+    } else if(params->delay != DEFAULT_DELAY &&
+	    (params->span_data >= params->delay - NMXP_DAP_TIMEOUT_KEEPALIVE)) {
+	ret = -1;
+	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "<span_data> has to be less than delay - %ds. Current value should be less than %ds.\n",
+		NMXP_DAP_TIMEOUT_KEEPALIVE, params->delay - NMXP_DAP_TIMEOUT_KEEPALIVE);
     } else if(params->verbose_level < DEFAULT_VERBOSE_LEVEL_MINIMUM  ||  params->verbose_level > DEFAULT_VERBOSE_LEVEL_MAXIMUM) {
 	ret = -1;
 	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "<verbose_level> has to be in the interval [%d..%d].\n",

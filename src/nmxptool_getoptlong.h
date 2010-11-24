@@ -40,6 +40,10 @@
 #define DEFAULT_DELAY_MAXIMUM  	(86400 * 31)
 #define DEFAULT_DELAY    	0
 
+#define DEFAULT_SPANINTERVAL_MINIMUM  	10
+#define DEFAULT_SPANINTERVAL_MAXIMUM  	(86400 * 1)
+#define DEFAULT_SPANINTERVAL    	10
+
 #define DEFAULT_MAX_TOLERABLE_LATENCY_MINIMUM	10
 #define DEFAULT_MAX_TOLERABLE_LATENCY_MAXIMUM	600
 #define DEFAULT_MAX_TOLERABLE_LATENCY 		600
@@ -119,6 +123,7 @@ typedef struct {
     int32_t rate;
     char *plugin_slink;
     int32_t delay;
+    int32_t span_data;
     int32_t max_tolerable_latency;
     int32_t timeoutrecv;
     int32_t verbose_level;
