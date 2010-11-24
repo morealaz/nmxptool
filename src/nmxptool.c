@@ -146,7 +146,6 @@ int main (int argc, char **argv) {
     int exitdapcondition;
     time_t timeout_for_channel;
 
-    int span_interval = 10;
     int time_to_sleep = 0;
 
     char str_start_time[200] = "";
@@ -470,8 +469,8 @@ int main (int argc, char **argv) {
 		params.end_time = nmxp_data_gmtime_now();
 	    }
 	} else if(params.delay > 0) {
-	    params.start_time = ((double) (time(NULL) - params.delay - span_interval) / 10.0) * 10.0;
-	    params.end_time = params.start_time + span_interval;
+	    params.start_time = ((double) (time(NULL) - params.delay - params.span_data) / 10.0) * 10.0;
+	    params.end_time = params.start_time + params.span_data;
 	}
 
 
@@ -750,15 +749,30 @@ int main (int argc, char **argv) {
 	    /* DAP Step 7: Repeat steps 5 and 6 for each data request */
 
 	    if(params.delay > 0) {
-		time_to_sleep = (params.end_time - params.start_time) - (time(NULL) - (params.start_time + params.delay + span_interval));
+		time_to_sleep = (params.end_time - params.start_time) - (time(NULL) - (params.start_time + params.delay + params.span_data));
+		/* TODO if time_to_sleep exceds DAP protocol time-out, split sleep() and send alive packet */
 		if(time_to_sleep >= 0) {
-		    nmxp_sleep(time_to_sleep);
+		    while(time_to_sleep>0 && !nmxptool_sigcondition_read()) {
+			nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_EXTRA, "time to sleep %d sec.\n", time_to_sleep);
+			if(time_to_sleep >= NMXP_DAP_TIMEOUT_KEEPALIVE) {
+			    nmxp_sleep(NMXP_DAP_TIMEOUT_KEEPALIVE);
+			    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_EXTRA, "nmxp_sendRequestPending\n");
+			    nmxp_sendRequestPending(naqssock);
+			    if(nmxp_waitReady(naqssock) != NMXP_SOCKET_OK) {
+				nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CONNFLOW, "Error waiting Ready message!\n");
+				return 1;
+			    }
+			} else {
+			    nmxp_sleep(time_to_sleep);
+			}
+			time_to_sleep -= NMXP_DAP_TIMEOUT_KEEPALIVE;
+		    }
 		} else {
 		    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CONNFLOW, "time to sleep %d sec.\n", time_to_sleep);
 		    nmxp_sleep(3);
 		}
 		params.start_time = params.end_time;
-		params.end_time = params.start_time + span_interval;
+		params.end_time = params.start_time + params.span_data;
 	    } else {
 		exitdapcondition = 0;
 	    }
