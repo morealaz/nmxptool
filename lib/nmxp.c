@@ -467,6 +467,19 @@ int nmxp_sendDataRequest(int isock, int32_t key, int32_t start_time, int32_t end
 }
 
 
+int nmxp_sendRequestPending(int isock) {
+    int ret;
+
+    ret = nmxp_sendMessage(isock, NMXP_MSG_REQUESTPENDING, NULL, 0);
+
+    if(ret != NMXP_SOCKET_OK) {
+	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CONNFLOW, "Send a RequestPending message\n");
+    }
+
+    return ret;
+}
+
+
 NMXP_CHAN_LIST *nmxp_getAvailableChannelList(char * hostname, int portnum, NMXP_DATATYPE datatype, int (*func_cond)(void)) {
     int naqssock;
     NMXP_CHAN_LIST *channelList = NULL, *channelList_subset = NULL;

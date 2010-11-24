@@ -1154,6 +1154,16 @@ int nmxp_waitReady(int isock);
 int nmxp_sendDataRequest(int isock, int32_t key, int32_t start_time, int32_t end_time);
 
 
+/*! \brief Sends the message "RequestPending" on a socket
+ *
+ * \param isock A descriptor referencing the socket.
+ *
+ * \retval SOCKET_OK on success
+ * \retval SOCKET_ERROR on error
+ * 
+ */
+int nmxp_sendRequestPending(int isock);
+
 /*! \brief Get the list of available channels from a server 
  *
  * \param hostname host name
