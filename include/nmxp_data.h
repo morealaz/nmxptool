@@ -110,6 +110,9 @@ typedef struct {
 /*! \brief Length in bytes of channel strings */
 #define NMXP_DATA_CHANNEL_LENGTH 10
 
+/*! Time-out for keeping the DataServer connection alive  */
+#define NMXP_DAP_TIMEOUT_KEEPALIVE 15
+
 /*! \brief Parameter structure for functions that process data */
 typedef struct {
     int32_t key;			/*!< \brief Channel Key */
