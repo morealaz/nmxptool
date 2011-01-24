@@ -14,6 +14,8 @@ dist-hook:
 	rm -rf `find $(distdir)/seiscomp_templates -name CVS`
 	rm -rf `find $(distdir)/earthworm -name .svn`
 	rm -rf `find $(distdir)/seiscomp_templates -name .svn`
+	rm -rf `find $(distdir)/doc -name CVS`
+	rm -rf `find $(distdir)/doc -name .svn`
 
 binary_distdir_FILES= \
 	AUTHORS \
