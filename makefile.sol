@@ -1,1 +1,1 @@
-earthworm/makefile.ux
+earthworm/makefile.ux.nognu
