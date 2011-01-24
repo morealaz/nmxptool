@@ -1,7 +1,7 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ(2.61)
+AC_PREREQ([2.68])
 
 AC_CONFIG_MACRO_DIR([m4])
 
@@ -33,6 +33,7 @@ m4_define([bug_report_address], [quintiliani@ingv.it])
 AC_INIT([full_package_name], [version], [bug_report_address])
 AC_CONFIG_SRCDIR([src/nmxptool.c])
 AC_CONFIG_HEADER([config.h])
+AC_CONFIG_SRCDIR([config.h.in])
 
 AC_CANONICAL_SYSTEM
 
