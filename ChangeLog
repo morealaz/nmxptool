@@ -1,10 +1,66 @@
-2010-10-22 09:41
+2011-01-24 15:52
 
 	* nmxptool:
 
 	  Open-Source and Cross-Platform software for Nanometrics seismic data acquisition
 	  Matteo Quintiliani - Istituto Nazionale di Geofisica e Vulcanologia - Italy
 	  Mail bug reports and suggestions to <quintiliani@ingv.it> 
+
+2010-11-24 15:31  mtheo <quintiliani@ingv.it>
+
+	* [r1384] src/nmxptool.c: Added management of span_data and time to
+	  sleep
+
+2010-11-24 15:31  mtheo <quintiliani@ingv.it>
+
+	* [r1383] src/nmxptool_getoptlong.c, src/nmxptool_getoptlong.h: Added
+	  parameter span_data
+
+2010-11-24 15:30  mtheo <quintiliani@ingv.it>
+
+	* [r1382] include/nmxp_data.h: Added declaration of
+	  NMXP_DAP_TIMEOUT_KEEPALIVE
+
+2010-11-24 15:29  mtheo <quintiliani@ingv.it>
+
+	* [r1381] include/nmxp.h, lib/nmxp.c: Added function
+	  nmxp_sendRequestPending()
+
+2010-11-06 20:26  mtheo <quintiliani@ingv.it>
+
+	* [r1380] README: Up to date information about signal handling
+
+2010-10-22 08:26  mtheo <quintiliani@ingv.it>
+
+	* [r1377] earthworm/nmxptool_cmd.html: Up to date earthworm
+	  configuration
+
+2010-10-22 07:58  mtheo <quintiliani@ingv.it>
+
+	* [r1376] earthworm/makefile.ux, earthworm/makefile.ux.nognu: Minor
+	  change
+
+2010-10-22 07:57  mtheo <quintiliani@ingv.it>
+
+	* [r1375] Makefile.am: Remove subversion directory from tarball
+	  distribution
+
+2010-10-22 07:42  mtheo <quintiliani@ingv.it>
+
+	* [r1374] no_dist/scripts/SVNAUTHORS[CPY],
+	  no_dist/scripts/nmxp_svn2cl.sh[CPY]: Added scripts for svn2cl
+
+2010-10-22 07:42  mtheo <quintiliani@ingv.it>
+
+	* [r1373] ChangeLog: Up to date ChangeLog
+
+2010-10-22 07:17  mtheo <quintiliani@ingv.it>
+
+	* [r1372] HISTORY: Up to date HISTORY
+
+2010-10-22 07:16  mtheo <quintiliani@ingv.it>
+
+	* [r1371] configure.in: Incremented version to 2.0.0
 
 2010-10-01 10:13  mtheo <quintiliani@ingv.it>
 
