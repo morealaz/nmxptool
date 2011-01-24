@@ -1,0 +1,4 @@
+#!/bin/sh
+
+glibtoolize --force --copy && autoheader && aclocal && autoconf && automake -a -c
+

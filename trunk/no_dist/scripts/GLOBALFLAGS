@@ -1,0 +1,8 @@
+ew_cygwin.bash:export GLOBALFLAGS="-D_CYGWIN -Dlinux -D__i386 -D_LINUX -D_INTEL -D_USE_SCHED  -D_USE_PTHREADS -D_USE_TERMIOS -I${EW_HOME}/${EW_VERSION}/include"
+ew_linux.bash:export GLOBALFLAGS="-m32 -Dlinux -D__i386 -D_LINUX -D_INTEL -D_USE_SCHED  -D_USE_PTHREADS -D_USE_TERMIOS -I${EW_HOME}/${EW_VERSION}/include"
+ew_macosx_intel.sh:export GLOBALFLAGS="-D_MACOSX -D_INTEL -D_USE_PTHREADS -D_USE_SCHED -I${EW_HOME}/${EW_VERSION}/include"
+ew_macosx_ppc.sh:export GLOBALFLAGS="-D_MACOSX -D_SPARC -D_USE_PTHREADS -D_USE_SCHED -I${EW_HOME}/${EW_VERSION}/include"
+ew_nt.cmd:set GLOBALFLAGS="/D_WINNT /D_INTEL /D_CRT_SECURE_NO_DEPRECATE /D_USE_32BIT_TIME_T"
+ew_nt_ux.sh:export GLOBALFLAGS="-D_WINNT -D_INTEL -D_CRT_SECURE_NO_DEPRECATE -D_USE_32BIT_TIME_T -I${EW_HOME}/${EW_VERSION}/include"
+ew_sol_intel.cmd:setenv GLOBALFLAGS "-D_INTEL -D_SOLARIS -I${EW_HOME}/${EW_VERSION}/include -I${SCHEMA_DIR}/src/include -I${SCHEMA_DIR}/src/include/internal -I${APPS_DIR}/src/include -I${ORACLE_HOME}/rdbms/demo"
+ew_sol_sparc.cmd:setenv GLOBALFLAGS "-D_SPARC -D_SOLARIS -I${EW_HOME}/${EW_VERSION}/include -I${SCHEMA_DIR}/src/include -I${SCHEMA_DIR}/src/include/internal -I${APPS_DIR}/src/include -I${ORACLE_HOME}/rdbms/demo"
