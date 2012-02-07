@@ -97,7 +97,7 @@ typedef struct {
     int32_t length;
 } NMXP_MESSAGE_HEADER;
 
-#define NMXP_MAX_LENGTH_DATA_BUFFER (4092 * 2)
+#define NMXP_MAX_LENGTH_DATA_BUFFER (4092 * 4)
 
 #define NMXP_DATA_MAX_SIZE_DATE 200
 
