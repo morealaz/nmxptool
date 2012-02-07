@@ -168,11 +168,12 @@ int nmxp_receiveMessage(int isock, NMXP_MSG_SERVER *type, void *buffer, int32_t 
  * \param length_data Buffer length in bytes.
  * \param channelList Pointer to the Channel List.
  * \param network_code_default Value of network code to assign returned structure. It should not be NULL.
+ * \param location_code_default Value of location code to assign returned structure. It should not be NULL.
  *
  * \return Return a pointer to static struct NMXP_DATA_PROCESS.
  *
  */
-NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data, NMXP_CHAN_LIST_NET *channelList, const char *network_code_default);
+NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data, NMXP_CHAN_LIST_NET *channelList, const char *network_code_default, const char *location_code_default);
 
 
 /*! \brief Process decompressed Data message by function func_processData().
@@ -181,11 +182,12 @@ NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data
  * \param length_data Buffer length in bytes.
  * \param channelList Pointer to the Channel List.
  * \param network_code_default Value of network code to assign returned structure. It should not be NULL.
+ * \param location_code_default Value of location code to assign returned structure. It should not be NULL.
  *
  * \return Return a pointer to static struct NMXP_DATA_PROCESS.
  *
  */
-NMXP_DATA_PROCESS *nmxp_processDecompressedData(char* buffer_data, int length_data, NMXP_CHAN_LIST_NET *channelList, const char *network_code_default);
+NMXP_DATA_PROCESS *nmxp_processDecompressedData(char* buffer_data, int length_data, NMXP_CHAN_LIST_NET *channelList, const char *network_code_default, const char *location_code_default);
 
 
 /*! \brief Wrapper for functions sleep on different platforms

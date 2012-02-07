@@ -461,7 +461,7 @@ int nmxp_receiveMessage(int isock, NMXP_MSG_SERVER *type, void *buffer, int32_t 
 }
 
 
-NMXP_DATA_PROCESS *nmxp_processDecompressedData(char* buffer_data, int length_data, NMXP_CHAN_LIST_NET *channelList, const char *network_code_default)
+NMXP_DATA_PROCESS *nmxp_processDecompressedData(char* buffer_data, int length_data, NMXP_CHAN_LIST_NET *channelList, const char *network_code_default, const char *location_code_default)
 {
   int32_t   netInt    = 0;
   int32_t   pKey      = 0;
@@ -477,6 +477,7 @@ NMXP_DATA_PROCESS *nmxp_processDecompressedData(char* buffer_data, int length_da
   char station_code[NMXP_CHAN_MAX_SIZE_STR_PATTERN];
   char channel_code[NMXP_CHAN_MAX_SIZE_STR_PATTERN];
   char network_code[NMXP_CHAN_MAX_SIZE_STR_PATTERN];
+  char location_code[NMXP_CHAN_MAX_SIZE_STR_PATTERN];
 
   char *nmxp_channel_name = NULL;
   NMXP_DATA_PROCESS *pd   = NULL;
@@ -514,7 +515,7 @@ NMXP_DATA_PROCESS *nmxp_processDecompressedData(char* buffer_data, int length_da
       pDataPtr[idx] = netInt;
   }
 
-  if(!nmxp_chan_cpy_sta_chan(nmxp_channel_name, station_code, channel_code, network_code)) {
+  if(!nmxp_chan_cpy_sta_chan(nmxp_channel_name, station_code, channel_code, network_code, location_code)) {
     nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_PACKETMAN, "Channel name not in STA.CHAN format: %s\n",
 	    NMXP_LOG_STR(nmxp_channel_name));
   }
@@ -530,6 +531,11 @@ NMXP_DATA_PROCESS *nmxp_processDecompressedData(char* buffer_data, int length_da
   }
   if(channel_code[0] != 0) {
       strncpy(pd->channel, channel_code, NMXP_DATA_CHANNEL_LENGTH);
+  }
+  if(location_code[0] != 0) {
+      strncpy(pd->location, location_code, NMXP_DATA_LOCATION_LENGTH);
+  } else {
+      strncpy(pd->location, location_code_default, NMXP_DATA_LOCATION_LENGTH);
   }
   pd->packet_type = NMXP_MSG_DECOMPRESSED;
   pd->x0 = -1;
@@ -555,7 +561,7 @@ NMXP_DATA_PROCESS *nmxp_processDecompressedData(char* buffer_data, int length_da
 }
 
 
-NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data, NMXP_CHAN_LIST_NET *channelList, const char *network_code_default)
+NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data, NMXP_CHAN_LIST_NET *channelList, const char *network_code_default, const char *location_code_default)
 {
     int32_t   pKey      = 0;
     double    pTime     = 0.0;
@@ -566,6 +572,7 @@ NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data
     char station_code[NMXP_CHAN_MAX_SIZE_STR_PATTERN];
     char channel_code[NMXP_CHAN_MAX_SIZE_STR_PATTERN];
     char network_code[NMXP_CHAN_MAX_SIZE_STR_PATTERN];
+    char location_code[NMXP_CHAN_MAX_SIZE_STR_PATTERN];
 
     NMXP_DATA_PROCESS *pd = NULL;
 
@@ -673,7 +680,7 @@ NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data
 
 	if(nmxp_channel_name) {
 
-	if(!nmxp_chan_cpy_sta_chan(nmxp_channel_name, station_code, channel_code, network_code)) {
+	if(!nmxp_chan_cpy_sta_chan(nmxp_channel_name, station_code, channel_code, network_code, location_code)) {
 	    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_PACKETMAN, "Channel name not in STA.CHAN format: %s\n",
 		    NMXP_LOG_STR(nmxp_channel_name));
 	}
@@ -728,6 +735,11 @@ NMXP_DATA_PROCESS *nmxp_processCompressedData(char* buffer_data, int length_data
 	}
 	if(channel_code[0] != 0) {
 	    strncpy(pd->channel, channel_code, NMXP_DATA_CHANNEL_LENGTH);
+	}
+	if(location_code[0] != 0) {
+	    strncpy(pd->location, location_code, NMXP_DATA_LOCATION_LENGTH);
+	} else {
+	    strncpy(pd->location, location_code_default, NMXP_DATA_LOCATION_LENGTH);
 	}
 	pd->packet_type = nmx_ptype;
 	pd->x0 = nmx_x0;

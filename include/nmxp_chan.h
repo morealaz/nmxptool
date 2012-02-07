@@ -124,7 +124,8 @@ typedef struct {
  * \param net_dot_station_dot_channel string containing NET.STA.CHAN where NET. is optional
  * \param[out] station_code Pointer to string for station code
  * \param[out] channel_code Pointer to string for channel code
- * \param[out] network_code Pointer to string for station code
+ * \param[out] network_code Pointer to string for network code
+ * \param[out] location_code Pointer to string for location code
  *
  * \warning Parametes can not be NULL!
  *
@@ -132,7 +133,7 @@ typedef struct {
  * \retval 0 on error
  *
  */
-int nmxp_chan_cpy_sta_chan(const char *net_dot_station_dot_channel, char *station_code, char *channel_code, char *network_code);
+int nmxp_chan_cpy_sta_chan(const char *net_dot_station_dot_channel, char *station_code, char *channel_code, char *network_code, char *location_code);
 
 
 /*! \brief Match station_dot_channel against pattern, treating errors as no match.
@@ -204,13 +205,14 @@ NMXP_CHAN_LIST *nmxp_chan_getType(NMXP_CHAN_LIST *channelList, NMXP_DATATYPE dat
  * \param dataType Type of channel.
  * \param sta_chan_list String list of item STA.CHAN, separeted by comma.
  * \param network_code_default Default Network code
+ * \param location_code_default Default Location code
  *
  * \return Channel list with specified dataType. It will need to be freed!
  *
  * \warning Returned value will need to be freed!
  *
  */
-NMXP_CHAN_LIST_NET *nmxp_chan_subset(NMXP_CHAN_LIST *channelList, NMXP_DATATYPE dataType, char *sta_chan_list, const char *network_code_default);
+NMXP_CHAN_LIST_NET *nmxp_chan_subset(NMXP_CHAN_LIST *channelList, NMXP_DATATYPE dataType, char *sta_chan_list, const char *network_code_default, const char *location_code_default);
 
 
 /*! Sort list by channel key

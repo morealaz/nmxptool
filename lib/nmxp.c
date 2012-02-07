@@ -222,7 +222,7 @@ int nmxp_sendAddTimeSeriesChannel(int isock, NMXP_CHAN_LIST_NET *channelList, in
 }
 
 
-NMXP_DATA_PROCESS *nmxp_receiveData(int isock, NMXP_CHAN_LIST_NET *channelList, const char *network_code, int timeoutsec, int *recv_errno ) {
+NMXP_DATA_PROCESS *nmxp_receiveData(int isock, NMXP_CHAN_LIST_NET *channelList, const char *network_code, const char *location_code, int timeoutsec, int *recv_errno ) {
     NMXP_MSG_SERVER type;
     char buffer[NMXP_MAX_LENGTH_DATA_BUFFER]={0};
     int32_t length;
@@ -231,10 +231,10 @@ NMXP_DATA_PROCESS *nmxp_receiveData(int isock, NMXP_CHAN_LIST_NET *channelList, 
     if(nmxp_receiveMessage(isock, &type, buffer, &length, timeoutsec, recv_errno, NMXP_MAX_LENGTH_DATA_BUFFER) == NMXP_SOCKET_OK) {
 	if(type == NMXP_MSG_COMPRESSED) {
 	    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN, "Type %d is NMXP_MSG_COMPRESSED!\n", type);
-	    pd = nmxp_processCompressedData(buffer, length, channelList, network_code);
+	    pd = nmxp_processCompressedData(buffer, length, channelList, network_code, location_code);
 	} else if(type == NMXP_MSG_DECOMPRESSED) {
 	    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN, "Type %d is NMXP_MSG_DECOMPRESSED!\n", type);
-	    pd = nmxp_processDecompressedData(buffer, length, channelList, network_code);
+	    pd = nmxp_processDecompressedData(buffer, length, channelList, network_code, location_code);
 	} else {
 	    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_PACKETMAN, "Type %d is not NMXP_MSG_COMPRESSED or NMXP_MSG_DECOMPRESSED!\n", type);
 	}

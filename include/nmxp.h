@@ -1093,6 +1093,7 @@ int nmxp_sendAddTimeSeriesChannel(int isock, NMXP_CHAN_LIST_NET *channelList, in
  * \param isock A descriptor referencing the socket.
  * \param channelList Channel list.
  * \param network_code Network code. It can be NULL.
+ * \param location_code Location code. It can be NULL.
  * \param timeoutsec Time-out in seconds
  * \param[out] recv_errno errno value after recv()
  *
@@ -1100,7 +1101,7 @@ int nmxp_sendAddTimeSeriesChannel(int isock, NMXP_CHAN_LIST_NET *channelList, in
  * \retval NULL on error
  * 
  */
-NMXP_DATA_PROCESS *nmxp_receiveData(int isock, NMXP_CHAN_LIST_NET *channelList, const char *network_code, int timeoutsec, int *recv_errno );
+NMXP_DATA_PROCESS *nmxp_receiveData(int isock, NMXP_CHAN_LIST_NET *channelList, const char *network_code, const char *location_code, int timeoutsec, int *recv_errno );
 
 
 /*! \brief Sends the message "ConnectRequest" on a socket

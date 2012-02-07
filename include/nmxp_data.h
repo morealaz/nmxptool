@@ -109,6 +109,7 @@ typedef struct {
 
 /*! \brief Length in bytes of channel strings */
 #define NMXP_DATA_CHANNEL_LENGTH 10
+#define NMXP_DATA_LOCATION_LENGTH 3
 
 /*! Time-out for keeping the DataServer connection alive  */
 #define NMXP_DAP_TIMEOUT_KEEPALIVE 15
@@ -119,6 +120,7 @@ typedef struct {
     char network[NMXP_DATA_NETWORK_LENGTH];	/*!< \brief Network code */
     char station[NMXP_DATA_STATION_LENGTH];	/*!< \brief Station code */
     char channel[NMXP_DATA_CHANNEL_LENGTH];	/*!< \brief Channel code */
+    char location[NMXP_DATA_LOCATION_LENGTH];	/*!< \brief Location code */
     int32_t packet_type;			/*!< \brief Packet type */
     int32_t x0;				/*!< \brief First sample. It is significant only if x0n_significant != 0 */
     int32_t xn;				/*!< \brief Last sample. It is significant only if x0n_significant != 0 */

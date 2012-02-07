@@ -57,6 +57,7 @@ Nanometrics server and connection parameters:<br>
 <a href="#TimeoutRecv">TimeoutRecv</a>		optional<br>
 <a href="#mschan">mschan</a>			optional<br>
 <a href="#DefaultNetworkCode">DefaultNetworkCode</a>	optional<br>
+<a href="#DefaultLocationCode">DefaultLocationCode</a>	optional<br>
 <a href="#ChannelFile">ChannelFile</a>		required	Xor Channel<br>
 <a href="#Channel">Channel</a>			required	Xor ChannelFile<br>
 <br>
@@ -82,20 +83,22 @@ and example commands are listed after each command description. </p>
 <pre><a name="Channel"><b>Channel <font color="red">streamkey</font>                 ReadConfig              nmxptool parameters<br></b><!-- command args ... -->           <br></a></pre>
 <blockquote><!-- command description goes here --> Specifies one stream
 of data to be requested from the NmxpHost.
-The <font color="red">streamkey</font> is not in SCNL format. It is composed of a network, station and channel code
-separated by period. network is optional and it is used only for output.
+The <font color="red">streamkey</font> is not in SCNL format. It is composed of a network, station, channel and location code
+separated by period. network and location are optional and they are used only for output.
 Station code can be &quot;&#42;&quot; that stands for all stations.
-Within channel code can appear character &quot;&#63;&quot; that stands for any characters. Location value is always set to &quot;--&quot;.
+Within channel code can appear character &quot;&#63;&quot; that stands for any characters. Default location is NULL and printed out as &quot;--&quot;.
 DO NOT USE WITH <a href="#ChannelFile">ChannelFile</a>!
   <pre>
 Default:  none
 Example:  Channel  ES.BOB.HH?
 	  Channel  MN.TIR.HH?
-	  Channel  SALO.HH?
+	  Channel  IV.MVVM.HH?.01
+	  Channel  SALO.HH?.03
 	  Channel  *.HHZ
 
-N.B. Network code will be assigned from the first pattern that includes station and channel.
-     Unless HH channels of BOB and TIR, all other stations will have default network code from <a href="#DefaultNetworkCode">DefaultNetworkCode</a>.
+N.B. Network and location code will be assigned from the first pattern that includes station and channel.
+     Unless HH channels of BOB, TIR and MVVM, all other stations will have default network code from <a href="#DefaultNetworkCode">DefaultNetworkCode</a>.
+     Unless HH channels of MVVM and SALO, all other stations will have NULL location or the default location code from <a href="#DefaultLocationCode">DefaultLocationCode</a>, if it is declared.
 </pre>
 </blockquote>
 
@@ -113,32 +116,58 @@ Default:  none
 Example:  ChannelFile  /home/ew/list_channels_naqs1.txt
 
 Example of file created by the user:
-ES.BOB.HH?
-MN.TIR.HH?
-SALO.HH?
-*.HH?
+TIR.HHZ.01
+ARCI.HHZ.02
+MM.JOPP.HHZ
+OO.FRES.HHZ
 
-N.B. Network code will be assigned from the first pattern that includes station and channel.
-     Unless HH channels of BOB and TIR, all other stations will have default network code from <a href="#DefaultNetworkCode">DefaultNetworkCode</a>.
+N.B. Network and location code will be assigned from the first pattern that includes station and channel.
+     See <a href="#DefaultNetworkCode">DefaultNetworkCode</a> and <a href="#DefaultLocationCode">DefaultLocationCode</a> 
 
 Example of file updated by nmxptool:
-1228603650 ES.BOB.HHE 2008.063,07:48:15.5799 2008.063,07:50:12.9000
-1228603649 ES.BOB.HHN 2008.063,07:48:16.0000 2008.063,07:50:13.6400
-1228603648 ES.BOB.HHZ 2008.063,07:48:16.0000 2008.063,07:50:12.4900
-1225851138 MN.TIR.HHE 2008.063,07:48:07.2200 2008.063,07:50:07.7999
-1225851137 MN.TIR.HHN 2008.063,07:48:16.0000 2008.063,07:50:07.9000
-1225851136 MN.TIR.HHZ 2008.063,07:48:05.7999 2008.063,07:50:08.2000
-1253900546 IV.SALO.HHE 2008.063,07:48:00.3199 2008.063,07:50:15.4800
-1253900545 IV.SALO.HHN 2008.063,07:48:16.0000 2008.063,07:50:15.7500
-1253900544 IV.SALO.HHZ 2008.063,07:48:16.0000 2008.063,07:50:16.3299
-1244987650 IV.AMUR.HHE 2008.063,07:48:09.0599 2008.063,07:50:13.3599
-1244987649 IV.AMUR.HHN 2008.063,07:48:10.9600 2008.063,07:50:11.8000
-1244987648 IV.AMUR.HHZ 2008.063,07:48:02.4600 2008.063,07:50:12.2799
-1237188866 IV.ARCI.HHE 2008.063,07:48:10.0099 2008.063,07:50:13.0100
-1237188865 IV.ARCI.HHN 2008.063,07:48:10.3399 2008.063,07:50:12.6200
-1237188864 IV.ARCI.HHZ 2008.063,07:48:16.0000 2008.063,07:50:11.6700
+MM.JOPP.HHZ.--  1 4321620 3596991 2012.027,23:38:33.7799 208pts lat. 4.1s
+MM.JOPP.HHZ.--  1 4321621 3596992 2012.027,23:38:35.8599 216pts lat. 2.0s
+IV.ARCI.HHZ.02  1 21431342 20706713 2012.027,23:38:27.6800 224pts lat. 10.1s
+IV.ARCI.HHZ.02  1 21431343 20706714 2012.027,23:38:29.9200 224pts lat. 8.8s
+IV.TIR.HHZ.01  1 103725441 103000812 2012.027,23:38:28.4600 224pts lat. 10.3s
+IV.ARCI.HHZ.02  1 21431344 20706715 2012.027,23:38:32.1600 224pts lat. 6.6s
+IV.TIR.HHZ.01  1 103725442 103000813 2012.027,23:38:30.7000 224pts lat. 8.1s
+IV.ARCI.HHZ.02  1 21431345 20706716 2012.027,23:38:34.4000 224pts lat. 4.4s
+IV.TIR.HHZ.01  1 103725443 103000814 2012.027,23:38:32.9400 224pts lat. 5.8s
+IV.TIR.HHZ.01  1 103725444 103000815 2012.027,23:38:35.1800 224pts lat. 3.6s
+IV.ARCI.HHZ.02  1 21431346 20706717 2012.027,23:38:36.6400 224pts lat. 2.1s
+OO.FRES.HHZ.--  1 42036166 41311537 2012.027,23:38:36.8199 128pts lat. 11.9s
+OO.FRES.HHZ.--  1 42036167 41311538 2012.027,23:38:38.0999 124pts lat. 10.7s
+OO.FRES.HHZ.--  1 42036168 41311539 2012.027,23:38:39.3399 118pts lat. 9.5s
+OO.FRES.HHZ.--  1 42036169 41311540 2012.027,23:38:40.5199 114pts lat. 8.3s
+OO.FRES.HHZ.--  1 42036170 41311541 2012.027,23:38:41.6600 116pts lat. 7.2s
+OO.FRES.HHZ.--  1 42036171 41311542 2012.027,23:38:42.8199 114pts lat. 6.0s
+MM.JOPP.HHZ.--  1 4321622 3596993 2012.027,23:38:38.0199 190pts lat. 10.1s
+OO.FRES.HHZ.--  1 42036172 41311543 2012.027,23:38:43.9600 114pts lat. 4.9s
+OO.FRES.HHZ.--  1 42036173 41311544 2012.027,23:38:45.0999 116pts lat. 3.7s
+MM.JOPP.HHZ.--  1 4321623 3596994 2012.027,23:38:39.9200 218pts lat. 7.9s
+OO.FRES.HHZ.--  1 42036174 41311545 2012.027,23:38:46.2599 114pts lat. 2.6s
+MM.JOPP.HHZ.--  1 4321624 3596995 2012.027,23:38:42.0999 198pts lat. 5.9s
+MM.JOPP.HHZ.--  1 4321625 3596996 2012.027,23:38:44.0799 224pts lat. 3.7s
+IV.ARCI.HHZ.02  1 21431347 20706718 2012.027,23:38:38.8800 224pts lat. 9.9s
+IV.TIR.HHZ.01  1 103725445 103000816 2012.027,23:38:37.4200 224pts lat. 11.3s
+IV.ARCI.HHZ.02  1 21431348 20706719 2012.027,23:38:41.1199 224pts lat. 7.6s
+IV.TIR.HHZ.01  1 103725446 103000817 2012.027,23:38:39.6600 224pts lat. 9.1s
+IV.ARCI.HHZ.02  1 21431349 20706720 2012.027,23:38:43.3599 224pts lat. 5.4s
+IV.TIR.HHZ.01  1 103725447 103000818 2012.027,23:38:41.9000 224pts lat. 6.9s
+IV.ARCI.HHZ.02  1 21431350 20706721 2012.027,23:38:45.5999 224pts lat. 3.2s
+IV.TIR.HHZ.01  1 103725448 103000819 2012.027,23:38:44.1400 224pts lat. 4.6s
+MM.JOPP.HHZ.--  1 4321626 3596997 2012.027,23:38:46.3199 220pts lat. 2.5s
+IV.TIR.HHZ.01  1 103725449 103000820 2012.027,23:38:46.3800 224pts lat. 2.4s
 ...
 </pre>
+</blockquote>
+
+<hr><!-- ADD HERE: all commands; below is a sample command blank: --><!-- command name as anchor inside quotes -->
+<pre><a name="DefaultLocationCode"><b>DefaultLocationCode <font color="red">network_code</font>                 ReadConfig              nmxptool parameters<br></b><!-- command args ... -->           <br></a></pre>
+<blockquote><!-- command description goes here --> Specifies default <font color="red">location code</font>
+    for channels where is omitted.
+  <pre><br>Default:  NULL location (also printed out as &quot;--&quot;)<br>Example:  DefaultLocationCode  01</pre>
 </blockquote>
 
 <hr><!-- ADD HERE: all commands; below is a sample command blank: --><!-- command name as anchor inside quotes -->

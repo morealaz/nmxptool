@@ -18,18 +18,19 @@
 #include <string.h>
 #include <stdlib.h>
 
-int nmxp_chan_cpy_sta_chan(const char *net_dot_station_dot_channel, char *station_code, char *channel_code, char *network_code) {
+int nmxp_chan_cpy_sta_chan(const char *net_dot_station_dot_channel, char *station_code, char *channel_code, char *network_code, char *location_code) {
     int ret = 0;
     int errors = 0;
     int i;
-    char *period1 = NULL, *period2 = NULL;
+    char *period1 = NULL, *period2 = NULL, *period3 = NULL;
     char *tmp_name = NULL;
 
-    if(net_dot_station_dot_channel || station_code || channel_code || network_code) {
+    if(net_dot_station_dot_channel || station_code || channel_code || network_code || location_code) {
 
 	station_code[0] = 0;
 	channel_code[0] = 0;
 	network_code[0] = 0;
+	location_code[0] = 0;
 
 	tmp_name = NMXP_MEM_STRDUP(net_dot_station_dot_channel);
 	/* count '.' */
@@ -40,6 +41,8 @@ int nmxp_chan_cpy_sta_chan(const char *net_dot_station_dot_channel, char *statio
 		    period1 = tmp_name+i;
 		} else if(!period2) {
 		    period2 = tmp_name+i;
+		} else if(!period3) {
+		    period3 = tmp_name+i;
 		} else {
 		    errors++;
 		}
@@ -48,13 +51,38 @@ int nmxp_chan_cpy_sta_chan(const char *net_dot_station_dot_channel, char *statio
 	}
 	if(!errors && period1) {
 	    ret = 1;
-	    if(period2) {
-		/* NET.STA.CHAN */
+	    if(period3) {
+		/* NET.STA.CHAN.LOC */
 		*period1++ = '\0';
 		*period2++ = '\0';
+		*period3++ = '\0';
 		strncpy(network_code, tmp_name, NMXP_CHAN_MAX_SIZE_STR_PATTERN);
 		strncpy(station_code, period1, NMXP_CHAN_MAX_SIZE_STR_PATTERN);
 		strncpy(channel_code, period2, NMXP_CHAN_MAX_SIZE_STR_PATTERN);
+		strncpy(location_code, period3, NMXP_CHAN_MAX_SIZE_STR_PATTERN);
+	    } else
+	    if(period2) {
+		/* TODO NECESSARY  */
+		/* NET.STA.CHAN */
+		/* OR */
+		/* STA.CHAN.LOC */
+		*period1++ = '\0';
+		*period2++ = '\0';
+		if( strlen(period1) == 3 && strlen(period2) == 2) {
+		    /* STA.CHAN.LOC */
+		    strncpy(station_code, tmp_name, NMXP_CHAN_MAX_SIZE_STR_PATTERN);
+		    strncpy(channel_code, period1, NMXP_CHAN_MAX_SIZE_STR_PATTERN);
+		    strncpy(location_code, period2, NMXP_CHAN_MAX_SIZE_STR_PATTERN);
+		} else
+		if( strlen(tmp_name) == 2 && strlen(period2) == 3) {
+		    /* NET.STA.CHAN */
+		    strncpy(network_code, tmp_name, NMXP_CHAN_MAX_SIZE_STR_PATTERN);
+		    strncpy(station_code, period1, NMXP_CHAN_MAX_SIZE_STR_PATTERN);
+		    strncpy(channel_code, period2, NMXP_CHAN_MAX_SIZE_STR_PATTERN);
+		} else {
+		  nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANNEL, "Name %s is not in NET.STA.CHA.LOC format! (NET. .LOC are optional)\n",
+		      NMXP_LOG_STR(net_dot_station_dot_channel));
+		}
 	    } else {
 		/* STA.CHAN */
 		*period1++ = '\0';
@@ -93,16 +121,34 @@ int nmxp_chan_match(const char *net_dot_station_dot_channel, char *pattern)
     char sta_pattern[NMXP_CHAN_MAX_SIZE_STR_PATTERN];
     char cha_pattern[NMXP_CHAN_MAX_SIZE_STR_PATTERN];
     char net_pattern[NMXP_CHAN_MAX_SIZE_STR_PATTERN];
+    char loc_pattern[NMXP_CHAN_MAX_SIZE_STR_PATTERN];
     char sta_sdc[NMXP_CHAN_MAX_SIZE_STR_PATTERN];
     char *cha_sdc;
 
     /* validate pattern channel */
-    if(!nmxp_chan_cpy_sta_chan(pattern, sta_pattern, cha_pattern, net_pattern)) {
+    if(!nmxp_chan_cpy_sta_chan(pattern, sta_pattern, cha_pattern, net_pattern, loc_pattern)) {
 	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANNEL, "Channel pattern %s is not in STA.CHAN format!\n",
 		NMXP_LOG_STR(pattern));
 	return -1;
     }
 
+    l = strlen(loc_pattern);
+    i = 0;
+    while(i < l  &&  ret != -1) {
+	if(  !(
+		(loc_pattern[i] >= 'A'  &&  loc_pattern[i] <= 'Z')
+		|| (loc_pattern[i] >= 'a'  &&  loc_pattern[i] <= 'z')
+		|| (loc_pattern[i] >= '0'  &&  loc_pattern[i] <= '9')
+		|| (loc_pattern[i] == '-')
+		)
+	  ) {
+	    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CHANNEL, "Channel pattern %s has not valid LOC format!\n",
+		    NMXP_LOG_STR(pattern));
+	    return -1;
+	}
+	i++;
+    }
+    
     l = strlen(net_pattern);
     i = 0;
     while(i < l  &&  ret != -1) {
@@ -273,7 +319,7 @@ NMXP_CHAN_LIST *nmxp_chan_getType(NMXP_CHAN_LIST *channelList, NMXP_DATATYPE dat
 }
 
 
-NMXP_CHAN_LIST_NET *nmxp_chan_subset(NMXP_CHAN_LIST *channelList, NMXP_DATATYPE dataType, char *sta_chan_list, const char *network_code_default) {
+NMXP_CHAN_LIST_NET *nmxp_chan_subset(NMXP_CHAN_LIST *channelList, NMXP_DATATYPE dataType, char *sta_chan_list, const char *network_code_default, const char *location_code_default) {
     NMXP_CHAN_LIST_NET *ret_channelList = NULL;
     int istalist, ista;
     char sta_chan_code_pattern[100];
@@ -281,6 +327,7 @@ NMXP_CHAN_LIST_NET *nmxp_chan_subset(NMXP_CHAN_LIST *channelList, NMXP_DATATYPE 
     char network_code[NMXP_CHAN_MAX_SIZE_STR_PATTERN];
     char station_code[NMXP_CHAN_MAX_SIZE_STR_PATTERN];
     char channel_code[NMXP_CHAN_MAX_SIZE_STR_PATTERN];
+    char location_code[NMXP_CHAN_MAX_SIZE_STR_PATTERN];
     int i_chan_found = -1;
     int i_chan_duplicated = -1;
     char *nmxp_channel_name = NULL;
@@ -320,10 +367,11 @@ NMXP_CHAN_LIST_NET *nmxp_chan_subset(NMXP_CHAN_LIST *channelList, NMXP_DATATYPE 
 			    i_chan_found = i_chan;
 			    ret_channelList->channel[ret_channelList->number].key =        channelList->channel[i_chan_found].key;
 			    strncpy(ret_channelList->channel[ret_channelList->number].name, channelList->channel[i_chan_found].name, NMXP_CHAN_MAX_SIZE_NAME);
-			    nmxp_chan_cpy_sta_chan(sta_chan_code_pattern, station_code, channel_code, network_code);
-			    snprintf(ret_channelList->channel[ret_channelList->number].name, NMXP_CHAN_MAX_SIZE_NAME, "%s.%s",
-				    (network_code[0] != 0)? network_code : network_code_default, channelList->channel[i_chan_found].name);
-			    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CHANNEL, "Added %s for %s.\n",
+			    nmxp_chan_cpy_sta_chan(sta_chan_code_pattern, station_code, channel_code, network_code, location_code);
+			    snprintf(ret_channelList->channel[ret_channelList->number].name, NMXP_CHAN_MAX_SIZE_NAME, "%s.%s.%s",
+				    (network_code[0] != 0)? network_code : network_code_default, channelList->channel[i_chan_found].name,
+				    (location_code[0] != 0)? location_code : location_code_default );
+			    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_CHANNEL, "Added %s for %s .\n",
 				    ret_channelList->channel[ret_channelList->number].name, sta_chan_code_pattern);
 			    ret_channelList->number++;
 			} else {

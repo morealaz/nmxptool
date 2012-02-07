@@ -109,7 +109,7 @@ int nmxptool_ew_pd2ewring (NMXP_DATA_PROCESS *pd, SHM_INFO *pregionOut, MSG_LOGO
 	strncpy(tbuf.trh2.sta, pd->station, TRACE2_STA_LEN);
 	strncpy(tbuf.trh2.chan, pd->channel, TRACE2_CHAN_LEN);
 
-	strncpy(tbuf.trh2.loc, LOC_NULL_STRING, 2);
+	strncpy(tbuf.trh2.loc, (pd->location[0]==0)?  LOC_NULL_STRING : ( strcmp(pd->location, DEFAULT_NULL_LOCATION)==0? LOC_NULL_STRING : pd->location ), 2);
 
 	tbuf.trh2.version[0] = TRACE2_VERSION0;
 	tbuf.trh2.version[1] = TRACE2_VERSION1;
@@ -439,6 +439,17 @@ int nmxptool_ew_proc_configfile (char * configfile, NMXPTOOL_PARAMS *params) {
 			return EW_FAILURE;
 		    } else {
 			params->network = NMXP_MEM_STRDUP(str);
+		    }
+		}
+	    }
+
+	    else if (k_its ("DefaultLocationCode")) {
+		if ( (str = k_str ()) ) {
+		    if(params->location) {
+			logit("et", "DefaultLocationCode has been replicated!\n");
+			return EW_FAILURE;
+		    } else {
+			params->location = NMXP_MEM_STRDUP(str);
 		    }
 		}
 	    }

@@ -25,6 +25,7 @@
 #define NMXP_STR_STATE_EXT ".nmxpstate"
 
 #define DEFAULT_NETWORK  	"XX"
+#define DEFAULT_NULL_LOCATION  	"--"
 #define DEFAULT_PORT_DAP 	28002
 #define DEFAULT_PORT_PDS 	28000
 

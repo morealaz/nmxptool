@@ -62,6 +62,8 @@ int if_dap_condition_only_one_time = 0;
 #define EXIT_CONDITION ( EXIT_CONDITION_PRELIM )
 #endif
 		    
+#define CURRENT_LOCATION ( (params.location)? params.location : DEFAULT_NULL_LOCATION )
+#define LOCCODE_OR_CURRENT_LOCATION ( (location_code[0] != 0)? location_code : CURRENT_LOCATION )
 
 #define CURRENT_NETWORK ( (params.network)? params.network : DEFAULT_NETWORK )
 #define NETCODE_OR_CURRENT_NETWORK ( (network_code[0] != 0)? network_code : CURRENT_NETWORK )
@@ -168,7 +170,7 @@ int main (int argc, char **argv) {
 #endif
   
     char filename[500] = "";
-    char station_code[20] = "", channel_code[20] = "", network_code[20] = "";
+    char station_code[20] = "", channel_code[20] = "", network_code[20] = "", location_code[20] = "";
 
     char cur_after_start_time_str[1024];
     double cur_after_start_time = DEFAULT_BUFFERED_TIME;
@@ -372,7 +374,7 @@ int main (int argc, char **argv) {
 	return 1;
     }
 
-    channelList_subset = nmxp_chan_subset(channelList, NMXP_DATA_TIMESERIES, params.channels, CURRENT_NETWORK);
+    channelList_subset = nmxp_chan_subset(channelList, NMXP_DATA_TIMESERIES, params.channels, CURRENT_NETWORK, CURRENT_LOCATION);
     
     /* Free the complete channel list */
     if(channelList) {
@@ -402,13 +404,18 @@ int main (int argc, char **argv) {
 		msr_list_chan[i_chan] = msr_init(NULL);
 
 		/* Separate station_code and channel_code */
-		if(nmxp_chan_cpy_sta_chan(channelList_subset->channel[i_chan].name, station_code, channel_code, network_code)) {
+		if(nmxp_chan_cpy_sta_chan(channelList_subset->channel[i_chan].name, station_code, channel_code, network_code, location_code)) {
 
 		    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_EXTRA, "%s.%s.%s\n",
 			    NMXP_LOG_STR(NETCODE_OR_CURRENT_NETWORK), NMXP_LOG_STR(station_code), NMXP_LOG_STR(channel_code));
 		    strncpy(msr_list_chan[i_chan]->network, NETCODE_OR_CURRENT_NETWORK, 11);
 		    strncpy(msr_list_chan[i_chan]->station, station_code, 11);
 		    strncpy(msr_list_chan[i_chan]->channel, channel_code, 11);
+		    if(location_code[0] != 0) {
+		      if(strcmp(location_code, DEFAULT_NULL_LOCATION) != 0) {
+			strncpy(msr_list_chan[i_chan]->location, location_code, 11);
+		      }
+		    }
 
 		    msr_list_chan[i_chan]->reclen   = params.reclen;     /* Byte record length */
 		    msr_list_chan[i_chan]->encoding = params.encoding;  /* Steim 1 compression by default */
@@ -569,7 +576,7 @@ int main (int argc, char **argv) {
 /*Possible bug params not inited*/
 		    if(params.flag_writefile) {
 			/* Open output file */
-			if(nmxp_chan_cpy_sta_chan(channelList_subset->channel[request_chan].name, station_code, channel_code, network_code)) {
+			if(nmxp_chan_cpy_sta_chan(channelList_subset->channel[request_chan].name, station_code, channel_code, network_code, location_code)) {
 			    sprintf(filename, "%s.%s.%s_%s_%s.nmx",
 				    NETCODE_OR_CURRENT_NETWORK,
 				    station_code,
@@ -594,7 +601,7 @@ int main (int argc, char **argv) {
 			/* Compute SNCL line */
 
 			/* Separate station_code_old_way and channel_code_old_way */
-			if(nmxp_chan_cpy_sta_chan(channelList_subset->channel[request_chan].name, station_code, channel_code, network_code)) {
+			if(nmxp_chan_cpy_sta_chan(channelList_subset->channel[request_chan].name, station_code, channel_code, network_code, location_code)) {
 			    /* Write SNCL line */
 			    fprintf(outfile, "%s.%s.%s.%s\n",
 				    station_code,
@@ -625,7 +632,7 @@ int main (int argc, char **argv) {
 			    NMXP_MEM_FREE(pd);
 			}
 
-			pd = nmxp_processCompressedData(buffer, length, channelList_subset, NETCODE_OR_CURRENT_NETWORK);
+			pd = nmxp_processCompressedData(buffer, length, channelList_subset, NETCODE_OR_CURRENT_NETWORK, LOCCODE_OR_CURRENT_LOCATION);
 
 			/* Force value for timing_quality if declared in the command-line */
 			if(pd && params.timing_quality != -1) {
@@ -833,7 +840,7 @@ int main (int argc, char **argv) {
 	    return 1;
 	}
 	/* Get a subset of channel from arguments, in respect to the step 3 of PDS */
-	channelList_subset_waste = nmxp_chan_subset(channelList, NMXP_DATA_TIMESERIES, params.channels, CURRENT_NETWORK);
+	channelList_subset_waste = nmxp_chan_subset(channelList, NMXP_DATA_TIMESERIES, params.channels, CURRENT_NETWORK, CURRENT_LOCATION);
 
 	/* Free the complete channel list */
 	if(channelList) {
@@ -898,7 +905,7 @@ int main (int argc, char **argv) {
               NMXP_MEM_FREE(pd);
             } 
 	    /* Process Compressed or Decompressed Data */
-	    pd = nmxp_receiveData(naqssock, channelList_subset, NETCODE_OR_CURRENT_NETWORK, params.timeoutrecv, &recv_errno);
+	    pd = nmxp_receiveData(naqssock, channelList_subset, NETCODE_OR_CURRENT_NETWORK, LOCCODE_OR_CURRENT_LOCATION, params.timeoutrecv, &recv_errno);
 
             
             
@@ -1517,7 +1524,7 @@ int nmxptool_msr_send_mseed(NMXP_DATA_PROCESS *pd) {
     int cur_chan;
 
     MSRecord *msr = NULL;
-    int psamples;
+    int64_t psamples;
     int precords;
     flag verbose = 0;
 
@@ -1574,10 +1581,11 @@ int nmxptool_print_seq_no(NMXP_DATA_PROCESS *pd) {
     char str_time[200];
     nmxp_data_to_str(str_time, pd->time);
 
-    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "Process %s.%s.%s %2d %d %d %s %dpts lat. %.1fs\n",
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "Process %s.%s.%s.%s %2d %d %d %s %dpts lat. %.1fs\n",
 	    NMXP_LOG_STR(pd->network),
 	    NMXP_LOG_STR(pd->station),
 	    NMXP_LOG_STR(pd->channel),
+	    NMXP_LOG_STR(pd->location),
 	    pd->packet_type,
 	    pd->seq_no,
 	    pd->oldest_seq_no,

@@ -59,18 +59,22 @@ MaxTolerableLatency  60                  # Raw Stream, NOT use 'ShortTermComplet
 DefaultNetworkCode   IV                  # Default network code where in 'ChannelFile' or 'Channel' is not declared.
                                          # It is equivalent to the option -N.
 
+# DefaultLocationCode   01               # Default location code where in 'ChannelFile' or 'Channel' is not declared.
+                                         # It is equivalent to the option -n. (Default is NULL location)
+
                                          # N.B. nmxptool channel definition IS NOT equal to SCNL
-                                         # It is NSC, that is NET.STA.CHAN
+                                         # It is NSCL, that is NET.STA.CHAN.LOC
                                          # NET  is optional and used only for output.
                                          # STA  can be '*', stands for all stations.
                                          # CHAN can contain '?', stands for any character.
-                                         # Localtion value is always equal to "--".
+                                         # LOC  is optional and used only for output.
                                          # Related to the parameters 'ChannelFile' and 'Channel'.
-                                         # Network code will be assigned from the first
-                                         # pattern that includes station and channel.
-                                         # Example: N1.AAA.HH?,N2.*.HH?,MMM.BH?
+                                         # Network and location code will be assigned from the
+                                         # first pattern that include station and channel.
+                                         # Example: N1.AAA.HH?.01,N2.*.HH?,MMM.BH?.03
                                          # Second pattern includes the first. Unless AAA, all
                                          # stations with HH channels will have network to N2.
+                                         # Stations N2.*.HH? will have default location defined by 'DefaultLocationCode'.
                                          # Station MMM will have default network defined by 'DefaultNetworkCode'.
 
 #MaxDataToRetrieve    3600               # Max amount of data of the past to retrieve from the
@@ -114,9 +118,9 @@ ChannelFile   /home/ew/nmxptool.list.txt # List of channel patterns, as in 'Chan
 # Channel              ES.BOB.HH?
 # Channel              MN.TIR.HH?
 # Channel              MDI.HH?
-# Channel              DOI.HH?
+# Channel              DOI.HH?.01
 # Channel              SALO.HH?
-# Channel              MONC.HH?
+# Channel              IV.MONC.HH?.03
 # Channel              *.BHZ               # Channel selection
 
 # Please, for other details about parameters, refer to the command line "nmxptool -h"

@@ -3,6 +3,8 @@ nmxptool Release History
 #########################
 
 * Release 2.1.0-rc1    (2012/02/07) 
+    - Added capability to specify the location code within the channel
+        pattern declaration (options -C, -n).
     - Incremented value of NMXP_MAX_LENGTH_DATA_BUFFER.
 
 * Release 2.0.0    (2010/10/22) 

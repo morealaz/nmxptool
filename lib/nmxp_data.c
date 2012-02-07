@@ -82,6 +82,7 @@ int nmxp_data_init(NMXP_DATA_PROCESS *pd) {
     pd->network[0] = 0;
     pd->station[0] = 0;
     pd->channel[0] = 0;
+    pd->location[0] = 0;
     pd->packet_type = -1;
     pd->x0 = -1;
     pd->xn = -1;
@@ -356,11 +357,12 @@ int nmxp_data_log(NMXP_DATA_PROCESS *pd, int flag_sample) {
 
 	/* nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_PACKETMAN, "%12d %5s.%3s rate=%03d (%s - %s) [%d, %d] pts=%04d (%d, %d, %d, %d) lat=%.1f len=%d\n", */
 	/* printf("%10d %5s.%3s 03dHz (%s - %s) lat=%.1fs [%d, %d] pts=%04d (%d, %d, %d, %d) len=%d\n", */
-	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "%s.%s.%3s %3dHz (%s - %s) lat %.1fs [%d, %d] (%d) %4dpts (%d, %d, %d, %d, %d)\n",
+	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "%s.%s.%3s.%2s %3dHz (%s - %s) lat %.1fs [%d, %d] (%d) %4dpts (%d, %d, %d, %d, %d)\n",
 		/* pd->key, */
 		NMXP_LOG_STR(pd->network),
 		(strlen(pd->station) == 0)? "XXXX" : NMXP_LOG_STR(pd->station),
 		(strlen(pd->channel) == 0)? "XXX" : NMXP_LOG_STR(pd->channel),
+		(strlen(pd->location) == 0)? "XX" : NMXP_LOG_STR(pd->location),
 		pd->sampRate,
 		NMXP_LOG_STR(str_start),
 		NMXP_LOG_STR(str_end),
@@ -964,9 +966,10 @@ int nmxp_data_get_filename_ms(NMXP_DATA_SEED *data_seed, char *dirseedchan, char
 		msr->station,
 		nmxp_data_sepdir,
 		msr->channel);
-	snprintf(filenameseed, NMXP_DATA_MAX_SIZE_FILENAME, "%s.%s..%s.D.%d.%03d",
+	snprintf(filenameseed, NMXP_DATA_MAX_SIZE_FILENAME, "%s.%s.%s.%s.D.%d.%03d",
 		NMXP_DATA_NETCODE_OR_DEFAULT_NETWORK,
 		msr->station,
+		(msr->location[0] == 0)? "" : msr->location,
 		msr->channel,
 		nmxp_data_year_from_epoch(MS_HPTIME2EPOCH(msr->starttime)),
 		nmxp_data_yday_from_epoch(MS_HPTIME2EPOCH(msr->starttime)));
@@ -976,9 +979,10 @@ int nmxp_data_get_filename_ms(NMXP_DATA_SEED *data_seed, char *dirseedchan, char
 		NMXP_DATA_NETCODE_OR_DEFAULT_NETWORK,
 		nmxp_data_sepdir,
 		msr->station);
-	snprintf(filenameseed, NMXP_DATA_MAX_SIZE_FILENAME, "%s.%s..%s.%d.%03d",
+	snprintf(filenameseed, NMXP_DATA_MAX_SIZE_FILENAME, "%s.%s.%s.%s.%d.%03d",
 		msr->station,
 		NMXP_DATA_NETCODE_OR_DEFAULT_NETWORK,
+		(msr->location[0] == 0)? "" : msr->location,
 		msr->channel,
 		nmxp_data_year_from_epoch(MS_HPTIME2EPOCH(msr->starttime)),
 		nmxp_data_yday_from_epoch(MS_HPTIME2EPOCH(msr->starttime)));
@@ -1019,7 +1023,7 @@ int nmxp_data_msr_pack(NMXP_DATA_PROCESS *pd, NMXP_DATA_SEED *data_seed, void *p
     int ret =0;
 
     MSRecord *msr = pmsr;
-    int psamples;
+    int64_t psamples;
     int precords;
     flag verbose = 0;
     int i;

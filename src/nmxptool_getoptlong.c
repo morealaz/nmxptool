@@ -194,16 +194,18 @@ NMXP_LOG_STR(DAP_VERSION)
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
 Main arguments:\n\
   -H, --hostname=HOST     NaqsServer/DataServer hostname or IP address.\n\
-  -C, --channels=LIST     List of NET.STA.CHAN separated by comma.\n\
+  -C, --channels=LIST     List of NET.STA.CHAN.LOC separated by comma.\n\
                           NET  is optional and used only for output.\n\
                           STA  can be '*', it stands for all stations.\n\
                           CHAN can contain '?', it stands for any character.\n\
-                          Network code will be assigned from the first\n\
-                          pattern that includes station and channel.\n\
+                          LOC  is optional and used only for output.\n\
+                          Network and location code will be assigned from the\n\
+                          first pattern that include station and channel.\n\
                           DO NOT USE with -F.\n\
-                                Example: N1.AAA.HH?,N2.*.HH?,MMM.BH?\n\
+                                Example: N1.AAA.HH?.01,N2.*.HH?,MMM.BH?.03\n\
                           Second pattern includes the first. Unless AAA, all\n\
                           stations with HH channels will have network to N2.\n\
+                          Stations N2.*.HH? will have default location defined by -n.\n\
                           Station MMM will have default network defined by -N.\n\
   -F, --statefile=FILE    List of channel patterns, as in -C. One for each line.\n\
                           Load/Save time of the last sample of each channel\n\
@@ -393,7 +395,8 @@ SeedLink arguments:\n");
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
 Other arguments:\n\
   -N, --network=NET       Default output Network code. (default '%s').\n\
-  -n, --location=LOC      Default output Location code. DISABLED!\n\
+  -n, --location=LOC      Default output Location code. (default is NULL).\n\
+                          Location NULL is printed out as '%s'.\n\
   -v, --verbose=LEVEL     Be verbose. LEVEL is a bitmap:\n\
                           %d Channel State, %d Channel, %d Raw Stream,\n\
                           %d CRC32, %d Connection flow,\n\
@@ -403,6 +406,7 @@ Other arguments:\n\
   -G, --logsample         Print sample values of packets. Includes -g.\n\
 ",
 	    NMXP_LOG_STR(DEFAULT_NETWORK),
+	    NMXP_LOG_STR(DEFAULT_NULL_LOCATION),
 	    NMXP_LOG_D_CHANSTATE,
 	    NMXP_LOG_D_CHANNEL,
 	    NMXP_LOG_D_RAWSTREAM,
@@ -784,11 +788,7 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 		    break;
 
 		case 'n':
-		    if(1) {
-			nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "Location is currently disabled!\n");
-		    } else {
-			params->location = optarg;
-		    }
+		    params->location = optarg;
 		    break;
 
 		case 'S':
