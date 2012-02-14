@@ -102,8 +102,13 @@ int nmxptool_ew_pd2ewring (NMXP_DATA_PROCESS *pd, SHM_INFO *pregionOut, MSG_LOGO
 
 	tbuf.trh2.starttime = pd->time;
 	tbuf.trh2.samprate = pd->sampRate;
-	tbuf.trh2.endtime = (tbuf.trh2.starttime +
+	if(pd->sampRate > 0) {
+	    tbuf.trh2.endtime = (tbuf.trh2.starttime +
 		(((double) tbuf.trh2.nsamp - 1.0) / (double) tbuf.trh2.samprate));
+	} else {
+	    /* Avoiding to divide by zero, try to invalidate the data in a safe way */
+	    tbuf.trh2.endtime = tbuf.trh2.starttime;
+	}
 
 	strncpy(tbuf.trh2.net, pd->network, TRACE2_NET_LEN);
 	strncpy(tbuf.trh2.sta, pd->station, TRACE2_STA_LEN);
@@ -136,8 +141,13 @@ int nmxptool_ew_pd2ewring (NMXP_DATA_PROCESS *pd, SHM_INFO *pregionOut, MSG_LOGO
 
 	tbuf.trh.starttime = pd->time;
 	tbuf.trh.samprate = pd->sampRate;
-	tbuf.trh.endtime = (tbuf.trh.starttime +
+	if(pd->sampRate > 0) {
+	    tbuf.trh.endtime = (tbuf.trh.starttime +
 		(((double) tbuf.trh.nsamp - 1.0) / (double) tbuf.trh.samprate));
+	} else {
+	    /* Avoiding to divide by zero, try to invalidate the data in a safe way */
+	    tbuf.trh.endtime = tbuf.trh.starttime;
+	}
 
 	strncpy(tbuf.trh.net, pd->network, TRACE_NET_LEN);
 	strncpy(tbuf.trh.sta, pd->station, TRACE_STA_LEN);
