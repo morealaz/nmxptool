@@ -200,6 +200,8 @@ void nmxptool_chanseq_load_states(NMXP_CHAN_LIST_NET *chan_list, NMXPTOOL_CHAN_S
 		}
 		fclose(fstatefileINPUT);
 	    }
+	} else {
+	    fclose(fstatefile);
 	}
     }
 
