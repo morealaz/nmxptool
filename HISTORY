@@ -2,10 +2,12 @@
 nmxptool Release History
 #########################
 
-* Release 2.1.0-rc2    (2012/02/16) 
-    - Added capability to specify the location code within the channel
-        pattern declaration (options -C, -n).
-    - Incremented value of NMXP_MAX_LENGTH_DATA_BUFFER.
+* Release 2.1.0-rc3    (2012/03/01) 
+    - Improvement: added capability to specify the location code within the
+        channel pattern declaration (options -C, -n).
+    - Improvement: also on earthworm, nmxptool responds quickly to 'stopmodule'
+        and 'restart' when the server is unreachable.
+    - Improvement: incremented value of NMXP_MAX_LENGTH_DATA_BUFFER.
     - Fixed minor bug: computing endtime for earthworm tracebuf.
     - Fixed minor bug: in some cases did not close .nmxpstate file.
 

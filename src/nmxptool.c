@@ -72,6 +72,8 @@ static void ShutdownHandler(int sig);
 static void nmxptool_AlarmHandler(int sig);
 static void CloseConnectionHandler(int sig);
 
+int nmxptool_exitcondition_on_open_socket();
+
 void flushing_raw_data_stream();
 
 void *nmxptool_print_info_raw_stream(void *arg);
@@ -264,7 +266,7 @@ int main (int argc, char **argv) {
 	/* List available channels on server */
 	if(params.flag_listchannels) {
 
-	    meta_channelList = nmxp_getMetaChannelList(params.hostname, params.portnumberdap, NMXP_DATA_TIMESERIES, params.flag_request_channelinfo, params.datas_username, params.datas_password, &channelList, nmxptool_sigcondition_read);
+	    meta_channelList = nmxp_getMetaChannelList(params.hostname, params.portnumberdap, NMXP_DATA_TIMESERIES, params.flag_request_channelinfo, params.datas_username, params.datas_password, &channelList, nmxptool_exitcondition_on_open_socket);
 
 	    /* nmxp_meta_chan_print(meta_channelList); */
 	    nmxp_meta_chan_print_with_match(meta_channelList, params.channels);
@@ -273,7 +275,7 @@ int main (int argc, char **argv) {
 
 	} else if(params.flag_listchannelsnaqs) {
 
-	    channelList = nmxp_getAvailableChannelList(params.hostname, params.portnumberpds, NMXP_DATA_TIMESERIES, nmxptool_sigcondition_read);
+	    channelList = nmxp_getAvailableChannelList(params.hostname, params.portnumberpds, NMXP_DATA_TIMESERIES, nmxptool_exitcondition_on_open_socket);
 
 	    /* nmxp_chan_print_channelList(channelList); */
 	    nmxp_chan_print_channelList_with_match(channelList, params.channels, 1);
@@ -361,12 +363,12 @@ int main (int argc, char **argv) {
 	if_dap_condition_only_one_time = 1;
 	/* From DataServer */
 	if(!nmxp_getMetaChannelList(params.hostname, params.portnumberdap, NMXP_DATA_TIMESERIES,
-		    params.flag_request_channelinfo, params.datas_username, params.datas_password, &channelList, nmxptool_sigcondition_read)) {
+		    params.flag_request_channelinfo, params.datas_username, params.datas_password, &channelList, nmxptool_exitcondition_on_open_socket)) {
 	    return -1;
 	}
     } else {
 	/* From NaqsServer */
-	channelList = nmxp_getAvailableChannelList(params.hostname, params.portnumberpds, NMXP_DATA_TIMESERIES, nmxptool_sigcondition_read);
+	channelList = nmxp_getAvailableChannelList(params.hostname, params.portnumberpds, NMXP_DATA_TIMESERIES, nmxptool_exitcondition_on_open_socket);
     }
 
     if(!channelList) {
@@ -486,7 +488,7 @@ int main (int argc, char **argv) {
 	/* ************************************************************** */
 
 	/* DAP Step 1: Open a socket */
-	if( (naqssock = nmxp_openSocket(params.hostname, params.portnumberdap, nmxptool_sigcondition_read)) == NMXP_SOCKET_ERROR) {
+	if( (naqssock = nmxp_openSocket(params.hostname, params.portnumberdap, nmxptool_exitcondition_on_open_socket)) == NMXP_SOCKET_ERROR) {
 	    nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CONNFLOW, "Error opening socket!\n");
 	    return 1;
 	}
@@ -822,7 +824,7 @@ int main (int argc, char **argv) {
 	/* ************************************************************* */
 
 	/* PDS Step 1: Open a socket */
-	naqssock = nmxp_openSocket(params.hostname, params.portnumberpds, nmxptool_sigcondition_read);
+	naqssock = nmxp_openSocket(params.hostname, params.portnumberpds, nmxptool_exitcondition_on_open_socket);
 
 	if(naqssock == NMXP_SOCKET_ERROR) {
 	    return 1;
@@ -1223,6 +1225,32 @@ int main (int argc, char **argv) {
 
     return main_ret;
 } /* End MAIN */
+
+
+int nmxptool_exitcondition_on_open_socket() {
+    int ret = nmxptool_sigcondition_read();
+#ifdef HAVE_EARTHWORMOBJS
+    if(!ret) {
+	if(params.ew_configuration_file) {
+
+	    /* Check if we are being asked to terminate */
+	    if( (ret  = nmxptool_ew_check_flag_terminate()) ) {
+
+		logit ("t", "nmxptool terminating on request\n");
+		nmxptool_ew_send_error(NMXPTOOL_EW_ERR_TERMREQ, NULL, params.hostname);
+
+		nmxptool_sigcondition_write(15);
+	    }
+
+	    /* Check if we need to send heartbeat message */
+	    nmxptool_ew_send_heartbeat_if_needed();
+
+	}
+    }
+#endif
+    return ret;
+}
+
 
 
 void flushing_raw_data_stream() {

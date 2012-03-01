@@ -45,6 +45,7 @@ int nmxp_openSocket(char *hostname, int portNum, int (*func_cond)(void))
   struct hostent *hostinfo = NULL;
   struct sockaddr_in psServAddr;
   struct in_addr hostaddr;
+  time_t timeStart;
 
 #ifdef HAVE_WINDOWS_H
   nmxp_initWinsock();
@@ -109,12 +110,15 @@ int nmxp_openSocket(char *hostname, int portNum, int (*func_cond)(void))
 		NMXP_LOG_STR(inet_ntoa(hostaddr)), portNum, sleepTime);
 	nmxp_closeSocket(isock);
 	isock = -1;
+	timeStart = time(NULL);
 
-	if(!func_cond()) {
-	    nmxp_sleep (sleepTime);
-	    sleepTime *= 2;
-	    if (sleepTime > NMXP_SLEEPMAX)
-		sleepTime = NMXP_SLEEPMAX;
+	while(!func_cond()  &&  (time(NULL) - timeStart) < sleepTime) {
+	  nmxp_sleep (1);
+	}
+
+	sleepTime *= 2;
+	if (sleepTime > NMXP_SLEEPMAX) {
+	  sleepTime = NMXP_SLEEPMAX;
 	}
     }
 
