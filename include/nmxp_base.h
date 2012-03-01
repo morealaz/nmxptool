@@ -19,7 +19,7 @@
 #include "nmxp_log.h"
 
 /*! Maximum time between connection attempts (seconds). */
-#define NMXP_SLEEPMAX 60
+#define NMXP_SLEEPMAX 30
 
 /*! Return message for succes on socket. */
 #define NMXP_SOCKET_OK          0

@@ -40,8 +40,7 @@
 
 int nmxp_openSocket(char *hostname, int portNum, int (*func_cond)(void))
 {
-  /*TODO stefano avoid static*/
-  static int sleepTime = 1;
+  int sleepTime = 1;
   int isock = -1;
   struct hostent *hostinfo = NULL;
   struct sockaddr_in psServAddr;
