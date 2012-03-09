@@ -6,7 +6,7 @@ nmxptool Release History
     - Improvement: added capability to specify the location code within the
         channel pattern declaration (options -C, -n).
     - Improvement: also on earthworm, nmxptool responds quickly to 'stopmodule'
-        and 'restart' when the server is unreachable.
+        and 'restart' when the nanometrics server is unreachable.
     - Improvement: incremented value of NMXP_MAX_LENGTH_DATA_BUFFER.
     - Fixed minor bug: computing endtime for earthworm tracebuf.
     - Fixed minor bug: in some cases did not close .nmxpstate file.

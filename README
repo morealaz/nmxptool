@@ -156,7 +156,7 @@ architectures.
 
      src/nmxptool --version
 
-     nmxptool 1.2.4, tool for Nanometrics Protocols
+     nmxptool 2.1.0, tool for Nanometrics Protocols
               Private Data Stream 1.4, Data Access Protocol 1.0
               Enabled features: libmseed YES, SeedLink YES, Earthworm YES.
               Using pthread: YES.
@@ -226,18 +226,18 @@ architectures.
 
    Linux box within the SeisComp3 directory:
 
-             wget http://mednet.rm.ingv.it/downloads/soft/nmxptool-1.2.3-bin-i686-pc-linux-gnu.tar.gz
-             tar xvfz nmxptool-1.2.3-bin-i686-pc-linux-gnu.tar.gz
-             cd nmxptool-1.2.3-bin-i686-pc-linux-gnu/
+             wget http://mednet.rm.ingv.it/downloads/soft/nmxptool-2.1.0-bin-i686-pc-linux-gnu.tar.gz
+             tar xvfz nmxptool-2.1.0-bin-i686-pc-linux-gnu.tar.gz
+             cd nmxptool-2.1.0-bin-i686-pc-linux-gnu/
              cp bin/nmxptool ~/seiscomp3/acquisition/bin/
              cp -R seiscomp_templates/135_nmxptool ~/seiscomp3/acquisition/templates/source/
              cp -R seiscomp_templates/136_nmxptool_dod ~/seiscomp3/acquisition/templates/source/
 
    Solaris Sparc Machine within Earthworm environment:
 
-             wget http://mednet.rm.ingv.it/downloads/soft/nmxptool-1.2.3-bin-sparc-sun-solaris2.10.tar.gz
-             gunzip -c < nmxptool-1.2.3-bin-sparc-sun-solaris2.10.tar.gz | tar xvf -
-             cd nmxptool-1.2.3-bin-sparc-sun-solaris2.10/
+             wget http://mednet.rm.ingv.it/downloads/soft/nmxptool-2.1.0-bin-sparc-sun-solaris2.10.tar.gz
+             gunzip -c < nmxptool-2.1.0-bin-sparc-sun-solaris2.10.tar.gz | tar xvf -
+             cd nmxptool-2.1.0-bin-sparc-sun-solaris2.10/
              cp bin/nmxptool $EW_HOME/$EW_VERSION/bin/
              cp earthworm/nmxptool.d $EW_PARAMS/
              cp earthworm/nmxptool.desc $EW_PARAMS/
@@ -247,7 +247,7 @@ architectures.
 
    Windows-XP, Windows2000:
 
-             Download http://mednet.rm.ingv.it/downloads/soft/nmxptool-1.2.3-bin-i686-pc-mingw32.zip
+             Download http://mednet.rm.ingv.it/downloads/soft/nmxptool-2.1.0-bin-i686-pc-mingw32.zip
 	     Unzip the file.
 	     Copy the files nmxptool.exe and pthreadVC2.dll where you want.
 
@@ -266,7 +266,7 @@ architectures.
       |          | 32-bit   64-bit    32-bit   64-bit   |
       |-------------------------------------------------|
       | Linux    |    X        X                        |
-      | Solaris  |    X                           X     |
+      | Solaris  |    X        X                  X     |
       | Mac OS X |             X         X              |
       | FreeBSD  |    X                                 |
       | Windows  |    X                                 |
