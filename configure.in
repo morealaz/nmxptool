@@ -27,7 +27,7 @@ m4_ifdef([build_version], [
 
 
 
-m4_define([bug_report_address], [quintiliani@ingv.it])
+m4_define([bug_report_address], [matteo.quintiliani@ingv.it])
 
 # AC_INIT(FULL_PACKAGE_NAME, VERSION, BUG_REPORT_ADDRESS)
 AC_INIT([full_package_name], [version], [bug_report_address])
