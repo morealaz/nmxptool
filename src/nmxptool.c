@@ -922,6 +922,7 @@ int main (int argc, char **argv) {
 	    }
 
 	    if ( (time(NULL) - lasttime_pds_receiveddata) >= timeout_pds_receiveddata ) {
+		nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "No data received within %d seconds. Force to close connection and open again.\n", timeout_pds_receiveddata);
 		flag_force_close_connection = 1;
 		time(&lasttime_pds_receiveddata);
 	    }
