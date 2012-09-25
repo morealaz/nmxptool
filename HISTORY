@@ -2,6 +2,10 @@
 nmxptool Release History
 #########################
 
+* Release 2.1.1    (2012/09/25) 
+    - Improvement: restart connection if any data is received within 60 seconds
+                   timeout = (NMXP_HIGHEST_TIMEOUT * 2)
+
 * Release 2.1.0    (2012/07/22) 
     - Improvement: added capability to specify the location code within the
         channel pattern declaration (options -C, -n).
