@@ -128,6 +128,8 @@ NMXP_META_CHAN_LIST *meta_channelList = NULL;
 int n_func_pd = 0;
 int (*p_func_pd[NMXP_MAX_FUNC_PD]) (NMXP_DATA_PROCESS *);
 
+time_t lasttime_pds_receiveddata;
+time_t timeout_pds_receiveddata = (NMXP_HIGHEST_TIMEOUT * 2);
 
 #ifdef HAVE_LIBMSEED
 /* Mini-SEED variables */
@@ -891,6 +893,9 @@ int main (int argc, char **argv) {
 	flag_force_close_connection = 0;
 
 	skip_current_packet = 0;
+
+	time(&lasttime_pds_receiveddata);
+
 	/* begin  main PDS loop */
 
 	while(exitpdscondition && !nmxptool_sigcondition_read() && !flag_force_close_connection
@@ -909,8 +914,17 @@ int main (int argc, char **argv) {
 	    /* Process Compressed or Decompressed Data */
 	    pd = nmxp_receiveData(naqssock, channelList_subset, NETCODE_OR_CURRENT_NETWORK, LOCCODE_OR_CURRENT_LOCATION, params.timeoutrecv, &recv_errno);
 
-            
-            
+	    nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_EXTRA, "Received %s packet.\n", (pd)? "not null" : "null");
+
+	    /* Get time when receive some data */
+	    if(pd) {
+		time(&lasttime_pds_receiveddata);
+	    }
+
+	    if ( (time(NULL) - lasttime_pds_receiveddata) >= timeout_pds_receiveddata ) {
+		flag_force_close_connection = 1;
+		time(&lasttime_pds_receiveddata);
+	    }
 
 	    /* Force value for timing_quality if declared in the command-line */
 	    if(pd && params.timing_quality != -1) {
