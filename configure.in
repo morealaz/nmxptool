@@ -100,6 +100,9 @@ win32*)
 msys*)
     WINSOURCES=$OSTYPE
 ;;
+cygwin*)
+    WINSOURCES=$OSTYPE
+;;
 *)
     AC_MSG_WARN(Operating system is not Windows. $OSTYPE)
 ;;
@@ -197,6 +200,9 @@ AS_IF([test "x$enable_ew" != xno],
 		    EWOS=winnt
 		;;
 		msys*)
+		    EWOS=winnt
+		;;
+		cygwin*)
 		    EWOS=winnt
 		;;
 		*)
