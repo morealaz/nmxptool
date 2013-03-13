@@ -2,14 +2,12 @@
 ACLOCAL_AMFLAGS = -I m4
 
 SUBDIRS = lib src
-dist_doc_DATA = BUGS HISTORY README earthworm seiscomp_templates makefile.sol makefile.ux doc/html doc/man
+dist_doc_DATA = BUGS HISTORY README earthworm seiscomp_templates makefile.unix doc/html doc/man
 
-EWMAKEFILESOL=earthworm/makefile.ux.nognu
 EWMAKEFILEUX=earthworm/makefile.ux.nognu
 
 dist-hook:
-	ln -f -s ${EWMAKEFILESOL} makefile.sol
-	ln -f -s ${EWMAKEFILEUX} makefile.ux
+	ln -f -s ${EWMAKEFILEUX} makefile.unix
 	rm -rf `find $(distdir)/earthworm -name CVS`
 	rm -rf `find $(distdir)/seiscomp_templates -name CVS`
 	rm -rf `find $(distdir)/earthworm -name .svn`
