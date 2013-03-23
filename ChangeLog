@@ -1,10 +1,61 @@
-2012-07-22 08:25
+2013-03-23 16:19
 
 	* nmxptool:
 
 	  Open-Source and Cross-Platform software for Nanometrics seismic data acquisition
 	  Matteo Quintiliani - Istituto Nazionale di Geofisica e Vulcanologia - Italy
 	  Mail bug reports and suggestions to <matteo.quintiliani@ingv.it> 
+
+2013-03-23 15:14  mtheo <matteo.quintiliani@ingv.it>
+
+	* [r1414] HISTORY, README, configure.in, lib/nmxp_data.c,
+	  src/nmxptool.c: Fixed bug: from now on, nmxptool will always create
+	  big-endian
+	  mini-SEED records (C. Trabant).
+
+2013-03-13 14:43  mtheo <matteo.quintiliani@ingv.it>
+
+	* [r1413] HISTORY, Makefile.am, configure.in, makefile.sol[DEL],
+	  makefile.unix[ADD], makefile.ux[DEL]: - News: windows binary
+	  distribution is available again.
+	  nmxptool has been compiled under Cygwin, it needs "cygwin1.dll".
+	  - Substitude makefile.ux and makefile.sol with the single
+	  makefile.unix
+
+2012-10-10 13:58  mtheo <matteo.quintiliani@ingv.it>
+
+	* [r1412] configure.in: Added check for OSTYPE equal to cygwin
+
+2012-09-26 06:38  mtheo <matteo.quintiliani@ingv.it>
+
+	* [r1411] configure.in: Increemented release candidate version
+
+2012-09-25 16:24  mtheo <matteo.quintiliani@ingv.it>
+
+	* [r1410] src/nmxptool.c: Further changes to accomplish to ticket #734
+
+2012-09-25 16:10  mtheo <matteo.quintiliani@ingv.it>
+
+	* [r1409] HISTORY, configure.in: Further changes to accomplish to ticket
+	  #734
+
+2012-09-25 16:07  mtheo <matteo.quintiliani@ingv.it>
+
+	* [r1408] src/nmxptool.c: First change to accomplish to ticket #734
+
+2012-07-22 06:50  mtheo <matteo.quintiliani@ingv.it>
+
+	* [r1407] HISTORY: Minor change
+
+2012-07-22 06:26  mtheo <matteo.quintiliani@ingv.it>
+
+	* [r1406] AUTHORS, ChangeLog, README, configure.in,
+	  earthworm/makefile.ux.nognu, no_dist/scripts/SVNAUTHORS,
+	  no_dist/scripts/nmxp_svn2cl.sh: Substituted the e-mail address
+
+2012-07-22 06:18  mtheo <matteo.quintiliani@ingv.it>
+
+	* [r1405] configure.in: Set version to 2.1.0
 
 2012-03-09 06:44  mtheo <matteo.quintiliani@ingv.it>
 
