@@ -1,10 +1,23 @@
-2013-03-23 16:19
+2013-03-23 17:22
 
 	* nmxptool:
 
 	  Open-Source and Cross-Platform software for Nanometrics seismic data acquisition
 	  Matteo Quintiliani - Istituto Nazionale di Geofisica e Vulcanologia - Italy
 	  Mail bug reports and suggestions to <matteo.quintiliani@ingv.it> 
+
+2013-03-23 16:21  mtheo <matteo.quintiliani@ingv.it>
+
+	* [r1417] lib/nmxp_data.c, src/nmxptool.c: Fixed big endian byte order
+	  for mini-SEED Steim[12] compression
+
+2013-03-23 15:23  mtheo <matteo.quintiliani@ingv.it>
+
+	* [r1416] HISTORY: Minor change
+
+2013-03-23 15:21  mtheo <matteo.quintiliani@ingv.it>
+
+	* [r1415] ChangeLog: Updated ChangeLog
 
 2013-03-23 15:14  mtheo <matteo.quintiliani@ingv.it>
 
