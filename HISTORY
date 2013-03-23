@@ -2,7 +2,12 @@
 nmxptool Release History
 #########################
 
-* Release 2.1.1-rc2    (2012/03/13) 
+* Release 2.1.1-rc3    (2012/03/23) 
+    - Fixed bug: from now on, nmxptool will always create big-endian
+        mini-SEED records (C. Trabant)
+        SEED utilizes the Big Endian word order as its standard.
+        In 2003, the FDSN adopted the format rule that Steim1 and Steim2
+        data records are to be written with the big-endian encoding only.
     - Improvement: restart connection if any data is received within 60 seconds
                    timeout = (NMXP_HIGHEST_TIMEOUT * 2)
     - News: windows binary distribution is available again.

@@ -13,7 +13,7 @@ m4_define([major_version], [2])
 m4_define([minor_version], [1])
 m4_define([micro_version], [1])
 # Comment build_version for stable release
-m4_define([build_version], [rc2])
+m4_define([build_version], [rc3])
 
 m4_ifdef([build_version], [
 	  m4_define([version],
@@ -349,6 +349,13 @@ AC_CONFIG_FILES([Makefile
 # AC_CONFIG_SUBDIRS([libnmxp])
 
 AC_OUTPUT
+
+# AC_MSG_NOTICE([
+#      Enabled features: libmseed ($enable_ew), SeedLink ($enable_seedlink), Earthworm ($enable_ew).])
+AC_MSG_NOTICE([Enabled features
+          libmseed : $enable_ew
+	  SeedLink : $enable_seedlink
+	  Earthworm: $enable_ew])
 
 AC_MSG_NOTICE([
       Compile nmxptool using 'make'.])

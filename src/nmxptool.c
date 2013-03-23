@@ -1583,8 +1583,11 @@ int nmxptool_msr_send_mseed(NMXP_DATA_PROCESS *pd) {
 		msr->starttime = MS_EPOCH2HPTIME(pd->time);
 		msr->samprate = pd->sampRate;
 
-		/* msr->byteorder = 0; */         /* big endian byte order */
-		msr->byteorder = nmxp_data_bigendianhost ();
+		/* SEED utilizes the Big Endian word order as its standard.
+		 * In 2003, the FDSN adopted the format rule that Steim1 and
+		 * Steim2 data records are to be written with the big-endian
+		 * encoding only. */
+		msr->byteorder = 0;         /* big endian byte order */
 
 		msr->sequence_number = pd->seq_no % 1000000;
 
