@@ -1,10 +1,19 @@
-2013-03-23 17:22
+2013-03-25 22:14
 
 	* nmxptool:
 
 	  Open-Source and Cross-Platform software for Nanometrics seismic data acquisition
 	  Matteo Quintiliani - Istituto Nazionale di Geofisica e Vulcanologia - Italy
 	  Mail bug reports and suggestions to <matteo.quintiliani@ingv.it> 
+
+2013-03-25 13:00  mtheo <matteo.quintiliani@ingv.it>
+
+	* [r1420] configure.in: Incremented release candidate version to
+	  nmxptool 2.1.1-rc4
+
+2013-03-23 16:22  mtheo <matteo.quintiliani@ingv.it>
+
+	* [r1418] ChangeLog: Updated ChangeLog
 
 2013-03-23 16:21  mtheo <matteo.quintiliani@ingv.it>
 

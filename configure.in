@@ -42,6 +42,10 @@ BINARY_DIST_NAME_SUFFIX=$host
 AC_MSG_NOTICE(BINARY_DIST_NAME_SUFFIX set to $BINARY_DIST_NAME_SUFFIX)
 AC_SUBST(BINARY_DIST_NAME_SUFFIX)
 
+avail_libmseed=YES
+avail_seedlink=YES
+avail_ew=YES
+
 #mtheo
 # AM_INIT_AUTOMAKE(FULL_PACKAGE_NAME,VERSION)
 AM_INIT_AUTOMAKE([full_package_name], [version])
@@ -141,9 +145,9 @@ AS_IF([test "x$enable_libmseed" != xno],
 		#		  [],
 		#		  [AC_MSG_FAILURE([libmseed found but libnmxp does not support it. (Try --disable-libmseed to disable)])])
 		     ], 
-		     [AC_MSG_WARN([
-		      libmseed is not available (--disable-libmseed to disable)
-		     ])
+		     [
+		      avail_libmseed=NO
+		      AC_MSG_WARN([libmseed is not available (--disable-libmseed to disable)])
 		     # AC_CHECK_LIB([nmxp], [nmxp_openSocket], [], [AC_MSG_ERROR([libnmxp not found or it supports libmseed
 				   # but libmseed is not available anymore! Try to recompile libnmxp!
 				   # ])]) 
@@ -152,9 +156,11 @@ AS_IF([test "x$enable_libmseed" != xno],
       ],
       [
        # AC_CHECK_LIB([nmxp], [nmxp_openSocket], [], [AC_MSG_ERROR([libnmxp not found or supports libmseed (--enable-libmseed to enable)!])]) 
+       avail_libmseed=NO
        AC_MSG_WARN([libmseed feature has been disabled!])
       ]
 ) 
+AM_CONDITIONAL(ENABLE_LIBMSEED, test x$enable_libmseed != xno)
 
 AC_ARG_VAR(EW_HOME, [Earthworm home directory])
 AC_ARG_VAR(EW_VERSION, [Earthworm version directory])
@@ -223,10 +229,14 @@ AS_IF([test "x$enable_ew" != xno],
 	       LIBS="$LIBS $EWOBJS"
 	       ])
 	],
-	[AC_MSG_WARN([Earthworm files are not available (--disable-ew to disable)])]
+	[
+	 avail_ew=NO
+	 AC_MSG_WARN([Earthworm files are not available (--disable-ew to disable)])]
     )
     ],
-    [AC_MSG_WARN([ew feature has been disabled!])]
+    [
+     avail_ew=NO
+     AC_MSG_WARN([ew feature has been disabled!])]
 )
 AM_CONDITIONAL(ENABLE_EWSOURCES, test x$EWOS != x)
 AM_CONDITIONAL(ENABLE_EW, test x$enable_ew != xno)
@@ -238,7 +248,11 @@ AC_ARG_VAR(SEISCOMPDIR, [SeisComP root directory - default is /home/sysop/seisco
 # Seedlink check.
 AS_IF([test "x$enable_seedlink" != xno], 
       [
-       AC_CHECK_FILES([./src/seedlink_plugin.c ./src/seedlink_plugin.h], [], AC_MSG_ERROR([seedlink plug-in sources not found!]))
+       AC_CHECK_FILES([./src/seedlink_plugin.c ./src/seedlink_plugin.h], [],
+		      [
+		       avail_seedlink=NO
+		       AC_MSG_ERROR([seedlink plug-in sources not found!])]
+		       )
 
        AS_IF([test "x$SEISCOMPDIR" == x],
 	      [
@@ -249,7 +263,9 @@ AS_IF([test "x$enable_seedlink" != xno],
        AC_SUBST(SEISCOMPDIR)
 
        ],
-    [AC_MSG_WARN([seedlink feature has been disabled!])]
+    [
+     avail_seedlink=NO
+     AC_MSG_WARN([seedlink feature has been disabled!])]
 )
 AM_CONDITIONAL(ENABLE_SEEDLINK, test x$enable_seedlink != xno)
 
@@ -353,9 +369,9 @@ AC_OUTPUT
 # AC_MSG_NOTICE([
 #      Enabled features: libmseed ($enable_ew), SeedLink ($enable_seedlink), Earthworm ($enable_ew).])
 AC_MSG_NOTICE([Enabled features
-          libmseed : $enable_ew
-	  SeedLink : $enable_seedlink
-	  Earthworm: $enable_ew])
+          libmseed : $avail_libmseed
+	  SeedLink : $avail_seedlink
+	  Earthworm: $avail_ew])
 
 AC_MSG_NOTICE([
       Compile nmxptool using 'make'.])
