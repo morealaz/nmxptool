@@ -1,5 +1,13 @@
 #!/bin/sh
 
 # glibtoolize --force --copy && autoheader && aclocal && autoconf && automake -a -c
-glibtoolize --copy && autoheader && aclocal && autoconf && automake -a
+# glibtoolize --copy && autoheader && aclocal && autoconf && automake -a
+
+# glibtoolize --force --copy || exit
+glibtoolize --copy || exit
+autoheader || exit
+aclocal || exit
+autoconf || exit
+# automake -a -c || exit
+automake -a || exit
 
