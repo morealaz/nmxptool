@@ -1,3 +1,4 @@
+# AUTOMAKE_OPTIONS = gnu subdir-objects
 AUTOMAKE_OPTIONS = gnu
 ACLOCAL_AMFLAGS = -I m4
 

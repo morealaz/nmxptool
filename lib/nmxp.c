@@ -179,7 +179,7 @@ int nmxp_sendAddTimeSeriesChannel(int isock, NMXP_CHAN_LIST_NET *channelList, in
 #ifdef HAVE_GETTIMEOFDAY
     gettimeofday(&tp_now, NULL);
 #else
-    TODO gettimeofday not found
+#error function gettimeofday() is required.
 #endif
 
     if(i <  channelList->number) {

@@ -11,9 +11,9 @@ m4_define([full_package_name], [nmxptool])
 dnl These three define the plug-in version number
 m4_define([major_version], [2])
 m4_define([minor_version], [1])
-m4_define([micro_version], [1])
+m4_define([micro_version], [2])
 # Comment build_version for stable release
-# m4_define([build_version], [rc4])
+m4_define([build_version], [beta1])
 
 m4_ifdef([build_version], [
 	  m4_define([version],
@@ -29,12 +29,12 @@ m4_ifdef([build_version], [
 
 m4_define([bug_report_address], [matteo.quintiliani@ingv.it])
 
-# AC_INIT(FULL_PACKAGE_NAME, VERSION, BUG_REPORT_ADDRESS)
 AC_INIT([full_package_name], [version], [bug_report_address])
 AC_CONFIG_SRCDIR([src/nmxptool.c])
 AC_CONFIG_HEADER([config.h])
 AC_CONFIG_SRCDIR([config.h.in])
 
+AC_CANONICAL_HOST
 AC_CANONICAL_SYSTEM
 
 # Set BINARY_DIST_NAME_SUFFIX
@@ -46,12 +46,11 @@ avail_libmseed=YES
 avail_seedlink=YES
 avail_ew=YES
 
-#mtheo
-# AM_INIT_AUTOMAKE(FULL_PACKAGE_NAME,VERSION)
-AM_INIT_AUTOMAKE([full_package_name], [version])
+AM_INIT_AUTOMAKE
 
 # Checks for programs.
 # AC_PROG_CXX
+AC_PROG_AWK
 AC_PROG_CC
 AM_PROG_CC_C_O
 # AC_PROG_CPP
@@ -93,6 +92,9 @@ AC_ARG_ENABLE([seedlink],
 	    [], 
 	    [enable_seedlink=yes]
 ) 
+
+AC_MSG_WARN(Cross-compiling: $cross_compiling $build $host $target)
+AC_MSG_WARN(OSTYPE: $OSTYPE)
 
 case "$OSTYPE" in
 solaris*)
@@ -182,13 +184,6 @@ AS_IF([test "x$enable_ew" != xno],
 			 )
 	EWLIB=$EW_HOME/$EW_VERSION/lib
 	EWOBJS="$EWLIB/kom.o $EWLIB/getutil.o $EWLIB/logit_mt.o $EWLIB/socket_ew_common.o $EWLIB/transport.o $EWLIB/sleep_ew.o $EWLIB/socket_ew.o $EWLIB/time_ew.o $EWLIB/threads_ew.o $EWLIB/sema_ew.o $EWLIB/swap.o $EWLIB/mem_circ_queue.o"
-	AC_CHECK_FILES([$EWLIB/kom.o $EWLIB/getutil.o $EWLIB/logit_mt.o $EWLIB/socket_ew_common.o $EWLIB/transport.o $EWLIB/sleep_ew.o $EWLIB/socket_ew.o $EWLIB/time_ew.o $EWLIB/threads_ew.o $EWLIB/sema_ew.o $EWLIB/swap.o $EWLIB/mem_circ_queue.o],
-		       [ ],
-		       [
-			AC_MSG_WARN(Earthworm object file is missing! Attempt to compile from source!)
-			EWOSOURCES=yes
-			]
-		       )
 	AC_DEFINE([HAVE_EARTHWORMOBJS], [1], [Define if you have all earthworm object files])
 	AS_IF([test "x$EWOSOURCES" != xno],
 	      [ 
@@ -248,11 +243,6 @@ AC_ARG_VAR(SEISCOMPDIR, [SeisComP root directory - default is /home/sysop/seisco
 # Seedlink check.
 AS_IF([test "x$enable_seedlink" != xno], 
       [
-       AC_CHECK_FILES([./src/seedlink_plugin.c ./src/seedlink_plugin.h], [],
-		      [
-		       avail_seedlink=NO
-		       AC_MSG_ERROR([seedlink plug-in sources not found!])]
-		       )
 
        AS_IF([test "x$SEISCOMPDIR" == x],
 	      [
@@ -275,6 +265,7 @@ AC_C_CONST
 AC_C_INLINE
 AC_TYPE_INT16_T
 AC_TYPE_INT32_T
+AC_TYPE_INT64_T
 AC_TYPE_UINT32_T
 AC_TYPE_INT8_T
 AC_TYPE_MODE_T
@@ -290,7 +281,10 @@ AC_FUNC_MKTIME
 AC_FUNC_SELECT_ARGTYPES
 AC_FUNC_STRERROR_R
 AC_TYPE_SIGNAL
-AC_CHECK_FUNCS([getcwd gethostbyname gettimeofday inet_ntoa memmove memset mkdir select setenv socket strcasecmp strchr strerror strstr strtol])
+AC_CHECK_FUNCS([getcwd gethostbyname inet_ntoa memmove memset mkdir select setenv socket strcasecmp strchr strerror strstr strtol tzset])
+AC_CHECK_FUNCS([gettimeofday], [], [
+			       AC_MSG_ERROR([function gettimeofday() not found!])
+])
 AC_CHECK_FUNCS([timegm], [], [
 		AC_CHECK_FUNCS([getenv setenv unsetenv tzset],
 			       [],
@@ -371,7 +365,8 @@ AC_OUTPUT
 AC_MSG_NOTICE([Enabled features
           libmseed : $avail_libmseed
 	  SeedLink : $avail_seedlink
-	  Earthworm: $avail_ew])
+	  Earthworm: $avail_ew
+	  Cross-compiling: $cross_compiling $build $host $target])
 
 AC_MSG_NOTICE([
       Compile nmxptool using 'make'.])
