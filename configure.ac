@@ -1,9 +1,7 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ([2.68])
-
-AC_CONFIG_MACRO_DIR([m4])
+AC_PREREQ([2.61])
 
 dnl Name your program here
 m4_define([full_package_name], [nmxptool])
@@ -13,7 +11,7 @@ m4_define([major_version], [2])
 m4_define([minor_version], [1])
 m4_define([micro_version], [2])
 # Comment build_version for stable release
-m4_define([build_version], [beta1])
+m4_define([build_version], [beta3])
 
 m4_ifdef([build_version], [
 	  m4_define([version],
@@ -30,6 +28,9 @@ m4_ifdef([build_version], [
 m4_define([bug_report_address], [matteo.quintiliani@ingv.it])
 
 AC_INIT([full_package_name], [version], [bug_report_address])
+
+AC_CONFIG_MACRO_DIR([m4])
+
 AC_CONFIG_SRCDIR([src/nmxptool.c])
 AC_CONFIG_HEADER([config.h])
 AC_CONFIG_SRCDIR([config.h.in])
@@ -47,6 +48,10 @@ avail_seedlink=YES
 avail_ew=YES
 
 AM_INIT_AUTOMAKE
+# Default AM_MAINTAINER_MODE is enable
+# AM_MAINTAINER_MODE([enable])
+# Default argument for AM_MAINTAINER_MODE is disable
+AM_MAINTAINER_MODE([disable])
 
 # Checks for programs.
 # AC_PROG_CXX

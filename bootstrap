@@ -1,13 +1,24 @@
 #!/bin/sh
 
-# glibtoolize --force --copy && autoheader && aclocal && autoconf && automake -a -c
-# glibtoolize --copy && autoheader && aclocal && autoconf && automake -a
+# ACVERSION="-1.10"
+ACLOCAL=aclocal${ACVERSION}
+AUTOMAKE=automake${ACVERSION}
+AUTOHEADER=autoheader
+AUTOCONF=autoconf
+GLIBTOOLIZE=glibtoolize
 
-# glibtoolize --force --copy || exit
-glibtoolize --copy || exit
-autoheader || exit
-aclocal || exit
-autoconf || exit
-# automake -a -c || exit
-automake -a || exit
+# LISTCMDVER="${ACLOCAL} ${AUTOMAKE} ${AUTOHEADER} ${AUTOCONF} ${GLIBTOOLIZE}"
+# for C in ${LISTCMDVER}; do
+  # echo ${C}
+  # ${C} --version
+# done
+
+# ${GLIBTOOLIZE} --force --copy || exit
+${GLIBTOOLIZE} --copy || exit
+${AUTOHEADER} || exit
+${ACLOCAL} || exit
+${AUTOMAKE} --gnu --add-missing --force-missing  || exit
+# ${AUTOMAKE} -a -c || exit
+# ${AUTOMAKE} -a || exit
+${AUTOCONF} || exit
 
