@@ -1,10 +1,41 @@
-2013-05-13 13:37
+2013-11-29 11:34
 
 	* nmxptool:
 
 	  Open-Source and Cross-Platform software for Nanometrics seismic data acquisition
 	  Matteo Quintiliani - Istituto Nazionale di Geofisica e Vulcanologia - Italy
 	  Mail bug reports and suggestions to <matteo.quintiliani@ingv.it> 
+
+2013-11-29 10:31  mtheo <matteo.quintiliani@ingv.it>
+
+	* [r1428] HISTORY, lib/nmxp_data.c: Fixed major bug in time of packets
+	  stored in mini-SEED format.
+
+2013-09-18 12:34  mtheo <matteo.quintiliani@ingv.it>
+
+	* [r1427] HISTORY, bootstrap, configure.ac: Fixed issue aboud autotools
+	  version
+
+2013-09-17 07:06  mtheo <matteo.quintiliani@ingv.it>
+
+	* [r1426] HISTORY: Started to fix 'Ubuntu vs. gettimeofday()' issue
+
+2013-09-17 07:05  mtheo <matteo.quintiliani@ingv.it>
+
+	* [r1425] configure.ac[CPY], configure.in[DEL], lib/nmxp.c,
+	  src/Makefile.am: Started to fix 'Ubuntu vs. gettimeofday()' issue
+
+2013-08-28 18:53  mtheo <matteo.quintiliani@ingv.it>
+
+	* [r1424] bootstrap: Changed the way how to call auto tool
+
+2013-05-13 11:37  mtheo <matteo.quintiliani@ingv.it>
+
+	* [r1423] ChangeLog: Updated ChangeLog
+
+2013-05-13 11:30  mtheo <matteo.quintiliani@ingv.it>
+
+	* [r1422] HISTORY, configure.in: Incremented version to 2.1.1
 
 2013-03-26 07:14  mtheo <matteo.quintiliani@ingv.it>
 
