@@ -1132,8 +1132,6 @@ int nmxp_data_msr_pack(NMXP_DATA_PROCESS *pd, NMXP_DATA_SEED *data_seed, void *p
 
 	    if(psamples > 0) {
 
-		msr->starttime += ( (double) psamples * ( 1.0 / (double) msr->samprate ) );
-
 		if(psamples == msr->numsamples) {
 		    /* Remove all samples allocated */
 		    NMXP_MEM_FREE(msr->datasamples);
@@ -1178,8 +1176,6 @@ int nmxp_data_msr_pack(NMXP_DATA_PROCESS *pd, NMXP_DATA_SEED *data_seed, void *p
 			"Packed forced %d samples into %d records for %s.%s.%s\n",
 			psamples, precords, msr->network, msr->station, msr->channel);
 	    }
-
-	    msr->starttime += ( (double) psamples * ( 1.0 / (double) msr->samprate ) );
 
 	    NMXP_MEM_FREE(msr->datasamples);
 	    msr->datasamples = NULL;
