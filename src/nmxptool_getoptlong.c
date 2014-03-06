@@ -107,7 +107,7 @@ void nmxptool_supports() {
 #endif
 
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, ", SeedLink ");
-#ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
+#ifdef HAVE_SEEDLINK
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "YES");
 #else
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "NO");
@@ -179,7 +179,7 @@ NMXP_LOG_STR(DAP_VERSION)
 \n", NMXP_LOG_STR(PACKAGE_NAME));
 #endif
 
-#ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
+#ifdef HAVE_SEEDLINK
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
        %s <option ... option> [ -k  |  -K ]\n\
              Launched as SeedLink plug-in to feed the SL-Server.\n\
@@ -362,7 +362,7 @@ Mini-SEED arguments:\n");
 #endif
 
 
-#ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
+#ifdef HAVE_SEEDLINK
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
 SeedLink arguments:\n");
 
@@ -664,15 +664,15 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 	{"reclen",       required_argument, NULL, 'r'},
 #endif
 	{"writefile",    no_argument,       NULL, 'w'},
-#ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
+#ifdef HAVE_SEEDLINK
 	{"slink",        required_argument, NULL, 'k'},
 #endif
 #ifdef HAVE_LIBMSEED
-#ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
+#ifdef HAVE_SEEDLINK
 	{"slinkms",      required_argument, NULL, 'K'},
 #endif
 #endif
-#ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
+#ifdef HAVE_SEEDLINK
 	{"timing_quality", required_argument, NULL, 'Q'},
 #endif
 #ifndef HAVE_WINDOWS_H
@@ -699,13 +699,13 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 #endif
 
 
-#ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
+#ifdef HAVE_SEEDLINK
     strcat(optstr, "Q:");
     strcat(optstr, "k:");
 #endif
 
 #ifdef HAVE_LIBMSEED
-#ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
+#ifdef HAVE_SEEDLINK
     strcat(optstr, "K:");
 #endif
 #endif
@@ -874,7 +874,7 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 		    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "Max_time_to_retrieve %d\n", params->max_data_to_retrieve);
 		    break;
 
-#ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
+#ifdef HAVE_SEEDLINK
 		case 'k':
 		    params->flag_slink = 1;
 		    if(params->flag_slinkms) {
@@ -891,7 +891,7 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 #endif
 
 #ifdef HAVE_LIBMSEED
-#ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
+#ifdef HAVE_SEEDLINK
 		case 'K':
 		    params->flag_slinkms = 1;
 		    if(params->flag_slink) {
@@ -908,7 +908,7 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 #endif
 #endif
 
-#ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
+#ifdef HAVE_SEEDLINK
 		case 'Q':
 		    params->timing_quality = atoi(optarg);
 		    break;
@@ -1339,7 +1339,7 @@ int nmxptool_check_params(NMXPTOOL_PARAMS *params) {
 	nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "<timeoutrecv> ignored since not defined --stc=-1.\n");
     }
 
-#ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
+#ifdef HAVE_SEEDLINK
     if( params->timing_quality != DEFAULT_TIMING_QUALITY &&
 	    ( params->timing_quality < DEFAULT_TIMING_QUALITY_MINIMUM ||  params->timing_quality > DEFAULT_TIMING_QUALITY_MAXIMUM) ) {
 	ret = -1;

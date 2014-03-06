@@ -45,7 +45,7 @@
 #include <libmseed.h>
 #endif
 
-#ifdef HAVE___SRC_SEEDLINK_PLUGIN_H
+#ifdef HAVE_SEEDLINK
 #include "seedlink_plugin.h"
 #endif
 
@@ -86,12 +86,12 @@ int nmxptool_log_miniseed(const char *s);
 int nmxptool_logerr_miniseed(const char *s);
 #endif
 
-#ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
+#ifdef HAVE_SEEDLINK
 int nmxptool_send_raw_depoch(NMXP_DATA_PROCESS *pd);
 #endif
 
 #ifdef HAVE_LIBMSEED
-#ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
+#ifdef HAVE_SEEDLINK
 void nmxptool_msr_send_mseed_handler (char *record, int reclen, void *handlerdata);
 int nmxptool_msr_send_mseed(NMXP_DATA_PROCESS *pd);
 #endif
@@ -324,7 +324,7 @@ int main (int argc, char **argv) {
 	}
 #endif
 
-#ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
+#ifdef HAVE_SEEDLINK
 	/* Send data to SeedLink Server */
 	if(params.flag_slink) {
 	    p_func_pd[n_func_pd++] = nmxptool_send_raw_depoch;
@@ -332,7 +332,7 @@ int main (int argc, char **argv) {
 #endif
 
 #ifdef HAVE_LIBMSEED
-#ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
+#ifdef HAVE_SEEDLINK
 	/* Send data to SeedLink Server */
 	if(params.flag_slinkms) {
 	    p_func_pd[n_func_pd++] = nmxptool_msr_send_mseed;
@@ -681,7 +681,7 @@ int main (int argc, char **argv) {
 			}
 #endif
 
-#ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
+#ifdef HAVE_SEEDLINK
 			/* Send data to SeedLink Server */
 			if(params.flag_slink) {
 			    nmxptool_send_raw_depoch(pd);
@@ -689,7 +689,7 @@ int main (int argc, char **argv) {
 #endif
 
 #ifdef HAVE_LIBMSEED
-#ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
+#ifdef HAVE_SEEDLINK
 			/* Send data to SeedLink Server */
 			if(params.flag_slinkms) {
 			    nmxptool_msr_send_mseed(pd);
@@ -1063,7 +1063,7 @@ int main (int argc, char **argv) {
 			}
 #endif
 
-#ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
+#ifdef HAVE_SEEDLINK
 			/* Send data to SeedLink Server */
 			if(params.flag_slink) {
 			    nmxptool_send_raw_depoch(pd);
@@ -1071,7 +1071,7 @@ int main (int argc, char **argv) {
 #endif
 
 #ifdef HAVE_LIBMSEED
-#ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
+#ifdef HAVE_SEEDLINK
 			/* Send data to SeedLink Server */
 			if(params.flag_slinkms) {
 			    nmxptool_msr_send_mseed(pd);
@@ -1550,7 +1550,7 @@ int nmxptool_write_miniseed(NMXP_DATA_PROCESS *pd) {
 #endif
 
 #ifdef HAVE_LIBMSEED
-#ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
+#ifdef HAVE_SEEDLINK
 
 void nmxptool_msr_send_mseed_handler (char *record, int reclen, void *handlerdata) {
     int ret = 0;
@@ -1644,7 +1644,7 @@ int nmxptool_print_seq_no(NMXP_DATA_PROCESS *pd) {
 }
 
 
-#ifdef HAVE___SRC_SEEDLINK_PLUGIN_C
+#ifdef HAVE_SEEDLINK
 int nmxptool_send_raw_depoch(NMXP_DATA_PROCESS *pd) {
     /* TODO Set values */
     const int usec_correction = 0;

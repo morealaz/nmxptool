@@ -11,7 +11,7 @@ m4_define([major_version], [2])
 m4_define([minor_version], [1])
 m4_define([micro_version], [2])
 # Comment build_version for stable release
-m4_define([build_version], [beta4])
+m4_define([build_version], [rc2])
 
 m4_ifdef([build_version], [
 	  m4_define([version],
@@ -256,6 +256,7 @@ AS_IF([test "x$enable_seedlink" != xno],
 	      )
        AC_MSG_WARN([SEISCOMPDIR is set to ${SEISCOMPDIR}])
        AC_SUBST(SEISCOMPDIR)
+       AC_DEFINE([HAVE_SEEDLINK], [1], [Define if you have libmseed]) 
 
        ],
     [
