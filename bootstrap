@@ -15,10 +15,15 @@ GLIBTOOLIZE=glibtoolize
 
 # ${GLIBTOOLIZE} --force --copy || exit
 ${GLIBTOOLIZE} --copy || exit
+
 ${AUTOHEADER} || exit
+
 ${ACLOCAL} || exit
-${AUTOMAKE} --gnu --add-missing --force-missing  || exit
+
+# ${AUTOMAKE} --gnu --add-missing --force-missing  || exit
+${AUTOMAKE} --add-missing --force-missing  || exit
 # ${AUTOMAKE} -a -c || exit
 # ${AUTOMAKE} -a || exit
+
 ${AUTOCONF} || exit
 
