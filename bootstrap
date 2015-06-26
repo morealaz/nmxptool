@@ -21,7 +21,7 @@ ${AUTOHEADER} || exit
 ${ACLOCAL} || exit
 
 # ${AUTOMAKE} --gnu --add-missing --force-missing  || exit
-${AUTOMAKE} --add-missing --force-missing  || exit
+${AUTOMAKE} --copy --add-missing --force-missing  || exit
 # ${AUTOMAKE} -a -c || exit
 # ${AUTOMAKE} -a || exit
 

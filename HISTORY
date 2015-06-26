@@ -2,7 +2,7 @@
 nmxptool Release History
 #########################
 
-* Release 2.1.2-rc2    (2014/02/05) 
+* Release 2.1.2    (2015/06/26) 
     - Fixed major bug in small time drifting of packets stored in mini-SEED format.
     - Started to fix 'Ubuntu vs. gettimeofday()' issue
 
