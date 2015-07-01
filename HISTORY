@@ -3,7 +3,7 @@ nmxptool Release History
 #########################
 
 * Release 2.1.3-beta1    (2015/06/26) 
-    - ...
+    - commit from web mobile
 
 * Release 2.1.2    (2015/06/26) 
     - Fixed major bug in small time drifting of packets stored in mini-SEED format.
@@ -140,4 +140,3 @@ nmxptool Release History
 
 * Release 1.1.5     (2007/10/07)
     - First public release.
-
