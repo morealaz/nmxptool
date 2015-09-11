@@ -2,8 +2,9 @@
 nmxptool Release History
 #########################
 
-* Release 2.1.3-beta1    (2015/06/26) 
+* Release 2.1.3-beta1    (2015/09/11) 
     - commit from web mobile
+    - Added options to intall binary and template on SeisComP3
 
 * Release 2.1.2    (2015/06/26) 
     - Fixed major bug in small time drifting of packets stored in mini-SEED format.
