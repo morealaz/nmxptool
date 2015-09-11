@@ -219,6 +219,31 @@ architectures.
 
              seiscomp config
 
+  * seedlink, SeisComP3 - http://www.gfz-potsdam.de/geofon/seiscomp/
+         Seedlink is a system for near real time seismic data distribution.
+         Inside the directory 'src' has been copied files
+         'seedlink_plugin.c' and 'seedlink_plugin.h' from 'plugin.c' and 'plugin.h'
+         belonging to the SeisComP 3.0 distribution.
+
+         If your SeisComP root directory is not equal to /home/sysop/seiscomp,
+         you have to launch the script 'configure' in the following way:
+
+             ./configure ... ... SEISCOMPDIR=/<where>/<seiscompdir>/<is>
+
+         Install binary and template files for SeedLink:
+
+             make install-seiscomp3-bin
+             make install-seiscomp3-templates (ONLY THE FIRST TIME)
+
+         The first command copies nmxptool binary in %SEISCOMPDIR%/share/plugins/seedlink/
+         The second command copies the directories
+             seiscomp3_templates/nmxp
+         in %SEISCOMPDIR%/share/templates/seedlink/
+
+         After, you can use:
+
+             seiscomp update-config
+
 
 - INSTALLATION BINARIES
    Download the binary distribution for your operating system from the
