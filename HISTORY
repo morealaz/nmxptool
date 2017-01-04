@@ -3,6 +3,7 @@ nmxptool Release History
 #########################
 
 * Release 2.1.4-dev    (2017/01/04)
+    - Exit if connect() fails first time.
     - Fix checking port number for option -P and -D.
     - Fix checking short-term-completion, option -S.
     - Fix checking rate, option -R.
