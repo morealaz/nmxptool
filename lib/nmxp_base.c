@@ -106,6 +106,9 @@ int nmxp_openSocket(char *hostname, int portNum, int (*func_cond)(void))
 		isock, NMXP_LOG_STR(inet_ntoa(hostaddr)), portNum);
 	return isock;
     } else {
+	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CONNFLOW, "connect(): (errno=%d) %s \n", errno, NMXP_LOG_STR(nmxp_strerror(errno)));
+	return -1;
+	/*
 	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_CONNFLOW, "Connecting to %s port %d. Trying again after %d seconds...\n",
 		NMXP_LOG_STR(inet_ntoa(hostaddr)), portNum, sleepTime);
 	nmxp_closeSocket(isock);
@@ -120,6 +123,7 @@ int nmxp_openSocket(char *hostname, int portNum, int (*func_cond)(void))
 	if (sleepTime > NMXP_SLEEPMAX) {
 	  sleepTime = NMXP_SLEEPMAX;
 	}
+	*/
     }
 
   }

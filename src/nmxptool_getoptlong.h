@@ -198,6 +198,28 @@ int nmxptool_read_time(char *str_input, int32_t *pvalue);
 int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params);
 
 
+/*! \brief Wrapper to strtol()
+ *
+ * \param str
+ * \param[out] val
+ *
+ * \retval 1 on success.
+ * \retval 0 on failure.
+ *
+ */
+int nmxptool_parse_long(const char *str, long *val);
+
+/*! \brief Wrapper to nmxptool_parse_long() to parse int value
+ *
+ * \param str
+ * \param[out] val
+ *
+ * \retval 1 on success.
+ * \retval 0 on failure.
+ *
+ */
+int nmxptool_parse_int(const char *str, int *val);
+
 /*! \brief Print value of NMXPTOOL_PARAMS
  *
  * \param params Struct to validate.
