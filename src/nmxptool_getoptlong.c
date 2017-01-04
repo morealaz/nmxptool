@@ -835,15 +835,22 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 		    break;
 
 		case 'S':
-		    params->stc = atoi(optarg);
-		    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "Short-Term-Completion %d.\n", params->stc);
-		    if(params->stc >= 0) {
-			params->rate = 0; // original sample rate
-		    }
+			if(nmxptool_parse_int(optarg, &(params->stc)) == 0) {
+				nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "Error parsing Short-Term-Completion '%s'.\n", optarg);
+				ret_errors++;
+			} else {
+				nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "Short-Term-Completion %d.\n", params->stc);
+				if(params->stc >= 0) {
+					params->rate = 0; // original sample rate
+				}
+			}
 		    break;
 
 		case 'R':
-		    params->rate = atoi(optarg);
+			if(nmxptool_parse_int(optarg, &(params->rate)) == 0) {
+				nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "Error parsing Rate '%s'.\n", optarg);
+				ret_errors++;
+			}
 		    break;
 
 		case 's':
@@ -885,19 +892,30 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 		    break;
 
 		case 'M':
-		    params->max_tolerable_latency = atoi(optarg);
-		    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "Max_tolerable_latency %d\n",
-			    params->max_tolerable_latency);
+			if(nmxptool_parse_int(optarg, &(params->max_tolerable_latency)) == 0) {
+				nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "Error parsing Max Tolerable Latency '%s'.\n", optarg);
+				ret_errors++;
+			} else {
+				nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "Max_tolerable_latency %d\n",
+						params->max_tolerable_latency);
+			}
 		    break;
 
 		case 'T':
-		    params->timeoutrecv = atoi(optarg);
-		    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "Time-out receiving %d\n",
-			    params->timeoutrecv);
+			if(nmxptool_parse_int(optarg, &(params->timeoutrecv)) == 0) {
+				nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "Error parsing Time-out receving '%s'.\n", optarg);
+				ret_errors++;
+			} else {
+				nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "Time-out receiving %d\n",
+						params->timeoutrecv);
+			}
 		    break;
 
 		case 'v':
-		    params->verbose_level = atoi(optarg);
+			if(nmxptool_parse_int(optarg, &(params->verbose_level)) == 0) {
+				nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "Error parsing verbose level '%s'.\n", optarg);
+				ret_errors++;
+			}
 		    break;
 
 		case 'B':
@@ -911,9 +929,12 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 		    break;
 
 		case 'A':
-		    if(optarg) {
-			params->max_data_to_retrieve = atoi(optarg);
-		    }
+			if(optarg) {
+				if(nmxptool_parse_int(optarg, &(params->max_data_to_retrieve)) == 0) {
+					nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "Error parsing Max amount of data to retrieve '%s'.\n", optarg);
+					ret_errors++;
+				}
+			}
 		    nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "Max_time_to_retrieve %d\n", params->max_data_to_retrieve);
 		    break;
 
@@ -953,13 +974,19 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 
 #ifdef HAVE_SEEDLINK
 		case 'Q':
-		    params->timing_quality = atoi(optarg);
+			if(nmxptool_parse_int(optarg, &(params->timing_quality)) == 0) {
+				nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "Error parsing timing quality '%s'.\n", optarg);
+				ret_errors++;
+			}
 		    break;
 #endif
 
 #ifndef HAVE_WINDOWS_H
 		case 'E':
-		    params->listen_port = atoi(optarg);
+			if(nmxptool_parse_int(optarg, &(params->listen_port)) == 0) {
+				nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "Error parsing listen port '%s'.\n", optarg);
+				ret_errors++;
+			}
 		    break;
 #endif
 
@@ -1081,25 +1108,29 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 		    break;
 
 		case 'r':
-		    params->reclen = atoi(optarg);
-		    if(params->reclen >= DEFAULT_RECLEN_MINIMUM  &&  params->reclen <= DEFAULT_RECLEN_MAXIMUM) {
-			flag_reclen_pow = 0;
-			while(!flag_reclen_pow  &&  reclen_pow <= DEFAULT_RECLEN_MAXIMUM) {
-			    if(params->reclen == reclen_pow) {
-				flag_reclen_pow = 1;
-			    }
-			    reclen_pow *= 2;
+			if(nmxptool_parse_int(optarg, &(params->reclen)) == 0) {
+				nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "Error parsing mini-SEED record length '%s'.\n", optarg);
+				ret_errors++;
+			} else {
+				if(params->reclen >= DEFAULT_RECLEN_MINIMUM  &&  params->reclen <= DEFAULT_RECLEN_MAXIMUM) {
+					flag_reclen_pow = 0;
+					while(!flag_reclen_pow  &&  reclen_pow <= DEFAULT_RECLEN_MAXIMUM) {
+						if(params->reclen == reclen_pow) {
+							flag_reclen_pow = 1;
+						}
+						reclen_pow *= 2;
+					}
+					if(!flag_reclen_pow) {
+						ret_errors++;
+						nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY,
+								"reclen must expressible as 2 raised to the power of X where X is between (and including) 8 to 20.\n");
+					}
+				} else {
+					ret_errors++;
+					nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY,
+							"reclen must expressible as 2 raised to the power of X where X is between (and including) 8 to 20.\n");
+				}
 			}
-			if(!flag_reclen_pow) {
-			    ret_errors++;
-			    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY,
-				    "reclen must expressible as 2 raised to the power of X where X is between (and including) 8 to 20.\n");
-			}
-		    } else {
-			ret_errors++;
-			nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY,
-				"reclen must expressible as 2 raised to the power of X where X is between (and including) 8 to 20.\n");
-		    }
 		    break;
 #endif
 
