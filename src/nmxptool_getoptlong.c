@@ -599,6 +599,43 @@ int nmxptool_read_time(char *str_input, int32_t *pvalue) {
     return ret_errors;
 }
 
+
+int nmxptool_parse_long(const char *str, long *val)
+{
+	char *temp;
+	int rc = 1;
+	errno = 0;
+	*val = strtol(str, &temp, 0);
+
+	if (temp == str || *temp != '\0' ||
+			( (*val == LONG_MIN || *val == LONG_MAX) && errno == ERANGE)
+	   ) {
+		rc = 0;
+	}
+
+	return rc;
+}
+
+
+int nmxptool_parse_int(const char *str, int *val)
+{
+	long v = 0;
+	int rc = 1;
+
+	rc = nmxptool_parse_long(str, &v);
+
+	if(rc) {
+		if(v >= INT_MIN && v <= INT_MAX) {
+			*val = v;
+		} else {
+			rc = 0;
+		}
+	}
+
+	return rc;
+}
+
+
 int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 {
     int ret_errors = 0;
