@@ -17,6 +17,7 @@
 
 #include <errno.h>
 #include <unistd.h>
+#include <limits.h>
 
 #include "config.h"
 #include "nmxp.h"
@@ -616,7 +617,6 @@ int nmxptool_parse_long(const char *str, long *val)
 	return rc;
 }
 
-
 int nmxptool_parse_int(const char *str, int *val)
 {
 	long v = 0;
@@ -803,11 +803,17 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 		    break;
 
 		case 'P':
-		    params->portnumberpds = atoi(optarg);
+			if(nmxptool_parse_int(optarg, &(params->portnumberpds)) == 0) {
+				nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "Error parsing NaqsServer port number '%s'.\n", optarg);
+				ret_errors++;
+			}
 		    break;
 
 		case 'D':
-		    params->portnumberdap = atoi(optarg);
+			if(nmxptool_parse_int(optarg, &(params->portnumberdap)) == 0) {
+				nmxp_log(NMXP_LOG_NORM, NMXP_LOG_D_ANY, "Error parsing DataServer port number '%s'.\n", optarg);
+				ret_errors++;
+			}
 		    break;
 
 		case 'C':
