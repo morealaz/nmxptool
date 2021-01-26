@@ -2,18 +2,14 @@
 ACLOCAL_AMFLAGS = -I m4
 
 SUBDIRS = lib src
-dist_doc_DATA = BUGS HISTORY README
+dist_doc_DATA = BUGS HISTORY README earthworm/nmxptool_cmd.html earthworm/nmxptool_ovr.html
 
 EWMAKEFILEUX=earthworm/makefile.ux.nognu
 
+EXTRA_DIST = earthworm seiscomp_templates makefile.unix
+
 dist-hook:
 	ln -f -s ${EWMAKEFILEUX} makefile.unix
-	rm -rf `find $(distdir)/earthworm -name CVS`
-	rm -rf `find $(distdir)/seiscomp_templates -name CVS`
-	rm -rf `find $(distdir)/earthworm -name .svn`
-	rm -rf `find $(distdir)/seiscomp_templates -name .svn`
-	rm -rf `find $(distdir)/doc -name CVS`
-	rm -rf `find $(distdir)/doc -name .svn`
 
 binary_distdir_FILES= \
 	AUTHORS \
@@ -24,12 +20,8 @@ binary_distdir_FILES= \
         README  \
         README_DISTBIN \
         bin/nmxptool${EXEEXT} \
-        earthworm/nmxptool.d \
-        earthworm/nmxptool.desc \
-        earthworm/nmxptool.list.txt \
-	earthworm/nmxptool_cmd.html \
-	earthworm/nmxptool_ovr.html \
-        seiscomp_templates
+		earthworm \
+		seiscomp_templates
 
 if ENABLE_DLL_PTHREAD
 binary_distdir_FILES+= bin/${DLL_PTHREAD}
