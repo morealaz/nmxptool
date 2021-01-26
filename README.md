@@ -229,11 +229,12 @@ The second command copies the directory `seiscomp3_templates/nmxp` to `${SEISCOM
 
 After, you must run:
 
-````
+```
 seiscomp update-config
 ```
 
 **Install binary and template files for SeisComp 2.5**
+
 ```
 make install-seiscomp2-bin
 make install-seiscomp2-templates (ONLY THE FIRST TIME)
