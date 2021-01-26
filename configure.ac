@@ -9,7 +9,7 @@ m4_define([full_package_name], [nmxptool])
 dnl These three define the plug-in version number
 m4_define([major_version], [2])
 m4_define([minor_version], [1])
-m4_define([micro_version], [4])
+m4_define([micro_version], [5])
 # Comment build_version for stable release
 # m4_define([build_version], [dev])
 
@@ -73,6 +73,8 @@ AC_CHECK_LIB(rt, nanosleep, LIBS="$LIBS -lrt", , -lrt)
 AC_CHECK_LIB(m, fabs, LIBS="$LIBS -lm", , -lm)
 
 AC_CHECK_LIB(ws2_32, puts, LIBS="$LIBS -lws2_32", , -lws2_32)
+
+AC_CHECK_LIB(pthread, pthread_create, LIBS="$LIBS -lpthread", , -lpthread)
 
 AC_ARG_ENABLE([memdebug],
 	      [AS_HELP_STRING([--enable-memdebug], [compile nmxptool for debugging memory leaks])],
