@@ -391,9 +391,11 @@ AS_IF([test "x$enable_seedlink" != xno],
       After compilation you can install nmxptool binary and templates for SeisComp2 o SeisComp3:
             make install-seiscomp2-bin
             make install-seiscomp2-templates
+            seiscomp config
 	  OR
             make install-seiscomp3-bin
-            make install-seiscomp3-templates])
+            make install-seiscomp3-templates
+            seiscomp update-config])
       ]
 )
 
