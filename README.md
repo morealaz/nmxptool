@@ -26,6 +26,7 @@ nmxptool can be used in three different ways:
   * launched as an Earthworm module to redirect data into the EW-rings
   * like a Seed-Link plug-in to feed the SL-server
 	
+
 The main contribute, as regards other similar software, is the capability to
 manage Raw Stream connections by buffering and sorting all received packets,
 included the retransmitted ones, guaranteeing a good compromise between data
@@ -64,12 +65,12 @@ Optional libraries:
 ### QUICK INSTALLATION
 
 	tar xvfz nmxptool-X.X.X.tar.gz
-
+	
 	cd nmxptool-X.X.X
 	./configure
 	make
 	src/nmxptool --version
-
+	
 	make install
 	     OR
 	make install-ew-bin
@@ -79,7 +80,7 @@ Optional libraries:
 	make install-seiscomp-templates (ONLY THE FIRST TIME)
 	     OR
 	cp src/nmxptool <where_you_want>
-
+	
 	nmxptool --help
 
 For binary installation see section INSTALLATION BINARIES below.
@@ -105,7 +106,7 @@ Disabling optional Features
 	--disable-seedlink      do not compile nmxptool as Seedlink plug-in
 
   Some influential environment variables:
-  
+
 	EW_HOME     Earthworm home directory
 	EW_VERSION  Earthworm version directory
 	EW_PARAMS   Earthworm configuration files directory
@@ -146,11 +147,11 @@ Examples:
 Verifying the version and enabled features after compilation:
 
 	src/nmxptool --version
-
-    nmxptool 2.1.0, tool for Nanometrics Protocols
-             Private Data Stream 1.4, Data Access Protocol 1.0
-             Enabled features: libmseed YES, SeedLink YES, Earthworm YES.
-             Using pthread: YES.
+	
+	nmxptool 2.1.0, tool for Nanometrics Protocols
+	         Private Data Stream 1.4, Data Access Protocol 1.0
+	         Enabled features: libmseed YES, SeedLink YES, Earthworm YES.
+	         Using pthread: YES.
 
   - libmseed, The Mini-SEED library - <http://www.iris.edu/manuals/>
 
@@ -211,13 +212,39 @@ Verifying the version and enabled features after compilation:
     
     	seiscomp_templates/135_nmxptool
 		seiscomp_templates/136_nmxptool_dod
-		
+	
     in %SEISCOMPDIR%/acquisition/templates/source/
 
     After, you can use:
     
 		seiscomp config
 
+  * seedlink, SeisComP3 - http://www.gfz-potsdam.de/geofon/seiscomp/
+         Seedlink is a system for near real time seismic data distribution.
+         Inside the directory 'src' has been copied files
+         'seedlink_plugin.c' and 'seedlink_plugin.h' from 'plugin.c' and 'plugin.h'
+         belonging to the SeisComP 3.0 distribution.
+
+         If your SeisComP root directory is not equal to /home/sysop/seiscomp,
+         you have to launch the script 'configure' in the following way:
+
+             ./configure ... ... SEISCOMPDIR=/<where>/<seiscompdir>/<is>
+
+         Install binary and template files for SeedLink:
+
+             make install-seiscomp3-bin
+             make install-seiscomp3-templates (ONLY THE FIRST TIME)
+
+         The first command copies nmxptool binary in %SEISCOMPDIR%/share/plugins/seedlink/
+         The second command copies the directories
+       
+       ​      ```seiscomp3_templates/nmxp```
+
+         in %SEISCOMPDIR%/share/templates/seedlink/
+
+         After, you can use:
+       
+             seiscomp update-config
 
 ### INSTALLATION BINARIES
 
@@ -298,7 +325,7 @@ N.B. No test has been done on Earthworm when nmxptool is compiled with 64-bit op
 		SendDelay = 250        // milliseconds to delay after each send 
 		RetxRequest = Enabled
 		MulticastGroup = 224.1.1.1 
-     
+    
 
 ### DOCUMENTATION
 
@@ -316,13 +343,13 @@ N.B. No test has been done on Earthworm when nmxptool is compiled with 64-bit op
 		Signals INT QUIT TERM : Sending these signals to nmxptool causes it
 		                        to immediately attempt to gracefully terminate. 
 		                        It may take several seconds to complete exiting.
-
+		
 		Signal  ALRM          : Print current info about Raw Stream buffer.
-
+		
 		Signal  USR1          : Force to close a connection and open again
 		                        without quitting the program. Only for connection
 		                        in near real-time to NaqsServer.
-
+		
 		Signals HUP PIPE      : Ignored. (SIG_IGN)
 
 
