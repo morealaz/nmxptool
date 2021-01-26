@@ -9,7 +9,7 @@ m4_define([full_package_name], [nmxptool])
 dnl These three define the plug-in version number
 m4_define([major_version], [2])
 m4_define([minor_version], [1])
-m4_define([micro_version], [5])
+m4_define([micro_version], [6])
 # Comment build_version for stable release
 # m4_define([build_version], [dev])
 
@@ -388,9 +388,12 @@ AS_IF([test "x$enable_ew" != xno],
 )
 AS_IF([test "x$enable_seedlink" != xno], 
       [AC_MSG_NOTICE([
-      After compilation you can install nmxptool for Seedlink:
-            make install-seiscomp-bin
-            make install-seiscomp-templates])
+      After compilation you can install nmxptool binary and templates for SeisComp2 o SeisComp3:
+            make install-seiscomp2-bin
+            make install-seiscomp2-templates
+	  OR
+            make install-seiscomp3-bin
+            make install-seiscomp3-templates])
       ]
 )
 
