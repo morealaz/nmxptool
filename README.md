@@ -67,7 +67,7 @@ Optional libraries:
 	tar xvfz nmxptool-X.X.X.tar.gz
 	
 	cd nmxptool-X.X.X
-	./configure
+	./configure [ --prefix=... ] [ SEISCOMPDIR=... ]
 	make
 	src/nmxptool --version
 	
@@ -76,8 +76,11 @@ Optional libraries:
 	make install-ew-bin
 	make install-ew-conf (ONLY THE FIRST TIME)
 	     OR
-	make install-seiscomp-bin
-	make install-seiscomp-templates (ONLY THE FIRST TIME)
+	make install-seiscomp2-bin
+	make install-seiscomp2-templates (ONLY THE FIRST TIME)
+	     OR
+	make install-seiscomp3-bin
+	make install-seiscomp3-templates (ONLY THE FIRST TIME)
 	     OR
 	cp src/nmxptool <where_you_want>
 	
@@ -116,44 +119,51 @@ Disabling optional Features
 
 Examples:
 
-  - 'configure' tries to compile all features
-  
-		./configure	CFLAGS="-O2 -Wall -pipe -I/<anywhere>/libmseed" \
-					LDFLAGS="-L/<anywhere>/libmseed"
+  - 'configure' tries to compile all features:
+```
+./configure	CFLAGS="-O2 -Wall -pipe -I/<anywhere>/libmseed" \
+  				LDFLAGS="-L/<anywhere>/libmseed"
+```
 
-  - Enable only Earthworm feature and set related variables
-  
-		./configure	--disable-libmseed --disable-seedlink \
+#### Enable only Earthworm feature and set related variables:
+```
+./configure	--disable-libmseed --disable-seedlink \
 					CFLAGS="-O2 -Wall -pipe" \
 					EW_HOME="/home/ew" \
 					EW_VERSION="v7.2" \
 					EW_PARAMS="${EW_HOME}/${EW_VERSION}/params" \
 					GLOBALFLAGS="-D_SPARC -D_SOLARIS"
+```
+or, for example
+```
+GLOBALFLAGS="-m32 -Dlinux -D__i386 -D_LINUX -D_INTEL -D_USE_SCHED -D_USE_PTHREADS -D_USE_TERMIOS"
+GLOBALFLAGS="-D_MACOSX -D_INTEL -D_USE_PTHREADS -D_USE_SCHED "
+GLOBALFLAGS="-D_WINNT -D_INTEL -D_CRT_SECURE_NO_DEPRECATE -D_USE_32BIT_TIME_T"
+```
 
-    or, for example
-   
-		GLOBALFLAGS="-m32 -Dlinux -D__i386 -D_LINUX -D_INTEL -D_USE_SCHED -D_USE_PTHREADS -D_USE_TERMIOS"
-		GLOBALFLAGS="-D_MACOSX -D_INTEL -D_USE_PTHREADS -D_USE_SCHED "
-		GLOBALFLAGS="-D_WINNT -D_INTEL -D_CRT_SECURE_NO_DEPRECATE -D_USE_32BIT_TIME_T"
+Use the last one to compile Earthworm feature under Windows-MinGW.
 
-    Use the last one to compile Earthworm feature under Windows-MinGW.
-
-  - Enable only libmseed and seedlink
-  
-		./configure	--disable-ew \
+#### Enable only libmseed and seedlink:
+```
+./configure	--disable-ew \
 					CFLAGS="-O2 -Wall -pipe -I/<anywhere>/libmseed" \
 					LDFLAGS="-L/<anywhere>/libmseed"
+```
 
-Verifying the version and enabled features after compilation:
+#### Verify the version and enabled features after compilation:
 
-	src/nmxptool --version
-	
-	nmxptool 2.1.0, tool for Nanometrics Protocols
+```
+./src/nmxptool --version
+```
+
+```
+	nmxptool 2.1.5, tool for Nanometrics Protocols
 	         Private Data Stream 1.4, Data Access Protocol 1.0
 	         Enabled features: libmseed YES, SeedLink YES, Earthworm YES.
 	         Using pthread: YES.
+```
 
-  - libmseed, The Mini-SEED library - <http://www.iris.edu/manuals/>
+#### libmseed, The Mini-SEED library - <http://www.iris.edu/manuals/>
 
     If available within include and library path,
          this library allows to save retrieved data in Mini-SEED records.
@@ -161,11 +171,12 @@ Verifying the version and enabled features after compilation:
          and to LDFLAGS this `"-L/<anywhere>/libmseed"`,
          do not forget to run 'ranlib libmseed.a' or similars.
 
-  - ew, Earthworm System - http://www.isti2.com/ew/
-  
+#### ew, Earthworm System - http://www.isti2.com/ew/
+
     nmxptool is included into the official Earthworm distribution since the version 7.2.
          Anyway, you can compile nmxptool outside the EW distribution, for example, to upgrade.
          Before launching 'configure', run the appropriate script from directory 'environment', the compilation depends on the following environment variables:
+    
     - $EW_HOME
     - $EW_VERSION
     - $EW_PARAMS
@@ -174,108 +185,79 @@ Verifying the version and enabled features after compilation:
     'configure' looks for necessary Earthworm object files inside `$EW_HOME/$EW_VERSION/lib`
          and link them to nmxptool in order to enable Earthworm module feature.
          If some of object files are missing then it will attempt to discover sources
-         dependents on your operating system and it will compile them before linking.
+     dependents on your operating system and it will compile them before linking.
 
-    Install binary and configuration files for Earthworm:
+Install binary and configuration files for Earthworm:
+```
+make install-ew-bin
+make install-ew-conf (ONLY THE FIRST TIME)
+```
 
-		make install-ew-bin
-		make install-ew-conf (ONLY THE FIRST TIME)
+The first command copies nmxptool binary in $EW_HOME/$EW_VERSION/bin
+The second command copies earthworm/nmxptool.d, earthworm/nmxptool.desc in $EW_PARAMS.
 
-    The first command copies nmxptool binary in $EW_HOME/$EW_VERSION/bin
-    The second command copies earthworm/nmxptool.d, earthworm/nmxptool.desc in $EW_PARAMS
-    If you are upgrading nmxptool then you might do that:
+If you are upgrading nmxptool then you might do that:
 
-		make install-ew-doc
+```
+make install-ew-doc
+```
 
-    Last command copies nmxptool_ovr.html and nmxptool_cmd.html into the directories
-	 `$EW_HOME/$EW_VERSION/ewdoc/WEB_DOC/ovr` and `$EW_HOME/$EW_VERSION/ewdoc/WEB_DOC/cmd`
+Last command copies nmxptool_ovr.html and nmxptool_cmd.html into the directories `$EW_HOME/$EW_VERSION/ewdoc/WEB_DOC/ovr` and `$EW_HOME/$EW_VERSION/ewdoc/WEB_DOC/cmd`.
 
-  - seedlink, SeisComP - <http://www.gfz-potsdam.de/geofon/seiscomp/>
-    
-    Seedlink is a system for near real time seismic data distribution.
-    Inside the directory 'src' has been copied files
-    'seedlink_plugin.c' and 'seedlink_plugin.h' from 'plugin.c' and 'plugin.h'
-    belonging to the SeisComP 2.5 distribution.
+#### seedlink, SeisComP 2.5 and 3 - <http://www.gfz-potsdam.de/geofon/seiscomp/>
 
-    If your SeisComP root directory is not equal to /home/sysop/seiscomp,
-    you have to launch the script 'configure' in the following way:
+Seedlink is a system for near real time seismic data distribution.
+Inside the directory 'src' has been copied files 'seedlink_plugin.c' and 'seedlink_plugin.h' from 'plugin.c' and 'plugin.h'belonging to the SeisComP distribution.
 
-		./configure ... ... SEISCOMPDIR=/<where>/<seiscompdir>/<is>
+If your SeisComP root directory is not equal to `/home/sysop/seiscomp`,
+you have to launch the script 'configure' and define `SEISCOMPDIR` in the following way:
 
-    Install binary and template files for SeedLink:
+```
+./configure ... ... SEISCOMPDIR=/<where>/<seiscompdir>/<is>
+```
 
-		make install-seiscomp-bin
-		make install-seiscomp-templates (ONLY THE FIRST TIME)
+**Install binary and template files for Seiscomp 3**
 
-    The first command copies nmxptool binary in %SEISCOMPDIR%/acquisition/bin
-    The second command copies the directories
-    
-    	seiscomp_templates/135_nmxptool
-		seiscomp_templates/136_nmxptool_dod
-	
-    in %SEISCOMPDIR%/acquisition/templates/source/
+```
+make install-seiscomp3-bin
+make install-seiscomp3-templates (ONLY THE FIRST TIME)
+```
 
-    After, you can use:
-    
-		seiscomp config
+The first command copies nmxptool binary to `${SEISCOMPDIR}/share/plugins/seedlink/`.
 
-  * seedlink, SeisComP3 - http://www.gfz-potsdam.de/geofon/seiscomp/
-         Seedlink is a system for near real time seismic data distribution.
-         Inside the directory 'src' has been copied files
-         'seedlink_plugin.c' and 'seedlink_plugin.h' from 'plugin.c' and 'plugin.h'
-         belonging to the SeisComP 3.0 distribution.
+The second command copies the directory `seiscomp3_templates/nmxp` to `${SEISCOMPDIR}/share/templates/seedlink/`.
 
-         If your SeisComP root directory is not equal to /home/sysop/seiscomp,
-         you have to launch the script 'configure' in the following way:
+After, you must run:
 
-             ./configure ... ... SEISCOMPDIR=/<where>/<seiscompdir>/<is>
+```
+seiscomp update-config
+```
 
-         Install binary and template files for SeedLink:
+**Install binary and template files for SeisComp 2.5**
 
-             make install-seiscomp3-bin
-             make install-seiscomp3-templates (ONLY THE FIRST TIME)
+```
+make install-seiscomp2-bin
+make install-seiscomp2-templates (ONLY THE FIRST TIME)
+```
 
-         The first command copies nmxptool binary in %SEISCOMPDIR%/share/plugins/seedlink/
-         The second command copies the directories
-       
-       ​      ```seiscomp3_templates/nmxp```
+The first command copies nmxptool binary to `${SEISCOMPDIR}/acquisition/bin`.
 
-         in %SEISCOMPDIR%/share/templates/seedlink/
+The second command copies the directories 
+```
+seiscomp2_templates/135_nmxptool
+seiscomp2_templates/136_nmxptool_dod
+```
+to `${SEISCOMPDIR}/acquisition/templates/source/`.
 
-         After, you can use:
-       
-             seiscomp update-config
+After, you must run:
+```
+seiscomp config
+```
 
 ### INSTALLATION BINARIES
 
 Download the binary distribution for your operating system from the
 web site <http://mednet.rm.ingv.it>, unpack it and copy the files where you want.
-
-Linux box within the SeisComp3 directory:
-
-	wget http://mednet.rm.ingv.it/downloads/soft/nmxptool-2.1.0-bin-i686-pc-linux-gnu.tar.gz
-	tar xvfz nmxptool-2.1.0-bin-i686-pc-linux-gnu.tar.gz
-	cd nmxptool-2.1.0-bin-i686-pc-linux-gnu/
-	cp bin/nmxptool ~/seiscomp3/acquisition/bin/
-	cp -R seiscomp_templates/135_nmxptool ~/seiscomp3/acquisition/templates/source/
-	cp -R seiscomp_templates/136_nmxptool_dod ~/seiscomp3/acquisition/templates/source/
-
-Solaris Sparc Machine within Earthworm environment:
-
-	wget http://mednet.rm.ingv.it/downloads/soft/nmxptool-2.1.0-bin-sparc-sun-solaris2.10.tar.gz
-	gunzip -c < nmxptool-2.1.0-bin-sparc-sun-solaris2.10.tar.gz | tar xvf -
-	cd nmxptool-2.1.0-bin-sparc-sun-solaris2.10/
-	cp bin/nmxptool $EW_HOME/$EW_VERSION/bin/
-	cp earthworm/nmxptool.d $EW_PARAMS/
-	cp earthworm/nmxptool.desc $EW_PARAMS/
-
-Inside the same directory 'earthworm' are also available the documentation html files nmxptool_cmd.html and nmxptool_ovr.html
-
-Windows-XP, Windows2000:
-
-	Download http://mednet.rm.ingv.it/downloads/soft/nmxptool-2.1.0-bin-i686-pc-mingw32.zip
-	Unzip the file.
-	Copy the files nmxptool.exe and pthreadVC2.dll where you want.
 
 
 ### SUPPORTED PLATFORMS AND 64-Bit ISSUES
@@ -325,7 +307,7 @@ N.B. No test has been done on Earthworm when nmxptool is compiled with 64-bit op
 		SendDelay = 250        // milliseconds to delay after each send 
 		RetxRequest = Enabled
 		MulticastGroup = 224.1.1.1 
-    
+
 
 ### DOCUMENTATION
 

@@ -2,6 +2,9 @@
 nmxptool Release History
 #########################
 
+* Release 2.1.6    (2021/01/26)
+    - Add make rules to install nmxptool binary and templates in Seiscomp2 and Seiscomp3.
+
 * Release 2.1.5    (2021/01/26)
     - Some fixes to compile nowdays. Particularly, add pthread option for some compilers.
 
