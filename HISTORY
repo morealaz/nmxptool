@@ -2,6 +2,14 @@
 nmxptool Release History
 #########################
 
+* Release 2.1.7-dev    (2021/02/04)
+    - New nmxptool option:
+          -I, --slink_network_id  When sending data to SeedLink as a plug-in.
+                                  Use unambiguous station ID (net.station).
+      Following the change in SeisComp, add possibility to define the station ID also declaring the network code.
+      See release/jakarta/2020.330. Use unambiguous station ID (net.station)
+      https://github.com/SeisComP3/seiscomp3/commit/04f52aed7f589ac872f4be34b0d7f0c247c2a79b
+
 * Release 2.1.6    (2021/01/26)
     - Add make rules to install nmxptool binary and templates in Seiscomp2 and Seiscomp3.
 

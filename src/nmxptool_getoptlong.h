@@ -149,6 +149,7 @@ typedef struct {
     int flag_writefile;
     int flag_slink;
     int flag_slinkms;
+    int flag_slink_network_id;
     int flag_buffered;
     int flag_logdata;
     int flag_logsample;

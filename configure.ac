@@ -9,7 +9,7 @@ m4_define([full_package_name], [nmxptool])
 dnl These three define the plug-in version number
 m4_define([major_version], [2])
 m4_define([minor_version], [1])
-m4_define([micro_version], [6])
+m4_define([micro_version], [7])
 # Comment build_version for stable release
 # m4_define([build_version], [dev])
 
