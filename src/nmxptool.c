@@ -80,6 +80,11 @@ void *nmxptool_print_info_raw_stream(void *arg);
 int nmxptool_print_seq_no(NMXP_DATA_PROCESS *pd);
 void nmxptool_str_time_to_filename(char *str_time);
 
+#ifdef HAVE_SEEDLINK
+#define MAX_LEN_STATION_ID 64
+int seedlink_station_id(NMXP_DATA_PROCESS *pd, NMXPTOOL_PARAMS *params, char *station_id, int size);
+#endif
+
 #ifdef HAVE_LIBMSEED
 int nmxptool_write_miniseed(NMXP_DATA_PROCESS *pd);
 int nmxptool_log_miniseed(const char *s);
@@ -1532,6 +1537,18 @@ static void CloseConnectionHandler(int sig) {
 
 
 
+#ifdef HAVE_SEEDLINK
+int seedlink_station_id(NMXP_DATA_PROCESS *pd, NMXPTOOL_PARAMS *params, char *station_id, int size) {
+	int ret = 0;
+	if(params->flag_slink_network_id) {
+		ret = snprintf(station_id, size, "%s.%s", pd->network, pd->station);
+	} else {
+		ret = snprintf(station_id, size, "%s", pd->station);
+	}
+	return ret;
+}
+#endif
+
 
 #ifdef HAVE_LIBMSEED
 int nmxptool_write_miniseed(NMXP_DATA_PROCESS *pd) {
@@ -1555,7 +1572,11 @@ int nmxptool_write_miniseed(NMXP_DATA_PROCESS *pd) {
 void nmxptool_msr_send_mseed_handler (char *record, int reclen, void *handlerdata) {
     int ret = 0;
     NMXP_DATA_PROCESS *pd = handlerdata;
-    ret = send_mseed(pd->station, record, reclen);
+	char station_id[MAX_LEN_STATION_ID];
+
+	seedlink_station_id(pd, &params, station_id, MAX_LEN_STATION_ID);
+
+    ret = send_mseed(station_id, record, reclen);
     if ( ret <= 0 ) {
 	nmxp_log(NMXP_LOG_ERR, NMXP_LOG_D_PACKETMAN,
 		"send_mseed() for %s.%s.%s\n", pd->network, pd->station, pd->channel);
@@ -1648,8 +1669,11 @@ int nmxptool_print_seq_no(NMXP_DATA_PROCESS *pd) {
 int nmxptool_send_raw_depoch(NMXP_DATA_PROCESS *pd) {
     /* TODO Set values */
     const int usec_correction = 0;
+	char station_id[MAX_LEN_STATION_ID];
 
-    return send_raw_depoch(pd->station, pd->channel, pd->time, usec_correction, pd->timing_quality,
+	seedlink_station_id(pd, &params, station_id, MAX_LEN_STATION_ID);
+
+    return send_raw_depoch(station_id, pd->channel, pd->time, usec_correction, pd->timing_quality,
 	    pd->pDataPtr, pd->nSamp);
 }
 #endif

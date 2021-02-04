@@ -67,6 +67,7 @@ const NMXPTOOL_PARAMS NMXPTOOL_PARAMS_DEFAULT =
     0,
     0,
     0,
+    0,
     0
 };
 
@@ -384,6 +385,10 @@ SeedLink arguments:\n");
                           instead of send_raw_depoch().\n\
                           Not usable together with -k.\n");
 #endif
+
+    nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
+  -I, --slink_network_id  When sending data to SeedLink as a plug-in.\n\
+                          Use unambiguous station ID (net.station).\n");
 
     nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "\
   -Q, --timing_quality=TQ This value is used for the functions send_raw*().\n\
@@ -710,6 +715,9 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 #endif
 #endif
 #ifdef HAVE_SEEDLINK
+	{"slink_network_id", no_argument, NULL, 'I'},
+#endif
+#ifdef HAVE_SEEDLINK
 	{"timing_quality", required_argument, NULL, 'Q'},
 #endif
 #ifndef HAVE_WINDOWS_H
@@ -970,6 +978,12 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 		    }
 		    break;
 #endif
+#endif
+
+#ifdef HAVE_SEEDLINK
+		case 'I':
+		    params->flag_slink_network_id = 1;
+		    break;
 #endif
 
 #ifdef HAVE_SEEDLINK
@@ -1263,6 +1277,7 @@ void nmxptool_log_params(NMXPTOOL_PARAMS *params) {
     int flag_writefile: %d\n\
     int flag_slink: %d\n\
     int flag_slinkms: %d\n\
+    int flag_slink_network_id: %d\n\
     int flag_buffered: %d\n\
     int flag_logdata: %d\n\
     int flag_logsample: %d\n\
@@ -1276,6 +1291,7 @@ void nmxptool_log_params(NMXPTOOL_PARAMS *params) {
     params->flag_writefile,
     params->flag_slink,
     params->flag_slinkms,
+    params->flag_slink_network_id,
     params->flag_buffered,
     params->flag_logdata,
     params->flag_logsample
@@ -1412,6 +1428,18 @@ int nmxptool_check_params(NMXPTOOL_PARAMS *params) {
 	params->timeoutrecv = 0;
 	nmxp_log(NMXP_LOG_WARN, NMXP_LOG_D_ANY, "<timeoutrecv> ignored since not defined --stc=-1.\n");
     }
+
+#ifdef HAVE_SEEDLINK
+    if( params->flag_slink_network_id == 1
+			&& (
+				params->flag_slink == 0
+				&& params->flag_slinkms == 0
+				)
+	  ) {
+	ret = -1;
+	nmxp_log(NMXP_LOG_NORM_NO, NMXP_LOG_D_ANY, "<slink_network_id> is used only by -k or -K options.\n");
+    }
+#endif
 
 #ifdef HAVE_SEEDLINK
     if( params->timing_quality != DEFAULT_TIMING_QUALITY &&
