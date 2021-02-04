@@ -745,6 +745,7 @@ int nmxptool_getopt_long(int argc, char **argv, NMXPTOOL_PARAMS *params)
 
 
 #ifdef HAVE_SEEDLINK
+    strcat(optstr, "I");
     strcat(optstr, "Q:");
     strcat(optstr, "k:");
 #endif
