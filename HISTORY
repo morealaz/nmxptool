@@ -2,6 +2,9 @@
 nmxptool Release History
 #########################
 
+* Release 2.1.8    (2021/02/04)
+    - Fix for using option -I.
+
 * Release 2.1.7-dev    (2021/02/04)
     - New nmxptool option:
           -I, --slink_network_id  When sending data to SeedLink as a plug-in.
